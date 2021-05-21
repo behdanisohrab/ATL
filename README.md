@@ -14,15 +14,15 @@ A:
 	yep, and that *can* be tackled, see https://github.com/minecraft-linux/{mcpelauncher-linker, ...}  
 
 Q:  
-	hey! it errors out!  
+	hey! this is so basic it's useless!  
 A:  
-	yup, we need to do some reimplementing :)  
-	for the PoC (simple sample app), just some basic stuff should be enough.  
-
-	Google did a lot of work for us already, by making a tool that can stub  
-	out all the source files. The stubbed out files are available in their Sdk,  
-	but it would be smart to just use the tool on the much better licensed  
-	original codebase.  
+	yup, we still need to do some proper reimplementing :)  
+	The PoC works-ish now, though it's much less complex than even a modern sample app.  
+	For one, it doesn't use any of the complex compat layers, it just directly subclasses Activity.  
+	Second, it uses only two basic UI elements (TextView and LinearLayout), and yes these are  
+	the only ones implemented (and partially at that, only the absolutely required functionality).  
+	Third, it doesn't do much - it just sets up it's static, non-changing UI, and since the current  
+	GUI implementation is just printing stuff to stdout, we might as well let the app finish after onCreate.  
 
 ##### Roadmap:
 
@@ -30,7 +30,6 @@ first we need to gather a lot of volunteers, because the android abi is *huge*
 
 then we need to settle on language / UI toolkit.  
 
-I would like to shim stuff to C for performance (kinda like Google already  
-does with C++ on newer implementations), and use GTK 4 for UI - because  
+I would like to shim stuff to C for performance, and use GTK 4 for UI - because  
 that seems like a lot of fun, and we need to be honest with ourselves, why  
 would anyone help with this project if not for fun ;)  
