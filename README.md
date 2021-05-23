@@ -11,7 +11,7 @@ Q:
 	some apps even use them for 99% of their functionality!  
 
 A:  
-	yep, and that *can* be tackled, see https://github.com/minecraft-linux/{mcpelauncher-linker, ...}  
+	yep, and that *can* be tackled, see https://github.com/minecraft-linux/mcpelauncher-linker
 
 Q:  
 	hey! this is so basic it's useless!  
