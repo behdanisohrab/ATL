@@ -2,7 +2,8 @@ CURRDIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 compile_hax:
 	javac -source 1.7 -target 1.7 -cp \
-	$(CURRDIR)/jars/core.jar \
+	$(CURRDIR)/jars/core.jar:\
+	jars/gtk-4.1.jar \
 	main-src/android/content/Context.java \
 	main-src/android/os/Bundle.java \
 	main-src/android/app/Activity.java \
@@ -51,11 +52,17 @@ compile_and_covert_hax: compile_hax convert_hax
 compile_launcher:
 	javac -source 1.6 -target 1.6 -cp \
 	demo_app.jar:\
+	jars/gtk-4.1.jar:\
 	main-src/ \
 	main-src/org/launch/main.java 
 
-convert_launcher:
+convert_launcher: | compile_launcher
 	cd main-src/ && ~/Android/Sdk/build-tools/21.0.0/dx --verbose --dex --output=../main.dex org/launch/*.class
 
+compile_and_covert_launcher: compile_launcher convert_launcher
+
+install_gtk_jni:
+	sudo cp libnative/libgtkjni-4.1.4-dev.so /usr/local/lib/libgtkjni-4.1.4-dev.so # if you wish to use a different path, you need to edit `.libdir` inside gtk.jar
+
 run:
-	./dalvik/dalvik -cp demo_app.apk:main.dex org/launch/main
+	LD_LIBRARY_PATH=/usr/local/lib/ ./dalvik/dalvik -verbose:jni -cp demo_app.apk:main.dex org/launch/main

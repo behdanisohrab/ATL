@@ -10,6 +10,12 @@ import android.view.LayoutInflater;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import org.gnome.gdk.Event;
+import org.gnome.gtk.Gtk;
+import org.gnome.gtk.Widget;
+import org.gnome.gtk.Window;
+import org.gnome.gtk.WindowPosition;
+
 import java.io.StringReader;
 
 public class Activity extends Object { // we will want to extend something like _real_Activity implemented in C as a GObject
@@ -72,9 +78,29 @@ public class Activity extends Object { // we will want to extend something like 
 		XmlPullParser xpp = factory.newPullParser();
 
 		// cheating here, should look it up
+		// note: s/@ref\///g
 		xpp.setInput( new StringReader ( "<?xml version=\"1.0\" encoding=\"utf-8\"?> <LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\" android:orientation=\"1\" android:layout_width=\"-1\" android:layout_height=\"-1\">  <TextView android:id=\"0x7f08010a\" android:layout_width=\"-2\" android:layout_height=\"-2\" android:text=\"Hello World!\" />  <TextView android:id=\"0x7f08010b\" android:layout_width=\"-2\" android:layout_height=\"-2\" android:text=\"second one (static)\" /> </LinearLayout>" ) );
 
 		root_view = layout_inflater.inflate(xpp, null, false);
+
+		System.out.println("~~~~~~~~~~~");
+		System.out.println(root_view);
+		System.out.println(root_view.widget);
+		System.out.println("~~~~~~~~~~~");
+
+		Window w = new Window();
+		w.setTitle(this.toString());
+		w.setDefaultSize(540, 960);
+		w.add(root_view.widget);
+		w.showAll();
+
+
+        w.connect(new Window.DeleteEvent() {
+            public boolean onDeleteEvent(Widget source, Event event) {
+                Gtk.mainQuit();
+                return false;
+            }
+        });
 
 		return;
     }

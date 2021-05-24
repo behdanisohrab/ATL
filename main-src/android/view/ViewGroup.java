@@ -2,13 +2,20 @@ package android.view;
 
 import android.util.AttributeSet;
 
+import org.gnome.gdk.Event;
+import org.gnome.gtk.Gtk;
+import org.gnome.gtk.Widget;
+import org.gnome.gtk.Window;
+import org.gnome.gtk.WindowPosition;
+import org.gnome.gtk.Container;
+
 import java.util.ArrayList;
 
 public class ViewGroup extends View {
 	public int id;
 	public ArrayList<View> children;
 
-	public ViewGroup() { // FIXME
+	public ViewGroup() {
 		children = new ArrayList<View>();
 	}
 
@@ -27,6 +34,7 @@ public class ViewGroup extends View {
 
 		child.parent = this;
 		children.add(child);
+		((Container)widget).add(child.widget);
 	}
 
 	public LayoutParams generateLayoutParams(AttributeSet attrs) {

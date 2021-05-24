@@ -1,1 +1,1 @@
-this is only needed for compiling, so presumably the dalvik-included core libs implement this; when we compile our own dalvik, we can keep the non-dex'd versions for this purpose.
+core.jar is only needed for compiling, so presumably the dalvik-included core libs implement this; when we compile our own dalvik, we can keep the non-dex'd versions for this purpose.
