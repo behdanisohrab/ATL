@@ -10,15 +10,9 @@ import android.view.LayoutInflater;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import org.gnome.gdk.Event;
-import org.gnome.gtk.Gtk;
-import org.gnome.gtk.Widget;
-import org.gnome.gtk.Window;
-import org.gnome.gtk.WindowPosition;
-
 import java.io.StringReader;
 
-public class Activity extends Object { // we will want to extend something like _real_Activity implemented in C as a GObject
+public class Activity extends Object {
 	LayoutInflater layout_inflater;
 	public View root_view;
 
@@ -88,7 +82,9 @@ public class Activity extends Object { // we will want to extend something like 
 		System.out.println(root_view.widget);
 		System.out.println("~~~~~~~~~~~");
 
-		Window w = new Window();
+		set_widget_as_root(root_view.widget);
+
+/*		Window w = new Window();
 		w.setTitle(this.toString());
 		w.setDefaultSize(540, 960);
 		w.add(root_view.widget);
@@ -100,10 +96,12 @@ public class Activity extends Object { // we will want to extend something like 
                 Gtk.mainQuit();
                 return false;
             }
-        });
+        });*/
 
 		return;
     }
+
+	private native void set_widget_as_root(long widget);
 
 	public <T extends android.view.View> T findViewById(int id) {
 		System.out.println("- findViewById - asked for view with id: " + id);

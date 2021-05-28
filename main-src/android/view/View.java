@@ -2,23 +2,14 @@ package android.view;
 
 import android.util.AttributeSet;
 
-import org.gnome.gdk.Event;
-import org.gnome.gtk.Gtk;
-import org.gnome.gtk.Widget;
-import org.gnome.gtk.Window;
-import org.gnome.gtk.WindowPosition;
-import org.gnome.gtk.Box;
-import org.gnome.gtk.Container;
-import org.gnome.gtk.Orientation;
-
 import java.util.HashMap;
 
-public class View extends Object { // FIXME-ish (it does extend Object, but in our case, we would want it to either extend or *be* a GObject implemented in C
+public class View extends Object {
 	public int id;
 	public ViewGroup parent;
 	public AttributeSet attrs;
 
-	public Widget widget;
+	public long widget; // pointer
 
 	public static HashMap<Integer, View> view_by_id = new HashMap<Integer, View>();
 
@@ -44,6 +35,5 @@ public class View extends Object { // FIXME-ish (it does extend Object, but in o
 		requestLayout();*/
 	}
 
-	protected void onFinishInflate() {
-	}
+	protected void onFinishInflate() {}
 }

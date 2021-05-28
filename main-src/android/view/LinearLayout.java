@@ -2,22 +2,17 @@ package android.view;
 
 import android.util.AttributeSet;
 
-import org.gnome.gdk.Event;
-import org.gnome.gtk.Gtk;
-import org.gnome.gtk.Widget;
-import org.gnome.gtk.Window;
-import org.gnome.gtk.WindowPosition;
-import org.gnome.gtk.Box;
-import org.gnome.gtk.Container;
-import org.gnome.gtk.Orientation;
-
 public class LinearLayout extends ViewGroup {
 
-	Orientation orientation;
+	boolean orientation;
 
-	public LinearLayout(AttributeSet _attrs) {
-		attrs = _attrs;
+	public LinearLayout(AttributeSet attrs) {
+		super(attrs);
 
+		native_constructor(attrs);
+	}
+
+	public native void native_constructor(AttributeSet attrs); /*{
 		int _orientation = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "orientation", 0);
 
 		if (_orientation == 0)
@@ -33,5 +28,8 @@ public class LinearLayout extends ViewGroup {
 		System.out.println("[[~~~~~~~~~~~");
 
 		System.out.println("creating LinearLayout with the attrs:"+attrs+"; "+attrs.getAttributeName(0));
-	}
+	}*/
+
+	@Override
+	public native void addView(View child, int index, LayoutParams params);
 }
