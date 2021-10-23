@@ -1,8 +1,30 @@
 CURRDIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-compile_hax:
+all: compile_and_covert_hax compile_and_covert_launcher compile_jni
+
+clean:
+	find main-src -name *.class -exec rm {} + || true
+	find xmlpull -name *.class -exec rm {} + || true
+	rm hax.dex hax_xmlpull.dex main.dex || true
+	rm libnative/org_launch_main.so || true
+
+default: all
+
+compile_xmlpull:
 	javac -h jni -source 1.7 -target 1.7 -cp \
 	$(CURRDIR)/jars/core.jar \
+	xmlpull/org/kxml2/io/KXmlSerializer.java \
+	xmlpull/org/kxml2/io/KXmlParser.java \
+	xmlpull/org/xmlpull/v1/XmlPullParser.java \
+	xmlpull/org/xmlpull/v1/sax2/Driver.java \
+	xmlpull/org/xmlpull/v1/XmlPullParserException.java \
+	xmlpull/org/xmlpull/v1/XmlPullParserFactory.java \
+	xmlpull/org/xmlpull/v1/XmlSerializer.java
+
+compile_hax: | convert_xmlpull
+	javac -h jni -source 1.7 -target 1.7 -cp \
+	$(CURRDIR)/jars/core.jar:\
+	$(CURRDIR)/xmlpull/ \
 	main-src/android/content/Context.java \
 	main-src/android/os/Bundle.java \
 	main-src/android/app/Activity.java \
@@ -14,13 +36,6 @@ compile_hax:
 	main-src/android/util/AttributeSet.java \
 	main-src/android/util/Xml.java \
 	main-src/android/util/XmlPullAttributes.java \
-	xmlpull/org/kxml2/io/KXmlSerializer.java \
-	xmlpull/org/kxml2/io/KXmlParser.java \
-	xmlpull/org/xmlpull/v1/XmlPullParser.java \
-	xmlpull/org/xmlpull/v1/sax2/Driver.java \
-	xmlpull/org/xmlpull/v1/XmlPullParserException.java \
-	xmlpull/org/xmlpull/v1/XmlPullParserFactory.java \
-	xmlpull/org/xmlpull/v1/XmlSerializer.java \
 	main-src/com/android/internal/util/XmlUtils.java \
 	main-src/com/android/internal/util/FastXmlSerializer.java \
 	main-src/android/view/LayoutInflater.java
@@ -36,7 +51,7 @@ convert_hax: | compile_hax
 	android/util/*.class \
 	com/android/internal/util/*.class
 
-convert_hax_xmlpull:
+convert_xmlpull: | compile_xmlpull
 	cd xmlpull/ && ~/Android/Sdk/build-tools/21.0.0/dx --verbose --dex --output=../hax_xmlpull.dex \
 	org/kxml2/io/KXmlSerializer.class \
 	org/kxml2/io/KXmlParser.class \
@@ -46,12 +61,13 @@ convert_hax_xmlpull:
 	org/xmlpull/v1/XmlPullParserFactory.class \
 	org/xmlpull/v1/XmlSerializer.class
 
-compile_and_covert_hax: compile_hax convert_hax
+compile_and_covert_hax: compile_xmlpull convert_xmlpull compile_hax convert_hax
 
 compile_launcher:
 	javac -h jni -source 1.6 -target 1.6 -cp \
-	demo_app.jar:\
-	main-src/ \
+	$(CURRDIR)/demo_app.jar:\
+	$(CURRDIR)/main-src/:\
+	$(CURRDIR)/xmlpull/ \
 	main-src/org/launch/main.java 
 
 convert_launcher: | compile_launcher
