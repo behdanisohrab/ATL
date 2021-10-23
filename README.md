@@ -2,7 +2,9 @@
 
 ---
 
-instructions: see Makefile
+instructions:  
+(optional) `make clean && make`: remove build artifacts and recompile the project
+`make run`: launch the demo app using the translation layer
 
 ##### FAQ:
 
