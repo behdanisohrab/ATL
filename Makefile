@@ -59,8 +59,10 @@ convert_launcher: | compile_launcher
 
 compile_and_covert_launcher: compile_launcher convert_launcher
 
-compile_jni:
-	gcc -g -shared -fPIC -o libnative/org_launch_main.so -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ -m32 -fPIE `PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs` jni/org_launch_main.c
+compile_jni: | compile_hax
+	mv jni/android_view_LinearLayout.h jni/android_view_ViewGroup.h jni/views/
+	mv jni/android_widget_TextView.h jni/widgets
+	gcc -g -shared -fPIC -o libnative/org_launch_main.so -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ -m32 -fPIE `PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs` jni/*.c jni/widgets/*.c jni/views/*.c
 
 run:
 	./dalvik/dalvik -verbose:jni -cp hax_xmlpull.dex:hax.dex:main.dex:demo_app.apk org/launch/main com/example/demo_application/MainActivity
