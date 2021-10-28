@@ -81,4 +81,5 @@ compile_jni: | compile_hax
 	gcc -g -shared -fPIC -o libnative/org_launch_main.so -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ -m32 -fPIE `PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs` jni/*.c jni/widgets/*.c jni/views/*.c
 
 run:
-	./dalvik/dalvik -verbose:jni -cp hax_xmlpull.dex:hax.dex:main.dex:demo_app.apk org/launch/main com/example/demo_application/MainActivity
+	#./dalvik/dalvik -verbose:jni -cp hax_xmlpull.dex:hax.dex:main.dex:demo_app.apk org/launch/main com/example/demo_application/MainActivity
+	./dalvik/dalvik -verbose:jni -cp hax_xmlpull.dex:hax.dex:main.dex:org.happysanta.gd_29.apk org/launch/main org/happysanta/gd/GDActivity

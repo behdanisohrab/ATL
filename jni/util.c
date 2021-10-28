@@ -20,7 +20,7 @@ int attribute_set_get_int(JNIEnv *env, jobject attrs, char *attribute, char *sch
 
 void set_up_handle_cache(JNIEnv *env, char *apk_main_activity_class)
 {
-	handle_cache.apk_main_activity.class = (*env)->FindClass(env, "com/example/demo_application/MainActivity");
+	handle_cache.apk_main_activity.class = (*env)->FindClass(env, apk_main_activity_class);
 	handle_cache.apk_main_activity.object = _REF((*env)->NewObject(env, handle_cache.apk_main_activity.class, _METHOD(handle_cache.apk_main_activity.class, "<init>", "()V")));
 	handle_cache.apk_main_activity.onCreate = (*env)->GetMethodID(env, handle_cache.apk_main_activity.class, "onCreate", "(Landroid/os/Bundle;)V");
 
