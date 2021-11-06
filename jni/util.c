@@ -30,4 +30,8 @@ void set_up_handle_cache(JNIEnv *env, char *apk_main_activity_class)
 
 	handle_cache.array_list.class = (*env)->FindClass(env, "java/util/ArrayList");
 	handle_cache.array_list.add = _METHOD(handle_cache.array_list.class, "add", "(Ljava/lang/Object;)Z");
+	handle_cache.array_list.remove = _METHOD(handle_cache.array_list.class, "remove", "(Ljava/lang/Object;)Z");
+	handle_cache.array_list.get = _METHOD(handle_cache.array_list.class, "get", "(I)Ljava/lang/Object;");
+	handle_cache.array_list.size = _METHOD(handle_cache.array_list.class, "size", "()I");
+	handle_cache.array_list.clear = _METHOD(handle_cache.array_list.class, "clear", "()V");
 }

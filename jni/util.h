@@ -19,6 +19,10 @@ struct handle_cache {
 	struct {
 		jclass class;
 		jmethodID add;
+		jmethodID remove;
+		jmethodID get;
+		jmethodID size;
+		jmethodID clear;
 	} array_list;
 };
 

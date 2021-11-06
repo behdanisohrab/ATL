@@ -15,5 +15,7 @@
 #define _GET_OBJ_FIELD(object, field, type) ((*env)->GetObjectField(env, object, _FIELD_ID(_CLASS(object), field, type)))
 #define _SET_LONG_FIELD(object, field, value) ((*env)->SetLongField(env, object, _FIELD_ID(_CLASS(object), field, "J"), value))
 #define _GET_LONG_FIELD(object, field) ((*env)->GetLongField(env, object, _FIELD_ID(_CLASS(object), field, "J")))
+#define _GET_BYTE_ARRAY_ELEMENTS(b_array) ((*env)->GetByteArrayElements(env, b_array, NULL))
+#define _RELEASE_BYTE_ARRAY_ELEMENTS(b_array, buffer_ptr) ((*env)->ReleaseByteArrayElements(env, b_array, buffer_ptr, 0))
 
 #endif

@@ -5,7 +5,7 @@
 
 #include "android_widget_TextView.h"
 
-JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor(JNIEnv *env, jobject this, jobject attrs)
+JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor__Landroid_util_AttributeSet_2(JNIEnv *env, jobject this, jobject attrs)
 {
 	const char *text = attribute_set_get_string(env, attrs, "text", NULL);
 
@@ -16,9 +16,31 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor(JNIEnv *
 	g_object_ref(label);
 }
 
+JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor__Landroid_content_Context_2(JNIEnv *env, jobject this, jobject attrs)
+{
+//	_SET_OBJ_FIELD(this, "text", "Ljava/lang/String;", _JSTRING(text)); //TODO: sadly this might be needed, but it's not atm
+
+	GtkWidget *label = gtk_label_new("FIXME");
+	_SET_LONG_FIELD(this, "widget", (long)label);
+	g_object_ref(label);
+}
+
 JNIEXPORT void JNICALL Java_android_widget_TextView_setText(JNIEnv *env, jobject this, jobject charseq)
 {
 //		_SET_OBJ_FIELD(this, "text", "Ljava/lang/String;", charseq); //TODO: sadly this might be needed, but it's not atm
 
 		gtk_label_set_text(GTK_LABEL(_PTR(_GET_LONG_FIELD(this, "widget"))), _CSTRING(charseq));
+}
+
+JNIEXPORT void JNICALL Java_android_widget_TextView_setTextSize(JNIEnv *env, jobject this, jfloat size)
+{
+	GtkLabel *label = GTK_LABEL(_PTR(_GET_LONG_FIELD(this, "widget")));
+
+	PangoAttrList *attrs = gtk_label_get_attributes(label);
+	if(!attrs)
+		attrs = pango_attr_list_new();
+
+	PangoAttribute *size_attr = pango_attr_size_new(size * PANGO_SCALE);
+	pango_attr_list_change(attrs, size_attr);
+	gtk_label_set_attributes(label, attrs);
 }
