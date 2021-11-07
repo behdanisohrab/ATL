@@ -112,7 +112,7 @@ compile_and_covert_launcher: compile_launcher convert_launcher
 compile_jni: | compile_hax
 	mv jni/android_view_View.h jni/android_view_ViewGroup.h jni/views/
 	mv jni/android_widget_TextView.h jni/android_widget_ScrollView.h jni/android_widget_RelativeLayout.h jni/android_widget_LinearLayout.h jni/android_widget_FrameLayout.h jni/widgets
-	gcc -g -m32 -shared -fPIC -o libnative/org_launch_main.so -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ `PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs` jni/*.c jni/widgets/*.c jni/views/*.c
+	gcc -g -m32 -shared -fPIC -o libnative/org_launch_main.so -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ jni/*.c jni/widgets/*.c jni/views/*.c `PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs`
 
 run:
 	#./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:demo_app.apk org/launch/main com/example/demo_application/MainActivity

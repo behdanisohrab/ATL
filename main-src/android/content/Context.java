@@ -28,7 +28,7 @@ public class Context extends Object {
 	File files_dir = null;
 
 	public Context() {
-		arsc_parser = new ArscResourcesParser("/home/Mis012/Github_and_other_sources/android_translation_layer_PoC/org.happysanta.gd_29.apk"); // FIXME
+		arsc_parser = new ArscResourcesParser("org.happysanta.gd_29.apk"); // FIXME
 
 		assets = new AssetManager();
 		dm = new DisplayMetrics();
@@ -66,7 +66,7 @@ public class Context extends Object {
 
     private File getDataDirFile() {
 		if(data_dir == null) {
-			data_dir = new File("/home/Mis012/Github_and_other_sources/android_translation_layer_PoC/data/");
+			data_dir = new File("data/");
 		}
 		return data_dir;
     }

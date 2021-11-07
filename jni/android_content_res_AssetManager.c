@@ -9,7 +9,7 @@
 #include "util.h"
 #include "android_content_res_AssetManager.h"
 
-#define ASSET_DIR "/home/Mis012/Github_and_other_sources/android_translation_layer_PoC/data/assets/"
+#define ASSET_DIR "data/assets/"
 
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openAsset(JNIEnv *env, jobject this, jstring _file_name, jint mode)
 {
