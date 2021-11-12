@@ -18,7 +18,7 @@ compile_arsc_parser:
 	arsc_parser/com/hq/arscresourcesparser/common/*.java \
 	arsc_parser/com/hq/arscresourcesparser/stream/*.java
 
-convert_arsc_parser:
+convert_arsc_parser: | compile_arsc_parser
 	cd arsc_parser/ && $(CURRDIR)/dalvik/linux-x86/bin/dx --verbose --dex --output=../hax_arsc_parser.dex \
 	com/hq/arscresourcesparser/*.class \
 	com/hq/arscresourcesparser/arsc/*.class \
