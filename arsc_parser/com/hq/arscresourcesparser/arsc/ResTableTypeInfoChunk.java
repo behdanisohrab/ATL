@@ -6,6 +6,8 @@ import java.io.IOException;
 
 import java.util.List;
 
+import java.lang.String;
+
 /**
  *
  * Created by xueqiulxq on 26/07/2017.
@@ -110,6 +112,25 @@ public class ResTableTypeInfoChunk extends BaseTypeChunk {
             if (entry.entryId == entryId) {
                 return entry;
             }
+        }
+        return null;
+    }
+
+    public ResTableEntry getResourceByName(String name) {
+		System.out.println("¯¯ in ResTableInfoChunk - getResourceByName");
+        for (ResTableEntry entry : tableEntries) {
+			System.out.println("¯¯ for loop start, entry: " + entry);
+			if(entry == null) {	
+				System.out.println("¯¯ > entry is null, continuing");
+				continue;
+			}
+			System.out.println("¯¯ entry id: " + entry.entryId);
+			System.out.println("¯¯ comparing ("+entry.keyStr+") vs ("+name+")");
+            if (name.equals(entry.keyStr)) {
+				System.out.println("¯¯ got a match");
+                return entry;
+            }
+			System.out.println("¯¯ will keep trying");
         }
         return null;
     }

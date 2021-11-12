@@ -128,6 +128,22 @@ public class ResTablePackageChunk {
         return null;
     }
 
+    public ResTableEntry getResourceByName(String name, int typeId) {
+		System.out.println("¯¯ in ResTablePackageChunk - getResourceByName");
+
+        List<BaseTypeChunk> typeList = typeInfoIndexer.get(typeId); // The first chunk in typeList should be ResTableTypeSpecChunk
+        for (int i = 1; i < typeList.size(); ++i) {
+            if (typeList.get(i) instanceof ResTableTypeInfoChunk) {
+                ResTableTypeInfoChunk x = (ResTableTypeInfoChunk) typeList.get(i);
+                ResTableEntry entry = ((ResTableTypeInfoChunk) typeList.get(i)).getResourceByName(name);
+                if (entry != null) {
+                    return entry;
+                }
+            }
+        }
+        return null;
+    }
+
     public String buildEntry2String() {
         StringBuilder builder = new StringBuilder();
         builder.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>" + System.lineSeparator());

@@ -97,4 +97,8 @@ public class ArscFile {
             return null;
         }
     }
+
+    public ResTableEntry getResourceByName(String name, int typeId) {
+        return resTablePackageChunk.getResourceByName(name, typeId); // don't check the pkgId, this thing only supports one anyway
+    }
 }
