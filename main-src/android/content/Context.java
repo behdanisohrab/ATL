@@ -1,6 +1,5 @@
 package android.content;
 
-import com.hq.arscresourcesparser.ArscResourcesParser;
 import android.util.Log;
 
 import android.content.pm.PackageManager;
@@ -16,8 +15,6 @@ import java.io.File;
 public class Context extends Object {
     private final static String TAG = "Context";
 
-	ArscResourcesParser arsc_parser;
-
 	AssetManager assets;
 	DisplayMetrics dm;
 	Configuration config;
@@ -28,8 +25,6 @@ public class Context extends Object {
 	File files_dir = null;
 
 	public Context() {
-		arsc_parser = new ArscResourcesParser("org.happysanta.gd_29.apk"); // FIXME
-
 		assets = new AssetManager();
 		dm = new DisplayMetrics();
 		config = new Configuration();
@@ -41,7 +36,7 @@ public class Context extends Object {
 	}
 
 	public final String getString(int resId) {
-		return arsc_parser.getResource(resId);
+		return r.getString(resId);
 	}
 
 	public PackageManager getPackageManager() {

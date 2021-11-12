@@ -16,6 +16,8 @@
 
 package android.content.res;
 
+import com.hq.arscresourcesparser.ArscResourcesParser;
+
 import android.os.ParcelFileDescriptor;
 import android.os.Trace;
 import android.util.Log;
@@ -78,6 +80,8 @@ public final class AssetManager {
     private boolean mOpen = true;
     private HashMap<Integer, RuntimeException> mRefStacks; 
  
+	private ArscResourcesParser arsc_parser;
+
     /**
      * Create a new AssetManager containing only the basic system assets.
      * Applications will not generally use this method, instead retrieving the
@@ -86,6 +90,10 @@ public final class AssetManager {
      * {@hide}
      */
     public AssetManager() {
+
+		arsc_parser = new ArscResourcesParser("org.happysanta.gd_29.apk"); // FIXME
+
+		// FIXME: evaluate if this can be axed
         synchronized (this) {
             if (DEBUG_REFS) {
                 mNumRefs = 0;
@@ -146,18 +154,8 @@ public final class AssetManager {
      * Retrieve the string value associated with a particular resource
      * identifier for the current configuration / skin.
      */
-    /*package*/ final CharSequence getResourceText(int ident) {
-        synchronized (this) {
-            TypedValue tmpValue = mValue;
-            int block = loadResourceValue(ident, (short) 0, tmpValue, true);
-            if (block >= 0) {
-                if (tmpValue.type == TypedValue.TYPE_STRING) {
-                    return mStringBlocks[block].get(tmpValue.data);
-                }
-                return tmpValue.coerceToString();
-            }
-        }
-        return null;
+    /*package*/ final CharSequence getResourceText(int id) {
+		return arsc_parser.getResource(id);
     }
 
     /**
@@ -664,9 +662,36 @@ public final class AssetManager {
     /**
      * Retrieve the resource identifier for the given resource name.
      */
-    /*package*/ /*native*/ final int getResourceIdentifier(String type, String name, String defPackage) {
-		System.out.println("getResourceIdentifier("+type+","+name+","+defPackage+") called");
-		return 0;
+    /*package*/ /*native*/ final int getResourceIdentifier(String name, String type, String defPackage) {
+		System.out.println("getResourceIdentifier("+name+","+type+","+defPackage+") called");
+
+		int typeId;
+
+		if(type.equals("attr")) {
+			typeId = 1;
+		}else if(type.equals("drawable")) {
+			typeId = 2;
+		}else if(type.equals("layout")) {
+			typeId = 3;
+		}else if(type.equals("dimen")) {
+			typeId = 4;
+		}else if(type.equals("string")) {
+			typeId = 5;
+		}else if(type.equals("array")) {
+			typeId = 6;
+		}else if(type.equals("style")) {
+			typeId = 7;
+		}else if(type.equals("menu")) {
+			typeId = 8;
+		}else if(type.equals("id")) {
+			typeId = 9;
+		} else {
+			System.out.println("returning 0 (no such type: >"+type+"<)");
+			return 0;
+		}
+
+		System.out.println("returning: " + arsc_parser.getResourceId(name, typeId));
+		return arsc_parser.getResourceId(name, typeId);
 	}
 
     /*package*/ native final String getResourceName(int resid);
