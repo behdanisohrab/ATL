@@ -24,6 +24,18 @@ struct handle_cache {
 		jmethodID size;
 		jmethodID clear;
 	} array_list;
+	struct {
+		jclass class;
+		jmethodID getColor;
+	} paint;
+	struct {
+		jclass class;
+		jmethodID constructor;
+	} motion_event;
+	struct {
+		jclass class;
+		jmethodID constructor;
+	} canvas;
 };
 
 extern struct handle_cache handle_cache;

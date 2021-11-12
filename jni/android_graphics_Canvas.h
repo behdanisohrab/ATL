@@ -9,14 +9,6 @@ extern "C" {
 #endif
 /*
  * Class:     android_graphics_Canvas
- * Method:    native_contructor
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1contructor
-  (JNIEnv *, jobject);
-
-/*
- * Class:     android_graphics_Canvas
  * Method:    native_drawLine
  * Signature: (JFFFFLandroid/graphics/Paint;)V
  */

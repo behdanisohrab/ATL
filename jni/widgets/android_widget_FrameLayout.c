@@ -27,8 +27,6 @@ static void frame_layout_widget_init (FrameLayoutWidget *frame_layout)
 
 static void frame_layout_widget_dispose(GObject *object)
 {
-	FrameLayoutWidget *frame_layout = FRAME_LAYOUT_WIDGET (object);
-
 	G_OBJECT_CLASS (frame_layout_widget_parent_class)->dispose (object);
 }
 

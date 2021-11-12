@@ -36,11 +36,19 @@ JNIEXPORT void JNICALL Java_org_launch_main_real_1main(JNIEnv *env, jclass this,
 
 // standard Gtk Application stuff, more or less
 
+gboolean app_exit(GtkWindow* self, gpointer user_data)
+{
+	exit(0); // TODO: call OnDestroy etc
+}
+
+
 static void activate(GtkApplication *app, JNIEnv *env)
 {
  	window = gtk_application_window_new (app);
  	gtk_window_set_title(GTK_WINDOW(window), "com.example.demo_application");
  	gtk_window_set_default_size(GTK_WINDOW(window), 540, 960);
+	// Gtk won't see it fit to close the window since we hold references for all the widgets created via JNI, se we do it ourselves for now
+ 	g_signal_connect(window, "close-request", G_CALLBACK (app_exit), NULL);
 
  	gtk_widget_show(window);
 

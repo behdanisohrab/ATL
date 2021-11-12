@@ -6,22 +6,21 @@
 #define MOTION_EVENT_ACTION_DOWN 0
 #define MOTION_EVENT_ACTION_UP 1
 
-struct callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; };
-
-static jclass motion_event_class;
-static jmethodID motion_event_constructor;
+struct callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class;};
 
 static void call_ontouch_callback(int action, float x, float y, struct callback_data *d)
 {
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	jobject motion_event = (*env)->NewObject(env, motion_event_class, motion_event_constructor, action, x, y);
+	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, action, x, y);
 
-	(*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(_CLASS(d->on_touch_listener), "onTouch", "(Landroid/view/View;Landroid/view/MotionEvent;)Z"), d->this, motion_event);
+	(*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onTouch", "(Landroid/view/View;Landroid/view/MotionEvent;)Z"), d->this, motion_event);
 
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
+
+	(*env)->DeleteLocalRef(env, motion_event);
 }
 
 static void on_press(GtkGestureClick *gesture, int n_press, double x, double y, struct callback_data *d)
@@ -46,11 +45,7 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener(JNIEnv *env, jo
 	callback_data->jvm = jvm;
 	callback_data->this = _REF(this);
  	callback_data->on_touch_listener = _REF(on_touch_listener);
-
-	motion_event_class = _REF((*env)->FindClass(env, "android/view/MotionEvent"));
-	motion_event_constructor = _METHOD(motion_event_class, "<init>", "(IFF)V");
-
-	printf(">>>>>%p<<<<>>>>%p<<<<\n", jvm, *jvm);
+	callback_data->on_touch_listener_class = _REF(_CLASS(callback_data->on_touch_listener));
 
 	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_click_new());
 
@@ -121,9 +116,6 @@ JNIEXPORT void JNICALL Java_android_view_View_setGravity(JNIEnv *env, jobject th
 // --- the stuff below only applies to widgets that override the OnDraw() method; other widgets are created by class-specific constructors.
 // FIXME: how do we handle someone subclassing something other then View and then overriding the onDraw method?
 
-static jclass canvas_class;
-static jmethodID canvas_constructor;
-
 struct draw_callback_data { JavaVM *jvm; jobject this; jclass this_class;};
 
 static void draw_function(GtkDrawingArea *area, cairo_t *cr, int width, int height, struct draw_callback_data *d)
@@ -131,7 +123,7 @@ static void draw_function(GtkDrawingArea *area, cairo_t *cr, int width, int heig
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	jobject canvas = (*env)->NewObject(env, canvas_class, canvas_constructor, cr);
+	jobject canvas = (*env)->NewObject(env, handle_cache.canvas.class, handle_cache.canvas.constructor, (uint64_t)cr);
 
 	(*env)->CallVoidMethod(env, d->this, _METHOD(d->this_class, "onDraw", "(Landroid/graphics/Canvas;)V"), canvas);
 
@@ -144,6 +136,7 @@ static void draw_function(GtkDrawingArea *area, cairo_t *cr, int width, int heig
 gboolean tick_callback(GtkWidget* widget, GdkFrameClock* frame_clock, gpointer user_data)
 {
 	gtk_widget_queue_draw(widget);
+	return G_SOURCE_CONTINUE;
 }
 
 JNIEXPORT void JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, jobject this, jobject Context)
@@ -154,9 +147,6 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, j
 
 	JavaVM *jvm;
 	(*env)->GetJavaVM(env, &jvm);
-
-	canvas_class = _REF((*env)->FindClass(env, "android/graphics/Canvas"));
-	canvas_constructor = _METHOD(canvas_class, "<init>", "(J)V");
 
 	struct draw_callback_data *callback_data = malloc(sizeof(struct draw_callback_data));
 	callback_data->jvm = jvm;

@@ -7,10 +7,7 @@ public class Canvas {
 
 	public Canvas(long cairo_context) {
 		this.cairo_context = cairo_context;
-		native_contructor();
 	}
-
-	public native void native_contructor();
 
     public /*native*/ int save() { return -1; }
     public /*native*/ void restore() {}

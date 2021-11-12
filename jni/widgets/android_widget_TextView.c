@@ -27,20 +27,25 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor__Landroi
 
 JNIEXPORT void JNICALL Java_android_widget_TextView_setText(JNIEnv *env, jobject this, jobject charseq)
 {
-//		_SET_OBJ_FIELD(this, "text", "Ljava/lang/String;", charseq); //TODO: sadly this might be needed, but it's not atm
+//	_SET_OBJ_FIELD(this, "text", "Ljava/lang/String;", charseq); //TODO: sadly this might be needed, but it's not atm
 
-		gtk_label_set_text(GTK_LABEL(_PTR(_GET_LONG_FIELD(this, "widget"))), _CSTRING(charseq));
+	gtk_label_set_text(GTK_LABEL(_PTR(_GET_LONG_FIELD(this, "widget"))), _CSTRING(charseq));
 }
 
 JNIEXPORT void JNICALL Java_android_widget_TextView_setTextSize(JNIEnv *env, jobject this, jfloat size)
 {
 	GtkLabel *label = GTK_LABEL(_PTR(_GET_LONG_FIELD(this, "widget")));
+	PangoAttrList *attrs;
 
-	PangoAttrList *attrs = gtk_label_get_attributes(label);
-	if(!attrs)
+	PangoAttrList *old_attrs = gtk_label_get_attributes(label);
+	if(old_attrs)
+		attrs = pango_attr_list_copy(old_attrs);
+	else
 		attrs = pango_attr_list_new();
 
 	PangoAttribute *size_attr = pango_attr_size_new(size * PANGO_SCALE);
 	pango_attr_list_change(attrs, size_attr);
 	gtk_label_set_attributes(label, attrs);
+
+	pango_attr_list_unref(attrs);
 }
