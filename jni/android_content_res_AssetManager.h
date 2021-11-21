@@ -131,14 +131,6 @@ JNIEXPORT jobject JNICALL Java_android_content_res_AssetManager_openAssetFd
 
 /*
  * Class:     android_content_res_AssetManager
- * Method:    openNonAssetNative
- * Signature: (ILjava/lang/String;I)I
- */
-JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openNonAssetNative
-  (JNIEnv *, jobject, jint, jstring, jint);
-
-/*
- * Class:     android_content_res_AssetManager
  * Method:    openNonAssetFdNative
  * Signature: (ILjava/lang/String;[J)Landroid/os/ParcelFileDescriptor;
  */

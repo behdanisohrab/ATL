@@ -13,6 +13,30 @@ extern "C" {
 #define android_graphics_Bitmap_WORKING_COMPRESS_STORAGE 4096L
 /*
  * Class:     android_graphics_Bitmap
+ * Method:    native_bitmap_from_path
+ * Signature: (Ljava/lang/CharSequence;)J
+ */
+JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1bitmap_1from_1path
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     android_graphics_Bitmap
+ * Method:    getWidth
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_getWidth
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     android_graphics_Bitmap
+ * Method:    getHeight
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_getHeight
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     android_graphics_Bitmap
  * Method:    nativeCopy
  * Signature: (IIZ)Landroid/graphics/Bitmap;
  */

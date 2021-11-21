@@ -9,11 +9,51 @@ extern "C" {
 #endif
 /*
  * Class:     android_graphics_Canvas
+ * Method:    native_save
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1save
+  (JNIEnv *, jclass, jlong, jlong);
+
+/*
+ * Class:     android_graphics_Canvas
+ * Method:    native_restore
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1restore
+  (JNIEnv *, jclass, jlong, jlong);
+
+/*
+ * Class:     android_graphics_Canvas
  * Method:    native_drawLine
- * Signature: (JFFFFLandroid/graphics/Paint;)V
+ * Signature: (JJFFFFLandroid/graphics/Paint;)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawLine
-  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat, jobject);
+  (JNIEnv *, jclass, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jobject);
+
+/*
+ * Class:     android_graphics_Canvas
+ * Method:    native_drawBitmap
+ * Signature: (JJJFFFFLandroid/graphics/Paint;)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawBitmap
+  (JNIEnv *, jclass, jlong, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jobject);
+
+/*
+ * Class:     android_graphics_Canvas
+ * Method:    native_rotate
+ * Signature: (JJF)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate
+  (JNIEnv *, jclass, jlong, jlong, jfloat);
+
+/*
+ * Class:     android_graphics_Canvas
+ * Method:    native_rotate_and_translate
+ * Signature: (JJFFF)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate_1and_1translate
+  (JNIEnv *, jclass, jlong, jlong, jfloat, jfloat, jfloat);
 
 #ifdef __cplusplus
 }

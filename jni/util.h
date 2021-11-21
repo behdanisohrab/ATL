@@ -10,6 +10,7 @@ struct handle_cache {
 		jclass class;
 		jobject object;
 		jmethodID onCreate;
+		jmethodID onDestroy;
 	} apk_main_activity;
 	struct {
 		jclass class;

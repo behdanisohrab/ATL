@@ -1,16 +1,28 @@
 package android.graphics;
 
 public class Canvas {
-	public long cairo_context;
+	private long cairo_context;
+	public long widget;
 
 	public Canvas() {}
 
-	public Canvas(long cairo_context) {
+	public Canvas(long cairo_context, long widget) {
 		this.cairo_context = cairo_context;
+		this.widget = widget;
 	}
 
-    public /*native*/ int save() { return -1; }
-    public /*native*/ void restore() {}
+	// FIXME: are these _needed_ ?
+
+    public int save() {
+		native_save(cairo_context, widget);
+		return -1; // FIXME: wtf should we return
+	}
+    public void restore() {
+		native_restore(cairo_context, widget);
+	}
+
+	private static native void native_save(long cairo_context, long widget);
+	private static native void native_restore(long cairo_context, long widget);
 
 // ---
 
@@ -57,7 +69,9 @@ public class Canvas {
      *
      * @param degrees The amount to rotate, in degrees
      */
-    public /*native*/ void rotate(float degrees) {}
+    public void rotate(float degrees) {
+		native_rotate(cairo_context, widget, degrees);
+	}
 
     /**
      * Preconcat the current matrix with the specified rotation.
@@ -67,9 +81,7 @@ public class Canvas {
      * @param py The y-coord for the pivot point (unchanged by the rotation)
      */
     public final void rotate(float degrees, float px, float py) {
-//        translate(px, py);
-        rotate(degrees);
-//        translate(-px, -py);
+		native_rotate_and_translate(cairo_context, widget, degrees, px, py);
     }
 // ---
     /**
@@ -208,11 +220,9 @@ public class Canvas {
      * @param top    The position of the top side of the bitmap being drawn
      * @param paint  The paint used to draw the bitmap (may be null)
      */
-    public void drawBitmap(Bitmap bitmap, float left, float top, Paint paint) {
-/*        throwIfCannotDraw(bitmap);
-        native_drawBitmap(mNativeCanvas, bitmap.ni(), left, top,
-                paint != null ? paint.mNativePaint : 0, mDensity, mScreenDensity, bitmap.mDensity);*/
-    }
+	public void drawBitmap(Bitmap bitmap, float left, float top, Paint paint) {/*
+		native_drawBitmap(mNativeCanvas, bitmap.ni(), left, top, paint != null ? paint.mNativePaint : 0, mDensity, mScreenDensity, bitmap.mDensity);
+	*/}
 
     /**
      * Draw the specified bitmap, scaling/translating automatically to fill
@@ -236,14 +246,12 @@ public class Canvas {
      *               to fit into
      * @param paint  May be null. The paint used to draw the bitmap
      */
-    public void drawBitmap(Bitmap bitmap, Rect src, RectF dst, Paint paint) {
-/*        if (dst == null) {
-            throw new NullPointerException();
-        }
-        throwIfCannotDraw(bitmap);
-        native_drawBitmap(mNativeCanvas, bitmap.ni(), src, dst,
-                          paint != null ? paint.mNativePaint : 0, mScreenDensity, bitmap.mDensity);*/
-    }
+	public void drawBitmap(Bitmap bitmap, Rect src, RectF dst, Paint paint) {
+		if (dst == null) {
+			throw new NullPointerException();
+		}
+		native_drawBitmap(cairo_context, widget, bitmap.pixbuf, src.left, src.top, dst.left, dst.top, paint); // FIXME - ignores width/height
+	}
 
     /**
      * Draw the specified bitmap, scaling/translating automatically to fill
@@ -267,14 +275,12 @@ public class Canvas {
      *               to fit into
      * @param paint  May be null. The paint used to draw the bitmap
      */
-    public void drawBitmap(Bitmap bitmap, Rect src, Rect dst, Paint paint) {
-/*        if (dst == null) {
-            throw new NullPointerException();
-        }
-        throwIfCannotDraw(bitmap);
-        native_drawBitmap(mNativeCanvas, bitmap.ni(), src, dst,
-                paint != null ? paint.mNativePaint : 0, mScreenDensity, bitmap.mDensity);*/
-    }
+    public void drawBitmap(Bitmap bitmap, Rect src, Rect dst, Paint paint) {/*
+		if (dst == null) {
+			throw new NullPointerException();
+		}
+		native_drawBitmap(mNativeCanvas, bitmap.ni(), src, dst, paint != null ? paint.mNativePaint : 0, mScreenDensity, bitmap.mDensity);
+	*/}
     
     /**
      * Treat the specified array of colors as a bitmap, and draw it. This gives
@@ -356,8 +362,11 @@ public class Canvas {
      * @param paint  The paint used to draw the line
      */
 	public void drawLine(float startX, float startY, float stopX, float stopY, Paint paint) {
-		native_drawLine(cairo_context, startX, startY, stopX, stopY, paint);
+		native_drawLine(cairo_context, widget, startX, startY, stopX, stopY, paint);
 	}
 
-	private static native void native_drawLine(long cairo_context, float startX, float startY, float stopX, float stopY, Paint paint); // TODO: make use of "paint" one way or another
+	private static native void native_drawLine(long cairo_context, long widget, float startX, float startY, float stopX, float stopY, Paint paint);
+	private static native void native_drawBitmap(long cairo_context, long widget, long pixbuf, float src_x, float src_y, float dest_x, float dest_y, Paint paint); // TODO: make use of "paint"?
+	private static native void native_rotate(long cairo_context, long widget, float angle);
+	private static native void native_rotate_and_translate(long cairo_context, long widget, float angle, float tx, float ty);
 }

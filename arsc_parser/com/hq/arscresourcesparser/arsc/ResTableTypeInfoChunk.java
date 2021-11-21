@@ -42,6 +42,8 @@ public class ResTableTypeInfoChunk extends BaseTypeChunk {
         chunk.entriesStart = Utils.readInt(mStreamer);
         chunk.resConfig = ResTableConfig.parseFrom(mStreamer);
 
+		System.out.println("### ResTableTypeInfoChunk with typeId: " + chunk.typeId + ", res0: " + chunk.res0 + ", res1:" + chunk.res1 + ", resConfig.density: " + chunk.resConfig.density);
+
         // read offsets table
         chunk.entryOffsets = new long[(int) chunk.entryCount];
         for (int i = 0; i < chunk.entryCount; ++i) {
@@ -51,10 +53,13 @@ public class ResTableTypeInfoChunk extends BaseTypeChunk {
         chunk.tableEntries = new ResTableEntry[(int) chunk.entryCount];
         mStreamer.seek(start + chunk.entriesStart); // Locate entry start point.
         for (int i = 0; i < chunk.entryCount; ++i) {
+			System.out.println("### entry num: " + i);
             // This is important!
             if (chunk.entryOffsets[i] == NO_ENTRY || chunk.entryOffsets[i] == -1) {
+				System.out.println("### - empty: >"+chunk.entryOffsets[i]+"<");
                 continue;
             }
+			System.out.println("### - not empty: >"+chunk.entryOffsets[i]+"<");
 
             long cursor = mStreamer.getPosition();     // Remember the start cursor
             ResTableEntry entry = ResTableEntry.parseFrom(mStreamer);
@@ -105,10 +110,10 @@ public class ResTableTypeInfoChunk extends BaseTypeChunk {
 
     public ResTableEntry getResource(int resId) {
         int entryId = resId & 0x0000ffff;
-        //int entryIndex = (int) (resId & 0xffff);
-        //return entryId < tableEntries.length ? tableEntries[entryId] : null;
         for (ResTableEntry entry : tableEntries) {
-            //LogUtil.i("", "Entry ID : " + entry.entryId);
+			if(entry == null) {
+				continue;
+			}
             if (entry.entryId == entryId) {
                 return entry;
             }
@@ -120,7 +125,7 @@ public class ResTableTypeInfoChunk extends BaseTypeChunk {
 		System.out.println("¯¯ in ResTableInfoChunk - getResourceByName");
         for (ResTableEntry entry : tableEntries) {
 			System.out.println("¯¯ for loop start, entry: " + entry);
-			if(entry == null) {	
+			if(entry == null) {
 				System.out.println("¯¯ > entry is null, continuing");
 				continue;
 			}

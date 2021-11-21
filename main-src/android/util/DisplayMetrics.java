@@ -198,6 +198,7 @@ public class DisplayMetrics {
     public float noncompatYdpi;
 
     public DisplayMetrics() {
+		setToDefaults();
     }
     
     public void setTo(DisplayMetrics o) {

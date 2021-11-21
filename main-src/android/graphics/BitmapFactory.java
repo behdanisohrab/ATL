@@ -441,33 +441,10 @@ public class BitmapFactory {
      *         decoded, or, if opts is non-null, if opts requested only the
      *         size be returned (in opts.outWidth and opts.outHeight)
      */
-    public static Bitmap decodeResource(Resources res, int id, Options opts) {/*
-        Bitmap bm = null;
-        InputStream is = null; 
-        
-        try {
-            final TypedValue value = new TypedValue();
-            is = res.openRawResource(id, value);
+    public static Bitmap decodeResource(Resources res, int id, Options opts) {
+        String path = res.getString(id);
 
-            bm = decodeResourceStream(res, value, is, null, opts);
-        } catch (Exception e) {
-            /*  do nothing.
-                If the exception happened on open, bm will be null.
-                If it happened on close, bm is still valid.
-            * /
-        } finally {
-            try {
-                if (is != null) is.close();
-            } catch (IOException e) {
-                // Ignore
-            }
-        }
-
-        if (bm == null && opts != null && opts.inBitmap != null) {
-            throw new IllegalArgumentException("Problem decoding into existing bitmap");
-        }
-
-        return bm;*/ return new Bitmap();
+		return new Bitmap(path);
     }
 
     /**

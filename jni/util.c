@@ -23,6 +23,7 @@ void set_up_handle_cache(JNIEnv *env, char *apk_main_activity_class)
 	handle_cache.apk_main_activity.class = _REF((*env)->FindClass(env, apk_main_activity_class));
 	handle_cache.apk_main_activity.object = _REF((*env)->NewObject(env, handle_cache.apk_main_activity.class, _METHOD(handle_cache.apk_main_activity.class, "<init>", "()V")));
 	handle_cache.apk_main_activity.onCreate = _METHOD(handle_cache.apk_main_activity.class, "onCreate", "(Landroid/os/Bundle;)V");
+	handle_cache.apk_main_activity.onDestroy = _METHOD(handle_cache.apk_main_activity.class, "onDestroy", "()V");
 
 	handle_cache.attribute_set.class = _REF((*env)->FindClass(env, "android/util/AttributeSet"));
 	handle_cache.attribute_set.getAttributeValue_string = _METHOD(handle_cache.attribute_set.class, "getAttributeValue", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
@@ -42,5 +43,5 @@ void set_up_handle_cache(JNIEnv *env, char *apk_main_activity_class)
 	handle_cache.motion_event.constructor = _METHOD(handle_cache.motion_event.class, "<init>", "(IFF)V");
 
 	handle_cache.canvas.class = _REF((*env)->FindClass(env, "android/graphics/Canvas"));
-	handle_cache.canvas.constructor = _METHOD(handle_cache.canvas.class, "<init>", "(J)V");
+	handle_cache.canvas.constructor = _METHOD(handle_cache.canvas.class, "<init>", "(JJ)V");
 }

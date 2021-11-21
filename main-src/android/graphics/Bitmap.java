@@ -39,7 +39,7 @@ public final class Bitmap {
      * 
      * @hide
      */
-    public final int mNativeBitmap;
+    public final int mNativeBitmap = 0;
 
     /**
      * Backing buffer for the Bitmap.
@@ -68,8 +68,8 @@ public final class Bitmap {
 
     private byte[] mNinePatchChunk;   // may be null
     private int[] mLayoutBounds;   // may be null
-    private int mWidth;
-    private int mHeight;
+    private int mWidth = 10;
+    private int mHeight = 10;
     private boolean mRecycled;
 
     // Package-scoped for fast access.
@@ -97,19 +97,31 @@ public final class Bitmap {
         return sDefaultDensity;
     }
 
+	public long pixbuf = 0;
+
 	Bitmap() {
-        mWidth = 10;
-        mHeight = 10;
         mIsMutable = false;
         mIsPremultiplied = false;
         mBuffer = null;
-        // we delete this in our finalizer
-        mNativeBitmap = 0;
+
         mFinalizer = null;
 
         mNinePatchChunk = null;
         mLayoutBounds = null;
 	} // FIXME
+
+	Bitmap(String path) {
+		pixbuf = native_bitmap_from_path("data/"+path);
+
+		mIsMutable = false;
+		mIsPremultiplied = false;
+		mBuffer = null;
+		mFinalizer = null;
+		mNinePatchChunk = null;
+		mLayoutBounds = null;
+	}
+
+	private native long native_bitmap_from_path(CharSequence path);
 
     /**
      * Private constructor that must received an already allocated native bitmap
@@ -118,7 +130,7 @@ public final class Bitmap {
     @SuppressWarnings({"UnusedDeclaration"}) // called from JNI
     Bitmap(int nativeBitmap, byte[] buffer, int width, int height, int density,
             boolean isMutable, boolean isPremultiplied,
-            byte[] ninePatchChunk, int[] layoutBounds) {
+            byte[] ninePatchChunk, int[] layoutBounds) {/*
         if (nativeBitmap == 0) {
             throw new RuntimeException("internal error: native bitmap is 0");
         }
@@ -136,7 +148,13 @@ public final class Bitmap {
         mLayoutBounds = layoutBounds;
         if (density >= 0) {
             mDensity = density;
-        }
+        }*/
+		mIsMutable = false;
+		mIsPremultiplied = false;
+		mBuffer = null;
+		mFinalizer = null;
+		mNinePatchChunk = null;
+		mLayoutBounds = null;
     }
 
     /**
@@ -263,7 +281,7 @@ public final class Bitmap {
      * @see #setConfig(Config)
      */
     public void setHeight(int height) {
-        reconfigure(getWidth(), height, getConfig());
+        //reconfigure(getWidth(), height, getConfig());
     }
 
     /**
@@ -279,7 +297,7 @@ public final class Bitmap {
      * @see #setHeight(int)
      */
     public void setConfig(Config config) {
-        reconfigure(getWidth(), getHeight(), config);
+        //reconfigure(getWidth(), getHeight(), config);
     }
 
     /**
@@ -1074,14 +1092,10 @@ public final class Bitmap {
     }
 
     /** Returns the bitmap's width */
-    public final int getWidth() {
-        return mWidth;
-    }
+    public native final int getWidth();
 
     /** Returns the bitmap's height */
-    public final int getHeight() {
-        return mHeight;
-    }
+    public native final int getHeight();
 
     /**
      * Convenience for calling {@link #getScaledWidth(int)} with the target

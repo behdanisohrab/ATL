@@ -200,7 +200,9 @@ public final class AssetManager {
             outValue.string = mStringBlocks[block].get(outValue.data);
             return true;
         }*/
-        return false;
+		outValue.type = TypedValue.TYPE_STRING;
+		outValue.string = getResourceText(ident);
+		return true;
     }
 
     /**
@@ -691,6 +693,7 @@ public final class AssetManager {
 		}
 
 		System.out.println("returning: " + arsc_parser.getResourceId(name, typeId));
+		System.out.println("debug: " + arsc_parser.getResource(0x7f020002));
 		return arsc_parser.getResourceId(name, typeId);
 	}
 
@@ -702,8 +705,9 @@ public final class AssetManager {
     private native final int openAsset(String fileName, int accessMode);
     private final native ParcelFileDescriptor openAssetFd(String fileName,
             long[] outOffsets) throws IOException;
-    private native final int openNonAssetNative(int cookie, String fileName,
-            int accessMode);
+	private /*native*/ final int openNonAssetNative(int cookie, String fileName, int accessMode) {
+		return openAsset("../"+fileName, accessMode);
+	}
     private native ParcelFileDescriptor openNonAssetFdNative(int cookie,
             String fileName, long[] outOffsets) throws IOException;
     private native final void destroyAsset(int asset);
