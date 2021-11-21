@@ -3,12 +3,14 @@
 #include "../defines.h"
 #include "../util.h"
 
+#include "../widgets/WrapperWidget.h"
+
 #define MOTION_EVENT_ACTION_DOWN 0
 #define MOTION_EVENT_ACTION_UP 1
 
-struct callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class;};
+struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; };
 
-static void call_ontouch_callback(int action, float x, float y, struct callback_data *d)
+static void call_ontouch_callback(int action, float x, float y, struct touch_callback_data *d)
 {
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
@@ -23,12 +25,12 @@ static void call_ontouch_callback(int action, float x, float y, struct callback_
 	(*env)->DeleteLocalRef(env, motion_event);
 }
 
-static void on_press(GtkGestureClick *gesture, int n_press, double x, double y, struct callback_data *d)
+static void on_press(GtkGestureClick *gesture, int n_press, double x, double y, struct touch_callback_data *d)
 {
 	call_ontouch_callback(MOTION_EVENT_ACTION_DOWN, (float)x, (float)y, d);
 }
 
-static void on_release(GtkGestureClick *gesture, int n_press, double x, double y, struct callback_data *d)
+static void on_release(GtkGestureClick *gesture, int n_press, double x, double y, struct touch_callback_data *d)
 {
 	call_ontouch_callback(MOTION_EVENT_ACTION_UP, (float)x, (float)y, d);
 }
@@ -41,7 +43,7 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener(JNIEnv *env, jo
 	JavaVM *jvm;
 	(*env)->GetJavaVM(env, &jvm);
 
-	struct callback_data *callback_data = malloc(sizeof(struct callback_data));
+	struct touch_callback_data *callback_data = malloc(sizeof(struct touch_callback_data));
 	callback_data->jvm = jvm;
 	callback_data->this = _REF(this);
  	callback_data->on_touch_listener = _REF(on_touch_listener);
@@ -85,7 +87,7 @@ JNIEXPORT jint JNICALL Java_android_view_View_getHeight(JNIEnv *env, jobject thi
 
 JNIEXPORT void JNICALL Java_android_view_View_setGravity(JNIEnv *env, jobject this, jint gravity)
 {
-	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
+	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget"))));
 
 	switch (gravity) {
 		case GRAVITY_TOP:
@@ -105,25 +107,30 @@ JNIEXPORT void JNICALL Java_android_view_View_setGravity(JNIEnv *env, jobject th
 			gtk_widget_set_halign(widget, GTK_ALIGN_END);
 			break;
 		case GRAVITY_CENTER:
-			gtk_widget_set_valign(widget, GTK_ALIGN_CENTER);
-			gtk_widget_set_halign(widget, GTK_ALIGN_CENTER);
+			gtk_widget_set_valign(widget, GTK_ALIGN_FILL); // GTK_ALIGN_CENTER doesn't seem to be the right one?
+			gtk_widget_set_halign(widget, GTK_ALIGN_FILL); // ditto (GTK_ALIGN_CENTER)
 			gtk_widget_set_hexpand(widget, true); // haxx or not?
 			gtk_widget_set_vexpand(widget, true); // seems to be the deciding factor expand, guess I should try on android
 			break;
 	}
 }
 
+JNIEXPORT void JNICALL Java_android_view_View_native_1set_1size_1request(JNIEnv *env, jobject this, jint width, jint height)
+{
+	gtk_widget_set_size_request(gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")))), width, height);
+}
+
 // --- the stuff below only applies to widgets that override the OnDraw() method; other widgets are created by class-specific constructors.
-// FIXME: how do we handle someone subclassing something other then View and then overriding the onDraw method?
+// FIXME: how do we handle someone subclassing something other then View and then overriding the onDraw/onMeasure method(s)?
 
-struct draw_callback_data { JavaVM *jvm; jobject this; jclass this_class;};
+struct jni_callback_data { JavaVM *jvm; jobject this; jclass this_class; };
 
-static void draw_function(GtkDrawingArea *area, cairo_t *cr, int width, int height, struct draw_callback_data *d)
+static void draw_function(GtkDrawingArea *area, cairo_t *cr, int width, int height, struct jni_callback_data *d)
 {
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	jobject canvas = (*env)->NewObject(env, handle_cache.canvas.class, handle_cache.canvas.constructor, (uint64_t)cr);
+	jobject canvas = (*env)->NewObject(env, handle_cache.canvas.class, handle_cache.canvas.constructor, (jlong)cr, (jlong)area);
 
 	(*env)->CallVoidMethod(env, d->this, _METHOD(d->this_class, "onDraw", "(Landroid/graphics/Canvas;)V"), canvas);
 
@@ -131,6 +138,14 @@ static void draw_function(GtkDrawingArea *area, cairo_t *cr, int width, int heig
 		(*env)->ExceptionDescribe(env);
 
 	(*env)->DeleteLocalRef(env, canvas);
+}
+
+void on_mapped(GtkWidget* self, struct jni_callback_data *d)
+{
+	JNIEnv *env;
+	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
+
+	(*env)->CallVoidMethod(env, d->this, _METHOD(d->this_class, "onMeasure", "(II)V"), gtk_widget_get_width(self), gtk_widget_get_height(self));
 }
 
 gboolean tick_callback(GtkWidget* widget, GdkFrameClock* frame_clock, gpointer user_data)
@@ -141,14 +156,16 @@ gboolean tick_callback(GtkWidget* widget, GdkFrameClock* frame_clock, gpointer u
 
 JNIEXPORT void JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, jobject this, jobject Context)
 {
+	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *area = gtk_drawing_area_new();
+	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), area);
 	gtk_widget_set_hexpand(area, true); // this doesn't seem to be done by the app,
 	gtk_widget_set_vexpand(area, true); // so presumably it's the default?
 
 	JavaVM *jvm;
 	(*env)->GetJavaVM(env, &jvm);
 
-	struct draw_callback_data *callback_data = malloc(sizeof(struct draw_callback_data));
+	struct jni_callback_data *callback_data = malloc(sizeof(struct jni_callback_data));
 	callback_data->jvm = jvm;
 	callback_data->this = _REF(this);
 	callback_data->this_class = _REF(_CLASS(this));
@@ -157,6 +174,9 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, j
 
 	gtk_widget_add_tick_callback(area, tick_callback, NULL, NULL);
 
+	// add a callback for when the widget is mapped, which will call onMeasure to figure out what size the widget wants to be
+	g_signal_connect(area, "map", G_CALLBACK(on_mapped), callback_data);
+
 	_SET_LONG_FIELD(this, "widget", (long)area);
-	g_object_ref(area);
+	g_object_ref(wrapper);
 }

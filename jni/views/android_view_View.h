@@ -151,14 +151,6 @@ extern "C" {
 #define android_view_View_PFLAG2_LAYOUT_DIRECTION_RESOLVED_MASK 48L
 /*
  * Class:     android_view_View
- * Method:    native_constructor
- * Signature: (Landroid/content/Context;)V
- */
-JNIEXPORT void JNICALL Java_android_view_View_native_1constructor
-  (JNIEnv *, jobject, jobject);
-
-/*
- * Class:     android_view_View
  * Method:    setGravity
  * Signature: (I)V
  */
@@ -188,6 +180,22 @@ JNIEXPORT jint JNICALL Java_android_view_View_getWidth
  */
 JNIEXPORT jint JNICALL Java_android_view_View_getHeight
   (JNIEnv *, jobject);
+
+/*
+ * Class:     android_view_View
+ * Method:    native_constructor
+ * Signature: (Landroid/content/Context;)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_native_1constructor
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     android_view_View
+ * Method:    native_set_size_request
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_native_1set_1size_1request
+  (JNIEnv *, jobject, jint, jint);
 
 #ifdef __cplusplus
 }

@@ -2,13 +2,13 @@
 <map>
     <boolean name="shadows_enabled" value="true" />
     <boolean name="look_ahead_enabled" value="true" />
-    <boolean name="vibrate_enabled" value="false" />
-    <int name="input_option" value="0" />
     <boolean name="perspective_enabled" value="true" />
-    <boolean name="driver_sprite_enabled" value="false" />
-    <long name="last_send_stats" value="1635778588" />
+    <int name="input_option" value="0" />
+    <boolean name="vibrate_enabled" value="false" />
     <string name="name">AAA</string>
+    <long name="last_send_stats" value="1635778588" />
+    <boolean name="driver_sprite_enabled" value="true" />
     <boolean name="keyboard_enabled" value="true" />
-    <boolean name="bike_sprite_enabled" value="false" />
+    <boolean name="bike_sprite_enabled" value="true" />
     <long name="level_id" value="1" />
 </map>

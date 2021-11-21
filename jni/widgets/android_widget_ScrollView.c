@@ -3,6 +3,8 @@
 #include "../defines.h"
 #include "../util.h"
 
+#include "WrapperWidget.h"
+
 #include "android_widget_ScrollView.h"
 #include "../views/android_view_ViewGroup.h"
 
@@ -12,24 +14,28 @@ JNIEXPORT void JNICALL Java_android_widget_ScrollView_native_1constructor__Landr
 {
 	int orientation = attribute_set_get_int(env, attrs, "orientation", NULL, 0);
 
+	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *box = gtk_box_new(orientation ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, 1); // spacing of 1
+	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), box);
 	gtk_widget_set_name(GTK_WIDGET(box), "ScrollView");
 	_SET_LONG_FIELD(this, "widget", (long)box);
-	g_object_ref(box);
+	g_object_ref(wrapper);
 }
 
 JNIEXPORT void JNICALL Java_android_widget_ScrollView_native_1constructor__Landroid_content_Context_2(JNIEnv *env, jobject this, jobject context) {
+	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 1); // spacing of 1
+	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), box);
 	gtk_widget_set_name(GTK_WIDGET(box), "ScrollView");
 	_SET_LONG_FIELD(this, "widget", (long)box);
-	g_object_ref(box);
+	g_object_ref(wrapper);
 }
 
 JNIEXPORT void JNICALL Java_android_widget_ScrollView_removeView(JNIEnv *env, jobject this, jobject child)
 {
 	Java_android_view_ViewGroup_removeView(env, this, child);
 
-	gtk_box_remove(GTK_BOX(_PTR(_GET_LONG_FIELD(this, "widget"))), GTK_WIDGET(_PTR(_GET_LONG_FIELD(child, "widget"))));
+	gtk_box_remove(GTK_BOX(_PTR(_GET_LONG_FIELD(this, "widget"))), gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(child, "widget")))));
 }
 
 JNIEXPORT void JNICALL Java_android_widget_ScrollView_removeAllViews(JNIEnv *env, jobject this)
@@ -48,5 +54,5 @@ JNIEXPORT void JNICALL Java_android_widget_ScrollView_addView(JNIEnv *env, jobje
 {
 	Java_android_view_ViewGroup_addView(env, this, child, index, layout_params);
 
-	gtk_box_append(GTK_BOX(_PTR(_GET_LONG_FIELD(this, "widget"))), GTK_WIDGET(_PTR(_GET_LONG_FIELD(child, "widget"))));
+	gtk_box_append(GTK_BOX(_PTR(_GET_LONG_FIELD(this, "widget"))), gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(child, "widget")))));
 }

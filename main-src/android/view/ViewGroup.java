@@ -68,9 +68,9 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		public static final int MATCH_PARENT = -1;
 		public static final int WRAP_CONTENT = -2;
 
-		public int width;
-		public int height;
-		public float weight;
+		public int width = 0;
+		public int height = 0;
+		public float weight = 1;
 
 		public LayoutParams() {
 			//FIXME

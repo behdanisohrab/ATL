@@ -504,9 +504,6 @@ public class View extends Object {
 // --- end of constants from android source
 
 // --- interfaces from android source
-
-	class MotionEvent {} // haxx
-
     public interface OnTouchListener {
         /**
          * Called when a touch event is dispatched to a view. This allows listeners to
@@ -525,6 +522,142 @@ public class View extends Object {
     }
 
 // --- end of interfaces
+
+// --- subclasses
+
+    /**
+     * A MeasureSpec encapsulates the layout requirements passed from parent to child.
+     * Each MeasureSpec represents a requirement for either the width or the height.
+     * A MeasureSpec is comprised of a size and a mode. There are three possible
+     * modes:
+     * <dl>
+     * <dt>UNSPECIFIED</dt>
+     * <dd>
+     * The parent has not imposed any constraint on the child. It can be whatever size
+     * it wants.
+     * </dd>
+     *
+     * <dt>EXACTLY</dt>
+     * <dd>
+     * The parent has determined an exact size for the child. The child is going to be
+     * given those bounds regardless of how big it wants to be.
+     * </dd>
+     *
+     * <dt>AT_MOST</dt>
+     * <dd>
+     * The child can be as large as it wants up to the specified size.
+     * </dd>
+     * </dl>
+     *
+     * MeasureSpecs are implemented as ints to reduce object allocation. This class
+     * is provided to pack and unpack the &lt;size, mode&gt; tuple into the int.
+     */
+    public static class MeasureSpec {
+        private static final int MODE_SHIFT = 30;
+        private static final int MODE_MASK  = 0x3 << MODE_SHIFT;
+
+        /**
+         * Measure specification mode: The parent has not imposed any constraint
+         * on the child. It can be whatever size it wants.
+         */
+        public static final int UNSPECIFIED = 0 << MODE_SHIFT;
+
+        /**
+         * Measure specification mode: The parent has determined an exact size
+         * for the child. The child is going to be given those bounds regardless
+         * of how big it wants to be.
+         */
+        public static final int EXACTLY     = 1 << MODE_SHIFT;
+
+        /**
+         * Measure specification mode: The child can be as large as it wants up
+         * to the specified size.
+         */
+        public static final int AT_MOST     = 2 << MODE_SHIFT;
+
+        /**
+         * Creates a measure specification based on the supplied size and mode.
+         *
+         * The mode must always be one of the following:
+         * <ul>
+         *  <li>{@link android.view.View.MeasureSpec#UNSPECIFIED}</li>
+         *  <li>{@link android.view.View.MeasureSpec#EXACTLY}</li>
+         *  <li>{@link android.view.View.MeasureSpec#AT_MOST}</li>
+         * </ul>
+         *
+         * <p><strong>Note:</strong> On API level 17 and lower, makeMeasureSpec's
+         * implementation was such that the order of arguments did not matter
+         * and overflow in either value could impact the resulting MeasureSpec.
+         * {@link android.widget.RelativeLayout} was affected by this bug.
+         * Apps targeting API levels greater than 17 will get the fixed, more strict
+         * behavior.</p>
+         *
+         * @param size the size of the measure specification
+         * @param mode the mode of the measure specification
+         * @return the measure specification based on size and mode
+         */
+        public static int makeMeasureSpec(int size, int mode) {
+            if (sUseBrokenMakeMeasureSpec) {
+                return size + mode;
+            } else {
+                return (size & ~MODE_MASK) | (mode & MODE_MASK);
+            }
+        }
+
+        /**
+         * Extracts the mode from the supplied measure specification.
+         *
+         * @param measureSpec the measure specification to extract the mode from
+         * @return {@link android.view.View.MeasureSpec#UNSPECIFIED},
+         *         {@link android.view.View.MeasureSpec#AT_MOST} or
+         *         {@link android.view.View.MeasureSpec#EXACTLY}
+         */
+        public static int getMode(int measureSpec) {
+            return (measureSpec & MODE_MASK);
+        }
+
+        /**
+         * Extracts the size from the supplied measure specification.
+         *
+         * @param measureSpec the measure specification to extract the size from
+         * @return the size in pixels defined in the supplied measure specification
+         */
+        public static int getSize(int measureSpec) {
+            return (measureSpec & ~MODE_MASK);
+        }
+
+        static int adjust(int measureSpec, int delta) {
+            return makeMeasureSpec(getSize(measureSpec + delta), getMode(measureSpec));
+        }
+
+        /**
+         * Returns a String representation of the specified measure
+         * specification.
+         *
+         * @param measureSpec the measure specification to convert to a String
+         * @return a String with the following format: "MeasureSpec: MODE SIZE"
+         */
+        public static String toString(int measureSpec) {
+            int mode = getMode(measureSpec);
+            int size = getSize(measureSpec);
+
+            StringBuilder sb = new StringBuilder("MeasureSpec: ");
+
+            if (mode == UNSPECIFIED)
+                sb.append("UNSPECIFIED ");
+            else if (mode == EXACTLY)
+                sb.append("EXACTLY ");
+            else if (mode == AT_MOST)
+                sb.append("AT_MOST ");
+            else
+                sb.append(mode).append(" ");
+
+            sb.append(size);
+            return sb.toString();
+        }
+    }
+
+// --- end of subclasses
 
 	public int id;
 	public ViewGroup parent;
@@ -562,9 +695,6 @@ public class View extends Object {
 		}
 	}
 
-	private native void native_constructor(Context context); // will create a custom GtkWidget with a custom drawing function
-	public native void setGravity(int gravity);
-
 	public final ViewParent getParent() {
 		return parent;
 	}
@@ -586,9 +716,21 @@ public class View extends Object {
 		return layout_params;
 	}
 
+	protected final void setMeasuredDimension(int measuredWidth, int measuredHeight) {
+		native_set_size_request(MeasureSpec.getSize(measuredWidth), MeasureSpec.getSize(measuredHeight));
+	}
+
+	public native void setGravity(int gravity);
 	public native void setOnTouchListener(OnTouchListener l);
+    public native final int getWidth();
+    public native final int getHeight();
+
+	private native void native_constructor(Context context); // will create a custom GtkWidget with a custom drawing function
+	private native void native_set_size_request(int width, int height);
 
 // --- stubs
+
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {}
 
 	public void setPressed(boolean pressed) {
 		System.out.println("calling setPressed on "+this+" with value: "+pressed);
@@ -614,7 +756,9 @@ public class View extends Object {
 		System.out.println("setting visibility of "+this+" to "+visibility+".");
 	}
 	public void setPadding(int left, int top, int right, int bottom) {}
-	public void setBackgroundResource(int resid) {}
+	public void setBackgroundResource(int resid) {
+//		System.out.println("*** setBackgroundResource: " + getString(resid));
+	}
 
 	public void setOnClickListener(OnClickListener l) {}
 
@@ -640,10 +784,6 @@ public class View extends Object {
 		return true; // FIXME why is it not void
 	}
 
-    public native final int getWidth();
-
-    public native final int getHeight();
-
 	public int getPaddingLeft() {
 		return 0;
 	}
@@ -660,6 +800,7 @@ public class View extends Object {
 		return 0;
 	}
 
+	public void postInvalidate() {}
 
 	public void postInvalidate(int left, int top, int right, int bottom) {
 		System.out.println("postInvalidate("+left+","+top+","+right+","+bottom+") called");

@@ -262,4 +262,9 @@ public final class SQLiteDatabase /*extends SQLiteClosable*/ {
                 SQLiteCursorDriver masterQuery, String editTable,
                 SQLiteQuery query);
     }
+// ---
+
+	public int update(String table, ContentValues values, String whereClause, String[] whereArgs) {
+		return -1;
+	}
 }

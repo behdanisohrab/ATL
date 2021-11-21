@@ -3,6 +3,8 @@
 #include "../defines.h"
 #include "../util.h"
 
+#include "WrapperWidget.h"
+
 #include "android_widget_TextView.h"
 
 JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor__Landroid_util_AttributeSet_2(JNIEnv *env, jobject this, jobject attrs)
@@ -11,18 +13,22 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor__Landroi
 
 //	_SET_OBJ_FIELD(this, "text", "Ljava/lang/String;", _JSTRING(text)); //TODO: sadly this might be needed, but it's not atm
 
+	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *label = gtk_label_new(text);
+	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), label);
 	_SET_LONG_FIELD(this, "widget", (long)label);
-	g_object_ref(label);
+	g_object_ref(wrapper);
 }
 
 JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor__Landroid_content_Context_2(JNIEnv *env, jobject this, jobject attrs)
 {
 //	_SET_OBJ_FIELD(this, "text", "Ljava/lang/String;", _JSTRING(text)); //TODO: sadly this might be needed, but it's not atm
 
+	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *label = gtk_label_new("FIXME");
+	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), label);
 	_SET_LONG_FIELD(this, "widget", (long)label);
-	g_object_ref(label);
+	g_object_ref(wrapper);
 }
 
 JNIEXPORT void JNICALL Java_android_widget_TextView_setText(JNIEnv *env, jobject this, jobject charseq)
