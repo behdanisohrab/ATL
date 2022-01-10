@@ -42,23 +42,32 @@ gboolean app_exit(GtkWindow* self, JNIEnv *env) // TODO: do more cleanup?
 
 	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onDestroy, NULL);
 
-	exit(0);
+	return false;
 }
-
 
 static void activate(GtkApplication *app, JNIEnv *env)
 {
- 	window = gtk_application_window_new (app);
- 	gtk_window_set_title(GTK_WINDOW(window), "com.example.demo_application");
- 	gtk_window_set_default_size(GTK_WINDOW(window), 540, 960);
-	// Gtk won't see it fit to close the window since we hold references for all the widgets created via JNI, se we do it ourselves for now
- 	g_signal_connect(window, "close-request", G_CALLBACK (app_exit), env);
+	window = gtk_application_window_new (app);
 
- 	gtk_widget_show(window);
+	gtk_window_set_title(GTK_WINDOW(window), "com.example.demo_application");
+	gtk_window_set_default_size(GTK_WINDOW(window), 540, 960);
+	g_signal_connect(window, "close-request", G_CALLBACK (app_exit), env);
+
+//	TODO: set icon according to how android gets it for the purposes of displaying it in the launcher
+//	gtk_window_set_icon_name(window, "weather-clear");
+
+	gtk_widget_show(window);
 
 	/* -- run the main activity's onCreate -- */
 
 	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onCreate, NULL);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
+//	TODO: some apps wait for this to actually do stuff
+/*	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onWindowFocusChanged, true);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);*/
 }
 
 static int main(int argc, char **argv, JNIEnv *env)
