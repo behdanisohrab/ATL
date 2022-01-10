@@ -7,6 +7,9 @@ import android.content.res.ColorStateList;
 import android.text.TextPaint;
 import android.content.res.TypedArray;
 
+import android.text.InputFilter;
+import android.text.TextWatcher;
+
 import android.view.View;
 
 public class TextView extends View {
@@ -31,7 +34,21 @@ public class TextView extends View {
 	native void native_constructor(AttributeSet attrs);
 	native void native_constructor(Context context);
 
-	public native final void setText(CharSequence _text);
+	public final void setText(CharSequence text) {
+		if(text == null) {
+			native_setText("NULL");
+			return;
+		}
+
+		native_setText(text.toString());
+
+		if(text instanceof android.text.Spanned)
+			native_set_markup(1);
+	}
+
+	private native final void native_set_markup(int bool);
+
+	public native final void native_setText(String text);
     public native void setTextSize(float size);
 
     public void setTextColor(int color) {}
@@ -42,10 +59,21 @@ public class TextView extends View {
     public void setLineSpacing(float add, float mult) {}
 	public final void setLinksClickable(boolean whether) {}
 
+	public void setInputType(int type) {}
+	public void setFilters(InputFilter[] filters) {}
+	public void setCursorVisible(boolean visible) {}
+	public void setImeOptions(int imeOptions) {}
+
 	public final ColorStateList getTextColors() { return new ColorStateList(new int[][] { new int[0] }, new int[1]); }
 	public static ColorStateList getTextColors(Context context, TypedArray attrs) { return new ColorStateList(new int[][] { new int[0] }, new int[1]); }
 
 	public TextPaint getPaint() {
 		return new TextPaint();
+	}
+
+	public void addTextChangedListener(TextWatcher watcher) {}
+	public void setOnEditorActionListener (TextView.OnEditorActionListener l) {}
+
+	public static interface OnEditorActionListener {
 	}
 }
