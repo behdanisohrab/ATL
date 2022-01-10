@@ -27,9 +27,14 @@ static void frame_layout_widget_init (FrameLayoutWidget *frame_layout)
 
 }
 
-static void frame_layout_widget_dispose(GObject *object)
+static void frame_layout_widget_dispose(GObject *frame_layout)
 {
-	G_OBJECT_CLASS (frame_layout_widget_parent_class)->dispose (object);
+	GtkWidget *child;
+	while((child = gtk_widget_get_first_child(GTK_WIDGET(frame_layout))) != NULL) {
+		gtk_widget_unparent(child);
+	}
+
+	G_OBJECT_CLASS (frame_layout_widget_parent_class)->dispose (frame_layout);
 }
 
 static void frame_layout_widget_class_init(FrameLayoutWidgetClass *class)
@@ -76,8 +81,7 @@ JNIEXPORT void JNICALL Java_android_widget_FrameLayout_native_1constructor__Land
 	GtkWidget *frame_layout = frame_layout_widget_new();
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), frame_layout);
 	gtk_widget_set_name(GTK_WIDGET(frame_layout), "FrameLayout");
-	_SET_LONG_FIELD(this, "widget", (long)frame_layout);
-	g_object_ref(wrapper);
+	_SET_LONG_FIELD(this, "widget", _INTPTR(frame_layout));
 }
 
 JNIEXPORT void JNICALL Java_android_widget_FrameLayout_native_1constructor__Landroid_content_Context_2(JNIEnv *env, jobject this, jobject context) {
@@ -85,8 +89,7 @@ JNIEXPORT void JNICALL Java_android_widget_FrameLayout_native_1constructor__Land
 	GtkWidget *frame_layout = frame_layout_widget_new();
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), frame_layout);
 	gtk_widget_set_name(GTK_WIDGET(frame_layout), "FrameLayout");
-	_SET_LONG_FIELD(this, "widget", (long)frame_layout);
-	g_object_ref(wrapper);
+	_SET_LONG_FIELD(this, "widget", _INTPTR(frame_layout));
 }
 
 JNIEXPORT void JNICALL Java_android_widget_FrameLayout_addView(JNIEnv *env, jobject this, jobject child, jint index, jobject layout_params)

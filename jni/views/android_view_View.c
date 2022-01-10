@@ -5,8 +5,7 @@
 
 #include "../widgets/WrapperWidget.h"
 
-#define MOTION_EVENT_ACTION_DOWN 0
-#define MOTION_EVENT_ACTION_UP 1
+#include "android_view_View.h"
 
 struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; };
 
@@ -35,6 +34,16 @@ static void on_release(GtkGestureClick *gesture, int n_press, double x, double y
 	call_ontouch_callback(MOTION_EVENT_ACTION_UP, (float)x, (float)y, d);
 }
 
+static void on_click(GtkGestureClick *gesture, int n_press, double x, double y, struct touch_callback_data *d)
+{
+	JNIEnv *env;
+	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
+
+	(*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onClick", "(Landroid/view/View;)V"), d->this);
+
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+}
 
 JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener(JNIEnv *env, jobject this, jobject on_touch_listener)
 {
@@ -53,7 +62,26 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener(JNIEnv *env, jo
 
 	g_signal_connect(controller, "pressed", G_CALLBACK(on_press), callback_data);
 	g_signal_connect(controller, "released", G_CALLBACK(on_release), callback_data);
-	gtk_widget_add_controller(widget, controller);	
+	gtk_widget_add_controller(widget, controller);
+}
+
+JNIEXPORT void JNICALL Java_android_view_View_setOnClickListener(JNIEnv *env, jobject this, jobject on_click_listener)
+{
+	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
+
+	JavaVM *jvm;
+	(*env)->GetJavaVM(env, &jvm);
+
+	struct touch_callback_data *callback_data = malloc(sizeof(struct touch_callback_data));
+	callback_data->jvm = jvm;
+	callback_data->this = _REF(this);
+ 	callback_data->on_touch_listener = _REF(on_click_listener);
+	callback_data->on_touch_listener_class = _REF(_CLASS(callback_data->on_touch_listener));
+
+	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_click_new());
+
+	g_signal_connect(controller, "released", G_CALLBACK(on_click), callback_data); // the release completes the click, I guess?
+	gtk_widget_add_controller(widget, controller);
 }
 
 JNIEXPORT jint JNICALL Java_android_view_View_getWidth(JNIEnv *env, jobject this)
@@ -75,10 +103,10 @@ JNIEXPORT jint JNICALL Java_android_view_View_getHeight(JNIEnv *env, jobject thi
 	return gtk_widget_get_height(widget);
 }
 
-#define GRAVITY_TOP 0x30
-#define GRAVITY_BOTTOM 0x50
-#define GRAVITY_LEFT 0x3
-#define GRAVITY_RIGHT 0x5
+#define GRAVITY_TOP (1<<5)//0x30
+#define GRAVITY_BOTTOM (1<<6)//0x50
+#define GRAVITY_LEFT (1<<1)//0x3
+#define GRAVITY_RIGHT (1<<2)//0x5
 
 #define GRAVITY_CENTER_VERTICAL 0x10
 #define GRAVITY_CENTER_HORIZONTAL 0x01
@@ -89,35 +117,54 @@ JNIEXPORT void JNICALL Java_android_view_View_setGravity(JNIEnv *env, jobject th
 {
 	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget"))));
 
-	switch (gravity) {
-		case GRAVITY_TOP:
-			gtk_widget_set_valign(widget, GTK_ALIGN_START);
-			gtk_widget_set_halign(widget, GTK_ALIGN_FILL);
-			break;
-		case GRAVITY_BOTTOM:
-			gtk_widget_set_valign(widget, GTK_ALIGN_END);
-			gtk_widget_set_halign(widget, GTK_ALIGN_FILL);
-			break;
-		case GRAVITY_LEFT:
-			gtk_widget_set_valign(widget, GTK_ALIGN_FILL);
-			gtk_widget_set_halign(widget, GTK_ALIGN_START);
-			break;
-		case GRAVITY_RIGHT:
-			gtk_widget_set_valign(widget, GTK_ALIGN_FILL);
-			gtk_widget_set_halign(widget, GTK_ALIGN_END);
-			break;
-		case GRAVITY_CENTER:
-			gtk_widget_set_valign(widget, GTK_ALIGN_FILL); // GTK_ALIGN_CENTER doesn't seem to be the right one?
-			gtk_widget_set_halign(widget, GTK_ALIGN_FILL); // ditto (GTK_ALIGN_CENTER)
-			gtk_widget_set_hexpand(widget, true); // haxx or not?
-			gtk_widget_set_vexpand(widget, true); // seems to be the deciding factor expand, guess I should try on android
-			break;
+	printf(":::-: setting gravity: %d\n", gravity);
+
+	if(gravity & GRAVITY_BOTTOM)
+		gtk_widget_set_valign(widget, GTK_ALIGN_END);
+	else if(gravity & GRAVITY_TOP)
+		gtk_widget_set_valign(widget, GTK_ALIGN_START);
+	else
+		gtk_widget_set_valign(widget, GTK_ALIGN_FILL);
+
+	if(gravity & GRAVITY_RIGHT)
+		gtk_widget_set_halign(widget, GTK_ALIGN_END);
+	else if(gravity & GRAVITY_LEFT)
+		gtk_widget_set_halign(widget, GTK_ALIGN_START);
+	else
+		gtk_widget_set_halign(widget, GTK_ALIGN_FILL);
+
+	if(gravity == GRAVITY_CENTER) {
+		gtk_widget_set_valign(widget, GTK_ALIGN_FILL); // GTK_ALIGN_CENTER doesn't seem to be the right one?
+		gtk_widget_set_halign(widget, GTK_ALIGN_FILL); // ditto (GTK_ALIGN_CENTER)
+		gtk_widget_set_hexpand(widget, true); // haxx or not?
+		gtk_widget_set_vexpand(widget, true); // seems to be the deciding factor for whether to expand, guess I should try on android
 	}
 }
 
 JNIEXPORT void JNICALL Java_android_view_View_native_1set_1size_1request(JNIEnv *env, jobject this, jint width, jint height)
 {
-	gtk_widget_set_size_request(gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")))), width, height);
+	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget"))));
+
+	if(width > 0)
+		g_object_set(G_OBJECT(widget), "width-request", width, NULL);
+	if(height > 0)
+		g_object_set(G_OBJECT(widget), "height-request", height, NULL);
+}
+
+JNIEXPORT void JNICALL Java_android_view_View_setVisibility(JNIEnv *env, jobject this, jint visibility) {
+	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget"))));
+
+	switch (visibility) {
+		case android_view_View_VISIBLE:
+			gtk_widget_set_visible(widget, true);
+			break;
+		case android_view_View_INVISIBLE:
+			printf("!!! View.INVISIBLE not implemented, now is a good time to check what it's supposed to do ;)\n");
+			break;
+		case android_view_View_GONE:
+			gtk_widget_set_visible(widget, false);
+			break;
+	}
 }
 
 // --- the stuff below only applies to widgets that override the OnDraw() method; other widgets are created by class-specific constructors.
@@ -130,7 +177,7 @@ static void draw_function(GtkDrawingArea *area, cairo_t *cr, int width, int heig
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	jobject canvas = (*env)->NewObject(env, handle_cache.canvas.class, handle_cache.canvas.constructor, (jlong)cr, (jlong)area);
+	jobject canvas = (*env)->NewObject(env, handle_cache.canvas.class, handle_cache.canvas.constructor, _INTPTR(cr), _INTPTR(area));
 
 	(*env)->CallVoidMethod(env, d->this, _METHOD(d->this_class, "onDraw", "(Landroid/graphics/Canvas;)V"), canvas);
 
@@ -159,8 +206,6 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, j
 	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *area = gtk_drawing_area_new();
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), area);
-	gtk_widget_set_hexpand(area, true); // this doesn't seem to be done by the app,
-	gtk_widget_set_vexpand(area, true); // so presumably it's the default?
 
 	JavaVM *jvm;
 	(*env)->GetJavaVM(env, &jvm);
@@ -178,5 +223,4 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, j
 	g_signal_connect(area, "map", G_CALLBACK(on_mapped), callback_data);
 
 	_SET_LONG_FIELD(this, "widget", (long)area);
-	g_object_ref(wrapper);
 }

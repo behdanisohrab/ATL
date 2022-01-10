@@ -49,10 +49,10 @@ static void wrapper_widget_init (WrapperWidget *frame_layout)
 
 }
 
-static void wrapper_widget_dispose(GObject *object)
+static void wrapper_widget_dispose(GObject *wrapper_widget)
 {
-	gtk_widget_unparent(gtk_widget_get_first_child(GTK_WIDGET(object)));
-	G_OBJECT_CLASS (wrapper_widget_parent_class)->dispose (object);
+	gtk_widget_unparent(gtk_widget_get_first_child(GTK_WIDGET(wrapper_widget)));
+	G_OBJECT_CLASS (wrapper_widget_parent_class)->dispose (wrapper_widget);
 }
 
 void wrapper_snapshot(GtkWidget* widget, GtkSnapshot* snapshot)
@@ -98,7 +98,7 @@ GtkWidget * wrapper_widget_new(void)
 	return g_object_new (wrapper_widget_get_type(), NULL);
 }
 
-void wrapper_widget_set_child(WrapperWidget *parent, GtkWidget *child)
+void wrapper_widget_set_child(WrapperWidget *parent, GtkWidget *child) // TODO: make sure there can only be one child
 {
 	gtk_widget_insert_before(child, GTK_WIDGET(parent), NULL);
 }

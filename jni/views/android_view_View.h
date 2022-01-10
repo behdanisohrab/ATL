@@ -167,6 +167,14 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener
 
 /*
  * Class:     android_view_View
+ * Method:    setOnClickListener
+ * Signature: (Landroid/view/View/OnClickListener;)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_setOnClickListener
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     android_view_View
  * Method:    getWidth
  * Signature: ()I
  */
@@ -196,6 +204,14 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1constructor
  */
 JNIEXPORT void JNICALL Java_android_view_View_native_1set_1size_1request
   (JNIEnv *, jobject, jint, jint);
+
+/*
+ * Class:     android_view_View
+ * Method:    setVisibility
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_setVisibility
+  (JNIEnv *, jobject, jint);
 
 #ifdef __cplusplus
 }

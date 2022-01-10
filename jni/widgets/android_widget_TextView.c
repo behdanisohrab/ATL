@@ -16,8 +16,7 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor__Landroi
 	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *label = gtk_label_new(text);
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), label);
-	_SET_LONG_FIELD(this, "widget", (long)label);
-	g_object_ref(wrapper);
+	_SET_LONG_FIELD(this, "widget", _INTPTR(label));
 }
 
 JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor__Landroid_content_Context_2(JNIEnv *env, jobject this, jobject attrs)
@@ -27,11 +26,10 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor__Landroi
 	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *label = gtk_label_new("FIXME");
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), label);
-	_SET_LONG_FIELD(this, "widget", (long)label);
-	g_object_ref(wrapper);
+	_SET_LONG_FIELD(this, "widget", _INTPTR(label));
 }
 
-JNIEXPORT void JNICALL Java_android_widget_TextView_setText(JNIEnv *env, jobject this, jobject charseq)
+JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setText(JNIEnv *env, jobject this, jobject charseq)
 {
 //	_SET_OBJ_FIELD(this, "text", "Ljava/lang/String;", charseq); //TODO: sadly this might be needed, but it's not atm
 
@@ -54,4 +52,14 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_setTextSize(JNIEnv *env, job
 	gtk_label_set_attributes(label, attrs);
 
 	pango_attr_list_unref(attrs);
+}
+
+JNIEXPORT void JNICALL Java_android_widget_TextView_native_1set_1markup(JNIEnv *env, jobject this, jint value)
+{
+	GtkLabel *label = GTK_LABEL(_PTR(_GET_LONG_FIELD(this, "widget")));
+
+	printf("weeeheee!\n");
+
+	gtk_label_set_use_markup(label, value);
+	printf("gtk_label_get_use_markup: %d, >%s<\n", gtk_label_get_use_markup(label), gtk_label_get_text(label));
 }

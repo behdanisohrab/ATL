@@ -5,7 +5,8 @@
 
 // these macros are a bit hacky, since they deliberately assume that env exists and refers to the JNI env
 
-#define _PTR(ptr)((void*)(int)ptr)
+#define _PTR(ptr)((void*)(intptr_t)ptr)
+#define _INTPTR(ptr)((jlong)(intptr_t)ptr)
 #define _REF(obj)((*env)->NewGlobalRef(env, obj))
 #define _CLASS(object) ((*env)->GetObjectClass(env, object))
 #define _SUPER(object) ((*env)->GetSuperclass(env, object))

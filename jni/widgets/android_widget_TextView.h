@@ -167,11 +167,19 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor__Landroi
 
 /*
  * Class:     android_widget_TextView
- * Method:    setText
- * Signature: (Ljava/lang/CharSequence;)V
+ * Method:    native_set_markup
+ * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_android_widget_TextView_setText
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT void JNICALL Java_android_widget_TextView_native_1set_1markup
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     android_widget_TextView
+ * Method:    native_setText
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setText
+  (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     android_widget_TextView
