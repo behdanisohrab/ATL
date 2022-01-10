@@ -6,10 +6,6 @@ import android.content.Context;
 import android.view.View;
 
 public class ImageView extends View {
-	public ImageView(int _id) { // FIXME
-		id = _id;
-	}
-
 	public ImageView(AttributeSet attrs) {
 		super(attrs);
 
@@ -19,7 +15,7 @@ public class ImageView extends View {
 	public ImageView(Context context) {
 		super(context);
 
-//		native_constructor(context);
+		native_constructor(context);
 	}
 
 	private native void native_constructor(AttributeSet attrs);
@@ -27,7 +23,6 @@ public class ImageView extends View {
 
 	public /*native*/ void setImageResource(final int resid) {}
 	public void setAdjustViewBounds(boolean adjustViewBounds) {}
-//	public native void setVisibility(final int visibility);
 
 	public void setScaleType(ScaleType scaleType) {}
 
