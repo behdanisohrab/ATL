@@ -41,7 +41,9 @@ public class FrameLayout extends ViewGroup {
 		}
 
 		public LayoutParams(int width, int height, int gravity) {
-			super(width, height);
+			this.width = width;
+			this.height = height;
+			this.gravity = gravity;
 		}
 	}
 }

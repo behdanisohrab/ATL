@@ -22,16 +22,14 @@ import android.content.pm.ApplicationInfo;
 //import android.graphics.Rect;
 //import android.graphics.Region;
 import android.util.DisplayMetrics;
-//import android.view.WindowManager;
-//import android.view.WindowManager.LayoutParams;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 
 class Canvas {}
 class PointF {}
 class Rect {}
 class Region {}
 class MotionEvent {}
-class WindowManager { class LayoutParams {} }
-class LayoutParams {}
 
 /**
  * CompatibilityInfo class keeps the information about compatibility mode that the application is

@@ -323,7 +323,9 @@ public class Handler {
      */
     public final boolean post(Runnable r)
     {
-       return  sendMessageDelayed(getPostMessage(r), 0);
+//       return  sendMessageDelayed(getPostMessage(r), 0);
+		r.run();
+		return true;
     }
     
     /**

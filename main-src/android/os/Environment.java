@@ -104,7 +104,7 @@ public class Environment {
 
         @Deprecated
         public File getExternalStorageDirectory() {
-            return mExternalDirsForApp[0];
+            return new File("data/");/*mExternalDirsForApp[0];*/
         }
 
         @Deprecated
@@ -310,8 +310,8 @@ public class Environment {
      * @see #isExternalStorageRemovable()
      */
     public static File getExternalStorageDirectory() {
-        throwIfUserRequired();
-        return sCurrentUser.getExternalDirsForApp()[0];
+//        throwIfUserRequired();
+        return new File("data/");/*sCurrentUser.getExternalDirsForApp()[0];*/
     }
 
     /** {@hide} */

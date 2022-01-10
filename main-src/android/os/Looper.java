@@ -53,6 +53,13 @@ import android.util.PrefixPrinter;
 public final class Looper {
     private static final String TAG = "Looper";
 
+	// FIXME
+	public Looper() {
+        mQueue = null;
+        mThread = Thread.currentThread();
+		System.out.println("making a fake Looper object, let's hope noone tries to actually use it");
+	}
+
     // sThreadLocal.get() will return null unless you've called prepare().
     static final ThreadLocal<Looper> sThreadLocal = new ThreadLocal<Looper>();
     private static Looper sMainLooper;  // guarded by Looper.class
@@ -76,7 +83,7 @@ public final class Looper {
         if (sThreadLocal.get() != null) {
             throw new RuntimeException("Only one Looper may be created per thread");
         }
-        sThreadLocal.set(new Looper(quitAllowed));
+        sThreadLocal.set(new Looper(/*quitAllowed*/));
     }
 
     /**
@@ -159,6 +166,9 @@ public final class Looper {
      * null if the calling thread is not associated with a Looper.
      */
     public static Looper myLooper() {
+		if(sThreadLocal.get() == null) {
+			prepare(false);
+		}
         return sThreadLocal.get();
     }
 

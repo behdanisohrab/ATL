@@ -392,7 +392,7 @@ public class ApplicationInfo extends PackageItemInfo {
     /**
      * Full path to the location of this package.
      */
-    public String sourceDir;
+    public String sourceDir = "/home/Mis012/Desktop/__/worms/com.worms2armageddon.app_1.4.0_paid-www.apkhere.com/dist/com.worms2armageddon.app_1.4.0_paid-www.apkhere.com.apk"; // FIXME FIXME FIXME
 
     /**
      * Full path to the location of the publicly available parts of this

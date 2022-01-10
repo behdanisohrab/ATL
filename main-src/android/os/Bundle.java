@@ -25,9 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-class IBinder {}
-class Parcelable {}
-
 /**
  * A mapping from String values to various Parcelable types.
  *

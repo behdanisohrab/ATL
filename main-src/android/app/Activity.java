@@ -1,24 +1,48 @@
 package android.app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.widget.TextView;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.view.Window;
+import android.view.WindowManager;
+import android.view.WindowManagerImpl;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.FileReader;
 import java.io.StringReader;
 
 public class Activity extends Context {
 	LayoutInflater layout_inflater;
-	public View root_view;
+	Application this_application;
 
 	public Activity() {
 		layout_inflater = new LayoutInflater();
+		this_application = new Application(); // TODO: why is this different from the Activity Context?
+	}
+
+	public View root_view;
+
+	public final Application getApplication () {
+		return this_application;
+	}
+
+	public WindowManager getWindowManager() {
+		return new WindowManagerImpl();
+	}
+
+	public Intent getIntent() {
+		return null; // this is the main activity, and it wasn't opened as a result of someone calling "open with"
+//		return new Intent();
+	}
+
+	public boolean isFinishing() {
+		return false; // FIXME
 	}
 
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +87,20 @@ public class Activity extends Context {
 		return;
 	}
 
+	public void onWindowFocusChanged(boolean hasFocus) {
+		System.out.println("- onWindowFocusChanged - yay! (hasFocus: "+hasFocus+")");
+
+		return;
+	}
+
 	/* --- */
 
     public void setContentView(int layoutResID) throws Exception {
 		System.out.println("- setContentView - yay!");
+
+		String layout_xml_file = "data/" + getString(layoutResID);
+
+		System.out.println("loading layout from: " + layout_xml_file);
 
 		XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
 		factory.setNamespaceAware(true);
@@ -74,8 +108,8 @@ public class Activity extends Context {
 
 		// cheating here, should look it up
 		// note: s/@ref\///g
-//		xpp.setInput( new StringReader ( "<?xml version=\"1.0\" encoding=\"utf-8\"?> <LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\" android:orientation=\"1\" android:layout_width=\"-1\" android:layout_height=\"-1\">  <TextView android:id=\"0x7f08010a\" android:layout_width=\"-2\" android:layout_height=\"-2\" android:text=\"Hello World!\" />  <TextView android:id=\"0x7f08010b\" android:layout_width=\"-2\" android:layout_height=\"-2\" android:text=\"second one (static)\" /> </LinearLayout>" ) );
-		xpp.setInput( new StringReader ( "<RelativeLayout xmlns:android=\"http://schemas.android.com/apk/res/android\" xmlns:tools=\"http://schemas.android.com/tools\" android:layout_width=\"match_parent\" android:layout_height=\"match_parent\" android:paddingBottom=\"0\" android:paddingLeft=\"0\" android:paddingRight=\"0\" android:paddingTop=\"0\" tools:context=\".GDTRActivity\"> </RelativeLayout>" ) );
+//		xpp.setInput( new StringReader ( "<?xml version=\"1.0\" encoding=\"utf-8\"?> <LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\" android:orientation=\"1\" android:layout_width=\"-1\" android:layout_height=\"-1\">  <TextView android:id=\"0x7f030000\" android:layout_width=\"-2\" android:layout_height=\"-2\" android:text=\"Hello World!\" />  <TextView android:id=\"0x7f030001\" android:layout_width=\"-2\" android:layout_height=\"-2\" android:text=\"second one (static)\" /> </LinearLayout>" ) );
+		xpp.setInput( new FileReader(layout_xml_file) );
 
 		root_view = layout_inflater.inflate(xpp, null, false);
 

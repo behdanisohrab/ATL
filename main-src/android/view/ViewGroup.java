@@ -71,6 +71,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		public int width = 0;
 		public int height = 0;
 		public float weight = 1;
+		public int gravity = -1;
 
 		public LayoutParams() {
 			//FIXME

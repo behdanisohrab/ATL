@@ -518,8 +518,17 @@ public class View extends Object {
     }
 
     public interface OnClickListener {
-        boolean onClick(View v, MotionEvent event);
+        void onClick(View v);
     }
+
+	public interface OnAttachStateChangeListener {
+		// TODO
+	}
+
+	public static interface OnKeyListener {
+// TODO
+//		boolean onKey(View v, int keyCode, KeyEvent event);
+	}
 
 // --- end of interfaces
 
@@ -663,6 +672,7 @@ public class View extends Object {
 	public ViewGroup parent;
 	public AttributeSet attrs;
 	protected ViewGroup.LayoutParams layout_params;
+	private Context context;
 
 	public long widget; // pointer
 
@@ -681,6 +691,8 @@ public class View extends Object {
 
 	public View(Context context) {
 		boolean custom_drawing;
+
+		this.context = context;
 
 		try {
 			Class[] cArg = new Class[1];
@@ -703,13 +715,14 @@ public class View extends Object {
 		if (params == null) {
 			throw new NullPointerException("Layout parameters cannot be null");
 		}
-		System.out.println("would set layout params on view: "+id+" ("+params+")");
-		layout_params = params;
-		/*resolveLayoutParams();
-		if (mParent instanceof ViewGroup) {
-			((ViewGroup) mParent).onSetLayoutParams(this, params);
+
+		native_set_size_request(params.width, params.height);
+
+		if(params.gravity != -1) {
+			setGravity(params.gravity);
 		}
-		requestLayout();*/
+
+		layout_params = params;
 	}
 
 	public ViewGroup.LayoutParams getLayoutParams() {
@@ -722,6 +735,7 @@ public class View extends Object {
 
 	public native void setGravity(int gravity);
 	public native void setOnTouchListener(OnTouchListener l);
+	public native void setOnClickListener(OnClickListener l);
     public native final int getWidth();
     public native final int getHeight();
 
@@ -729,6 +743,22 @@ public class View extends Object {
 	private native void native_set_size_request(int width, int height);
 
 // --- stubs
+
+	public void setOnKeyListener(OnKeyListener l) {}
+
+	public void setFocusable(boolean focusable) {}
+	public void setFocusableInTouchMode(boolean focusableInTouchMode) {}
+    public final boolean requestFocus() {
+        return requestFocus(View.FOCUS_DOWN);
+    }
+    public final boolean requestFocus(int direction) {
+        return requestFocus(direction, null);
+    }
+    public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
+        return true;
+    }
+
+	public void setSystemUiVisibility(int visibility) {}
 
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {}
 
@@ -752,15 +782,11 @@ public class View extends Object {
 	public void invalidate() {}
 
 	public void setBackgroundColor(int color) {}
-	public void setVisibility(int visibility) {
-		System.out.println("setting visibility of "+this+" to "+visibility+".");
-	}
+	public native void setVisibility(int visibility);
 	public void setPadding(int left, int top, int right, int bottom) {}
 	public void setBackgroundResource(int resid) {
 //		System.out.println("*** setBackgroundResource: " + getString(resid));
 	}
-
-	public void setOnClickListener(OnClickListener l) {}
 
 	public void getHitRect(Rect outRect) {}
 	public final boolean getLocalVisibleRect(Rect r) { return false; }

@@ -1844,7 +1844,8 @@ public final class MotionEvent extends InputEvent {
      * @see #AXIS_PRESSURE
      */
     public final float getPressure() {
-        return nativeGetAxisValue(mNativePtr, AXIS_PRESSURE, 0, HISTORY_CURRENT);
+//        return nativeGetAxisValue(mNativePtr, AXIS_PRESSURE, 0, HISTORY_CURRENT);
+		return 0;
     }
 
     /**
@@ -2014,7 +2015,8 @@ public final class MotionEvent extends InputEvent {
      * @see #AXIS_PRESSURE
      */
     public final float getPressure(int pointerIndex) {
-        return nativeGetAxisValue(mNativePtr, AXIS_PRESSURE, pointerIndex, HISTORY_CURRENT);
+//        return nativeGetAxisValue(mNativePtr, AXIS_PRESSURE, pointerIndex, HISTORY_CURRENT);
+		return 0;
     }
 
     /**

@@ -9,26 +9,63 @@ import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.content.SharedPreferences;
 import android.app.SharedPreferencesImpl;
+import android.os.Looper;
+import android.view.WindowManager;
+import android.view.WindowManagerImpl;
+import android.text.ClipboardManager;
+import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
 
 import java.io.File;
 
 public class Context extends Object {
     private final static String TAG = "Context";
 
-	AssetManager assets;
-	DisplayMetrics dm;
-	Configuration config;
-	Resources r;
+	public static final String WINDOW_SERVICE = "window";
+
+	static AssetManager assets;
+	static DisplayMetrics dm;
+	static Configuration config;
+	static Resources r;
 
 	File data_dir = null;
 	File prefs_dir = null;
 	File files_dir = null;
 
-	public Context() {
+	static {
 		assets = new AssetManager();
 		dm = new DisplayMetrics();
 		config = new Configuration();
 		r = new Resources(assets, dm, config);
+	}
+
+	public Context() {
+		System.out.println("new Context! this one is: " + this);
+	}
+
+	public ContentResolver getContentResolver() {
+		return new ContentResolver();
+	}
+
+	public Object getSystemService(String name) {
+		switch (name) {
+			case WINDOW_SERVICE:
+				return new WindowManagerImpl();
+			case "clipboard":
+				return new ClipboardManager();
+			case "sensor":
+				return new SensorManager();
+			case "connectivity":
+				return new ConnectivityManager();
+			default:
+				System.out.println("!!!!!!! getSystemService: case >"+name+"< is not implemented yet");
+				return null;
+		}
+	}
+
+    public Looper getMainLooper() {
+		System.out.println("returning the main Looper, most definitely doing just that!");
+		return new Looper();
 	}
 
 	public String getPackageName() {

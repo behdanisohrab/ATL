@@ -20,6 +20,8 @@ public abstract class SQLiteOpenHelper {
         mErrorHandler = errorHandler;*/
     }
 
+	public void close () {}
+
     public SQLiteDatabase getWritableDatabase() {
         synchronized (this) {
             return getDatabaseLocked(true);

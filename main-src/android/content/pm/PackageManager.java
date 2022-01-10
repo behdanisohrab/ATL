@@ -1570,7 +1570,7 @@ public class PackageManager {
      */
     public ApplicationInfo getApplicationInfo(String packageName,
             int flags) throws NameNotFoundException {
-		return null;
+		return new ApplicationInfo();
 	}
 
     /**
