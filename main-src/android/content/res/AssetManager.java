@@ -90,8 +90,8 @@ public final class AssetManager {
      * {@hide}
      */
     public AssetManager() {
-
-		arsc_parser = new ArscResourcesParser("org.happysanta.gd_29.apk"); // FIXME
+		// NOTE: this enforces a particular order when specifying the MicroG .apk in classpath
+		arsc_parser = new ArscResourcesParser(ClassLoader.getSystemClassLoader().getResource("resources.arsc"));
 
 		// FIXME: evaluate if this can be axed
         synchronized (this) {
@@ -182,8 +182,7 @@ public final class AssetManager {
      * @param id Resource id of the string array
      */
     /*package*/ final String[] getResourceStringArray(final int id) {
-        String[] retArray = {"_one", "_two", "_three"}/*getArrayStringResource(id)*/;
-        return retArray;
+        return arsc_parser.getResourceArray(id);
     }
 
 
@@ -669,7 +668,7 @@ public final class AssetManager {
 
 		int typeId;
 
-		if(type.equals("attr")) {
+		if(type.equals("color")) {
 			typeId = 1;
 		}else if(type.equals("drawable")) {
 			typeId = 2;

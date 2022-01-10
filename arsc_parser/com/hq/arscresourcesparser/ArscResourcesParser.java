@@ -3,15 +3,19 @@ package com.hq.arscresourcesparser;
 import com.hq.arscresourcesparser.arsc.ArscFile;
 import com.hq.arscresourcesparser.arsc.ResTableEntry;
 import com.hq.arscresourcesparser.arsc.ResTableValueEntry;
+import com.hq.arscresourcesparser.arsc.ResTableMapEntry;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.io.ByteArrayOutputStream;
+import java.net.URL;
+
+//import java.util.zip.ZipEntry;
+//import java.util.zip.ZipFile;
 
 public class ArscResourcesParser {
-	public final int TYPE_ATTR = 1; // FIXME assumption
+	public final int TYPE_COLOR = 1;
 	public final int TYPE_DRAWABLE = 2;
 	public final int TYPE_LAYOUT = 3;
 	public final int TYPE_DIMEN = 4;
@@ -23,19 +27,29 @@ public class ArscResourcesParser {
 
 	private ArscFile arscFile;
 
-    public ArscResourcesParser(String fileName) {
+	public ArscResourcesParser(URL file) {
 		try {
-			ZipFile zip = new ZipFile(fileName);
-			ZipEntry amz;
-			amz = zip.getEntry("resources.arsc");
-			InputStream amis = zip.getInputStream(amz);
-			int BUFFER_SIZE = (int) (amz.getSize() > 51200 ? 51200 : amz.getSize());
-			byte[] buf = new byte[BUFFER_SIZE];
-			int bytesRead = amis.read(buf);
+			InputStream amis = file.openStream();
+			System.out.println(amis);
+
+			byte[] buffer = new byte[1000];
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			try {
+				int temp;
+
+				while ((temp = amis.read(buffer)) != -1) {
+					byteArrayOutputStream.write(buffer, 0, temp);
+				}
+			} catch (IOException e) {
+				// Display the exception/s on the console
+				System.out.println(e);
+			}
+
+			byte[] byteArray = byteArrayOutputStream.toByteArray();
+
 			arscFile = new ArscFile();
-			arscFile.parse(buf);
+			arscFile.parse(byteArray);
 			amis.close();
-			zip.close();
 		} catch (IOException e) {
 			System.out.println("ArscResourcesParser: IOException raised: " + e.toString());
 		}
@@ -51,6 +65,12 @@ public class ArscResourcesParser {
 		ResTableValueEntry res = (ResTableValueEntry)arscFile.getResourceByName(name, typeId);
 
 		return res.resValue.toString();
+	}
+
+	public String[] getResourceArray(int resId) {
+		ResTableMapEntry resArray = (ResTableMapEntry)arscFile.getResource(resId);
+
+		return resArray.asStringArray();
 	}
 
 	public int getResourceId(String name, int typeId) {
