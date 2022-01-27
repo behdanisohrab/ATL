@@ -68,6 +68,13 @@ compile_hax: | convert_xmlpull
 	main-src/android/graphics/*.java \
 	main-src/android/database/*.java \
 	main-src/android/database/sqlite/*.java \
+	main-src/android/opengl/*.java \
+	main-src/android/hardware/*.java \
+	main-src/android/provider/*.java \
+	main-src/android/net/*.java \
+	main-src/com/google/android/vending/licensing/*.java \
+	main-src/javax/microedition/khronos/egl/*.java \
+	main-src/javax/microedition/khronos/opengles/*.java \
 	main-src/android/Manifest.java \
 	main-src/android/R.java \
 	main-src/com/android/internal/Manifest.java \
@@ -91,6 +98,13 @@ convert_hax: | compile_hax
 	android/graphics/*.class \
 	android/database/*.class \
 	android/database/sqlite/*.class \
+	android/opengl/*.class \
+	android/hardware/*.class \
+	android/provider/*.class \
+	android/net/*.class \
+	com/google/android/vending/licensing/*.class \
+	javax/microedition/khronos/egl/*.class \
+	javax/microedition/khronos/opengles/*.class \
 	android/*.class \
 	com/android/internal/*.class
 
@@ -111,9 +125,17 @@ compile_and_covert_launcher: compile_launcher convert_launcher
 
 compile_jni: | compile_hax
 	mv jni/android_view_View.h jni/android_view_ViewGroup.h jni/views/
-	mv jni/android_widget_TextView.h jni/android_widget_ScrollView.h jni/android_widget_RelativeLayout.h jni/android_widget_LinearLayout.h jni/android_widget_FrameLayout.h jni/widgets
+	mv jni/android_widget_TextView.h \
+	jni/android_widget_ScrollView.h \
+	jni/android_widget_RelativeLayout.h \
+	jni/android_widget_LinearLayout.h \
+	jni/android_widget_FrameLayout.h \
+	jni/android_widget_ImageView.h \
+	jni/android_opengl_GLSurfaceView.h \
+	jni/widgets
 	gcc -g -m32 -shared -fPIC -o libnative/org_launch_main.so -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ jni/*.c jni/widgets/*.c jni/views/*.c jni/drawables/*.c `PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs`
 
 run:
-	#./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:demo_app.apk org/launch/main com/example/demo_application/MainActivity
-	./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:org.happysanta.gd_29.apk org/launch/main org/happysanta/gd/GDActivity
+	#./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:test_apks/demo_app.apk org/launch/main com/example/demo_application/MainActivity
+	./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:test_apks/org.happysanta.gd_29.apk org/launch/main org/happysanta/gd/GDActivity
+	#LD_LIBRARY_PATH=/usr/local/lib/ GDK_DEBUG=gl-egl MESA_DEBUG=1 DEBUG=3 ANDROID_LOG_TAGS=*:v BIONIC_LD_LIBRARY_PATH=data/lib/ ./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:/home/Mis012/Desktop/__/worms/com.worms2armageddon.app_1.4.0_paid-www.apkhere.com/dist/com.worms2armageddon.app_1.4.0_paid-www.apkhere.com.apk:com.google.android.gms.apk org/launch/main com/worms2armageddon/app/Main

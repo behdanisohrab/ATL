@@ -10,6 +10,7 @@ struct handle_cache {
 		jclass class;
 		jobject object;
 		jmethodID onCreate;
+		jmethodID onWindowFocusChanged;
 		jmethodID onDestroy;
 	} apk_main_activity;
 	struct {
@@ -37,6 +38,20 @@ struct handle_cache {
 		jclass class;
 		jmethodID constructor;
 	} canvas;
+	struct {
+		jclass class;
+		jmethodID onSurfaceCreated;
+		jmethodID onSurfaceChanged;
+		jmethodID onDrawFrame;
+	} renderer;
+	struct {
+		jclass class;
+		jmethodID onTouchEvent;
+	} gl_surface_view;
+	struct {
+		jclass class;
+		jmethodID setLayoutParams;
+	} view;
 };
 
 extern struct handle_cache handle_cache;
