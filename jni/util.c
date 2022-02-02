@@ -59,6 +59,8 @@ void set_up_handle_cache(JNIEnv *env, char *apk_main_activity_class)
 
 	handle_cache.gl_surface_view.class = _REF((*env)->FindClass(env, "android/opengl/GLSurfaceView"));
 	handle_cache.gl_surface_view.onTouchEvent = _METHOD(handle_cache.gl_surface_view.class, "onTouchEvent", "(Landroid/view/MotionEvent;)Z");
+	handle_cache.gl_surface_view.wrap_EGLContextFactory_createContext = _METHOD(handle_cache.gl_surface_view.class, "wrap_EGLContextFactory_createContext", "(JJ)J");
+	handle_cache.gl_surface_view.wrap_EGLConfigChooser_chooseConfig = _METHOD(handle_cache.gl_surface_view.class, "wrap_EGLConfigChooser_chooseConfig", "(J)J");
 
 	handle_cache.view.class = _REF((*env)->FindClass(env, "android/view/View"));
 	if((*env)->ExceptionCheck(env))

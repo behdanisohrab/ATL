@@ -22,6 +22,14 @@
 #define FIXME__WIDTH 960
 #define FIXME__HEIGHT 540
 
+// mainly frame markers (very obtrusive, not recommended for most builds)
+#ifdef DEBUG_GLAREA
+#define d_printf(...) printf(VA_ARGS)
+#else
+#define d_printf(...)
+#endif
+
+#define ___GL_TRACE___(message) glDebugMessageInsert(GL_DEBUG_SOURCE_THIRD_PARTY, GL_DEBUG_TYPE_MARKER, 0xdeadbeef, GL_DEBUG_SEVERITY_NOTIFICATION, strlen(message), message)
 
 JNIEXPORT void JNICALL Java_android_opengl_GLSurfaceView_native_1constructor__Landroid_content_Context_2(JNIEnv *env, jobject this, jobject context)
 {
@@ -57,292 +65,317 @@ const char *fragmentStr = "#version 320 es\n"
                           "   outputColor = texture(texSampler, texCoords);\n"
                           "}\n";
 
-struct jni_gl_callback_data { JavaVM *jvm; jobject renderer; bool first_time;};
-static gboolean render(GtkGLArea *area, GdkGLContext *context, struct jni_gl_callback_data *d)
+struct render_priv {
+	GLuint program;
+	GLuint vao;
+	int texUnit;
+	GLuint texBufferdObject;
+	GLuint sampler;
+
+/* --- */
+    EGLSurface eglSurface;
+    EGLContext eglContext;
+
+	GLuint FramebufferName;
+	GLuint renderedTexture;
+	GLuint texture_id;
+
+	EGLImage egl_image;
+};
+
+static void check_shader_compile_error(GLuint shader)
 {
+	GLint compileResult;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &compileResult);
 
-	static GLuint program;
-	static GLuint vao;
-	static const int texUnit=0;
-	static GLuint texBufferdObject;
-	static GLuint sampler=0;
+	if(compileResult != GL_TRUE) {
+		GLint log_size = 0;
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_size);
 
-/* --- */
-    static EGLSurface eglSurface;
-    static EGLContext eglContext;
+		GLchar *info_log = malloc(log_size);
+		glGetShaderInfoLog(shader, log_size, &log_size, info_log);
+		fprintf(stderr, "\nError compiling one of the shaders used by GLSurfaceView:\n%s\n---\nsince this error shouldn't ever happen, we fail hard\n", info_log);
+		free(info_log);
 
-	static GLuint FramebufferName = 0;
-	static GLuint renderedTexture;
-	static GLuint texture_id;
+		exit(1);
+	}
+}
 
-	static EGLImage egl_image;
-/* --- */
+static void check_program_link_error(GLuint program)
+{
+	GLint link_status = 0;
+	glGetProgramiv(program, GL_LINK_STATUS, &link_status);
 
-/* --- */
-	printf("WEEEE AAAAARE HEEEEERE\n");
-	printf("d: %p\n", d);
-	printf("jvm: %p\n", d->jvm);
+	if(link_status != GL_TRUE) {
+		GLint log_size = 0;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_size);
+
+		GLchar *info_log = malloc(log_size);
+		glGetProgramInfoLog(program, log_size, &log_size, info_log);
+		fprintf(stderr, "\nError linking the program used by GLSurfaceView:\n%s\n---\nsince this error shouldn't ever happen, we fail hard\n", info_log);
+		free(info_log);
+
+		exit(1);
+	}
+}
+
+#define check_egl_error()                                                                                                         \
+	do {                                                                                                                      \
+		EGLint error_ = eglGetError();                                                                                    \
+		if(error_ != EGL_SUCCESS)                                                                                         \
+			fprintf(stderr, "\nError in %s (%s:%d): \n"                                                               \
+				        "eglGetError reported 0x%x\n"                                                             \
+				        "this might be because we need to implement more stuff, so we will continue from here\n", \
+				        __func__, __FILE__, __LINE__, error_);                                                    \
+	} while(0)
+
+// TODO: use this where appropriate
+#define check_gl_error()                                                                                                          \
+	do {                                                                                                                      \
+		GLenum error_ = glGetError();                                                                                     \
+		if(error_ != GL_NO_ERROR)                                                                                         \
+			fprintf(stderr, "\nError in %s (%s:%d): \n"                                                               \
+				        "glGetError reported 0x%x\n"                                                              \
+				        "this might be because we need to implement more stuff, so we will continue from here\n", \
+				        __func__, __FILE__, __LINE__, error_);                                                    \
+	} while(0)
+
+
+struct jni_gl_callback_data { JavaVM *jvm; jobject this; jobject renderer; bool first_time;};
+static void on_realize(GtkGLArea *gl_area, struct jni_gl_callback_data *d)
+{
+	gtk_gl_area_make_current(gl_area);
+
+	struct render_priv *render_priv = g_object_get_data(G_OBJECT(gl_area), "render_priv");
 
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	printf("WEEEE AAAAARE HEEEEERE TWO\n");
+	EGLDisplay eglDisplay = eglGetDisplay((EGLNativeDisplayType)0);
+	EGLDisplay old_eglDisplay = eglGetCurrentDisplay();
 
-    EGLDisplay eglDisplay = eglGetDisplay((EGLNativeDisplayType)0);
-    EGLDisplay old_eglDisplay = eglGetCurrentDisplay();
-/* --- */
+	d_printf("GTK version: >%d__%d__%d<\n", gtk_get_major_version(), gtk_get_minor_version(), gtk_get_micro_version());
+	d_printf("OpenGL version: >%s<\n", glGetString(GL_VERSION));
 
-	if(d->first_time) {
-/* --- */
-		printf("GTK version: >%d__%d__%d<\n", gtk_get_major_version(), gtk_get_minor_version(), gtk_get_micro_version());
-		printf("OpenGL version: >%s<\n", glGetString(GL_VERSION));
+	glGenTextures(1, &render_priv->texture_id);
 
-		glGenTextures(1, &texture_id);
-/* --- */
+	// vertex shader
 
-		// TODO - proper error checking
+	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &vertexStr, NULL);
+	glCompileShader(vertexShader);
 
-		GLuint vertexShader = glCreateShader( GL_VERTEX_SHADER );
-		glShaderSource(vertexShader, 1, &vertexStr, NULL);
-		glCompileShader( vertexShader );
+	check_shader_compile_error(vertexShader);
 
-/*
-GLint logSize = 0;
-glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &logSize);
+	// fragment shader
 
-GLchar *infoLog = malloc(logSize);
-glGetShaderInfoLog(vertexShader, logSize, &logSize, infoLog);
-printf("\n...>%s<\n\n", infoLog);
-free(infoLog);
-*/
-		GLuint fragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
-		glShaderSource(fragmentShader, 1, &fragmentStr, NULL);
-		glCompileShader( fragmentShader );
-/*
-glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &logSize);
+	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragmentStr, NULL);
+	glCompileShader(fragmentShader);
 
-infoLog = malloc(logSize);
-glGetShaderInfoLog(fragmentShader, logSize, &logSize, infoLog);
-printf("\n...>%s<\n\n", infoLog);
-free(infoLog);
-*/
-		program = glCreateProgram();
+	check_shader_compile_error(fragmentShader);
 
-		glAttachShader(program, vertexShader);
-		glAttachShader(program, fragmentShader);
-		glLinkProgram(program);
-/*
-	GLint maxLength = 0;
-	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
-	infoLog = malloc(maxLength);
+	// program
 
-	glGetProgramInfoLog(program, maxLength, &maxLength, infoLog);
+	render_priv->program = glCreateProgram();
 
-	printf("\n..>%s<\n\n", infoLog);
-*/
+	glAttachShader(render_priv->program, vertexShader);
+	glAttachShader(render_priv->program, fragmentShader);
+	glLinkProgram(render_priv->program);
 
-		glUseProgram(program);
+	check_program_link_error(render_priv->program);
 
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
+	glUseProgram(render_priv->program);
 
-		GLuint positionBufferObject;
-		glGenBuffers(1, &positionBufferObject);
-		glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float)*6*3,positions, GL_STREAM_DRAW);
+	// the triangles
 
-		GLuint posIndex = glGetAttribLocation(program, "pos");
-		glEnableVertexAttribArray(posIndex);
-		glVertexAttribPointer(posIndex, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glGenVertexArrays(1, &render_priv->vao);
+	glBindVertexArray(render_priv->vao);
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-		glUseProgram(0);
+	GLuint positionBufferObject;
+	glGenBuffers(1, &positionBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, positionBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*6*3,positions, GL_STREAM_DRAW);
 
-		glUseProgram(program);
+	GLuint posIndex = glGetAttribLocation(render_priv->program, "pos");
+	glEnableVertexAttribArray(posIndex);
+	glVertexAttribPointer(posIndex, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-		glGenTextures(1, &texBufferdObject);
-		glBindTexture(GL_TEXTURE_2D, texBufferdObject);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+	glUseProgram(0);
 
-		glGenSamplers(1, &sampler);
-		glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		GLuint samplerUniform = glGetUniformLocation(program, "texSampler");
-		glUniform1i(samplerUniform, texUnit);
-		glUseProgram(0);
+	glUseProgram(render_priv->program);
 
-/* --- */
-		eglInitialize(eglDisplay, 0, 0);
-		eglBindAPI(EGL_OPENGL_ES_API);
+	// the texture we will be rendering to
 
-		printf("eglDisplay: >%p<\n", eglDisplay);
+	glGenTextures(1, &render_priv->texBufferdObject);
+	glBindTexture(GL_TEXTURE_2D, render_priv->texBufferdObject);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-		// Step 4 - Specify the required configuration attributes.
-		EGLint pi32ConfigAttribs[17];
-		pi32ConfigAttribs[0] = EGL_SURFACE_TYPE;
-		pi32ConfigAttribs[1] = EGL_PBUFFER_BIT;
-		pi32ConfigAttribs[2] = EGL_RENDERABLE_TYPE;
-		pi32ConfigAttribs[3] = EGL_OPENGL_ES_BIT;
-		pi32ConfigAttribs[4] = EGL_RED_SIZE;
-		pi32ConfigAttribs[5] = 8;
-		pi32ConfigAttribs[6] = EGL_GREEN_SIZE;
-		pi32ConfigAttribs[7] = 8;
-		pi32ConfigAttribs[8] = EGL_BLUE_SIZE;
-		pi32ConfigAttribs[9] = 8;
-		pi32ConfigAttribs[10] = EGL_ALPHA_SIZE;
-		pi32ConfigAttribs[11] = 0;
-		pi32ConfigAttribs[12] = EGL_DEPTH_SIZE;
-		pi32ConfigAttribs[13] = 16;
-		pi32ConfigAttribs[14] = EGL_STENCIL_SIZE;
-		pi32ConfigAttribs[15] = 0;
-		pi32ConfigAttribs[16] = EGL_NONE;
+	// texture sampler for our triangles
 
-		printf("have not crashed yet 1\n");
+	glGenSamplers(1, &render_priv->sampler);
+	glSamplerParameteri(render_priv->sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glSamplerParameteri(render_priv->sampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glSamplerParameteri(render_priv->sampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	GLuint samplerUniform = glGetUniformLocation(render_priv->program, "texSampler");
+	glUniform1i(samplerUniform, render_priv->texUnit);
+	glUseProgram(0);
 
-		int iConfigs;
-		EGLConfig eglConfig;
-		printf("have not crashed yet 2\n");
-		eglChooseConfig(eglDisplay, pi32ConfigAttribs, &eglConfig, 1, &iConfigs);
-		printf("have not crashed yet 3\n");
+	// EGL setup
 
-		printf("iConfigs: >%d<\n", iConfigs); // SUS
-		printf("eglConfig: >%p<\n", eglConfig);
+	eglInitialize(eglDisplay, 0, 0);
+	eglBindAPI(EGL_OPENGL_ES_API);
 
-		EGLint pbufferAttribs[5];
-		pbufferAttribs[0] = EGL_WIDTH;
-		pbufferAttribs[1] = FIXME__WIDTH;
-		pbufferAttribs[2] = EGL_HEIGHT;
-		pbufferAttribs[3] = FIXME__HEIGHT;
-		pbufferAttribs[4] = EGL_NONE;
+	EGLConfig eglConfig;
 
-		eglSurface = eglCreatePbufferSurface(eglDisplay, eglConfig, pbufferAttribs);
+	// a roundabout way to let the app define the parameter list, and then choose the best fit out of all the returned configs
+	eglConfig = (EGLConfig)_PTR((*env)->CallLongMethod(env, d->this, handle_cache.gl_surface_view.wrap_EGLConfigChooser_chooseConfig, _INTPTR(eglDisplay)));
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+	check_egl_error();
 
-		printf("eglCreatePbufferSurface: error: >%d<\n", eglGetError());
+	// set up the pbuffer (TODO: is there any way to dynamically change the width/height?)
 
-		printf("eglSurface: %d, EGL_NO_SURFACE: %d\n", eglSurface, EGL_NO_SURFACE);
+	EGLint pbufferAttribs[5];
+	pbufferAttribs[0] = EGL_WIDTH;
+	pbufferAttribs[1] = FIXME__WIDTH;
+	pbufferAttribs[2] = EGL_HEIGHT;
+	pbufferAttribs[3] = FIXME__HEIGHT;
+	pbufferAttribs[4] = EGL_NONE;
 
-		EGLint ai32ContextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 1, EGL_NONE };
+	render_priv->eglSurface = eglCreatePbufferSurface(eglDisplay, eglConfig, pbufferAttribs);
+	check_egl_error();
 
-		eglContext = eglCreateContext(eglDisplay, eglConfig, NULL, ai32ContextAttribs);
+	// a roundabout way to run eglCreateContext with the atrribute list that the app chose
+	render_priv->eglContext = (EGLContext)_PTR((*env)->CallLongMethod(env, d->this, handle_cache.gl_surface_view.wrap_EGLContextFactory_createContext, _INTPTR(eglDisplay), _INTPTR(eglConfig)));
+	check_egl_error();
 
-		printf("eglContext: %d, EGL_NO_CONTEXT: %d\n", eglContext, EGL_NO_CONTEXT);
-
-		EGLContext old_eglContext = eglGetCurrentContext();
-		EGLSurface old_read_surface = eglGetCurrentSurface(EGL_READ);
-		EGLSurface old_draw_surface = eglGetCurrentSurface(EGL_DRAW);
-
-		bool result = eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
-		printf("result: %d, error:>%d<\n", result, eglGetError());
-
-		glGenFramebuffers(1, &FramebufferName);
-		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-
-		glGenTextures(1, &renderedTexture);
-		glBindTexture(GL_TEXTURE_2D, renderedTexture);
-		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, FIXME__WIDTH, FIXME__HEIGHT, 0,GL_RGB,   GL_UNSIGNED_BYTE, 0);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-		GLuint depthrenderbuffer;
-		glGenRenderbuffers(1, &depthrenderbuffer);
-		glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, FIXME__WIDTH, FIXME__HEIGHT);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
-
-		// Set "renderedTexture" as our colour attachement #0
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderedTexture, 0);
-
-		// Set the list of draw buffers.
-		GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-		glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
-
-		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			printf("glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE - REEEEEEEE!");
-
-		printf("FRAMEBUFFER stuff error:>%d<\n", eglGetError());
-
-		egl_image = eglCreateImage(eglDisplay, eglContext, EGL_GL_TEXTURE_2D, (EGLClientBuffer)(uint32_t)renderedTexture, NULL);
-		printf("eglCreateImage: error: %d\n", eglGetError());
-/* --- */
-
-/* ... */
-		(*env)->CallVoidMethod(env, d->renderer, handle_cache.renderer.onSurfaceCreated, NULL, NULL); // FIXME passing NULL only works if the app doesn't use these parameters
-		if((*env)->ExceptionCheck(env))
-			(*env)->ExceptionDescribe(env);
-
-		(*env)->CallVoidMethod(env, d->renderer, handle_cache.renderer.onSurfaceChanged, NULL, FIXME__WIDTH, FIXME__HEIGHT); // FIXME put this in the right callback (and pass the actual dimensions)
-		if((*env)->ExceptionCheck(env))
-			(*env)->ExceptionDescribe(env);
-/* ... */
-
-		result = eglMakeCurrent(old_eglDisplay, old_read_surface, old_draw_surface, old_eglContext);
-		printf("restore result: %d\n", result);
-
-		d->first_time = 0;
-	}
-/* --- */
+	// save the EGL state before we change it, so we can switch back later
 	EGLContext old_eglContext = eglGetCurrentContext();
 	EGLSurface old_read_surface = eglGetCurrentSurface(EGL_READ);
 	EGLSurface old_draw_surface = eglGetCurrentSurface(EGL_DRAW);
 
-	bool result = eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
-	printf("eglMakeCurrent for our context returned: %d\n", result);
+	bool result = eglMakeCurrent(eglDisplay, render_priv->eglSurface, render_priv->eglSurface, render_priv->eglContext);
+	check_egl_error();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderedTexture, 0);
+	// set up the framebuffer
+	glGenFramebuffers(1, &render_priv->FramebufferName);
+	glBindFramebuffer(GL_FRAMEBUFFER, render_priv->FramebufferName);
 
-	printf("glBindFramebuffer: error: %d\n", eglGetError());
+	glGenTextures(1, &render_priv->renderedTexture);
+	glBindTexture(GL_TEXTURE_2D, render_priv->renderedTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, FIXME__WIDTH, FIXME__HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	GLuint depthrenderbuffer;
+	glGenRenderbuffers(1, &depthrenderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, FIXME__WIDTH, FIXME__HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
+
+	// Set "renderedTexture" as our colour attachement #0
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_priv->renderedTexture, 0);
+
+	// Set the list of draw buffers.
+	GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+	glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		printf("2: glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE - REEEEEEEE! (==: %d)", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+		fprintf(stderr, "Error: glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE\n");
 
-	printf("glCheckFramebufferStatus: error: %d\n", eglGetError());
+	// create the EGL Image which we will use to access the rendered-to texture from Gtk's EGL context
+	render_priv->egl_image = eglCreateImage(eglDisplay, render_priv->eglContext, EGL_GL_TEXTURE_2D, (EGLClientBuffer)(uint32_t)render_priv->renderedTexture, NULL);
+	check_egl_error();
 
+	// Here we call the app's onSurfaceCreated callback. This is the android API's equivalent of the `realize` callback that we are currently in.
+	(*env)->CallVoidMethod(env, d->renderer, handle_cache.renderer.onSurfaceCreated, NULL, NULL); // FIXME passing NULL only works if the app doesn't use these parameters
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
 
-	printf("OpenGL version before calling onDrawFrame: >%s<\n", glGetString(GL_VERSION));
-	printf("\n\n\n---- calling onDrawFrame\n\n");
-	glDebugMessageInsert(GL_DEBUG_SOURCE_THIRD_PARTY, GL_DEBUG_TYPE_MARKER, 0xdeadbeef, GL_DEBUG_SEVERITY_NOTIFICATION, strlen("---- calling onDrawFrame"), "---- calling onDrawFrame");
-/* ... */
+	// This should be called from Gtk's `resize` callback. However, until we figure out how to resize the pbuffer, the framebuffer, and the texture, we can't afford to pass the actual widget's dimensions here
+	(*env)->CallVoidMethod(env, d->renderer, handle_cache.renderer.onSurfaceChanged, NULL, FIXME__WIDTH, FIXME__HEIGHT); // FIXME put this in the right callback (and pass the actual dimensions)
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
+	// restore the EGL context so that Gtk doesn't get confused
+
+	result = eglMakeCurrent(old_eglDisplay, old_read_surface, old_draw_surface, old_eglContext);
+	check_egl_error();
+}
+
+static gboolean render(GtkGLArea *gl_area, GdkGLContext *context, struct jni_gl_callback_data *d)
+{
+	struct render_priv *render_priv = g_object_get_data(G_OBJECT(gl_area), "render_priv");
+
+	JNIEnv *env;
+	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
+
+	EGLDisplay eglDisplay = eglGetDisplay((EGLNativeDisplayType)0);
+	EGLDisplay old_eglDisplay = eglGetCurrentDisplay();
+
+	// save the EGL state before we change it, so we can switch back later
+	EGLContext old_eglContext = eglGetCurrentContext();
+	EGLSurface old_read_surface = eglGetCurrentSurface(EGL_READ);
+	EGLSurface old_draw_surface = eglGetCurrentSurface(EGL_DRAW);
+
+	bool result = eglMakeCurrent(eglDisplay, render_priv->eglSurface, render_priv->eglSurface, render_priv->eglContext);
+	check_egl_error();
+
+	// bind the framebuffer that we are rendering into
+	glBindFramebuffer(GL_FRAMEBUFFER, render_priv->FramebufferName);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_priv->renderedTexture, 0);
+	check_gl_error();
+
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		fprintf(stderr, "Error: glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE\n");
+
+	d_printf("OpenGL version before calling onDrawFrame: >%s<\n", glGetString(GL_VERSION));
+	d_printf("\n\n\n---- calling onDrawFrame\n\n");
+	// this marks the part where the app is doing the rendering (as opposed to Gtk) for easier orientation in a trace (e.g apitrace)
+	// TODO: make a program that extracts just these fragments from a trace
+	// TODO: add a unique identifier of this GLArea (worst case the pointer to this widget)
+	___GL_TRACE___("---- calling onDrawFrame");
+
+	// Here we call the app's onDrawFrame callback. This is the android API's equivalent of the `render` callback that we are currently in.
 	(*env)->CallVoidMethod(env, d->renderer, handle_cache.renderer.onDrawFrame, NULL); // FIXME passing NULL only works if the app doesn't use this parameter
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
-/* ... */
-	glDebugMessageInsert(GL_DEBUG_SOURCE_THIRD_PARTY, GL_DEBUG_TYPE_MARKER, 0xdeadbeef, GL_DEBUG_SEVERITY_NOTIFICATION, strlen("---- returned from calling onDrawFrame"), "---- returned from calling onDrawFrame");
-	printf("\n---- returned from calling onDrawFrame\n\n\n\n");
 
-	glFlush();
-	//SUS
-	glFinish();
-	eglSwapBuffers(eglDisplay, eglSurface);
+	___GL_TRACE___("---- returned from calling onDrawFrame");
+	d_printf("\n---- returned from calling onDrawFrame\n\n\n\n");
 
-	printf("WEEEE AAAAARE HEEEEERE SIX\n");
+	eglSwapBuffers(eglDisplay, render_priv->eglSurface);
 
+	// switch the EGL context back to Gtk's one
 	result = eglMakeCurrent(old_eglDisplay, old_read_surface, old_draw_surface, old_eglContext);
-	printf("eglMakeCurrent for original (GTK's) context returned: %d\n", result);
+	check_egl_error();
 
-	gtk_gl_area_make_current(area);
-/* --- */
+	gtk_gl_area_make_current(gl_area);
 
-	printf("OpenGL version after restore: >%s<\n", glGetString(GL_VERSION));
-	printf("\n\n\n---- drawing the texture containing our frame\n\n");
+	d_printf("OpenGL version after restore: >%s<\n", glGetString(GL_VERSION));
+	d_printf("\n\n\n---- drawing the texture containing our frame\n\n");
+	___GL_TRACE___("---- drawing the texture containing our frame");
 
+	// draw on a black background (TODO: isn't this pointless?)
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(program);
-	glBindVertexArray(vao);
+	// draw two triangles (a rectangle) painted with the texture that we were rendering into
+	glUseProgram(render_priv->program);
+	glBindVertexArray(render_priv->vao);
 
-	glActiveTexture(GL_TEXTURE0 + texUnit);
-	glBindTexture(GL_TEXTURE_2D, texBufferdObject);
-//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 8, 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, &texture[0]);
-    glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, egl_image);
-	glBindSampler(texUnit, sampler);
+	glActiveTexture(GL_TEXTURE0 + render_priv->texUnit);
+	glBindTexture(GL_TEXTURE_2D, render_priv->texBufferdObject);
+
+	glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, render_priv->egl_image);
+	glBindSampler(render_priv->texUnit, render_priv->sampler);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -350,7 +383,8 @@ free(infoLog);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glUseProgram(0);
 
-	printf("\n---- end of drawing the texture containing our frame\n\n\n\n");
+	___GL_TRACE___("---- end of drawing the texture containing our frame");
+	d_printf("\n---- end of drawing the texture containing our frame\n\n\n\n");
 
 	return TRUE;
 }
@@ -377,6 +411,7 @@ static gboolean on_event(GtkEventControllerLegacy* self, GdkEvent* event, struct
 	double x;
 	double y;
 
+	// TODO: this doesn't work for multitouch
 	switch(gdk_event_get_event_type(event)) {
 		case GDK_BUTTON_PRESS:
 			gdk_event_get_position(event, &x, &y);
@@ -387,6 +422,7 @@ static gboolean on_event(GtkEventControllerLegacy* self, GdkEvent* event, struct
 			call_ontouch_callback(MOTION_EVENT_ACTION_UP, (float)x, (float)y, d);
 			break;
 		case GDK_MOTION_NOTIFY:
+			gdk_event_get_position(event, &x, &y);
 			call_ontouch_callback(MOTION_EVENT_ACTION_MOVE, (float)x, (float)y, d);
 			break;
 	}
@@ -403,15 +439,24 @@ JNIEXPORT void JNICALL Java_android_opengl_GLSurfaceView_native_1set_1renderer(J
 
 	gtk_gl_area_set_use_es(GTK_GL_AREA(gl_area), true); // FIXME
 
+	struct render_priv *render_priv = malloc(sizeof(struct render_priv));
+	render_priv->texUnit = 0;
+	render_priv->sampler = 0;
+	render_priv->FramebufferName = 0;
+
+	g_object_set_data(G_OBJECT(gl_area), "render_priv", render_priv);
+
 	JavaVM *jvm;
 	(*env)->GetJavaVM(env, &jvm);
 
 	struct jni_gl_callback_data *gl_callback_data = malloc(sizeof(struct jni_gl_callback_data));
 	gl_callback_data->jvm = jvm;
+	gl_callback_data->this = _REF(this);
 	gl_callback_data->renderer = _REF(renderer);
 	gl_callback_data->first_time = 1;
 
 	g_signal_connect(gl_area, "render", G_CALLBACK(render), gl_callback_data);
+	g_signal_connect(gl_area, "realize", G_CALLBACK(on_realize), gl_callback_data);
 
 	if(implements_onTouchEvent) {
 		struct jni_callback_data *callback_data = malloc(sizeof(struct jni_callback_data));

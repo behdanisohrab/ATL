@@ -50,7 +50,7 @@ static void activate(GtkApplication *app, JNIEnv *env)
 	window = gtk_application_window_new (app);
 
 	gtk_window_set_title(GTK_WINDOW(window), "com.example.demo_application");
-	gtk_window_set_default_size(GTK_WINDOW(window), 540, 960);
+	gtk_window_set_default_size(GTK_WINDOW(window), 960, 540); // FIXME
 	g_signal_connect(window, "close-request", G_CALLBACK (app_exit), env);
 
 //	TODO: set icon according to how android gets it for the purposes of displaying it in the launcher

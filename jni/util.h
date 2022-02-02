@@ -47,6 +47,8 @@ struct handle_cache {
 	struct {
 		jclass class;
 		jmethodID onTouchEvent;
+		jmethodID wrap_EGLContextFactory_createContext;
+		jmethodID wrap_EGLConfigChooser_chooseConfig;
 	} gl_surface_view;
 	struct {
 		jclass class;

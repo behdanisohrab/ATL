@@ -75,6 +75,7 @@ compile_hax: | convert_xmlpull
 	main-src/com/google/android/vending/licensing/*.java \
 	main-src/javax/microedition/khronos/egl/*.java \
 	main-src/javax/microedition/khronos/opengles/*.java \
+	main-src/com/google/android/gles_jni/*.java \
 	main-src/android/Manifest.java \
 	main-src/android/R.java \
 	main-src/com/android/internal/Manifest.java \
@@ -105,6 +106,7 @@ convert_hax: | compile_hax
 	com/google/android/vending/licensing/*.class \
 	javax/microedition/khronos/egl/*.class \
 	javax/microedition/khronos/opengles/*.class \
+	com/google/android/gles_jni/*.class \
 	android/*.class \
 	com/android/internal/*.class
 
@@ -124,7 +126,9 @@ convert_launcher: | compile_launcher
 compile_and_covert_launcher: compile_launcher convert_launcher
 
 compile_jni: | compile_hax
-	mv jni/android_view_View.h jni/android_view_ViewGroup.h jni/views/
+	mv jni/android_view_View.h \
+	jni/android_view_ViewGroup.h \
+	jni/views/
 	mv jni/android_widget_TextView.h \
 	jni/android_widget_ScrollView.h \
 	jni/android_widget_RelativeLayout.h \
@@ -133,7 +137,9 @@ compile_jni: | compile_hax
 	jni/android_widget_ImageView.h \
 	jni/android_opengl_GLSurfaceView.h \
 	jni/widgets
-	gcc -g -m32 -shared -fPIC -o libnative/org_launch_main.so -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ jni/*.c jni/widgets/*.c jni/views/*.c jni/drawables/*.c `PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs`
+	mv jni/com_google_android_gles_jni_EGLImpl.h \
+	jni/egl/
+	gcc -g -m32 -shared -fPIC -o libnative/org_launch_main.so -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ jni/*.c jni/widgets/*.c jni/views/*.c jni/drawables/*.c jni/egl/*.c `PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs`
 
 run:
 	#./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:test_apks/demo_app.apk org/launch/main com/example/demo_application/MainActivity
