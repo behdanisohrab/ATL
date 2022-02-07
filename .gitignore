@@ -1,0 +1,18 @@
+# populated by apps
+data/files/*
+data/shared_prefs/*
+
+# manually extracted from apk
+data/assets/*
+data/lib/*
+
+# manually extracted from apk and possibly converted
+data/res/*
+
+# taken from android (apps may dislike non-bionic-linked libstdc++)
+!data/lib/libstdc++.so
+
+# build artifacts
+libnative/*
+*.class
+*.dex
