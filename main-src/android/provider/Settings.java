@@ -1,6 +1,7 @@
 package android.provider;
 
 import android.content.ContentResolver;
+import android.util.AndroidException;
 
 public class Settings {
 	public static final class Secure {
@@ -13,5 +14,16 @@ public class Settings {
 					return "NOTICEME";
 			}
 		}
+		public static int getInt(ContentResolver content_resolver, String key) {
+			switch(key) {
+				case "limit_ad_tracking":
+					return 1; // obviously, duh
+				default:
+					System.out.println("!!!! Settings$Secure.getInt: unknown key: >"+key+"<");
+					return -1;
+			}
+		}
 	}
+
+	public static class SettingNotFoundException extends AndroidException {}
 }

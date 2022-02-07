@@ -6,22 +6,26 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.content.SharedPreferences;
 import android.app.SharedPreferencesImpl;
 import android.os.Looper;
+
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
 import android.text.ClipboardManager;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
+import android.app.KeyguardManager;
+import android.telephony.TelephonyManager;
+import android.media.AudioManager;
 
 import java.io.File;
 
 public class Context extends Object {
     private final static String TAG = "Context";
-
-	public static final String WINDOW_SERVICE = "window";
 
 	static AssetManager assets;
 	static DisplayMetrics dm;
@@ -31,6 +35,7 @@ public class Context extends Object {
 	File data_dir = null;
 	File prefs_dir = null;
 	File files_dir = null;
+	File cache_dir = null;
 
 	static {
 		assets = new AssetManager();
@@ -49,7 +54,7 @@ public class Context extends Object {
 
 	public Object getSystemService(String name) {
 		switch (name) {
-			case WINDOW_SERVICE:
+			case "window":
 				return new WindowManagerImpl();
 			case "clipboard":
 				return new ClipboardManager();
@@ -57,6 +62,12 @@ public class Context extends Object {
 				return new SensorManager();
 			case "connectivity":
 				return new ConnectivityManager();
+			case "keyguard":
+				return new KeyguardManager();
+			case "phone":
+				return new TelephonyManager();
+			case "audio":
+				return new AudioManager();
 			default:
 				System.out.println("!!!!!!! getSystemService: case >"+name+"< is not implemented yet");
 				return null;
@@ -120,6 +131,14 @@ public class Context extends Object {
         return files_dir;
     }
 
+	// FIXME: should be something like /tmp/cache, but may need to create that directory
+	public File getCacheDir() {
+            if (cache_dir == null) {
+                cache_dir = new File("/tmp/");
+            }
+            return cache_dir;
+	}
+
     private File getPreferencesDir() {
             if (prefs_dir == null) {
                 prefs_dir = new File(getDataDirFile(), "shared_prefs");
@@ -135,4 +154,19 @@ public class Context extends Object {
         File prefsFile = getSharedPrefsFile(name);
         return new SharedPreferencesImpl(prefsFile, mode);
     }
+
+	public ClassLoader getClassLoader() {
+		// not perfect, but it's what we use for now as well, and it works
+		return ClassLoader.getSystemClassLoader();
+	}
+
+	public ComponentName startService(Intent service) {
+		return new ComponentName("","");
+	}
+
+	// these may not look like typical stubs, but they definitely are stubs
+	public final TypedArray obtainStyledAttributes (AttributeSet set, int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
+	public final TypedArray obtainStyledAttributes (AttributeSet set, int[] attrs, int defStyleAttr, int defStyleRes) { return new TypedArray(r, new int[1000], new int[1000], 0); }
+	public final TypedArray obtainStyledAttributes (int resid, int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
+	public final TypedArray obtainStyledAttributes (int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
 }

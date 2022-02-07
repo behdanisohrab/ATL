@@ -1,5 +1,6 @@
 package android.view;
 
+import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Xml;
 
@@ -9,6 +10,26 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.lang.reflect.Constructor;
 
 public class LayoutInflater {
+
+	public interface Factory {
+	}
+
+	public interface Factory2 {
+	}
+
+	private Factory2 factory2;
+
+	public final LayoutInflater.Factory getFactory() {
+		return null;
+	}
+
+	public void setFactory2 (Factory2 factory) {
+		this.factory2 = factory;
+	}
+
+	public static LayoutInflater from (Context context) {
+		return new LayoutInflater();
+	}
 
 	public final View createView(String name, String prefix, AttributeSet attrs) throws Exception {
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> createView("+name+", "+prefix+", "+attrs+");");

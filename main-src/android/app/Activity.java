@@ -1,6 +1,7 @@
 package android.app;
 
 import android.content.Context;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -20,6 +21,7 @@ import java.io.StringReader;
 public class Activity extends Context {
 	LayoutInflater layout_inflater;
 	Application this_application;
+	Window window = new Window();
 
 	public Activity() {
 		layout_inflater = new LayoutInflater();
@@ -34,6 +36,10 @@ public class Activity extends Context {
 
 	public WindowManager getWindowManager() {
 		return new WindowManagerImpl();
+	}
+
+	public ComponentName getComponentName() {
+		return null;
 	}
 
 	public Intent getIntent() {
@@ -136,10 +142,8 @@ public class Activity extends Context {
     }
 
 	public void setContentView(View view) {
-		set_widget_as_root(view.widget);
+		window.setContentView(view);
 	}
-
-	private native void set_widget_as_root(long widget);
 
 	public <T extends android.view.View> T findViewById(int id) {
 		System.out.println("- findViewById - asked for view with id: " + id);
@@ -154,7 +158,7 @@ public class Activity extends Context {
 	}
 
 	public Window getWindow() {
-		return new Window();
+		return this.window;
 	}
 
     public final void runOnUiThread(Runnable action) {

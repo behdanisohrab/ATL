@@ -1595,7 +1595,7 @@ public class PackageManager {
      */
     public ActivityInfo getActivityInfo(ComponentName component,
             int flags) throws NameNotFoundException {
-		return null;
+		return new ActivityInfo();
 	}
 
     /**

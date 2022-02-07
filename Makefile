@@ -1,6 +1,6 @@
 CURRDIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-all: compile_and_covert_hax compile_and_covert_launcher compile_jni
+all: compile_and_covert_hax compile_and_covert_launcher compile_jni compile_libandroid
 
 clean:
 	find main-src -name *.class -exec rm {} + || true
@@ -72,6 +72,9 @@ compile_hax: | convert_xmlpull
 	main-src/android/hardware/*.java \
 	main-src/android/provider/*.java \
 	main-src/android/net/*.java \
+	main-src/android/telephony/*.java \
+	main-src/android/location/*.java \
+	main-src/android/media/*.java \
 	main-src/com/google/android/vending/licensing/*.java \
 	main-src/javax/microedition/khronos/egl/*.java \
 	main-src/javax/microedition/khronos/opengles/*.java \
@@ -103,6 +106,9 @@ convert_hax: | compile_hax
 	android/hardware/*.class \
 	android/provider/*.class \
 	android/net/*.class \
+	android/telephony/*.class \
+	android/location/*.class \
+	android/media/*.class \
 	com/google/android/vending/licensing/*.class \
 	javax/microedition/khronos/egl/*.class \
 	javax/microedition/khronos/opengles/*.class \
@@ -140,6 +146,9 @@ compile_jni: | compile_hax
 	mv jni/com_google_android_gles_jni_EGLImpl.h \
 	jni/egl/
 	gcc -g -m32 -shared -fPIC -o libnative/org_launch_main.so -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ jni/*.c jni/widgets/*.c jni/views/*.c jni/drawables/*.c jni/egl/*.c `PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs`
+
+compile_libandroid:
+	gcc -m32 -shared -fPIC -o libnative/libandroid.so libandroid-src/*.c
 
 run:
 	#./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:test_apks/demo_app.apk org/launch/main com/example/demo_application/MainActivity

@@ -728,7 +728,8 @@ public class TypedArray {
             cookie, data[index+AssetManager.STYLE_DATA]);
     }
 
-    /*package*/ TypedArray(Resources resources, int[] data, int[] indices, int len) {
+	// FIXME
+    public/*package*/ TypedArray(Resources resources, int[] data, int[] indices, int len) {
         mResources = resources;
         mData = data;
         mIndices = indices;

@@ -4,7 +4,7 @@ import javax.microedition.khronos.opengles.GL;
 
 public class EGLContext
 {
-	private static final EGL EGL_INSTANCE = null;//new com.google.android.gles_jni.EGLImpl();
+	private static final EGL EGL_INSTANCE = new com.google.android.gles_jni.EGLImpl();
 	public long native_egl_context = 0;
 
 	public static EGL getEGL() {

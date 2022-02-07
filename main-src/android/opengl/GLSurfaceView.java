@@ -16,21 +16,22 @@ import android.view.View;
 import android.view.MotionEvent;
 
 public class GLSurfaceView extends View { // TODO: have this extend SurfaceView once that one is implemented?
-	EGLContextFactory context_factory = null;
+	EGLContextFactory context_factory = new default_ContextFactory();
 	EGLConfigChooser config_chooser = null;
 	EGL10 java_egl_wrapper;
+	int opengl_version = 1;
 
 	public GLSurfaceView(AttributeSet attrs) {
 		super(attrs);
 
-		java_egl_wrapper = new EGLImpl();
+		java_egl_wrapper = (EGL10)EGLContext.getEGL();
 		native_constructor(attrs);
 	}
 
 	public GLSurfaceView(Context context) {
 		super(context);
 
-		java_egl_wrapper = new EGLImpl();
+		java_egl_wrapper = (EGL10)EGLContext.getEGL();
 		native_constructor(context);
 	}
 
@@ -45,6 +46,10 @@ public class GLSurfaceView extends View { // TODO: have this extend SurfaceView 
 		config_chooser = chooser;
 	}
 
+	public void setEGLConfigChooser (boolean needDepth) {
+		config_chooser = new boolean_ConfigChooser(needDepth);
+	}
+
 	public void setEGLConfigChooser(int redSize, int greenSize, int blueSize,
 			int alphaSize, int depthSize, int stencilSize) {
 //		setEGLConfigChooser(new ComponentSizeChooser(redSize, greenSize,
@@ -56,9 +61,13 @@ public class GLSurfaceView extends View { // TODO: have this extend SurfaceView 
 	}
 
 	public void setEGLContextClientVersion(int version) {
-		System.out.println("setEGLContextClientVersion("+version+") called");
-//		checkRenderThreadState();
-//		mEGLContextClientVersion = version;
+		opengl_version = version;
+	}
+
+	public void setPreserveEGLContextOnPause(boolean preserveOnPause) {}
+
+	public synchronized boolean shouldTerminateEGLWhenPausing() {
+		return false;
 	}
 
 	private native void native_set_renderer(Renderer renderer, boolean implements_onTouchEvent);
@@ -118,6 +127,39 @@ public class GLSurfaceView extends View { // TODO: have this extend SurfaceView 
 		}
 	}
 
+    private static class boolean_ConfigChooser implements GLSurfaceView.EGLConfigChooser {
+		// TODO - what happens if we actually allow for 16 bits per color?
+        private static int[] config_attribs_no_depth = {EGL10.EGL_RED_SIZE, 8, EGL10.EGL_GREEN_SIZE, 8, EGL10.EGL_BLUE_SIZE, 8, EGL10.EGL_ALPHA_SIZE, 0, EGL10.EGL_DEPTH_SIZE, 0,  EGL10.EGL_STENCIL_SIZE, 0, EGL10.EGL_NONE};
+        private static int[] config_attribs_depth    = {EGL10.EGL_RED_SIZE, 8, EGL10.EGL_GREEN_SIZE, 8, EGL10.EGL_BLUE_SIZE, 8, EGL10.EGL_ALPHA_SIZE, 0, EGL10.EGL_DEPTH_SIZE, 16, EGL10.EGL_STENCIL_SIZE, 0, EGL10.EGL_NONE};
+
+		private boolean want_depth;
+
+		public boolean_ConfigChooser(boolean depth) {
+			want_depth = depth;
+		}
+
+        public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
+            int[] num_config = new int[1];
+            egl.eglChooseConfig(display, want_depth ? config_attribs_depth : config_attribs_no_depth, null, 0, num_config);
+            int numConfigs = num_config[0];
+            if (numConfigs <= 0) {
+                throw new IllegalArgumentException("boolean_ConfigChooser: no configs match");
+            }
+            EGLConfig[] configs = new EGLConfig[numConfigs];
+            egl.eglChooseConfig(display, want_depth ? config_attribs_depth : config_attribs_no_depth, configs, numConfigs, num_config);
+            return configs[0]; // TODO - something smarter here?
+        }
+    }
+
+    private static class default_ContextFactory implements GLSurfaceView.EGLContextFactory {
+        public EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig eglConfig) {
+            return egl.eglCreateContext(display, eglConfig, EGL10.EGL_NO_CONTEXT, new int[]{EGL10.EGL_CONTEXT_CLIENT_VERSION, 2/*opengl_version*/, EGL10.EGL_NONE});
+        }
+
+        public void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context) {
+            egl.eglDestroyContext(display, context);
+        }
+    }
 
 	// interfaces
 

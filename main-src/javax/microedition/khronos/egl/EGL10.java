@@ -78,6 +78,7 @@ public interface EGL10 extends EGL {
     int EGL_HORIZONTAL_RESOLUTION       = 0x3090;
     int EGL_VERTICAL_RESOLUTION         = 0x3091;
     int EGL_PIXEL_ASPECT_RATIO          = 0x3092;
+	int EGL_CONTEXT_CLIENT_VERSION      = 0x3098;
     int EGL_SINGLE_BUFFER               = 0x3085;
     int EGL_CORE_NATIVE_ENGINE          = 0x305B;
     int EGL_DRAW                        = 0x3059;

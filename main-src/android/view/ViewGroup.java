@@ -43,6 +43,10 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		addView(child, -1, params);
 	}
 
+	public void addView(View child, int width, int height) {
+		addView(child, new LayoutParams(width, height));
+	}
+
 	public native void addView(View child, int index, LayoutParams params);
 
     public native void removeView(View view);/* {

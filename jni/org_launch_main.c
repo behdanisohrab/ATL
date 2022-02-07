@@ -13,7 +13,7 @@ static int main (int argc, char **argv, JNIEnv *env);
 
 // android_app_Activity native methods
 
-JNIEXPORT void JNICALL Java_android_app_Activity_set_1widget_1as_1root(JNIEnv *env, jobject this, jlong widget)
+JNIEXPORT void JNICALL Java_android_view_Window_set_1widget_1as_1root(JNIEnv *env, jobject this, jlong widget)
 {
 	gtk_window_set_child(GTK_WINDOW(window), gtk_widget_get_parent(GTK_WIDGET(_PTR(widget))));
 }
