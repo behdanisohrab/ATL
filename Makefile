@@ -149,8 +149,3 @@ compile_jni: | compile_hax
 
 compile_libandroid:
 	gcc -m32 -shared -fPIC -o libnative/libandroid.so libandroid-src/*.c
-
-run:
-	#./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:test_apks/demo_app.apk org/launch/main com/example/demo_application/MainActivity
-	./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:test_apks/org.happysanta.gd_29.apk org/launch/main org/happysanta/gd/GDActivity
-	#LD_LIBRARY_PATH=/usr/local/lib/ GDK_DEBUG=gl-egl MESA_DEBUG=1 DEBUG=3 ANDROID_LOG_TAGS=*:v BIONIC_LD_LIBRARY_PATH=data/lib/ ./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:/home/Mis012/Desktop/__/worms/com.worms2armageddon.app_1.4.0_paid-www.apkhere.com/dist/com.worms2armageddon.app_1.4.0_paid-www.apkhere.com.apk:com.google.android.gms.apk org/launch/main com/worms2armageddon/app/Main

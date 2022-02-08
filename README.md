@@ -2,15 +2,33 @@
 
 ---
 
-instructions:  
+build instructions:  
 `make`: compile everything (except dalvik, which is precompiled from https://gitlab.com/Mis012/dalvik_standalone)  
-`make run`: launch the demo app using the translation layer  
+
+usage:  
+`./launch_activity.sh <path_to_apk> <path_to_activity>`  
+example: `./launch_activity.sh test_apks/org.happysanta.gd_29.apk org/happysanta/gd/GDActivity`
+
+when it doesn't work:  
+if you are trying to launch a random app, chances are that we are missing implementations for some  
+stuff that it needs, and we also don't have (sufficiently real looking) stubs for the stuff it says  
+it needs but doesn't really.  
+the workflow is basically to see where it fails (usually a Class or Method was not found) and to create  
+stubs which sufficiently satisfy the app so that it continues trying to launch.  
+once the app launches, you may find that some functionality (UI elements, ...) is missing; to enable  
+such functionality, you need to convert the relevant stubs to actual implementation.  
+you can look at simple widgets (e.g. TextView, or ImageView which is extremely simple since it's  
+currently displaying an image-not-found icon instead of the actual image) to see how to implement a  
+widget such that it shows up as a Gtk Widget. for layout widgets, you can cheat by duplicating  
+LinearLayout or RelativeLayout, which are currently implemented in an extremely simplistic manner  
+(it might not look correctly, but it should *work*)
 
 screenshot:
 
-![gravity defied, simple demo app, and another gravity defied running side by side by side](https://gitlab.com/Mis012/android_translation_layer_PoC/-/raw/master/screenshot.png)
+![angry birds 3.2.0, Worms 2 Armageddon, and gravity defied running side by side by side](https://gitlab.com/Mis012/android_translation_layer_PoC/-/raw/master/screenshot_2.png)
 
-note: running two different apps at the same time is a bit of a hack, since the data directory path is currently hardcoded to `./data/` no matter the app
+note: running two or more different apps at the same time needs a tiny bit of luck, since the data directory path is currently hardcoded to `./data/` no matter the app  
+note: the GLSurfaceView widgets currently start out with zero width, which is somewhat helpful for debugging so it wasn't fixed yet; to get the app to start rendering, enable hexpand on the Wrapper widget around the GtkGLArea using Gtk Inspector
 
 ##### FAQ:
 
@@ -19,21 +37,21 @@ Q:
 	some apps even use them for 99% of their functionality!  
 
 A:  
-	yep, and that *can* be tackled, see https://github.com/minecraft-linux/mcpelauncher-linker or https://github.com/Cloudef/android2gnulinux/
+	recently, support for loading bionic-linked libraries was added, and two games which use  
+	GLSurfaceView (rendered to from native code) as their main UI element - Angry Birds 3.2.0  
+	and Worms 2 Armageddon - are currently fully playable
 
 Q:  
-	<del>hey! this is so basic it's useless!</del>  
+	this seems pretty basic, most apps don't work at all...  
 A:  
-	yup, we still need to do some proper reimplementing :)  
-	<del>The PoC works-ish now, though it's much less complex than even a modern sample app.  
-	For one, it doesn't use any of the complex compat layers, it just directly subclasses Activity.  
-	Second, it uses only two basic UI elements (TextView and LinearLayout), and yes these are  
-	the only ones implemented (and partially at that, only the absolutely required functionality).  
-	Third, it doesn't do much - it just sets up it's static, non-changing UI (though it can process  
-	a layout xml, as well as reflect changes to a TextView done in OnCreate)</del>
+	we have three apps working for now, how fast that number grows depends on how many  
+	people work on reimplementing stuff :)  
+	there are probably more than enough people in the world with the required skills who don't have  
+	anything better to do for the number of implemented APIs to grow appreciably fast, maybe you are  
+	one of them? ;)
 
 Q:  
-	ok, so this can sorta run Gravity Defied. What's the catch?  
+	ok, so this can sorta run three apps. What's the catch?  
 
 A:  
 	well, first things first, technically I compiled Gravity Defied myself and removed  
@@ -46,14 +64,17 @@ A:
 	and the third issue: Gravity Defied is still extremely simple compared to most android apps,  
 	doesn't acknowledge compat layers, and the most intricate UI element is completely custom drawn  
 	using the canvas interface, in a manner that makes it easy to implement with cairo.
+	angry birds (old version) and worms 2 armageddon were chosen because they similarly don't use  
+	compat layers, and basically the entire UI is custom drawn with OpenGL calls from native code.
 
 ##### Roadmap:
 
 - fix issues mention above
 
 - fix ugly hacks
+	- don't assume apps only have one (relevant) activity
+	- figure out a way to avoid hardcoding resolution, at minimum allow setting it on launch
 
 - implement more stuff (there is a lot of it, and it won't get done if nobody helps... ideally pick a simple-ish application and stub/implement stuff until it works)
 
-- integrate e.g. https://github.com/Cloudef/android2gnulinux/ for loading libraries linked against bionic; if we're lucky, 
-we might be able to get quite a few apps running that are 99% native, since they hopefully only use a few Java APIs and might not even complain too much if most of those APIs are stubbed
+- implement the alternatives to GLSurfaceView (using SurfaceView to get an EGL surface, native activity, not sure if there are others?)
