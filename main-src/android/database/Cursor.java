@@ -132,7 +132,7 @@ public interface Cursor extends Closeable {
      *
      * @return whether the move succeeded.
      */
-//    boolean moveToNext();
+    boolean moveToNext();
 
     /**
      * Move the cursor to the previous row.

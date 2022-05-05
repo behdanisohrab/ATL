@@ -12,6 +12,7 @@ import android.util.DisplayMetrics;
 import android.content.SharedPreferences;
 import android.app.SharedPreferencesImpl;
 import android.os.Looper;
+import android.app.Application;
 
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
@@ -21,8 +22,11 @@ import android.net.ConnectivityManager;
 import android.app.KeyguardManager;
 import android.telephony.TelephonyManager;
 import android.media.AudioManager;
+import android.app.ActivityManager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 public class Context extends Object {
     private final static String TAG = "Context";
@@ -31,6 +35,8 @@ public class Context extends Object {
 	static DisplayMetrics dm;
 	static Configuration config;
 	static Resources r;
+
+	static Application this_application;
 
 	File data_dir = null;
 	File prefs_dir = null;
@@ -42,10 +48,15 @@ public class Context extends Object {
 		dm = new DisplayMetrics();
 		config = new Configuration();
 		r = new Resources(assets, dm, config);
+		this_application = new Application(); // TODO: the application context is presumably not identical to the Activity context, what is the difference for us though?
 	}
 
 	public Context() {
 		System.out.println("new Context! this one is: " + this);
+	}
+
+	public Context getApplicationContext() {
+		return (Context)this_application;
 	}
 
 	public ContentResolver getContentResolver() {
@@ -68,6 +79,8 @@ public class Context extends Object {
 				return new TelephonyManager();
 			case "audio":
 				return new AudioManager();
+			case "activity":
+				return new ActivityManager();
 			default:
 				System.out.println("!!!!!!! getSystemService: case >"+name+"< is not implemented yet");
 				return null;
@@ -151,6 +164,7 @@ public class Context extends Object {
     }
 
     public SharedPreferences getSharedPreferences(String name, int mode) {
+		System.out.println("\n\n...> getSharedPreferences("+name+",)\n\n");
         File prefsFile = getSharedPrefsFile(name);
         return new SharedPreferencesImpl(prefsFile, mode);
     }
@@ -162,6 +176,22 @@ public class Context extends Object {
 
 	public ComponentName startService(Intent service) {
 		return new ComponentName("","");
+	}
+
+	// FIXME - it should be *trivial* to do actually implement this
+	public FileInputStream openFileInput(String name) {
+		return null;
+	}
+
+	public FileOutputStream openFileOutput(String name, int mode) throws java.io.FileNotFoundException {
+		System.out.println("openFileOutput called for: '"+name+"'");
+		return new FileOutputStream("data/files/" + name);
+	}
+
+	public int checkCallingOrSelfPermission(String permission) {
+		System.out.println("!!! app wants to know if it has a permission: >"+permission+"<");
+
+		return -1; // PackageManager.PERMISSION_DENIED
 	}
 
 	// these may not look like typical stubs, but they definitely are stubs

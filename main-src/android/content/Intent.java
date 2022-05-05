@@ -114,4 +114,8 @@ public class Intent {
 		return this; //??
 	}
 
+	public Intent setClass (Context packageContext, Class<?> cls) {
+		return this; //??
+	}
+
 }

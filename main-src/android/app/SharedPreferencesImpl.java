@@ -211,6 +211,7 @@ public final class SharedPreferencesImpl implements SharedPreferences {
     }
 
     public Map<String, ?> getAll() {
+		System.out.println("\n\n...> getAll()\n\n");
         synchronized (this) {
             awaitLoadedLocked();
             //noinspection unchecked

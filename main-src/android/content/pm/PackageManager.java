@@ -34,6 +34,7 @@ import android.util.DisplayMetrics;
 
 import java.io.File;
 import java.util.List;
+import java.util.ArrayList;
 
 class Uri {}
 class Resources {}
@@ -1706,7 +1707,9 @@ public class PackageManager {
      * @see #GET_UNINSTALLED_PACKAGES
      */
     public List<PackageInfo> getInstalledPackages(int flags) {
-		return null;
+		List<PackageInfo> ret = new ArrayList<PackageInfo>();
+		ret.add(new PackageInfo());
+		return ret;
 	}
 
     /**

@@ -1,2 +1,2 @@
 #!/bin/sh
-LD_PRELOAD=libpthread_bio.so ./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:${1}:com.google.android.gms.apk org/launch/main ${2}
+LD_PRELOAD=libpthread_bio.so:libbsd.so.0 ./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:${1}:com.google.android.gms.apk org/launch/main -l ${2}

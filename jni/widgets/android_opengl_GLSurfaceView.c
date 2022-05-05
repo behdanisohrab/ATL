@@ -19,8 +19,10 @@
 //#define FIXME__WIDTH 540
 //#define FIXME__HEIGHT 960
 
-#define FIXME__WIDTH 960
-#define FIXME__HEIGHT 540
+// FIXME: what do we do here? we should probably take these from the size of the GLArea, but how do we change the sizes of all the textures and buffers etc when the GLArea changes size?
+// for now, borrow the initial app window width/height
+extern int FIXME__WIDTH;
+extern int FIXME__HEIGHT;
 
 // mainly frame markers (very obtrusive, not recommended for most builds)
 #ifdef DEBUG_GLAREA
@@ -265,26 +267,32 @@ static void on_realize(GtkGLArea *gl_area, struct jni_gl_callback_data *d)
 	// set up the framebuffer
 	glGenFramebuffers(1, &render_priv->FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, render_priv->FramebufferName);
+	check_gl_error();
 
 	glGenTextures(1, &render_priv->renderedTexture);
 	glBindTexture(GL_TEXTURE_2D, render_priv->renderedTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, FIXME__WIDTH, FIXME__HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	check_gl_error();
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	check_gl_error();
 
 	GLuint depthrenderbuffer;
 	glGenRenderbuffers(1, &depthrenderbuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, FIXME__WIDTH, FIXME__HEIGHT);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
+	check_gl_error();
 
 	// Set "renderedTexture" as our colour attachement #0
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_priv->renderedTexture, 0);
+	check_gl_error();
 
 	// Set the list of draw buffers.
 	GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
 	glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
+	check_gl_error();
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		fprintf(stderr, "Error: glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE\n");
@@ -294,7 +302,7 @@ static void on_realize(GtkGLArea *gl_area, struct jni_gl_callback_data *d)
 	check_egl_error();
 
 	// Here we call the app's onSurfaceCreated callback. This is the android API's equivalent of the `realize` callback that we are currently in.
-	(*env)->CallVoidMethod(env, d->renderer, handle_cache.renderer.onSurfaceCreated, NULL, NULL); // FIXME passing NULL only works if the app doesn't use these parameters
+	(*env)->CallVoidMethod(env, d->renderer, handle_cache.renderer.onSurfaceCreated, _GET_OBJ_FIELD(d->this, "java_gl_wrapper", "Ljavax/microedition/khronos/opengles/GL10;"), NULL); // FIXME passing NULL only works if the app doesn't use these parameters
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
@@ -328,7 +336,9 @@ static gboolean render(GtkGLArea *gl_area, GdkGLContext *context, struct jni_gl_
 	check_egl_error();
 
 	// bind the framebuffer that we are rendering into
+	check_gl_error();
 	glBindFramebuffer(GL_FRAMEBUFFER, render_priv->FramebufferName);
+	check_gl_error();
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_priv->renderedTexture, 0);
 	check_gl_error();
 
@@ -340,6 +350,7 @@ static gboolean render(GtkGLArea *gl_area, GdkGLContext *context, struct jni_gl_
 	// this marks the part where the app is doing the rendering (as opposed to Gtk) for easier orientation in a trace (e.g apitrace)
 	// TODO: make a program that extracts just these fragments from a trace
 	// TODO: add a unique identifier of this GLArea (worst case the pointer to this widget)
+check_gl_error();
 	___GL_TRACE___("---- calling onDrawFrame");
 
 	// Here we call the app's onDrawFrame callback. This is the android API's equivalent of the `render` callback that we are currently in.
@@ -348,6 +359,7 @@ static gboolean render(GtkGLArea *gl_area, GdkGLContext *context, struct jni_gl_
 		(*env)->ExceptionDescribe(env);
 
 	___GL_TRACE___("---- returned from calling onDrawFrame");
+check_gl_error();
 	d_printf("\n---- returned from calling onDrawFrame\n\n\n\n");
 
 	eglSwapBuffers(eglDisplay, render_priv->eglSurface);
@@ -474,4 +486,7 @@ JNIEXPORT void JNICALL Java_android_opengl_GLSurfaceView_native_1set_1renderer(J
 	}
 
 	gtk_widget_add_tick_callback(gl_area, tick_callback, NULL, NULL);
+
+	//FIXME
+	gtk_widget_set_hexpand(gtk_widget_get_parent(GTK_WIDGET(gl_area)), true);
 }

@@ -20,18 +20,16 @@ import java.io.StringReader;
 
 public class Activity extends Context {
 	LayoutInflater layout_inflater;
-	Application this_application;
 	Window window = new Window();
 
 	public Activity() {
 		layout_inflater = new LayoutInflater();
-		this_application = new Application(); // TODO: why is this different from the Activity Context?
 	}
 
 	public View root_view;
 
 	public final Application getApplication () {
-		return this_application;
+		return (Application)getApplicationContext();
 	}
 
 	public WindowManager getWindowManager() {
@@ -50,6 +48,12 @@ public class Activity extends Context {
 	public boolean isFinishing() {
 		return false; // FIXME
 	}
+
+	public final boolean requestWindowFeature(int featureId) {
+		return false; // whatever feature it is, it's probably not supported
+	}
+
+	public final void setVolumeControlStream(int streamType) {}
 
 	protected void onCreate(Bundle savedInstanceState) {
 		System.out.println("- onCreate - yay!");

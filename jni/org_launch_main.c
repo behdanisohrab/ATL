@@ -18,7 +18,7 @@ JNIEXPORT void JNICALL Java_android_view_Window_set_1widget_1as_1root(JNIEnv *en
 	gtk_window_set_child(GTK_WINDOW(window), gtk_widget_get_parent(GTK_WIDGET(_PTR(widget))));
 }
 
-JNIEXPORT void JNICALL Java_org_launch_main_real_1main(JNIEnv *env, jclass this, jobjectArray args)
+JNIEXPORT void JNICALL Java_org_launch_main_real_1main(JNIEnv *env, jclass this_class, jobjectArray args)
 {
 	int argc = (*env)->GetArrayLength(env, args);
 	char **argv = malloc(argc * sizeof(char *) + 1);
@@ -45,12 +45,34 @@ gboolean app_exit(GtkWindow* self, JNIEnv *env) // TODO: do more cleanup?
 	return false;
 }
 
-static void activate(GtkApplication *app, JNIEnv *env)
+// FIXME: used by hacks in GLSurfaceView
+int FIXME__WIDTH;
+int FIXME__HEIGHT;
+
+struct jni_callback_data { JavaVM *jvm; char *apk_main_activity_class; uint32_t window_width; uint32_t window_height;};
+static void activate(GtkApplication *app, struct jni_callback_data *d)
 {
+	JNIEnv *env;
+	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
+
+	if(!d->apk_main_activity_class) {
+		printf("error: missing required option --launch-activity <activity>.\nyou can specify --help to see the list of options\n");
+		exit(1);
+	}
+
+	set_up_handle_cache(env, d->apk_main_activity_class);
+
+	jclass display_class = (*env)->FindClass(env, "android/view/Display");
+	_SET_STATIC_INT_FIELD(display_class, "window_width", d->window_width);
+	_SET_STATIC_INT_FIELD(display_class, "window_height", d->window_height);
+
+	FIXME__WIDTH = d->window_width;
+	FIXME__HEIGHT = d->window_height;
+
 	window = gtk_application_window_new (app);
 
 	gtk_window_set_title(GTK_WINDOW(window), "com.example.demo_application");
-	gtk_window_set_default_size(GTK_WINDOW(window), 960, 540); // FIXME
+	gtk_window_set_default_size(GTK_WINDOW(window), d->window_width, d->window_height);
 	g_signal_connect(window, "close-request", G_CALLBACK (app_exit), env);
 
 //	TODO: set icon according to how android gets it for the purposes of displaying it in the launcher
@@ -70,21 +92,65 @@ static void activate(GtkApplication *app, JNIEnv *env)
 		(*env)->ExceptionDescribe(env);*/
 }
 
+void init_cmd_parameters(GApplication *app, struct jni_callback_data *d)
+{
+  const GOptionEntry cmd_params[] =
+  {
+    {
+      .long_name = "launch-activity",
+      .short_name = 'l',
+      .flags = G_OPTION_FLAG_NONE,
+      .arg = G_OPTION_ARG_STRING,
+      .arg_data = &d->apk_main_activity_class,
+      .description = "the fully quilifed name of the activity you wish to launch (usually the apk's main activity)",
+      .arg_description = NULL,
+    },
+    {
+      .long_name = "window-width",
+      .short_name = 'w',
+      .flags = G_OPTION_FLAG_NONE,
+      .arg = G_OPTION_ARG_INT,
+      .arg_data = &d->window_width,
+      .description = "window width to launch with (some apps react poorly to runtime window size adjustments)",
+      .arg_description = NULL,
+    },
+    {
+      .long_name = "window-height",
+      .short_name = 'h',
+      .flags = G_OPTION_FLAG_NONE,
+      .arg = G_OPTION_ARG_INT,
+      .arg_data = &d->window_height,
+      .description = "window height to launch with (some apps react poorly to runtime window size adjustments)",
+      .arg_description = NULL,
+    },
+    {NULL}
+  };
+
+  g_application_add_main_option_entries (G_APPLICATION (app), cmd_params);
+}
+
 static int main(int argc, char **argv, JNIEnv *env)
 {
  	GtkApplication *app;
  	int status;
 
-	if(argc < 2) {
-		printf("usage: ~TBD~ <fully qualified class name of the entry activity>\n"); // TODO: if launching a different activity works just fine, we should probably note that here
-		exit(1);
-	}
+	JavaVM *jvm;
+	(*env)->GetJavaVM(env, &jvm);
 
-	set_up_handle_cache(env, argv[1]);
+	struct jni_callback_data *callback_data = malloc(sizeof(struct jni_callback_data));
+	callback_data->jvm = jvm;
+	callback_data->apk_main_activity_class = NULL;
+	callback_data->window_width = 960;
+	callback_data->window_height = 540;
 
  	app = gtk_application_new("com.example.demo_application", G_APPLICATION_NON_UNIQUE);
- 	g_signal_connect(app, "activate", G_CALLBACK (activate), env);
- 	status = g_application_run(G_APPLICATION(app), 0, NULL); // we can't wait for gio handle the commandline, since we need to use the argument(s) in JNI context
+
+	// cmdline related setup
+	init_cmd_parameters(G_APPLICATION(app), callback_data);
+	g_application_set_option_context_summary(G_APPLICATION(app), "actual usage:\nLD_PRELOAD=libpthread_bio.so ./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:${1}:com.google.android.gms.apk org/launch/main ${2}\nwhere ${1} is the path to the apk and ${2} is the cmdline");
+
+ 	g_signal_connect(app, "activate", G_CALLBACK (activate), callback_data);
+ 	status = g_application_run(G_APPLICATION(app), argc, argv); // the way gio handles the commandline is useless for us
  	g_object_unref(app);
 
  	return status;

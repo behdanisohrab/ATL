@@ -267,4 +267,21 @@ public final class SQLiteDatabase /*extends SQLiteClosable*/ {
 	public int update(String table, ContentValues values, String whereClause, String[] whereArgs) {
 		return -1;
 	}
+
+// ---
+
+	public int delete(String table, String whereClause, String[] whereArgs) {
+		return 0;
+	}
+
+	// TODO: this belongs in SQLiteClosable
+	public void close() {}
+
+	public Cursor rawQuery(String sql, String[] selectionArgs, CancellationSignal cancellationSignal) {
+		return null;
+	}
+
+	public Cursor rawQuery(String sql, String[] selectionArgs) {
+		return null;
+	}
 }

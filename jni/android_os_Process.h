@@ -142,7 +142,7 @@ JNIEXPORT jint JNICALL Java_android_os_Process_getGidForName
  * Method:    setThreadPriority
  * Signature: (II)V
  */
-JNIEXPORT void JNICALL Java_android_os_Process_setThreadPriority__II
+JNIEXPORT void JNICALL Java_android_os_Process_setThreadPriority
   (JNIEnv *, jclass, jint, jint);
 
 /*
@@ -175,14 +175,6 @@ JNIEXPORT void JNICALL Java_android_os_Process_setProcessGroup
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_android_os_Process_getProcessGroup
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class:     android_os_Process
- * Method:    setThreadPriority
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_android_os_Process_setThreadPriority__I
   (JNIEnv *, jclass, jint);
 
 /*

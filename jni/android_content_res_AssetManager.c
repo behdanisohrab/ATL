@@ -37,10 +37,18 @@ JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_getAssetLength(JNI
 	struct stat statbuf;
 
 	ret = fstat(fd, &statbuf);
-	if(ret)
+	if(ret)https://developer.android.com/reference/android/database/Cursor#moveToNext()
 		printf("oopsie, fstat failed on fd: %d with errno: %d\n", fd, errno);
 
 	return statbuf.st_size;
+}
+
+JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_getAssetRemainingLength(JNIEnv *env, jobject this, jint fd)
+{
+	jlong file_size = Java_android_content_res_AssetManager_getAssetLength(env, this, fd);
+	off_t offset = lseek(fd, 0, SEEK_CUR);
+
+	return file_size - offset;
 }
 
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_readAsset(JNIEnv *env, jobject this, jint fd, jbyteArray b, jint off, jint len)

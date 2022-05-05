@@ -578,8 +578,8 @@ public class Process {
      * 
      * @see #setThreadPriority(int, int)
      */
-    public static final native void setThreadPriority(int priority)
-            throws IllegalArgumentException, SecurityException;
+    public static final /*native*/ void setThreadPriority(int priority)
+            throws IllegalArgumentException, SecurityException {}
     
     /**
      * Return the current priority of a thread, based on Linux priorities.

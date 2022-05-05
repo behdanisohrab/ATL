@@ -284,6 +284,10 @@ public class SQLiteCursor /*extends AbstractWindowedCursor*/ implements Cursor {
 		return false;
 	}
 
+	public boolean moveToNext () {
+		return false;
+	}
+
 	public boolean isAfterLast() {
 		return true;
 	}

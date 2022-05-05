@@ -324,7 +324,7 @@ public final class AssetManager {
 
     public final AssetFileDescriptor openFd(String fileName)
             throws IOException {
-        synchronized (this) {
+/*        synchronized (this) {
             if (!mOpen) {
                 throw new RuntimeException("Assetmanager has been closed");
             }
@@ -333,7 +333,8 @@ public final class AssetManager {
                 return new AssetFileDescriptor(pfd, mOffsets[0], mOffsets[1]);
             }
         }
-        throw new FileNotFoundException("Asset file: " + fileName);
+        throw new FileNotFoundException("Asset file: " + fileName);*/
+		return null; // FIXME
     }
 
     /**

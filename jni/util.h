@@ -52,6 +52,10 @@ struct handle_cache {
 	} gl_surface_view;
 	struct {
 		jclass class;
+		jmethodID onPeriodicNotification;
+	} audio_track_periodic_listener;
+	struct {
+		jclass class;
 		jmethodID setLayoutParams;
 	} view;
 };

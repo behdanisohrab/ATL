@@ -17,14 +17,16 @@ import android.view.MotionEvent;
 
 public class GLSurfaceView extends View { // TODO: have this extend SurfaceView once that one is implemented?
 	EGLContextFactory context_factory = new default_ContextFactory();
-	EGLConfigChooser config_chooser = null;
+	EGLConfigChooser config_chooser = new boolean_ConfigChooser(true);
 	EGL10 java_egl_wrapper;
+	GL10 java_gl_wrapper;
 	int opengl_version = 1;
 
 	public GLSurfaceView(AttributeSet attrs) {
 		super(attrs);
 
 		java_egl_wrapper = (EGL10)EGLContext.getEGL();
+		java_gl_wrapper = (GL10)EGLContext.getGL();
 		native_constructor(attrs);
 	}
 
@@ -32,6 +34,7 @@ public class GLSurfaceView extends View { // TODO: have this extend SurfaceView 
 		super(context);
 
 		java_egl_wrapper = (EGL10)EGLContext.getEGL();
+		java_gl_wrapper = (GL10)EGLContext.getGL();
 		native_constructor(context);
 	}
 

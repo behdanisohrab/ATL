@@ -25,14 +25,14 @@ public class PackageInfo {
      * The name of this package.  From the &lt;manifest&gt; tag's "name"
      * attribute.
      */
-    public String packageName;
+    public String packageName = "com.example.app"; // FIXME
 
     /**
      * The version number of this package, as specified by the &lt;manifest&gt;
      * tag's {@link android.R.styleable#AndroidManifest_versionCode versionCode}
      * attribute.
      */
-    public int versionCode;
+    public int versionCode = 1; //FIXME
     
     /**
      * The version name of this package, as specified by the &lt;manifest&gt;

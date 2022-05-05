@@ -58,6 +58,10 @@ public class ArscResourcesParser {
 	public String getResource(int resId) {
 		ResTableValueEntry res = (ResTableValueEntry)arscFile.getResource(resId);
 
+		if(res == null) {
+			return "oops, arscFile.getResource returned null";
+		}
+
 		return res.resValue.toString();
 	}
 

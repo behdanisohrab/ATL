@@ -114,7 +114,7 @@ public final class Looper {
      * Run the message queue in this thread. Be sure to call
      * {@link #quit()} to end the loop.
      */
-    public static void loop() {
+    public static void loop() {/*
         final Looper me = myLooper();
         if (me == null) {
             throw new RuntimeException("No Looper; Looper.prepare() wasn't called on this thread.");
@@ -155,10 +155,10 @@ public final class Looper {
                         + Long.toHexString(newIdent) + " while dispatching to "
                         + msg.target.getClass().getName() + " "
                         + msg.callback + " what=" + msg.what);
-            }*/
+            }* /
 
             msg.recycle();
-        }
+        }*/
     }
 
     /**

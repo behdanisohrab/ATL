@@ -587,14 +587,15 @@ public class Handler {
      *         occurs then the message will be dropped.
      */
     public boolean sendMessageAtTime(Message msg, long uptimeMillis) {
-        MessageQueue queue = mQueue;
+/*        MessageQueue queue = mQueue;
         if (queue == null) {
             RuntimeException e = new RuntimeException(
                     this + " sendMessageAtTime() called with no mQueue");
             Log.w("Looper", e.getMessage(), e);
             return false;
         }
-        return enqueueMessage(queue, msg, uptimeMillis);
+        return enqueueMessage(queue, msg, uptimeMillis);*/
+		return true;
     }
 
     /**
@@ -610,14 +611,15 @@ public class Handler {
      *         looper processing the message queue is exiting.
      */
     public final boolean sendMessageAtFrontOfQueue(Message msg) {
-        MessageQueue queue = mQueue;
+        /*MessageQueue queue = mQueue;
         if (queue == null) {
             RuntimeException e = new RuntimeException(
                 this + " sendMessageAtTime() called with no mQueue");
             Log.w("Looper", e.getMessage(), e);
             return false;
         }
-        return enqueueMessage(queue, msg, 0);
+        return enqueueMessage(queue, msg, 0);*/
+		return true;
     }
 
     private boolean enqueueMessage(MessageQueue queue, Message msg, long uptimeMillis) {
