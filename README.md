@@ -9,6 +9,8 @@ usage:
 `./launch_activity.sh <path_to_apk> <path_to_activity>`  
 example: `./launch_activity.sh test_apks/org.happysanta.gd_29.apk org/happysanta/gd/GDActivity`
 
+NOTE: you might need to copy some files out from the apk under `data/`, e.g the `assets` folder
+
 when it doesn't work:  
 if you are trying to launch a random app, chances are that we are missing implementations for some  
 stuff that it needs, and we also don't have (sufficiently real looking) stubs for the stuff it says  
@@ -22,6 +24,9 @@ currently displaying an image-not-found icon instead of the actual image) to see
 widget such that it shows up as a Gtk Widget. for layout widgets, you can cheat by duplicating  
 LinearLayout or RelativeLayout, which are currently implemented in an extremely simplistic manner  
 (it might not look correctly, but it should *work*)
+
+for more specific instructions, see `doc/QuickHelp.md`
+for general description of the architecure, see `doc/Architecture.md`
 
 screenshot:
 
