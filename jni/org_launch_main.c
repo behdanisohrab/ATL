@@ -38,7 +38,7 @@ JNIEXPORT void JNICALL Java_org_launch_main_real_1main(JNIEnv *env, jclass this_
 
 gboolean app_exit(GtkWindow* self, JNIEnv *env) // TODO: do more cleanup?
 {
-	/* -- run the main activity's onCreate -- */
+	/* -- run the main activity's onDestroy -- */
 
 	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onDestroy, NULL);
 
@@ -150,7 +150,7 @@ static int main(int argc, char **argv, JNIEnv *env)
 	g_application_set_option_context_summary(G_APPLICATION(app), "actual usage:\nLD_PRELOAD=libpthread_bio.so ./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:${1}:com.google.android.gms.apk org/launch/main ${2}\nwhere ${1} is the path to the apk and ${2} is the cmdline");
 
  	g_signal_connect(app, "activate", G_CALLBACK (activate), callback_data);
- 	status = g_application_run(G_APPLICATION(app), argc, argv); // the way gio handles the commandline is useless for us
+ 	status = g_application_run(G_APPLICATION(app), argc, argv);
  	g_object_unref(app);
 
  	return status;
