@@ -7,7 +7,9 @@ build instructions:
 
 usage:  
 `./launch_activity.sh <path_to_apk> <path_to_activity>`  
-example: `./launch_activity.sh test_apks/org.happysanta.gd_29.apk org/happysanta/gd/GDActivity`
+example: `./launch_activity.sh test_apks/org.happysanta.gd_29.apk org/happysanta/gd/GDActivity`  
+note: some apps don't like runtime changes to resolution, and currently GLSurfaceView will stretch instead of changing resolution  
+example with custom width/height: `./launch_activity.sh test_apks/org.happysanta.gd_29.apk 'org/happysanta/gd/GDActivity -w 540 -h 960'`
 
 NOTE: you might need to copy some files out from the apk under `data/`, e.g the `assets` folder
 
@@ -78,7 +80,7 @@ A:
 
 - fix ugly hacks
 	- don't assume apps only have one (relevant) activity
-	- figure out a way to avoid hardcoding resolution, at minimum allow setting it on launch
+	- figure out a way to dynamically change the resolution of a GLSurfaceView
 
 - implement more stuff (there is a lot of it, and it won't get done if nobody helps... ideally pick a simple-ish application and stub/implement stuff until it works)
 
