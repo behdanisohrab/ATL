@@ -12,6 +12,8 @@ note: some apps don't like runtime changes to resolution, and currently GLSurfac
 example with custom width/height: `./launch_activity.sh test_apks/org.happysanta.gd_29.apk 'org/happysanta/gd/GDActivity -w 540 -h 960'`
 
 NOTE: you might need to copy some files out from the apk under `data/`, e.g the `assets` folder
+NOTE: on X11, Gtk might decide to use GLX, which completely messes up our EGL-dependent code.
+If you have a debug build of Gtk, you can use GDK_DEBUG=gl-egl to force the use of EGL
 
 when it doesn't work:  
 if you are trying to launch a random app, chances are that we are missing implementations for some  
