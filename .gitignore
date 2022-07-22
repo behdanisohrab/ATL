@@ -16,3 +16,5 @@ data/res/*
 libnative/*
 *.class
 *.dex
+
+/main

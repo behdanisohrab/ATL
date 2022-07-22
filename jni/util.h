@@ -12,6 +12,7 @@ struct handle_cache {
 		jmethodID onCreate;
 		jmethodID onWindowFocusChanged;
 		jmethodID onDestroy;
+		jmethodID set_window;
 	} apk_main_activity;
 	struct {
 		jclass class;

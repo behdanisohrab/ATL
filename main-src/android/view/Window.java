@@ -4,6 +4,9 @@ public class Window {
 	public static interface Callback {}
 	public static class fixme_callback implements Callback {}
 
+	// FIXME private
+	public long native_window;
+
 	private Window.Callback callback;
 
 	public Window() {
@@ -22,8 +25,8 @@ public class Window {
 	}
 
 	public void setContentView(View view) {
-		set_widget_as_root(view.widget);
+		set_widget_as_root(native_window, view.widget);
 	}
 
-	private native void set_widget_as_root(long widget);
+	private native void set_widget_as_root(long native_window, long widget);
 }

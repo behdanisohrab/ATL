@@ -1,12 +1,11 @@
 CURRDIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-all: compile_and_covert_hax compile_and_covert_launcher compile_jni compile_libandroid
+all: compile_and_covert_hax compile_jni compile_libandroid
 
 clean:
 	find main-src -name *.class -exec rm {} + || true
-	find xmlpull -name *.class -exec rm {} + || true
-	rm hax.dex hax_xmlpull.dex main.dex || true
-	rm libnative/org_launch_main.so || true
+	rm hax_arsc_parser.dex hax.dex || true
+	rm libnative/libtranslation_layer_main.so || true
 
 default: all
 
@@ -98,18 +97,6 @@ convert_hax: | compile_hax
 
 compile_and_covert_hax: compile_arsc_parser convert_arsc_parser compile_hax convert_hax
 
-compile_launcher:
-	javac -h jni -source 1.6 -target 1.6 -bootclasspath \
-	$(CURRDIR)/jars/core.jar \
-	-cp \
-	$(CURRDIR)/main-src/ \
-	main-src/org/launch/main.java
-
-convert_launcher: | compile_launcher
-	cd main-src/ && $(CURRDIR)/dalvik/linux-x86/bin/dx --verbose --dex --output=../main.dex org/launch/*.class
-
-compile_and_covert_launcher: compile_launcher convert_launcher
-
 compile_jni: | compile_hax
 	mv jni/android_view_View.h \
 	jni/android_view_ViewGroup.h \
@@ -126,7 +113,7 @@ compile_jni: | compile_hax
 	jni/egl/
 	mv jni/android_media_AudioTrack.h \
 	jni/audio/
-	gcc -g -m32 -shared -fPIC -lasound -o libnative/org_launch_main.so \
+	gcc -g -m32 -shared -fPIC -lasound -o libnative/libtranslation_layer_main.so \
 	-I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ \
 	jni/*.c \
 	jni/widgets/*.c \
@@ -135,6 +122,7 @@ compile_jni: | compile_hax
 	jni/egl/*.c \
 	jni/audio/*.c \
 	`PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs`
+	LIBRARY_PATH=libnative/:dalvik/linux-x86/lib/ gcc -g -m32 -fPIC -o main -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ src/main.c `PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs` -ltranslation_layer_main -ldvm -ldl
 
 compile_libandroid:
 	gcc -g -m32 -shared -fPIC -o libnative/libandroid.so libandroid-src/*.c

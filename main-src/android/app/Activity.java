@@ -22,6 +22,10 @@ public class Activity extends Context {
 	LayoutInflater layout_inflater;
 	Window window = new Window();
 
+	protected void set_window(long native_window) {
+		window.native_window = native_window;
+	}
+
 	public Activity() {
 		layout_inflater = new LayoutInflater();
 	}

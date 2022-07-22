@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     android_view_Window
  * Method:    set_widget_as_root
- * Signature: (J)V
+ * Signature: (JJ)V
  */
 JNIEXPORT void JNICALL Java_android_view_Window_set_1widget_1as_1root
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jobject, jlong, jlong);
 
 #ifdef __cplusplus
 }
