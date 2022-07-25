@@ -11,7 +11,7 @@ example: `./launch_activity.sh test_apks/org.happysanta.gd_29.apk org/happysanta
 note: some apps don't like runtime changes to resolution, and currently GLSurfaceView will stretch instead of changing resolution  
 example with custom width/height: `./launch_activity.sh test_apks/org.happysanta.gd_29.apk 'org/happysanta/gd/GDActivity -w 540 -h 960'`
 
-NOTE: you might need to copy some files out from the apk under `data/`, e.g the `assets` folder
+NOTE: you might need to copy some files out from the apk under `data/`, e.g the `assets` folder  
 NOTE: on X11, Gtk might decide to use GLX, which completely messes up our EGL-dependent code.
 If you have a debug build of Gtk, you can use GDK_DEBUG=gl-egl to force the use of EGL
 
@@ -36,8 +36,7 @@ screenshot:
 
 ![angry birds 3.2.0, Worms 2 Armageddon, and gravity defied running side by side by side](https://gitlab.com/Mis012/android_translation_layer_PoC/-/raw/master/screenshot_2.png)
 
-note: running two or more different apps at the same time needs a tiny bit of luck, since the data directory path is currently hardcoded to `./data/` no matter the app  
-note: the GLSurfaceView widgets currently start out with zero width, which is somewhat helpful for debugging so it wasn't fixed yet; to get the app to start rendering, enable hexpand on the Wrapper widget around the GtkGLArea using Gtk Inspector
+note: running two or more different apps at the same time needs a tiny bit of luck (no conflicting files), since the data directory path is currently hardcoded to `./data/` no matter the app  
 
 ##### FAQ:
 
@@ -72,9 +71,19 @@ A:
 	protobuf-based, which would make reading it directly easier.  
 	and the third issue: Gravity Defied is still extremely simple compared to most android apps,  
 	doesn't acknowledge compat layers, and the most intricate UI element is completely custom drawn  
-	using the canvas interface, in a manner that makes it easy to implement with cairo.
+	using the canvas interface, in a manner that makes it easy to implement with cairo.  
 	angry birds (old version) and worms 2 armageddon were chosen because they similarly don't use  
 	compat layers, and basically the entire UI is custom drawn with OpenGL calls from native code.
+
+Q:  
+	why are only 32bit architectures supported?
+A:  
+	we are currently using good old dalvik vm (probably newer commit than ever shipped though), which  
+	is so hopelessly hardcoded to assume 32bit ints and pointers that it probably made google's cost/benefit  
+	analyses of writing art from scratch a lot easier.  
+	Eventually, we should probably move to ART, but it's an open question whether that will bring issues for our  
+	usecase (is there a way to use ART without zygote? is it straightforward to port the few modifications that we did to dalvik?)
+
 
 ##### Roadmap:
 
@@ -86,4 +95,8 @@ A:
 
 - implement more stuff (there is a lot of it, and it won't get done if nobody helps... ideally pick a simple-ish application and stub/implement stuff until it works)
 
-- implement the alternatives to GLSurfaceView (using SurfaceView to get an EGL surface, native activity, not sure if there are others?)
+- especially implement the alternatives to GLSurfaceView (using SurfaceView to get an EGL surface, native activity, not sure if there are others?) which would allow us to support a few more 99%-native applications with relative ease
+
+- explore switching to ART in the interest of supporting 64bit architectures
+
+- explore using apparmor to enforce the security policies that google helpfully forces apps to comply with (and our own security policies, like no internet access for apps which really shouldn't need it and are not scummy enough to refuse to launch without it)
