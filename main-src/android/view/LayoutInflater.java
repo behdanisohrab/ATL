@@ -6,8 +6,11 @@ import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.lang.reflect.Constructor;
+
+import java.io.FileReader;
 
 public class LayoutInflater {
 
@@ -81,6 +84,25 @@ public class LayoutInflater {
 		return view;
 
 	}
+
+    public View inflate(int resource, ViewGroup root) throws Exception {
+        return inflate(resource, root, root != null);
+    }
+
+    public View inflate(int layoutResID, ViewGroup root, boolean attachToRoot) throws Exception {
+
+		String layout_xml_file = "data/" + Context.this_application.getString(layoutResID);
+
+		System.out.println("loading layout from: " + layout_xml_file);
+
+		XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+		factory.setNamespaceAware(true);
+		XmlPullParser xpp = factory.newPullParser();
+
+		xpp.setInput( new FileReader(layout_xml_file) );
+
+        return inflate(xpp, root, attachToRoot);
+    }
 
 	public View inflate(XmlPullParser parser, ViewGroup root, boolean attachToRoot) throws Exception {
 

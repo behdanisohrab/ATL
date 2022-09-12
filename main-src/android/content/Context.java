@@ -36,7 +36,7 @@ public class Context extends Object {
 	static Configuration config;
 	static Resources r;
 
-	static Application this_application;
+	public /*← FIXME?*/ static Application this_application;
 
 	File data_dir = null;
 	File prefs_dir = null;

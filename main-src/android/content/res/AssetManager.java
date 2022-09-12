@@ -18,6 +18,11 @@ package android.content.res;
 
 import com.hq.arscresourcesparser.ArscResourcesParser;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.FileReader;
+
 import android.os.ParcelFileDescriptor;
 import android.os.Trace;
 import android.util.Log;
@@ -441,7 +446,7 @@ public final class AssetManager {
      * @param fileName The name of the file to retrieve.
      */
     public final XmlResourceParser openXmlResourceParser(String fileName)
-            throws IOException {
+            throws /*IO*/ Exception {
         return openXmlResourceParser(0, fileName);
     }
     
@@ -452,11 +457,19 @@ public final class AssetManager {
      * @param fileName The name of the file to retrieve.
      */
     public final XmlResourceParser openXmlResourceParser(int cookie,
-            String fileName) throws IOException {
-        XmlBlock block = openXmlBlockAsset(cookie, fileName);
+            String fileName) throws /*IO*/ Exception {
+/*        XmlBlock block = openXmlBlockAsset(cookie, fileName);
         XmlResourceParser rp = block.newParser();
         block.close();
-        return rp;
+        return rp;*/
+
+		XmlPullParserFactory factory = XmlPullParserFactory.newInstance("android.util.DecompiledXmlResourceParser", this.getClass());
+		factory.setNamespaceAware(true);
+		XmlPullParser xpp = factory.newPullParser();
+
+		xpp.setInput( new FileReader("data/" + fileName) );
+
+		return (XmlResourceParser)xpp;
     }
 
     /**
@@ -771,7 +784,9 @@ public final class AssetManager {
                                                                 boolean resolve);
     /*package*/ native static final void dumpTheme(int theme, int priority, String tag, String prefix);
 
-    private native final int openXmlAssetNative(int cookie, String fileName);
+    private /*native*/ final int openXmlAssetNative(int cookie, String fileName) {
+		return openAsset("../"+fileName, 0);
+	}
 
     private native final String[] getArrayStringResource(int arrayRes);
     private native final int[] getArrayStringInfo(int arrayRes);

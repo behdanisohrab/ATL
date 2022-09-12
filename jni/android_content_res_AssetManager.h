@@ -331,14 +331,6 @@ JNIEXPORT void JNICALL Java_android_content_res_AssetManager_dumpTheme
 
 /*
  * Class:     android_content_res_AssetManager
- * Method:    openXmlAssetNative
- * Signature: (ILjava/lang/String;)I
- */
-JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openXmlAssetNative
-  (JNIEnv *, jobject, jint, jstring);
-
-/*
- * Class:     android_content_res_AssetManager
  * Method:    getArrayStringResource
  * Signature: (I)[Ljava/lang/String;
  */

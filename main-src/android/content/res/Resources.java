@@ -944,7 +944,7 @@ public class Resources {
      *         
      * @see #getXml
      */
-    public XmlResourceParser getLayout(int id) throws NotFoundException {
+    public XmlResourceParser getLayout(int id) throws /*NotFound*/Exception {
         return loadXmlResourceParser(id, "layout");
     }
 
@@ -968,7 +968,7 @@ public class Resources {
      *         
      * @see #getXml
      */
-    public XmlResourceParser getAnimation(int id) throws NotFoundException {
+    public XmlResourceParser getAnimation(int id) throws /*NotFound*/Exception {
         return loadXmlResourceParser(id, "anim");
     }
 
@@ -993,7 +993,7 @@ public class Resources {
      *         
      * @see android.util.AttributeSet
      */
-    public XmlResourceParser getXml(int id) throws NotFoundException {
+    public XmlResourceParser getXml(int id) throws /*NotFound*/Exception {
         return loadXmlResourceParser(id, "xml");
     }
 
@@ -2309,7 +2309,7 @@ public class Resources {
     }
 
     /*package*/ XmlResourceParser loadXmlResourceParser(int id, String type)
-            throws NotFoundException {
+            throws /*NotFound*/Exception {
         synchronized (mAccessLock) {
             TypedValue value = mTmpValue;
             if (value == null) {
@@ -2327,8 +2327,9 @@ public class Resources {
     }
     
     /*package*/ XmlResourceParser loadXmlResourceParser(String file, int id,
-            int assetCookie, String type) throws NotFoundException {
-        if (id != 0) {
+            int assetCookie, String type) throws /*NotFound*/Exception {
+		return mAssets.openXmlResourceParser(assetCookie, file);
+/*        if (id != 0) {
             try {
                 // These may be compiled...
                 synchronized (mCachedXmlBlockIds) {
@@ -2373,7 +2374,7 @@ public class Resources {
         throw new NotFoundException(
                 "File " + file + " from xml type " + type + " resource ID #0x"
                 + Integer.toHexString(id));
-    }
+*/    }
 
     private TypedArray getCachedStyledAttributes(int len) {
         synchronized (mAccessLock) {

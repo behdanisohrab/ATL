@@ -687,6 +687,11 @@ public class View extends Object {
 			view_by_id.put(id, this);
 	}
 
+	public View findViewById(int id) {
+		/* TODO: this should probably only search among children, but the id is surely unique anyway? :P */
+		return view_by_id.get(id);
+	}
+
 	public void onDraw(Canvas canvas) {}
 
 	public View(Context context) {
