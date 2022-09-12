@@ -68,13 +68,13 @@ JNIEnv* create_vm(char *apk_classpath) {
 
 	// TODO: should probably not hardcode this
 	char *boot_cp_arr[] = {
-		"core-hostdex.jar",
-		"core-junit-hostdex.jar",
-		"conscrypt-hostdex.jar",
-		"okhttp-hostdex.jar",
-		"bouncycastle-hostdex.jar",
-		"apachehttp-hostdex.jar",
 		"apache-xml-hostdex.jar",
+		"core-junit-hostdex.jar",
+		"core-libart-hostdex.jar",
+		"dex-host.jar",
+		"dx.jar",
+		"hamcrest-hostdex.jar",
+		"jarjar.jar",
 	};
 	options[0].optionString = construct_boot_classpath("-Xbootclasspath:", boot_cp_arr, ARRAY_SIZE(boot_cp_arr));
 
@@ -105,10 +105,7 @@ JNIEnv* create_vm(char *apk_classpath) {
 	return env;
 }
 
-bool _Z17dvmLoadNativeCodePKcP6ObjectPPc(const char* pathName, void* classLoader, char** detail);
-void * _Z20dvmDecodeIndirectRefP6ThreadP8_jobject(void* self, jobject jobj);
-void * _Z13dvmThreadSelfv(void);
-
+bool HAXX__JavaVMExt__LoadNativeLibrary(JNIEnv* env, char *path, jobject class_loader, char** error_msg);
 struct jni_callback_data { char *apk_main_activity_class; uint32_t window_width; uint32_t window_height;};
 static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* hint, struct jni_callback_data *d)
 {
@@ -163,10 +160,12 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	jobject class_loader = (*env)->CallObjectMethod(env, handle_cache.view.class, getClassLoader);
 
 	char* reason = NULL;
-	if (!_Z17dvmLoadNativeCodePKcP6ObjectPPc("libtranslation_layer_main.so", _Z20dvmDecodeIndirectRefP6ThreadP8_jobject(_Z13dvmThreadSelfv(), class_loader), &reason)) {
+	if (!HAXX__JavaVMExt__LoadNativeLibrary(env, "libtranslation_layer_main.so", _REF(class_loader), &reason)) {
 		printf("[main] dvmLoadNativeCode failed for libtranslation_layer_main.so: %s", reason);
 		exit(1);
 	}
+
+	free(reason);
 
 	/* -- run the main activity's onCreate -- */
 
