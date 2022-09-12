@@ -11,7 +11,9 @@ example: `./launch_activity.sh test_apks/org.happysanta.gd_29.apk org/happysanta
 note: some apps don't like runtime changes to resolution, and currently GLSurfaceView will stretch instead of changing resolution  
 example with custom width/height: `./launch_activity.sh test_apks/org.happysanta.gd_29.apk 'org/happysanta/gd/GDActivity -w 540 -h 960'`
 
-NOTE: you might need to copy some files out from the apk under `data/`, e.g the `assets` folder  
+NOTE: you might need to copy some files out from the apk under `data/`, e.g the `assets` folder; 
+additionally, resources (`res`) currently need to be "decompiled" (e.g. by apktool, though this 
+additionally replaces hex IDs with string names, which needs to be reversed)  
 NOTE: on X11, Gtk might decide to use GLX, which completely messes up our EGL-dependent code.
 If you have a debug build of Gtk, you can use GDK_DEBUG=gl-egl to force the use of EGL
 
