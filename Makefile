@@ -11,7 +11,7 @@ default: all
 
 compile_arsc_parser:
 	javac -source 1.7 -target 1.7 -bootclasspath \
-	$(CURRDIR)/jars/core.jar \
+	$(CURRDIR)/jars/core-libart-hostdex_classes.jar \
 	arsc_parser/com/hq/arscresourcesparser/*.java \
 	arsc_parser/com/hq/arscresourcesparser/arsc/*.java \
 	arsc_parser/com/hq/arscresourcesparser/common/*.java \
@@ -26,7 +26,7 @@ convert_arsc_parser: | compile_arsc_parser
 
 compile_hax: | compile_arsc_parser
 	javac -h jni -source 1.7 -target 1.7 -bootclasspath \
-	$(CURRDIR)/jars/core.jar \
+	$(CURRDIR)/jars/core-libart-hostdex_classes.jar \
 	-cp \
 	$(CURRDIR)/arsc_parser/ \
 	main-src/android/content/*.java \
@@ -53,6 +53,7 @@ compile_hax: | compile_arsc_parser
 	main-src/android/location/*.java \
 	main-src/android/media/*.java \
 	main-src/android/webkit/*.java \
+	main-src/android/preference/*.java \
 	main-src/com/google/android/vending/licensing/*.java \
 	main-src/javax/microedition/khronos/egl/*.java \
 	main-src/javax/microedition/khronos/opengles/*.java \
@@ -88,6 +89,7 @@ convert_hax: | compile_hax
 	android/location/*.class \
 	android/media/*.class \
 	android/webkit/*.class \
+	android/preference/*.class \
 	com/google/android/vending/licensing/*.class \
 	javax/microedition/khronos/egl/*.class \
 	javax/microedition/khronos/opengles/*.class \
@@ -113,7 +115,7 @@ compile_jni: | compile_hax
 	jni/egl/
 	mv jni/android_media_AudioTrack.h \
 	jni/audio/
-	gcc -g -m32 -shared -fPIC -lasound -o libnative/libtranslation_layer_main.so \
+	gcc -g -shared -fPIC -lasound -o libnative/libtranslation_layer_main.so \
 	-I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ \
 	jni/*.c \
 	jni/widgets/*.c \
@@ -121,8 +123,8 @@ compile_jni: | compile_hax
 	jni/drawables/*.c \
 	jni/egl/*.c \
 	jni/audio/*.c \
-	`PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs`
-	LIBRARY_PATH=libnative/:dalvik/linux-x86/lib/ gcc -g -m32 -fPIC -o main -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ src/main.c `PKG_CONFIG_PATH=/usr/lib/pkgconfig/ pkgconf gtk4 --cflags --libs` -ltranslation_layer_main -ldvm -ldl
+	`pkgconf gtk4 --cflags --libs`
+	LIBRARY_PATH=libnative/:dalvik/linux-x86/lib64/ gcc -g -fPIC -o main -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ src/main.c `pkgconf gtk4 --cflags --libs` -ltranslation_layer_main -lart -lnativebridge -ldl
 
 compile_libandroid:
-	gcc -g -m32 -shared -fPIC -o libnative/libandroid.so libandroid-src/*.c
+	gcc -g -shared -fPIC -o libnative/libandroid.so libandroid-src/*.c

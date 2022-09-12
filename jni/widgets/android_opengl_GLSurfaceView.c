@@ -298,7 +298,7 @@ static void on_realize(GtkGLArea *gl_area, struct jni_gl_callback_data *d)
 		fprintf(stderr, "Error: glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE\n");
 
 	// create the EGL Image which we will use to access the rendered-to texture from Gtk's EGL context
-	render_priv->egl_image = eglCreateImage(eglDisplay, render_priv->eglContext, EGL_GL_TEXTURE_2D, (EGLClientBuffer)(uint32_t)render_priv->renderedTexture, NULL);
+	render_priv->egl_image = eglCreateImage(eglDisplay, render_priv->eglContext, EGL_GL_TEXTURE_2D, (EGLClientBuffer)(intptr_t)render_priv->renderedTexture, NULL);
 	check_egl_error();
 
 	// Here we call the app's onSurfaceCreated callback. This is the android API's equivalent of the `realize` callback that we are currently in.

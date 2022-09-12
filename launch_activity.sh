@@ -12,12 +12,12 @@ export ANDROID_ROOT=${CURRDIR}/dalvik/linux-${ARCH}
 export ANDROID_DATA=/tmp/dalvik-data
 
 # compat
-export LD_PRELOAD=libpthread_bio.so:libbsd.so.0
+export LD_PRELOAD=/usr/lib64/libcrypto.so.1.0.0:libpthread_bio.so:libbsd.so.0
 
 # libraries under this path will be loaded using shim bionic linker
 export BIONIC_LD_LIBRARY_PATH=data/lib/
 
 # places where we have libs; dalvik libs, the application's libs, and our reimplementation effort libs respectively
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ANDROID_ROOT}/lib/:${CURRDIR}/data/lib/:${CURRDIR}/libnative/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ANDROID_ROOT}/lib64/:${CURRDIR}/data/lib/:${CURRDIR}/libnative/
 
 ${CURRDIR}/main ${1} -l ${2}
