@@ -124,7 +124,7 @@ compile_jni: | compile_hax
 	jni/egl/*.c \
 	jni/audio/*.c \
 	`pkgconf gtk4 --cflags --libs`
-	LIBRARY_PATH=libnative/:dalvik/linux-x86/lib64/ gcc -g -fPIC -o main -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ src/main.c `pkgconf gtk4 --cflags --libs` -ltranslation_layer_main -lart -lnativebridge -ldl
+	LIBRARY_PATH=libnative/:dalvik/linux-x86/lib64/ gcc -g -fPIC -o main -I /usr/lib64/jvm/java/include/ -I /usr/lib64/jvm/java/include/linux/ src/main.c `pkgconf gtk4 --cflags --libs` -ltranslation_layer_main -lart -lnativebridge -ldl -ldl_bio
 
 compile_libandroid:
 	gcc -g -shared -fPIC -o libnative/libandroid.so libandroid-src/*.c
