@@ -362,10 +362,10 @@ public class Canvas {
      * @param paint  The paint used to draw the line
      */
 	public void drawLine(float startX, float startY, float stopX, float stopY, Paint paint) {
-		native_drawLine(cairo_context, widget, startX, startY, stopX, stopY, paint);
+		native_drawLine(cairo_context, widget, startX, startY, stopX, stopY, paint.getColor());
 	}
 
-	private static native void native_drawLine(long cairo_context, long widget, float startX, float startY, float stopX, float stopY, Paint paint);
+	private static native void native_drawLine(long cairo_context, long widget, float startX, float startY, float stopX, float stopY, int paint_color); // TODO: pass all the other relevant parameters extracted from paint
 	private static native void native_drawBitmap(long cairo_context, long widget, long pixbuf, float src_x, float src_y, float dest_x, float dest_y, Paint paint); // TODO: make use of "paint"?
 	private static native void native_rotate(long cairo_context, long widget, float angle);
 	private static native void native_rotate_and_translate(long cairo_context, long widget, float angle, float tx, float ty);

@@ -19,11 +19,11 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1restore(JNIEnv *env,
 	cairo_restore(cr);
 }
 
-JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawLine(JNIEnv *env, jclass this_class, jlong cairo_context, jlong widget, jfloat start_x, jfloat start_y, jfloat stop_x, jfloat stop_y, jobject paint)
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawLine(JNIEnv *env, jclass this_class, jlong cairo_context, jlong widget, jfloat start_x, jfloat start_y, jfloat stop_x, jfloat stop_y, jint paint_color)
 {
 	cairo_t *cr = (cairo_t *)_PTR(cairo_context);
 
-	jint paint_color = (*env)->CallIntMethod(env, paint, handle_cache.paint.getColor);
+//	jint paint_color = (*env)->CallIntMethod(env, paint, handle_cache.paint.getColor);
 
 	char buf[10]; //#rrggbbaa\0
 	snprintf(buf, 10, "#%06x%02x", paint_color & 0x00FFFFFF, paint_color>>24);

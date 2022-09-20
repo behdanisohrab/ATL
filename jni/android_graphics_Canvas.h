@@ -26,10 +26,10 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1restore
 /*
  * Class:     android_graphics_Canvas
  * Method:    native_drawLine
- * Signature: (JJFFFFLandroid/graphics/Paint;)V
+ * Signature: (JJFFFFI)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawLine
-  (JNIEnv *, jclass, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jobject);
+  (JNIEnv *, jclass, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jint);
 
 /*
  * Class:     android_graphics_Canvas
