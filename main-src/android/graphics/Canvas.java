@@ -1,7 +1,7 @@
 package android.graphics;
 
 public class Canvas {
-	private long cairo_context;
+	public long cairo_context;
 	public long widget;
 
 	public Canvas() {}

@@ -170,21 +170,26 @@ JNIEXPORT void JNICALL Java_android_view_View_setVisibility(JNIEnv *env, jobject
 // --- the stuff below only applies to widgets that override the OnDraw() method; other widgets are created by class-specific constructors.
 // FIXME: how do we handle someone subclassing something other then View and then overriding the onDraw/onMeasure method(s)?
 
-struct jni_callback_data { JavaVM *jvm; jobject this; jclass this_class; };
+struct jni_callback_data { JavaVM *jvm; jobject this; jclass this_class; cairo_t *cached_cr; jobject canvas;};
 
 static void draw_function(GtkDrawingArea *area, cairo_t *cr, int width, int height, struct jni_callback_data *d)
 {
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	jobject canvas = (*env)->NewObject(env, handle_cache.canvas.class, handle_cache.canvas.constructor, _INTPTR(cr), _INTPTR(area));
+	if(d->cached_cr != cr) {
+		if(d->canvas == NULL) {
+			d->canvas = _REF((*env)->NewObject(env, handle_cache.canvas.class, handle_cache.canvas.constructor, _INTPTR(cr), _INTPTR(area)));
+		} else {
+			_SET_LONG_FIELD(d->canvas, "cairo_context", _INTPTR(cr));
+		}
+		d->cached_cr = cr;
+	}
 
-	(*env)->CallVoidMethod(env, d->this, _METHOD(d->this_class, "onDraw", "(Landroid/graphics/Canvas;)V"), canvas);
+	(*env)->CallVoidMethod(env, d->this, _METHOD(d->this_class, "onDraw", "(Landroid/graphics/Canvas;)V"), d->canvas);
 
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
-
-	(*env)->DeleteLocalRef(env, canvas);
 }
 
 void on_mapped(GtkWidget* self, struct jni_callback_data *d)
@@ -214,6 +219,8 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, j
 	callback_data->jvm = jvm;
 	callback_data->this = _REF(this);
 	callback_data->this_class = _REF(_CLASS(this));
+	callback_data->cached_cr = NULL;
+	callback_data->canvas = NULL;
 
 	gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA(area), ( void(*)(GtkDrawingArea*,cairo_t*,int,int,gpointer) )draw_function, callback_data, NULL);
 
