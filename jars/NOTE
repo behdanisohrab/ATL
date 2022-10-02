@@ -1,1 +1,1 @@
-core.jar is only needed for compiling, so presumably the dalvik-included core libs implement this; when we compile our own dalvik, we can keep the non-dex'd versions for this purpose.
+this is the non-dexed version of the main libcore jar; it implements the java stdlib - java.* etc; we use it as our bootclasspath, since it includes xmlpull etc

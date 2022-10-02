@@ -1,0 +1,29 @@
+#!/bin/sh
+# FIXME: currently all architectures use "x86"
+ARCH=x86
+CURRDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# this might be needed on X11, but it only works with debug builds of Gtk
+export GDK_DEBUG=gl-egl
+
+# these are required by libart.so (art vm); we also use ANDROID_ROOT to get absolute paths for bootclasspath
+# FIXME: step 1) don't ship prebuilts inside this repo, step 2) patch up the way art uses ANDROID_ROOT so that it can be installed in a prefix in a standard way 
+export ANDROID_ROOT=${CURRDIR}/../dalvik/linux-${ARCH}
+export ANDROID_DATA=/tmp/dalvik-data
+
+# compat
+export LD_PRELOAD=libc.so:libpthread_bio.so:libbsd.so.0
+
+
+# libraries under this path will be loaded using shim bionic linker
+# NOTE: './data' is taken wrt the cwd, since this is what all the temporary hacks assume
+# NOTE: we mkdir data/lib/ here, since it's absence results in a rather cryptic error
+mkdir -p data/lib/
+export BIONIC_LD_LIBRARY_PATH=data/lib/
+
+# places where we have libs; art's libs, the application's libs, and our reimplementation effort libs respectively
+# (${CURRDIR} in case we're running from builddir, \@install_libdir\@/java/dex/native/ otherwise)
+# NOTE: in the future, \@install_libdir\@/java/dex/native/ will also contain libjavacore.so, as it's indeed a JNI lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${ANDROID_ROOT}/lib64/:${PWD}/data/lib/:${CURRDIR}:@install_libdir@/java/dex/native/
+
+${PREFIX}${CURRDIR}/main ${1} -l ${2}
