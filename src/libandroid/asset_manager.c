@@ -18,14 +18,16 @@ typedef int64_t off64_t;
 typedef void JNIEnv;
 typedef void * jobject;
 
-#define ASSET_DIR "data/assets/"
+#define ASSET_DIR "assets/"
+char *get_app_data_dir();
 
 struct AAsset* AAssetManager_open(struct AAssetManager *amgr, const char *file_name, int mode)
 {
-	char *path = malloc(strlen(file_name) + strlen(ASSET_DIR) + 1);
+	char *app_data_dir = get_app_data_dir();
+	char *path = malloc(strlen(app_data_dir) + strlen(ASSET_DIR) + strlen(file_name) + 1);
 	int fd;
-
-	strcpy(path, ASSET_DIR);
+	strcpy(path, app_data_dir);
+	strcat(path, ASSET_DIR);
 	strcat(path, file_name);
 
 	printf("openning asset with filename: %s\n", file_name);

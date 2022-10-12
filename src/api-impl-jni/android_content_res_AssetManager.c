@@ -9,15 +9,18 @@
 #include "util.h"
 #include "generated_headers/android_content_res_AssetManager.h"
 
-#define ASSET_DIR "data/assets/"
+#define ASSET_DIR "assets/"
+char *get_app_data_dir();
 
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openAsset(JNIEnv *env, jobject this, jstring _file_name, jint mode)
 {
 	const char *file_name = _CSTRING(_file_name);
-	char *path = malloc(strlen(file_name) + strlen(ASSET_DIR) + 1);
+	char *app_data_dir = get_app_data_dir();
+	char *path = malloc(strlen(app_data_dir) + strlen(ASSET_DIR) + strlen(file_name) + 1);
 	int fd;
 
-	strcpy(path, ASSET_DIR);
+	strcpy(path, app_data_dir);
+	strcat(path, ASSET_DIR);
 	strcat(path, file_name);
 
 	printf("openning asset with filename: %s\n", _CSTRING(_file_name));

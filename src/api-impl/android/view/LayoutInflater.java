@@ -91,7 +91,7 @@ public class LayoutInflater {
 
     public View inflate(int layoutResID, ViewGroup root, boolean attachToRoot) throws Exception {
 
-		String layout_xml_file = "data/" + Context.this_application.getString(layoutResID);
+		String layout_xml_file = android.os.Environment.getExternalStorageDirectory().getPath() + "/" + Context.this_application.getString(layoutResID);
 
 		System.out.println("loading layout from: " + layout_xml_file);
 
