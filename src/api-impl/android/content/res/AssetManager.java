@@ -467,7 +467,7 @@ public final class AssetManager {
 		factory.setNamespaceAware(true);
 		XmlPullParser xpp = factory.newPullParser();
 
-		xpp.setInput( new FileReader("data/" + fileName) );
+		xpp.setInput( new FileReader(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + fileName) );
 
 		return (XmlResourceParser)xpp;
     }

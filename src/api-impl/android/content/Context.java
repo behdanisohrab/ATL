@@ -122,7 +122,7 @@ public class Context extends Object {
 
     private File getDataDirFile() {
 		if(data_dir == null) {
-			data_dir = new File("data/");
+			data_dir = android.os.Environment.getExternalStorageDirectory();
 		}
 		return data_dir;
     }
@@ -185,7 +185,7 @@ public class Context extends Object {
 
 	public FileOutputStream openFileOutput(String name, int mode) throws java.io.FileNotFoundException {
 		System.out.println("openFileOutput called for: '"+name+"'");
-		return new FileOutputStream("data/files/" + name);
+		return new FileOutputStream(android.os.Environment.getExternalStorageDirectory().getPath() + "/files/" + name);
 	}
 
 	public int checkCallingOrSelfPermission(String permission) {

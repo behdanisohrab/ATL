@@ -111,7 +111,7 @@ public final class Bitmap {
 	} // FIXME
 
 	Bitmap(String path) {
-		pixbuf = native_bitmap_from_path("data/"+path);
+		pixbuf = native_bitmap_from_path(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + path);
 
 		mIsMutable = false;
 		mIsPremultiplied = false;

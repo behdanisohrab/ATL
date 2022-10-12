@@ -3,19 +3,41 @@
 ---
 
 build instructions:  
-`make`: compile everything (except dalvik, which is precompiled from https://gitlab.com/Mis012/dalvik_standalone)  
+1. compile and install https://gitlab.com/Mis012/dalvik_standalone (art branch) (you can run it from builddir, but it requires some additional env variables)
+2. `mkdir builddir`
+3. `meson builddir`
+4. `ninja -C builddir`
 
-usage:  
-`./launch_activity.sh <path_to_apk> <path_to_activity>`  
-example: `./launch_activity.sh test_apks/org.happysanta.gd_29.apk org/happysanta/gd/GDActivity`  
-note: some apps don't like runtime changes to resolution, and currently GLSurfaceView will stretch instead of changing resolution  
-example with custom width/height: `./launch_activity.sh test_apks/org.happysanta.gd_29.apk 'org/happysanta/gd/GDActivity -w 540 -h 960'`
+then, to run from builddir:  
+`cd builddir`  
+and  
+`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ANDROID_APP_DATA_DIR=../test_apks/example_data_dir/ ./android_translation_layer ../test_apks/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity`  
+(for an example of a full game working that can be distributed along this)
+or  
+`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ANDROID_APP_DATA_DIR=../test_apks/example_data_dir/ ./android_translation_layer ../test_apks/gles3jni.apk -l com/android/gles3jni/GLES3JNIActivity`  
+(for a sample app using OpenGL from native code to do it's rendering) (note: the lib in `test_apks/example_data_dir/gles3jni.apk/lib/` is for x86_64, make sure you extract the lib for your architecture from the apk)  
 
-NOTE: you might need to copy some files out from the apk under `data/`, e.g the `assets` folder; 
+to install:  
+`meson install`  
+
+to run after installataion:  
+`ANDROID_APP_DATA_DIR=[data dir] android_translation_layer [path to apk] -l [activity to launch]`  
+or just  
+`android_translation_layer [path to apk] -l [activity to launch]`  
+to use the default data dir of `~/.local/share/android_translation_layer/`
+
+NOTE: some apps don't like runtime changes to resolution, and currently GLSurfaceView will stretch instead of changing resolution  
+to sidestep this, we allow for specifying the initial resolution, which will currently always get passed as the screen resolution to the app and to GLSurfaceView even when you resize the window.
+example with custom width/height: `android_translation_layer path/to/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity -w 540 -h 960`
+
+NOTE: you might need to copy some files out from the apk under `ANDROID_APP_DATA_DIR` 
+(defaults to `~/.local/share/android_translation_layer/`), e.g the `assets` folder;  
 additionally, resources (`res`) currently need to be "decompiled" (e.g. by apktool, though this 
-additionally replaces hex IDs with string names, which needs to be reversed)  
+additionally replaces hex IDs with string names, which then needs to be manually reversed;
+android studio's `inspect apk` feature is known to keep the integers)  
 NOTE: on X11, Gtk might decide to use GLX, which completely messes up our EGL-dependent code.
-If you have a debug build of Gtk, you can use GDK_DEBUG=gl-egl to force the use of EGL
+If you have a debug build of Gtk, you can use GDK_DEBUG=gl-egl to force the use of EGL  
+NOTE: we don't currently handle signed apks; simply remove the META-INF folder from an apk to skip signature verification
 
 when it doesn't work:  
 if you are trying to launch a random app, chances are that we are missing implementations for some  
@@ -37,8 +59,6 @@ for general description of the architecure, see `doc/Architecture.md`
 screenshot:
 
 ![angry birds 3.2.0, Worms 2 Armageddon, and gravity defied running side by side by side](https://gitlab.com/Mis012/android_translation_layer_PoC/-/raw/master/screenshot_2.png)
-
-note: running two or more different apps at the same time needs a tiny bit of luck (no conflicting files), since the data directory path is currently hardcoded to `./data/` no matter the app  
 
 ##### FAQ:
 
@@ -67,24 +87,16 @@ A:
 	well, first things first, technically I compiled Gravity Defied myself and removed  
 	some bug-reporting-init-related code which I got frustrated with stubbing out. however,  
 	adding more stubs should make that unnecessary.  
-	now for the second issue: `./data/` contains some stuff that should instead be read from the apk,  
-	and some of this stuff is also externally converted (e.g Xml from binary form to actual Xml).  
-	obviously this is not ideal for user experience. NOTE: it seems that the binary form *might* be  
-	protobuf-based, which would make reading it directly easier.  
+	now for the second issue: `ANDROID_APP_DATA_DIR` contains some stuff that should instead be  
+	read from the apk, and some of this stuff is also externally converted (e.g Xml from binary  
+	form to actual Xml). obviously this is not ideal for user experience.  
+	NOTE: it seems that the binary form *might* be protobuf-based, which would make reading it  
+	directly easier.  
 	and the third issue: Gravity Defied is still extremely simple compared to most android apps,  
 	doesn't acknowledge compat layers, and the most intricate UI element is completely custom drawn  
 	using the canvas interface, in a manner that makes it easy to implement with cairo.  
 	angry birds (old version) and worms 2 armageddon were chosen because they similarly don't use  
 	compat layers, and basically the entire UI is custom drawn with OpenGL calls from native code.
-
-Q:  
-	why are only 32bit architectures supported?
-A:  
-	we are currently using good old dalvik vm (probably newer commit than ever shipped though), which  
-	is so hopelessly hardcoded to assume 32bit ints and pointers that it probably made google's cost/benefit  
-	analyses of writing art from scratch a lot easier.  
-	Eventually, we should probably move to ART, but it's an open question whether that will bring issues for our  
-	usecase (is there a way to use ART without zygote? is it straightforward to port the few modifications that we did to dalvik?)
 
 
 ##### Roadmap:
@@ -99,6 +111,4 @@ A:
 
 - especially implement the alternatives to GLSurfaceView (using SurfaceView to get an EGL surface, native activity, not sure if there are others?) which would allow us to support a few more 99%-native applications with relative ease
 
-- explore switching to ART in the interest of supporting 64bit architectures
-
-- explore using apparmor to enforce the security policies that google helpfully forces apps to comply with (and our own security policies, like no internet access for apps which really shouldn't need it and are not scummy enough to refuse to launch without it)
+- explore using bubblewrap to enforce the security policies that google helpfully forces apps to comply with (and our own security policies, like no internet access for apps which really shouldn't need it and are not scummy enough to refuse to launch without it)

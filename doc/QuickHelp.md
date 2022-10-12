@@ -11,7 +11,7 @@ you would probably prefer to first get the app to launch without errors. With a 
 with writing stubs.
 
 What is a stub? Well, the simplest stub would be an empty class, like this:
-`main-src/android/webkit/WebView.java:`
+`src/api-impl/android/webkit/WebView.java:`
 ```Java
 package android.webkit;
 
@@ -34,7 +34,7 @@ public class WebView {
 	}
 }
 ```
-here, all that you need to take care of is that at `main-src/android/content/Context.java`, you have at minimum 
+here, all that you need to take care of is that at `src/api-impl/android/content/Context.java`, you have at minimum 
 a stub class.
 
 Unfortunately, in the WebView case, the method that an app was trying call wasn't returning `void`. If this is 
@@ -94,7 +94,7 @@ to get to work in order to cut down on the amount of stubbing you need to do.
 There are two basic types of widgets (Views): containers (Layouts) and the rest.
 
 To implement a container widget, simply copy an existing container widget implementation (e.g LinearLayout 
-(`./main-src/android/widget/LinearLayout.java` and `./jni/widgets/android_widget_LinearLayout.c`)), and that's 
+(`src/api-impl/android/widget/LinearLayout.java` and `src/api-impl-jni/widgets/android_widget_LinearLayout.c`)), and that's 
 it! Now, chances are that you wanted something slightly different, but this will at least display the child 
 widgets so that you can focus on implementing those.
 
@@ -108,7 +108,7 @@ the close-enough Gtk widget, since subclassing is mostly not possible in Gtk.
 
 ###### case study: ImageView
 
-`main-src/android/widget/ImageView.java`
+`src/api-impl/android/widget/ImageView.java`
 ```Java
 package android.widget;
 ```
@@ -151,7 +151,7 @@ public class ImageView extends View {
 
 ---
 
-`jni/widgets/android_widget_ImageView.c`
+`src/api-impl-jni/widgets/android_widget_ImageView.c`
 ```C
 #include <gtk/gtk.h>
 
@@ -161,11 +161,11 @@ public class ImageView extends View {
 #include "WrapperWidget.h"
 
 ```
-↑ every widget will be under `jni/widgets/` and will have these includes
+↑ every widget will be under `src/api-impl-jni/widgets/` and will have these includes
 ```C
-#include "android_widget_ImageView.h"
+#include "../generated_headers/android_widget_ImageView.h"
 ```
-↑ this is the jni-generated header file; you will need to add this to the part of the Makefile which moves widget header files to `jni/widgets/`
+↑ this is the jni-generated header file (btw, t's name is what dicates the name of this .c file)
 ↓ there should be two functions here, one for the `Context` costructor and one for the `AttributeSet` one; for start, you can keep them the same
 ```C
 JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1constructor__Landroid_content_Context_2(JNIEnv *env, jobject this, jobject context)
@@ -173,7 +173,7 @@ JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1constructor__Landro
 	GtkWidget *wrapper = wrapper_widget_new();
 ```
 ↑ the wrapper widget is required, it's expected by generic functions operating on widgets; the purpose is to allow for things like background image
-handling independently of the
+handling for cases where we can't subclass the backing widget itself
 ```C
 	GtkWidget *image = gtk_image_new_from_icon_name("FIXME"); // will not actually use gtk_image_new_from_icon_name when implementing this, but we want that nice "broken image" icon
 ```

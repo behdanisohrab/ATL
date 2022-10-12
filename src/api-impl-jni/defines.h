@@ -13,6 +13,7 @@
 #define _CLASS(object) ((*env)->GetObjectClass(env, object))
 #define _SUPER(object) ((*env)->GetSuperclass(env, object))
 #define _METHOD(class, method, attrs) ((*env)->GetMethodID(env, class, method, attrs))
+#define _STATIC_METHOD(class, method, attrs) ((*env)->GetStaticMethodID(env, class, method, attrs))
 #define _JSTRING(cstring) ((*env)->NewStringUTF(env, cstring))
 #define _CSTRING(jstring) ((*env)->GetStringUTFChars(env, jstring, NULL))
 #define _FIELD_ID(class, field, type) ((*env)->GetFieldID(env, class , field, type))

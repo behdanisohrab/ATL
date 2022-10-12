@@ -112,7 +112,7 @@ public class Activity extends Context {
     public void setContentView(int layoutResID) throws Exception {
 		System.out.println("- setContentView - yay!");
 
-		String layout_xml_file = "data/" + getString(layoutResID);
+		String layout_xml_file = android.os.Environment.getExternalStorageDirectory().getPath() + "/" + getString(layoutResID);
 
 		System.out.println("loading layout from: " + layout_xml_file);
 
