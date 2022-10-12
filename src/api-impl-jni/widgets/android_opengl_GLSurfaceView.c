@@ -4,8 +4,8 @@
 #include <GL/glcorearb.h>
 
 #include <EGL/egl.h>
-#include <GLES/gl.h>
-#include <GLES/glext.h>
+#include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
 
 #include <gtk/gtk.h>
 
