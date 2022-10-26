@@ -28,5 +28,9 @@ public class Window {
 		set_widget_as_root(native_window, view.widget);
 	}
 
+	public View getDecorView() {
+		return new View(); // FIXME: this can probably backfire
+	}
+
 	private native void set_widget_as_root(long native_window, long widget);
 }

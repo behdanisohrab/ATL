@@ -27,10 +27,12 @@ public class AlertDialog extends Dialog {
 		}
 
 		public AlertDialog.Builder setTitle (CharSequence title) {
+			System.out.println("AlertDialog.Builder setTitle called with: '"+title+"'");
 			return this;
 		}
 
 		public AlertDialog.Builder setMessage (CharSequence message) {
+			System.out.println("AlertDialog.Builder setMessage called with: '"+message+"'");
 			return this;
 		}
 

@@ -192,7 +192,7 @@ static void draw_function(GtkDrawingArea *area, cairo_t *cr, int width, int heig
 		(*env)->ExceptionDescribe(env);
 }
 
-void on_mapped(GtkWidget* self, struct jni_callback_data *d)
+static void on_mapped(GtkWidget* self, struct jni_callback_data *d)
 {
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
@@ -200,6 +200,7 @@ void on_mapped(GtkWidget* self, struct jni_callback_data *d)
 	(*env)->CallVoidMethod(env, d->this, _METHOD(d->this_class, "onMeasure", "(II)V"), gtk_widget_get_width(self), gtk_widget_get_height(self));
 }
 
+// FIXME: this is used in one other place as well, should probably go in util.c or gtk_util.c?
 gboolean tick_callback(GtkWidget* widget, GdkFrameClock* frame_clock, gpointer user_data)
 {
 	gtk_widget_queue_draw(widget);

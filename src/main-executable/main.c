@@ -294,9 +294,13 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 		(*env)->ExceptionDescribe(env);
 
 //	TODO: some apps wait for this to actually do stuff
-/*	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onWindowFocusChanged, true);
+	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onResume);
 	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);*/
+		(*env)->ExceptionDescribe(env);
+
+	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onWindowFocusChanged, true);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
 }
 
 static void activate(GtkApplication *app, struct jni_callback_data *d)

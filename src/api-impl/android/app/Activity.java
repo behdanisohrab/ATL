@@ -21,6 +21,7 @@ import java.io.StringReader;
 public class Activity extends Context {
 	LayoutInflater layout_inflater;
 	Window window = new Window();
+	int requested_orientation = -1 /*ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED*/; // dummy
 
 	protected void set_window(long native_window) {
 		window.native_window = native_window;
@@ -47,6 +48,14 @@ public class Activity extends Context {
 	public Intent getIntent() {
 		return null; // this is the main activity, and it wasn't opened as a result of someone calling "open with"
 //		return new Intent();
+	}
+
+	public int getRequestedOrientation() {
+		return requested_orientation; 
+	}
+
+	public void setRequestedOrientation (int orientation) {
+		requested_orientation = orientation;
 	}
 
 	public boolean isFinishing() {
