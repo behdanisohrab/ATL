@@ -17,4 +17,8 @@ public final class Display {
 	public int getRotation() {
 		return 0/*ROTATION_0*/;
 	}
+
+	public float getRefreshRate() {
+		return 60; // FIXME
+	}
 }

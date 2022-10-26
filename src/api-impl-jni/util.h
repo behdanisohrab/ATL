@@ -10,6 +10,7 @@ struct handle_cache {
 		jclass class;
 		jobject object;
 		jmethodID onCreate;
+		jmethodID onResume;
 		jmethodID onWindowFocusChanged;
 		jmethodID onDestroy;
 		jmethodID set_window;

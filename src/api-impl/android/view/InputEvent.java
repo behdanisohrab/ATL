@@ -18,8 +18,6 @@ package android.view;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-class InputDevice {}
-
 /**
  * Common base class for input events.
  */

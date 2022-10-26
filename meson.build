@@ -33,6 +33,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/widgets/WrapperWidget.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_TextView.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_LinearLayout.c',
+                                                                  	'src/api-impl-jni/widgets/android_view_SurfaceView.c',
                                                                   	'src/api-impl-jni/views/android_view_View.c',
                                                                   	'src/api-impl-jni/views/android_view_ViewGroup.c',
                                                                   	'src/api-impl-jni/android_graphics_Bitmap.c'
@@ -60,11 +61,18 @@ executable('android-translation-layer', [
 
 # libandroid
 shared_library('android', [
+                          	'src/libandroid/asset_manager.c',
+                          	'src/libandroid/media.c',
                           	'src/libandroid/misc.c',
-                          	'src/libandroid/asset_manager.c'
+                          	'src/libandroid/native_window.c',
+                          	'src/libandroid/sensor.c',
+                          	'src/libandroid/looper.c'
                           ],
                           install: true,
-                          soversion: 0,)
+                          soversion: 0,
+                          dependencies: [
+                          	dependency('gtk4'), dependency('jni'), dependency('glfw3')
+                          ])
 
 # hax_arsc_parser.dex (named as classes2.dex so it works inside a jar)
 subdir('src/arsc_parser')

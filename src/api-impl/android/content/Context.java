@@ -3,10 +3,14 @@ package android.content;
 import android.util.Log;
 
 import android.content.pm.PackageManager;
+import android.content.pm.ApplicationInfo;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.content.Intent;
+import android.content.BroadcastReceiver;
+
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.content.SharedPreferences;
@@ -23,6 +27,8 @@ import android.app.KeyguardManager;
 import android.telephony.TelephonyManager;
 import android.media.AudioManager;
 import android.app.ActivityManager;
+import android.hardware.usb.UsbManager;
+import android.os.Vibrator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,6 +61,10 @@ public class Context extends Object {
 		System.out.println("new Context! this one is: " + this);
 	}
 
+	public ApplicationInfo getApplicationInfo () {
+		return new ApplicationInfo();
+	}
+
 	public Context getApplicationContext() {
 		return (Context)this_application;
 	}
@@ -81,10 +91,18 @@ public class Context extends Object {
 				return new AudioManager();
 			case "activity":
 				return new ActivityManager();
+			case "usb":
+				return new UsbManager();
+			case "vibrator":
+				return new Vibrator();
 			default:
 				System.out.println("!!!!!!! getSystemService: case >"+name+"< is not implemented yet");
 				return null;
 		}
+	}
+
+	public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+		return new Intent();
 	}
 
     public Looper getMainLooper() {

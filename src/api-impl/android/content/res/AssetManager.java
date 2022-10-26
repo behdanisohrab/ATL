@@ -339,7 +339,8 @@ public final class AssetManager {
             }
         }
         throw new FileNotFoundException("Asset file: " + fileName);*/
-		return null; // FIXME
+		throw new IOException("FIXME: 'public final AssetFileDescriptor openFd(String fileName)': throwing an exception, which makes e.g SDL2 fall back to using something that we actually have implemented");
+//		return null; // FIXME
     }
 
     /**

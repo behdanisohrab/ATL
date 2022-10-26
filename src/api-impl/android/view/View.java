@@ -525,6 +525,14 @@ public class View extends Object {
 		// TODO
 	}
 
+	public interface OnGenericMotionListener {
+		// TODO
+	}
+
+	public interface OnSystemUiVisibilityChangeListener {
+		// TODO
+	}
+
 	public static interface OnKeyListener {
 // TODO
 //		boolean onKey(View v, int keyCode, KeyEvent event);
@@ -741,6 +749,7 @@ public class View extends Object {
 	public native void setGravity(int gravity);
 	public native void setOnTouchListener(OnTouchListener l);
 	public native void setOnClickListener(OnClickListener l);
+	public /*native*/ void setOnSystemUiVisibilityChangeListener(OnSystemUiVisibilityChangeListener l) {}
 	public native final int getWidth();
 	public native final int getHeight();
 
