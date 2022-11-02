@@ -845,4 +845,6 @@ public class View extends Object {
 	public void postInvalidate(int left, int top, int right, int bottom) {
 		System.out.println("postInvalidate("+left+","+top+","+right+","+bottom+") called");
 	}
+
+	public void setOnGenericMotionListener (View.OnGenericMotionListener l) {}
 }

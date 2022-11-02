@@ -1,3 +1,5 @@
+
+#define _LARGEFILE64_SOURCE
 #include <errno.h>
 #include <fcntl.h>
 #include <stdint.h>
@@ -88,6 +90,14 @@ off64_t AAsset_getLength64(struct AAsset *asset)
 struct AAssetManager * AAssetManager_fromJava(JNIEnv *env, jobject assetManager)
 {
 	return NULL;
+}
+
+int AAsset_read(struct AAsset *asset, void *buf, size_t count) {
+	return read(asset->fd, buf, count);
+}
+
+off64_t AAsset_seek64(struct AAsset *asset, off64_t offset, int whence) {
+	return lseek64(asset->fd, offset, whence);
 }
 
 void AAsset_close(struct AAsset *asset)

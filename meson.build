@@ -70,6 +70,7 @@ executable('android-translation-layer', [
 # libandroid
 shared_library('android', [
                           	'src/libandroid/asset_manager.c',
+                          	'src/libandroid/configuration.c',
                           	'src/libandroid/media.c',
                           	'src/libandroid/native_window.c',
                           	'src/libandroid/sensor.c',

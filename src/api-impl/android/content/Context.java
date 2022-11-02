@@ -20,7 +20,7 @@ import android.app.Application;
 
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
-import android.text.ClipboardManager;
+import android.content.ClipboardManager;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.app.KeyguardManager;

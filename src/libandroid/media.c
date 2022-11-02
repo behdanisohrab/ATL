@@ -68,41 +68,71 @@ typedef enum {
 struct AMediaFormat;
 typedef struct AMediaFormat AMediaFormat;
 
-AMediaFormat *AMediaFormat_new();
-media_status_t AMediaFormat_delete(AMediaFormat*);
+AMediaFormat *AMediaFormat_new()
+{
+	return NULL;
+}
+
+media_status_t AMediaFormat_delete(AMediaFormat*)
+{
+	return AMEDIA_ERROR_UNKNOWN;
+}
 
 /**
  * Human readable representation of the format. The returned string is owned by the format,
  * and remains valid until the next call to toString, or until the format is deleted.
  */
-const char* AMediaFormat_toString(AMediaFormat*);
+const char* AMediaFormat_toString(AMediaFormat*)
+{
+	return NULL;
+}
 
-bool AMediaFormat_getInt32(AMediaFormat*, const char *name, int32_t *out);
-bool AMediaFormat_getInt64(AMediaFormat*, const char *name, int64_t *out);
-bool AMediaFormat_getFloat(AMediaFormat*, const char *name, float *out);
+bool AMediaFormat_getInt32(AMediaFormat*, const char *name, int32_t *out)
+{
+	return false;
+}
+
+bool AMediaFormat_getInt64(AMediaFormat*, const char *name, int64_t *out)
+{
+	return false;
+}
+
+bool AMediaFormat_getFloat(AMediaFormat*, const char *name, float *out)
+{
+	return false;
+}
+
 /**
  * The returned data is owned by the format and remains valid as long as the named entry
  * is part of the format.
  */
-bool AMediaFormat_getBuffer(AMediaFormat*, const char *name, void** data, size_t *size);
+bool AMediaFormat_getBuffer(AMediaFormat*, const char *name, void** data, size_t *size)
+{
+	return false;
+}
+
 /**
  * The returned string is owned by the format, and remains valid until the next call to getString,
  * or until the format is deleted.
  */
-bool AMediaFormat_getString(AMediaFormat*, const char *name, const char **out);
+bool AMediaFormat_getString(AMediaFormat*, const char *name, const char **out)
+{
+	return false;
+}
 
 
-void AMediaFormat_setInt32(AMediaFormat*, const char* name, int32_t value);
-void AMediaFormat_setInt64(AMediaFormat*, const char* name, int64_t value);
-void AMediaFormat_setFloat(AMediaFormat*, const char* name, float value);
+
+void AMediaFormat_setInt32(AMediaFormat*, const char* name, int32_t value) {}
+void AMediaFormat_setInt64(AMediaFormat*, const char* name, int64_t value) {}
+void AMediaFormat_setFloat(AMediaFormat*, const char* name, float value) {}
 /**
  * The provided string is copied into the format.
  */
-void AMediaFormat_setString(AMediaFormat*, const char* name, const char* value);
+void AMediaFormat_setString(AMediaFormat*, const char* name, const char* value) {}
 /**
  * The provided data is copied into the format.
  */
-void AMediaFormat_setBuffer(AMediaFormat*, const char* name, void* data, size_t size);
+void AMediaFormat_setBuffer(AMediaFormat*, const char* name, void* data, size_t size) {}
 
 
 
