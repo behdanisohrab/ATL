@@ -1,5 +1,7 @@
 project('android_translation_layer', ['c', 'java'], default_options: ['b_lundef=false'])
 
+gnome = import('gnome')
+
 incdir_dep = declare_dependency(include_directories: '.')
 add_project_dependencies(incdir_dep, language: 'c')
 
@@ -14,6 +16,12 @@ libart_dep = [
 libdl_bio_dep = [
 	cc.find_library('dl_bio')
 ]
+
+marshal_files = gnome.genmarshal('marshal',
+	sources: 'src/api-impl-jni/widgets/marshal.list',
+	valist_marshallers: true,
+	internal: true,
+)
 
 libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/egl/com_google_android_gles_jni_EGLImpl.c',
@@ -37,11 +45,11 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/views/android_view_View.c',
                                                                   	'src/api-impl-jni/views/android_view_ViewGroup.c',
                                                                   	'src/api-impl-jni/android_graphics_Bitmap.c'
-                                                                  ],
+                                                                  ] + marshal_files,
                                                                   install: true,
                                                                   install_dir : get_option('libdir') / 'java/dex/android_translation_layer/natives',
                                                                   dependencies: [
-                                                                  	dependency('gtk4'), dependency('gl'), dependency('egl'), dependency('jni')
+                                                                  	dependency('gtk4'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni')
                                                                   ],
                                                                   link_args: [
                                                                   	'-lasound'
@@ -63,7 +71,6 @@ executable('android-translation-layer', [
 shared_library('android', [
                           	'src/libandroid/asset_manager.c',
                           	'src/libandroid/media.c',
-                          	'src/libandroid/misc.c',
                           	'src/libandroid/native_window.c',
                           	'src/libandroid/sensor.c',
                           	'src/libandroid/looper.c'
