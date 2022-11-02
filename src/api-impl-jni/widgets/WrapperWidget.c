@@ -44,7 +44,7 @@ GdkTexture * gdk_texture_new_for_surface (cairo_surface_t *surface)
 
 G_DEFINE_TYPE(WrapperWidget, wrapper_widget, GTK_TYPE_WIDGET)
 
-static void wrapper_widget_init (WrapperWidget *frame_layout)
+static void wrapper_widget_init (WrapperWidget *wrapper_widget)
 {
 
 }

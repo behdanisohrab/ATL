@@ -11,6 +11,8 @@ public class SurfaceView extends View {
 		super(context);
 
 		native_constructor(context);
+
+		mSurface.widget = this.widget;
 	}
 
 	private native void native_constructor(Context context);

@@ -34,17 +34,16 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
-//#include <gtk/gtk.h>
+#include <wayland-client.h>
+#include <wayland-egl.h>
+
+#include <gtk/gtk.h>
 #include <gdk/wayland/gdkwayland.h>
-
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
-#define GLFW_EXPOSE_NATIVE_WAYLAND
-#include <GLFW/glfw3native.h>
 
 #include <jni.h>
 
+// FIXME: put the header in a common place
+#include "../api-impl-jni/defines.h"
 
 /**
  * Transforms that can be applied to buffers as they are displayed to a window.
@@ -66,8 +65,8 @@ enum ANativeWindowTransform {
 };
 
 struct ANativeWindow {
-	GLFWwindow *glfw_window;
 	EGLNativeWindowType egl_window;
+	GtkWidget *surface_view_widget;
 };
 
 /**
@@ -119,16 +118,12 @@ void ANativeWindow_release(struct ANativeWindow *native_window)
 
 int32_t ANativeWindow_getWidth(struct ANativeWindow *native_window)
 {
-   int v = 0;
-   glfwGetWindowSize(native_window->glfw_window, &v, NULL);
-   return v;
+   return gtk_widget_get_width(native_window->surface_view_widget);
 }
 
 int32_t ANativeWindow_getHeight(struct ANativeWindow *native_window)
 {
-   int v = 0;
-   glfwGetWindowSize(native_window->glfw_window, NULL, &v);
-   return v;
+   return gtk_widget_get_height(native_window->surface_view_widget);
 }
 
 /**
@@ -205,46 +200,90 @@ int32_t ANativeWindow_setBuffersTransform(ANativeWindow* window, int32_t transfo
 	return -1;
 }
 
-// FIXME: include the header
-struct wl_surface;
-struct wl_egl_window *wl_egl_window_create(struct wl_surface *surface,int width, int height);
-
-static void
-glfw_error_cb(int code, const char *error)
+void wl_registry_global_handler(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version)
 {
-   fprintf(stderr, "glfw: (%d) %s\n", code, error);
+	struct wl_subcompositor **subcompositor = data;
+	printf("interface: '%s', version: %u, name: %u\n", interface, version, name);
+	if (!strcmp(interface, "wl_subcompositor")) {
+		*subcompositor = wl_registry_bind(registry, name, &wl_subcompositor_interface, 1);
+	}
+}
+
+void wl_registry_global_remove_handler(void *data, struct wl_registry *registry, uint32_t name)
+{
+	printf("removed: %u\n", name);
+}
+
+// TODO: handle X11
+static void on_resize(GtkWidget* self, gint width, gint height, struct wl_egl_window *egl_window)
+{
+	wl_egl_window_resize(egl_window, width, height, 0, 0);
 }
 
 ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 {
-	// FIXME: add a path for x11
-// TODO: something with subsurfaces
-/*	GdkDisplay *display = gdk_display_get_default(); //TODO: edge cases?
-	struct wl_display *wl_display = gdk_wayland_display_get_wl_display(display);
-	struct wl_compositor *wl_compositor = gdk_wayland_display_get_wl_compositor(display);
-	//GdkSurface *popup_surface = gdk_surface_new_popup (GdkSurface* parent, gboolean autohide) // TODO: could this work better for us? (need to somehow get the parent surface)
-	struct wl_surface *toplevel_surface = gdk_wayland_surface_get_wl_surface(gdk_surface_new_toplevel(display));
-	struct wl_surface *our_surface = wl_compositor_create_surface(wl_compositor);
-//	wl_subsurface* our_subsurface = wl_subcompositor_get_subsurface(wl_compositor, our_surface; our_parent);
-	struct wl_egl_window *egl_window = wl_egl_window_create(our_surface, 700, 700);
-	return (ANativeWindow *)egl_window;*/
+
+	int width;
+	int height;
+
+	double pos_x;
+	double pos_y;
+	double off_x;
+	double off_y;
+
+	GtkWidget *surface_view_widget = _PTR(_GET_LONG_FIELD(surface, "widget"));
+	GtkWidget *window = GTK_WIDGET(gtk_widget_get_native(surface_view_widget));
+	while( (width = gtk_widget_get_width(surface_view_widget)) == 0 ) {
+		// FIXME: UGLY: this loop waits until the SurfaceView widget gets mapped
+	}
+	height = gtk_widget_get_height(surface_view_widget);
+
+
+	// get position of the SurfaceView widget wrt the toplevel window
+	gtk_widget_translate_coordinates(surface_view_widget, window, 0, 0, &pos_x, &pos_y);
+	// compensate for offset between the widget coordinates and the surface coordinates
+	gtk_native_get_surface_transform(GTK_NATIVE(window), &off_x, &off_y);
+	pos_x += off_x;
+	pos_y += off_y;
+
+	printf("XXXXX: SurfaceView widget: %p (%s), width: %d, height: %d\n", surface_view_widget, gtk_widget_get_name(surface_view_widget), width, height);
+	printf("XXXXX: SurfaceView widget: x: %lf, y: %lf\n", pos_x, pos_y);
+	printf("XXXXX: native offset: x: %lf, y: %lf\n", off_x, off_y);
 
 	struct ANativeWindow *native_window = malloc(sizeof(struct ANativeWindow));
+	native_window->surface_view_widget = surface_view_widget;
 
-	glfwInit();
-	fprintf(stderr, "glfw: %s\n", glfwGetVersionString());
-	glfwSetErrorCallback(glfw_error_cb);
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	native_window->glfw_window = glfwCreateWindow(700, 700, "FIXME: don't create a separate window for this widget", NULL, NULL);
-	struct wl_surface *wayland_surface = glfwGetWaylandWindow(native_window->glfw_window);
-	int width, height;
-	glfwGetWindowSize(native_window->glfw_window, &width, &height);
-	printf("glfw::: width: %d, height: %d\n", width, height);
-	native_window->egl_window = (EGLNativeWindowType)wl_egl_window_create(wayland_surface, width, height);
+	GdkDisplay *display = gtk_root_get_display(GTK_ROOT(window));
+	// FIXME: add a path for x11
+	// start of wayland-specific code
+	struct wl_display *wl_display = gdk_wayland_display_get_wl_display(display);
+	struct wl_compositor *wl_compositor = gdk_wayland_display_get_wl_compositor(display);
 
+	struct wl_registry *wl_registry = wl_display_get_registry(wl_display);
+	struct wl_registry_listener wl_registry_listener = {
+		.global = wl_registry_global_handler,
+		.global_remove = wl_registry_global_remove_handler
+	};
+	struct wl_subcompositor *wl_subcompositor = NULL;
+	wl_registry_add_listener(wl_registry, &wl_registry_listener, &wl_subcompositor);
+	wl_display_roundtrip(wl_display);
+	printf("XXX: wl_subcompositor: %p\n", wl_subcompositor);
+
+	struct wl_surface *toplevel_surface = gdk_wayland_surface_get_wl_surface(gtk_native_get_surface(GTK_NATIVE(window)));
+
+	struct wl_surface *wayland_surface = wl_compositor_create_surface(wl_compositor);
+
+	struct wl_subsurface *subsurface = wl_subcompositor_get_subsurface(wl_subcompositor, wayland_surface, toplevel_surface);
+	wl_subsurface_set_desync(subsurface);
+	wl_subsurface_set_position(subsurface, pos_x, pos_y);
+
+	struct wl_egl_window *egl_window = wl_egl_window_create(wayland_surface, width, height);
+	native_window->egl_window = (EGLNativeWindowType)egl_window;
 	printf("EGL::: wayland_surface: %p\n", wayland_surface);
-	printf("EGL::: native_window->glfw_window: %p\n", native_window->glfw_window);
+	// end of wayland-specific code
 	printf("EGL::: native_window->egl_window: %ld\n", native_window->egl_window);
+
+	g_signal_connect(surface_view_widget, "resize", G_CALLBACK(on_resize), egl_window);
 
 	return native_window;
 }
@@ -315,6 +354,8 @@ static void PrintConfigAttributes(EGLDisplay display, EGLConfig config)
 
 // FIXME: this possibly belongs elsewhere
 
+extern GtkWindow *window; // TODO: how do we get rid of this? the app won't pass anyhting useful to eglGetDisplay
+
 EGLDisplay bionic_eglGetDisplay(NativeDisplayType native_display)
 {
 	/*
@@ -322,18 +363,17 @@ EGLDisplay bionic_eglGetDisplay(NativeDisplayType native_display)
 	 * We obviously want to make the app use the correct display, which may happen to be a different one
 	 * than the "default" display (especially on Wayland)
 	 */
-	glfwInit(); // it's allegedly safe to call this multiple times
-	struct wl_display *glfw_wl_display = glfwGetWaylandDisplay(); 
-	return eglGetPlatformDisplay(EGL_PLATFORM_WAYLAND_KHR, glfw_wl_display, NULL);
+	GdkDisplay *display = gtk_root_get_display(GTK_ROOT(window));
+	struct wl_display *wl_display = gdk_wayland_display_get_wl_display(display);
+
+	return eglGetPlatformDisplay(EGL_PLATFORM_WAYLAND_KHR, wl_display, NULL);
 }
 
 EGLSurface bionic_eglCreateWindowSurface(EGLDisplay display, EGLConfig config, struct ANativeWindow *native_window, EGLint const *attrib_list)
 {
-	// TODO: eglGetDisplay((EGLNativeDisplayType)0) isn't ideal...
 	PrintConfigAttributes(display, config);
 	EGLSurface ret = eglCreateWindowSurface(display, config, native_window->egl_window, attrib_list);
 
-	printf("EGL::: native_window->glfw_window: %p\n", native_window->glfw_window);
 	printf("EGL::: native_window->egl_window: %ld\n", native_window->egl_window);
 	printf("EGL::: eglGetError: %d\n", eglGetError());
 
