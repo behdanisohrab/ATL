@@ -16,6 +16,24 @@
 
 #include "../generated_headers/android_opengl_GLSurfaceView.h"
 
+// for whatever reason, some Mesa builds don't export the OES function (which we use in order to have GLESv1 support)
+GL_APICALL void GL_APIENTRY _glEGLImageTargetTexture2DOES_load(GLenum target, GLeglImageOES image);
+static PFNGLEGLIMAGETARGETTEXTURE2DOESPROC _glEGLImageTargetTexture2DOES = &_glEGLImageTargetTexture2DOES_load;
+
+GL_APICALL void GL_APIENTRY _glEGLImageTargetTexture2DOES_load(GLenum target, GLeglImageOES image)
+{
+	_glEGLImageTargetTexture2DOES =
+		(PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)eglGetProcAddress("glEGLImageTargetTexture2DOES");
+
+	_glEGLImageTargetTexture2DOES(target, image);
+}
+
+GL_APICALL void GL_APIENTRY __attribute__((weak)) glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image)
+{
+	_glEGLImageTargetTexture2DOES(target, image);
+}
+// end of OES workaround
+
 //#define FIXME__WIDTH 540
 //#define FIXME__HEIGHT 960
 
