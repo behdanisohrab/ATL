@@ -41,6 +41,10 @@ public class GLSurfaceView extends View { // TODO: have this extend SurfaceView 
 	private native void native_constructor(AttributeSet attrs);
 	private native void native_constructor(Context context);
 
+	// Resumes the rendering thread, re-creating the OpenGL context if necessary. It is the counterpart to onPause(). This method should typically be called in Activity.onStart. Must not be called before a renderer has been set.
+	// TODO: make use of this
+	public void onResume() {}
+
 	public boolean onTouchEvent (MotionEvent event) {
 		return true;
 	}
