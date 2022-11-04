@@ -77,6 +77,7 @@ static void on_resize(GtkWidget* self, gint width, gint height, struct jni_callb
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
 	// TODO: are there cases where returning RGBA_8888 is a bad idea?
+	// NOTE: we want to call the private method of android.view.SurfaceView, not the related method with this name in the API
 	(*env)->CallVoidMethod(env, d->this, _METHOD(d->this_class, "surfaceChanged", "(Landroid/view/SurfaceHolder;III)V"),
 	                       _GET_OBJ_FIELD(d->this, "mSurfaceHolder", "Landroid/view/SurfaceHolder;"), 1 /*RGBA_8888*/,
 	                       width, height);
@@ -98,7 +99,7 @@ JNIEXPORT void JNICALL Java_android_view_SurfaceView_native_1constructor(JNIEnv 
 	struct jni_callback_data *callback_data = malloc(sizeof(struct jni_callback_data));
 	callback_data->jvm = jvm;
 	callback_data->this = _REF(this);
-	callback_data->this_class = _REF(_CLASS(this));
+	callback_data->this_class = _REF((*env)->FindClass(env, "android/view/SurfaceView"));
 
 	g_signal_connect(dummy, "resize", G_CALLBACK(on_resize), callback_data);
 

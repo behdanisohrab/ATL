@@ -5,7 +5,11 @@ import android.graphics.Rect;
 
 import android.content.Context;
 
+import java.util.ArrayList;
+
 public class SurfaceView extends View {
+
+	final ArrayList<SurfaceHolder.Callback> mCallbacks = new ArrayList<SurfaceHolder.Callback>();
 
 	public SurfaceView(Context context) {
 		super(context);
@@ -15,13 +19,17 @@ public class SurfaceView extends View {
 		mSurface.widget = this.widget;
 	}
 
+	private void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+		for (SurfaceHolder.Callback c : mCallbacks) {
+			c.surfaceChanged(mSurfaceHolder, format, width, height);
+		}
+	}
+
 	private native void native_constructor(Context context);
 
-    public SurfaceHolder getHolder() {
+	public SurfaceHolder getHolder() {
 		return mSurfaceHolder;
-    }
-
-	void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {}
+	}
 
 	final Surface mSurface = new Surface();
 
@@ -30,31 +38,29 @@ public class SurfaceView extends View {
 
 		@Override
 		public boolean isCreating() {
-	//	    return mIsCreating;
+	//		return mIsCreating;
 			return false;
 		}
 
 		@Override
 		public void addCallback(Callback callback) {
-	/*	    synchronized (mCallbacks) {
-			// This is a linear search, but in practice we'll
-			// have only a couple callbacks, so it doesn't matter.
-			if (mCallbacks.contains(callback) == false) {
-				mCallbacks.add(callback);
+			synchronized (mCallbacks) {
+				if (mCallbacks.contains(callback) == false) {
+					mCallbacks.add(callback);
+				}
 			}
-			}*/
 		}
 
 		@Override
 		public void removeCallback(Callback callback) {
-	/*	    synchronized (mCallbacks) {
+	/*		synchronized (mCallbacks) {
 			mCallbacks.remove(callback);
 			}*/
 		}
 
 		@Override
 		public void setFixedSize(int width, int height) {
-	/*	    if (mRequestedWidth != width || mRequestedHeight != height) {
+	/*		if (mRequestedWidth != width || mRequestedHeight != height) {
 			mRequestedWidth = width;
 			mRequestedHeight = height;
 			requestLayout();
@@ -63,7 +69,7 @@ public class SurfaceView extends View {
 
 		@Override
 		public void setSizeFromLayout() {
-	/*	    if (mRequestedWidth != -1 || mRequestedHeight != -1) {
+	/*		if (mRequestedWidth != -1 || mRequestedHeight != -1) {
 			mRequestedWidth = mRequestedHeight = -1;
 			requestLayout();
 			}*/
@@ -92,9 +98,9 @@ public class SurfaceView extends View {
 
 		@Override
 		public void setKeepScreenOn(boolean screenOn) {
-	//	    Message msg = mHandler.obtainMessage(KEEP_SCREEN_ON_MSG);
-	//	    msg.arg1 = screenOn ? 1 : 0;
-	//	    mHandler.sendMessage(msg);
+	//		Message msg = mHandler.obtainMessage(KEEP_SCREEN_ON_MSG);
+	//		msg.arg1 = screenOn ? 1 : 0;
+	//		mHandler.sendMessage(msg);
 		}
 
 		/**
@@ -108,7 +114,7 @@ public class SurfaceView extends View {
 		 */
 		@Override
 		public Canvas lockCanvas() {
-	//	    return internalLockCanvas(null);
+	//		return internalLockCanvas(null);
 			return null;
 		}
 
@@ -129,12 +135,12 @@ public class SurfaceView extends View {
 		 */
 		@Override
 		public Canvas lockCanvas(Rect inOutDirty) {
-	//	    return internalLockCanvas(inOutDirty);
+	//		return internalLockCanvas(inOutDirty);
 			return null;
 		}
 
 		private final Canvas internalLockCanvas(Rect dirty) {
-	/*	    mSurfaceLock.lock();
+	/*		mSurfaceLock.lock();
 
 			if (DEBUG) Log.i(TAG, "Locking canvas... stopped="
 				+ mDrawingStopped + ", win=" + mWindow);
@@ -180,8 +186,8 @@ public class SurfaceView extends View {
 		 */
 		@Override
 		public void unlockCanvasAndPost(Canvas canvas) {
-	//	    mSurface.unlockCanvasAndPost(canvas);
-	//	    mSurfaceLock.unlock();
+	//		mSurface.unlockCanvasAndPost(canvas);
+	//		mSurfaceLock.unlock();
 		}
 
 		@Override
@@ -191,7 +197,7 @@ public class SurfaceView extends View {
 
 		@Override
 		public Rect getSurfaceFrame() {
-	//	    return mSurfaceFrame;
+	//		return mSurfaceFrame;
 			return null;
 		}
 	};
