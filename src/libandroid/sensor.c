@@ -18,12 +18,22 @@ typedef void * ALooper_callbackFunc;
 
 struct ASensorManager a_sensor_manager;
 
+// --- sensor manager
+
 struct ASensorManager* ASensorManager_getInstance()
 {
 	return &a_sensor_manager;
 }
 
-// --- sensor manager
+struct ASensorManager* ASensorManager_getInstanceForPackage(const char* packageName)
+{
+	return &a_sensor_manager;
+}
+
+struct ASensor const* ASensorManager_getDefaultSensor(struct ASensorManager* manager, int type)
+{
+	return NULL; // no sensor of this type exists
+}
 
 int ASensorManager_getSensorList(struct ASensorManager* manager, struct ASensorList* list)
 {
