@@ -71,10 +71,11 @@ executable('android-translation-layer', [
 shared_library('android', [
                           	'src/libandroid/asset_manager.c',
                           	'src/libandroid/configuration.c',
+                          	'src/libandroid/input.c',
+                          	'src/libandroid/looper.c',
                           	'src/libandroid/media.c',
                           	'src/libandroid/native_window.c',
                           	'src/libandroid/sensor.c',
-                          	'src/libandroid/looper.c'
                           ],
                           install: true,
                           soversion: 0,
