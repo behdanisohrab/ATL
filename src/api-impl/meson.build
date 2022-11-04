@@ -11,6 +11,7 @@ hax_jar = jar('hax', [
               	'android/app/Dialog.java',
               	'android/app/IntentService.java',
               	'android/app/KeyguardManager.java',
+              	'android/app/NativeActivity.java',
               	'android/app/PendingIntent.java',
               	'android/app/ProgressDialog.java',
               	'android/app/Service.java',
