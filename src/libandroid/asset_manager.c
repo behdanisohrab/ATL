@@ -14,6 +14,7 @@ struct AAssetManager {
 
 struct AAsset{
 	int fd;
+	off64_t read;
 };
 
 typedef int64_t off64_t;
@@ -65,6 +66,7 @@ struct AAsset* AAssetManager_open(struct AAssetManager *amgr, const char *file_n
 
 	struct AAsset* asset = malloc(sizeof(struct AAsset));
 	asset->fd = fd;
+	asset->read = 0;
 
 	return asset;
 }
@@ -106,17 +108,40 @@ off64_t AAsset_getLength64(struct AAsset *asset)
 	return statbuf.st_size;
 }
 
+off_t AAsset_getLength(struct AAsset *asset)
+{
+	return AAsset_getLength64(asset);
+}
 struct AAssetManager * AAssetManager_fromJava(JNIEnv *env, jobject assetManager)
 {
 	return NULL;
 }
 
 int AAsset_read(struct AAsset *asset, void *buf, size_t count) {
-	return read(asset->fd, buf, count);
+	off64_t tmp = read(asset->fd, buf, count);
+	asset->read += tmp;
+	return tmp;
+}
+
+off_t AAsset_seek(struct AAsset *asset, off_t offset, int whence) {
+	off64_t tmp =  lseek(asset->fd, offset, whence);
+	asset->read += tmp;
+	return tmp;
 }
 
 off64_t AAsset_seek64(struct AAsset *asset, off64_t offset, int whence) {
-	return lseek64(asset->fd, offset, whence);
+	off64_t tmp =  lseek64(asset->fd, offset, whence);
+	asset->read += tmp;
+	return tmp;
+}
+
+off_t AAsset_getRemainingLength(struct AAsset* asset)
+{
+	return AAsset_getLength(asset) - asset->read;
+}
+off64_t AAsset_getRemainingLength64(struct AAsset* asset)
+{
+	return AAsset_getLength64(asset) - asset->read;
 }
 
 void AAsset_close(struct AAsset *asset)

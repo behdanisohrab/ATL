@@ -27,6 +27,7 @@ marshal_files = gnome.genmarshal('marshal',
 # libandroid
 libandroid_so = shared_library('android', [
                           	'src/libandroid/asset_manager.c',
+                          	'src/libandroid/bitmap.c',
                           	'src/libandroid/configuration.c',
                           	'src/libandroid/input.c',
                           	'src/libandroid/looper.c',
