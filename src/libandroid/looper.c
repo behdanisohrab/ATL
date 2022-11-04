@@ -1,22 +1,39 @@
 #include <stddef.h>
+#include <stdio.h>
 
-struct ALooper {
-	int dummy;
-};
+typedef void ALooper;
+typedef int (*Looper_callbackFunc)(int fd, int events, void* data);
 
-struct ALooper a_looper;
-
-struct ALooper* ALooper_forThread()
+void _ZN7android6Looper12getForThreadEv(void **ret); // no clue why itanium ABI does this with return values
+ALooper * ALooper_forThread()
 {
-	return &a_looper;
+	void *ret;
+	_ZN7android6Looper12getForThreadEv(&ret);
+	return ret;
 }
 
-struct ALooper* ALooper_prepare(int opts)
+void _ZN7android6Looper7prepareEi(void **ret, int opts); // no clue why itanium ABI does this with return values
+ALooper * ALooper_prepare(int opts)
 {
-	return NULL;
+	void *ret;
+	_ZN7android6Looper7prepareEi(&ret, opts);
+	return ret;
 }
 
+int _ZN7android6Looper7pollAllEiPiS1_PPv(void *this, int timeoutMillis, int* outFd, int* outEvents, void** outData);
 int ALooper_pollAll(int timeoutMillis, int* outFd, int* outEvents, void** outData)
 {
-	return 0;
+	ALooper *looper = ALooper_forThread();
+	if(!looper) {
+		fprintf(stderr, "ALooper_pollAll: ALooper_forThread returned NULL\n");
+		return 0;
+	}
+
+	return _ZN7android6Looper7pollAllEiPiS1_PPv(looper, timeoutMillis, outFd, outEvents,  outData);
+}
+
+int _ZN7android6Looper5addFdEiiiPFiiiPvES1_(void *this, int fd, int ident, int events, Looper_callbackFunc callback, void* data);
+int ALooper_addFd(ALooper* looper, int fd, int ident, int events, Looper_callbackFunc callback, void* data)
+{
+	return _ZN7android6Looper5addFdEiiiPFiiiPvES1_(looper, fd, ident, events, callback, data);
 }
