@@ -35,7 +35,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 public class Context extends Object {
-    private final static String TAG = "Context";
+	private final static String TAG = "Context";
 
 	static AssetManager assets;
 	static DisplayMetrics dm;
@@ -47,6 +47,7 @@ public class Context extends Object {
 	File data_dir = null;
 	File prefs_dir = null;
 	File files_dir = null;
+	File obb_dir = null;
 	File cache_dir = null;
 
 	static {
@@ -105,7 +106,7 @@ public class Context extends Object {
 		return new Intent();
 	}
 
-    public Looper getMainLooper() {
+	public Looper getMainLooper() {
 		System.out.println("returning the main Looper, most definitely doing just that!");
 		return new Looper();
 	}
@@ -130,62 +131,73 @@ public class Context extends Object {
 		return assets;
 	}
 
-    private File makeFilename(File base, String name) {
-        if (name.indexOf(File.separatorChar) < 0) {
-            return new File(base, name);
-        }
-        throw new IllegalArgumentException(
-                "File " + name + " contains a path separator");
-    }
+	private File makeFilename(File base, String name) {
+		if (name.indexOf(File.separatorChar) < 0) {
+			return new File(base, name);
+		}
+		throw new IllegalArgumentException(
+				"File " + name + " contains a path separator");
+	}
 
-    private File getDataDirFile() {
+	private File getDataDirFile() {
 		if(data_dir == null) {
 			data_dir = android.os.Environment.getExternalStorageDirectory();
 		}
 		return data_dir;
-    }
+	}
 
-    public File getFilesDir() {
-        if (files_dir == null) {
-            files_dir = new File(getDataDirFile(), "files");
-        }
-        if (!files_dir.exists()) {
-            if(!files_dir.mkdirs()) {
-                if (files_dir.exists()) {
-                    // spurious failure; probably racing with another process for this app
-                    return files_dir;
-                }
-                Log.w(TAG, "Unable to create files directory " + files_dir.getPath());
-                return null;
-            }
-        }
-        return files_dir;
-    }
+	public File getFilesDir() {
+		if (files_dir == null) {
+			files_dir = new File(getDataDirFile(), "files");
+		}
+		if (!files_dir.exists()) {
+			if(!files_dir.mkdirs()) {
+				if (files_dir.exists()) {
+					// spurious failure; probably racing with another process for this app
+					return files_dir;
+				}
+				Log.w(TAG, "Unable to create files directory " + files_dir.getPath());
+				return null;
+			}
+		}
+		return files_dir;
+	}
+
+	public File getExternalFilesDir(String type) {
+		return getFilesDir();
+	}
+
+	public File getObbDir() {
+	if (obb_dir == null) {
+			obb_dir = new File(getDataDirFile(), "obb");
+		}
+		return obb_dir;
+	}
 
 	// FIXME: should be something like /tmp/cache, but may need to create that directory
 	public File getCacheDir() {
-            if (cache_dir == null) {
-                cache_dir = new File("/tmp/");
-            }
-            return cache_dir;
+			if (cache_dir == null) {
+				cache_dir = new File("/tmp/");
+			}
+			return cache_dir;
 	}
 
-    private File getPreferencesDir() {
-            if (prefs_dir == null) {
-                prefs_dir = new File(getDataDirFile(), "shared_prefs");
-            }
-            return prefs_dir;
-    }
+	private File getPreferencesDir() {
+			if (prefs_dir == null) {
+				prefs_dir = new File(getDataDirFile(), "shared_prefs");
+			}
+			return prefs_dir;
+	}
 
-    public File getSharedPrefsFile(String name) {
-        return makeFilename(getPreferencesDir(), name + ".xml");
-    }
+	public File getSharedPrefsFile(String name) {
+		return makeFilename(getPreferencesDir(), name + ".xml");
+	}
 
-    public SharedPreferences getSharedPreferences(String name, int mode) {
+	public SharedPreferences getSharedPreferences(String name, int mode) {
 		System.out.println("\n\n...> getSharedPreferences("+name+",)\n\n");
-        File prefsFile = getSharedPrefsFile(name);
-        return new SharedPreferencesImpl(prefsFile, mode);
-    }
+		File prefsFile = getSharedPrefsFile(name);
+		return new SharedPreferencesImpl(prefsFile, mode);
+	}
 
 	public ClassLoader getClassLoader() {
 		// not perfect, but it's what we use for now as well, and it works

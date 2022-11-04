@@ -3,6 +3,7 @@ package android.app;
 import android.content.Context;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import android.widget.TextView;
@@ -114,6 +115,15 @@ public class Activity extends Context {
 		System.out.println("- onWindowFocusChanged - yay! (hasFocus: "+hasFocus+")");
 
 		return;
+	}
+
+	protected void onSaveInstanceState(Bundle outState) {
+	}
+
+	void onConfigurationChanged(Configuration newConfig) {
+	}
+
+	public void onLowMemory() {
 	}
 
 	/* --- */
