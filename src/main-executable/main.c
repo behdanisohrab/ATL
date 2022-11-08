@@ -298,6 +298,10 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 		(*env)->ExceptionDescribe(env);
 
 //	TODO: some apps wait for this to actually do stuff
+	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onStart);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
 	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onResume);
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
