@@ -277,6 +277,10 @@ ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 	wl_subsurface_set_desync(subsurface);
 	wl_subsurface_set_position(subsurface, pos_x, pos_y);
 
+	struct wl_region *empty_region = wl_compositor_create_region(wl_compositor);
+	wl_surface_set_input_region(wayland_surface, empty_region);
+	wl_region_destroy(empty_region);
+
 	struct wl_egl_window *egl_window = wl_egl_window_create(wayland_surface, width, height);
 	native_window->egl_window = (EGLNativeWindowType)egl_window;
 	printf("EGL::: wayland_surface: %p\n", wayland_surface);
