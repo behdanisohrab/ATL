@@ -1682,13 +1682,15 @@ public final class MotionEvent extends InputEvent {
 	/** {@inheritDoc} */
 	@Override
 	public final int getDeviceId() {
-		return nativeGetDeviceId(mNativePtr);
+		return 1; // FIXME: implement this properly
+//		return nativeGetDeviceId(mNativePtr);
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public final int getSource() {
-		return nativeGetSource(mNativePtr);
+		return  4098/*SOURCE_TOUCHSCREEN*/; // TODO: reflect reality
+//		return nativeGetSource(mNativePtr);
 	}
 
 	/** {@inheritDoc} */
@@ -1926,7 +1928,7 @@ public final class MotionEvent extends InputEvent {
 	 * >= 1.
 	 */
 	public final int getPointerCount() {
-		return 1;
+		return 1; // TODO: implement this properly
 	}
 	
 	/**
