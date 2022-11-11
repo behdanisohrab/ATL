@@ -309,6 +309,15 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onWindowFocusChanged, true);
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
+
+	jobject input_queue_callback = g_object_get_data(G_OBJECT(window), "input_queue_callback");
+	if(input_queue_callback) {
+		jobject input_queue = g_object_get_data(G_OBJECT(window), "input_queue");
+
+		(*env)->CallVoidMethod(env, input_queue_callback, handle_cache.input_queue_callback.onInputQueueCreated, input_queue);
+		if((*env)->ExceptionCheck(env))
+			(*env)->ExceptionDescribe(env);
+	}
 }
 
 static void activate(GtkApplication *app, struct jni_callback_data *d)

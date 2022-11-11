@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT void JNICALL Java_android_view_Window_set_1widget_1as_1root
   (JNIEnv *, jobject, jlong, jlong);
 
+/*
+ * Class:     android_view_Window
+ * Method:    take_input_queue
+ * Signature: (JLandroid/view/InputQueue/Callback;Landroid/view/InputQueue;)V
+ */
+JNIEXPORT void JNICALL Java_android_view_Window_take_1input_1queue
+  (JNIEnv *, jobject, jlong, jobject, jobject);
+
 #ifdef __cplusplus
 }
 #endif

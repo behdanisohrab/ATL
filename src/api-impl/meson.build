@@ -168,6 +168,7 @@ hax_jar = jar('hax', [
               	'android/view/Gravity.java',
               	'android/view/InputDevice.java',
               	'android/view/InputEvent.java',
+              	'android/view/InputQueue.java',
               	'android/view/inputmethod/BaseInputConnection.java',
               	'android/view/inputmethod/InputConnection.java',
               	'android/view/LayoutInflater.java',

@@ -27,7 +27,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.os.MessageQueue;
 import android.util.AttributeSet;
-//import android.view.InputQueue;
+import android.view.InputQueue;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -56,7 +56,7 @@ import java.io.File;
  * {@sample development/ndk/platforms/android-9/samples/native-activity/jni/main.c all}
  */
 public class NativeActivity extends Activity implements SurfaceHolder.Callback,
-		/*InputQueue.Callback, */OnGlobalLayoutListener {
+		InputQueue.Callback, OnGlobalLayoutListener {
 	/**
 	 * Optional meta-that can be in the manifest for this component, specifying
 	 * the name of the native shared library to load.  If not specified,
@@ -79,7 +79,7 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 
 	private long mNativeHandle;
 
-//	private InputQueue mCurInputQueue;
+	private InputQueue mCurInputQueue;
 	private SurfaceHolder mCurSurfaceHolder;
 
 	final int[] mLocation = new int[2];
@@ -110,8 +110,8 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 			int format, int width, int height);
 	private native void onSurfaceRedrawNeededNative(long handle, Surface surface);
 	private native void onSurfaceDestroyedNative(long handle);
-	private native void onInputQueueCreatedNative(long handle, int queuePtr);
-	private native void onInputQueueDestroyedNative(long handle, int queuePtr);
+	private native void onInputQueueCreatedNative(long handle, long queuePtr);
+	private native void onInputQueueDestroyedNative(long handle, long queuePtr);
 	private native void onContentRectChangedNative(long handle, int x, int y, int w, int h);
 
 	static class NativeContentView extends SurfaceView {
@@ -135,7 +135,7 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 //		mIMM = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 
 //		getWindow().takeSurface(this);
-//		getWindow().takeInputQueue(this);
+		getWindow().takeInputQueue(this);
 //		getWindow().setFormat(PixelFormat.RGB_565);
 //		getWindow().setSoftInputMode(
 //				WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED
@@ -198,10 +198,10 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 			onSurfaceDestroyedNative(mNativeHandle);
 			mCurSurfaceHolder = null;
 		}
-/*		if (mCurInputQueue != null) {
+		if (mCurInputQueue != null) {
 			onInputQueueDestroyedNative(mNativeHandle, mCurInputQueue.getNativePtr());
 			mCurInputQueue = null;
-		}*/
+		}
 		unloadNativeCode(mNativeHandle);
 		super.onDestroy();
 	}
@@ -291,19 +291,19 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 		}
 	}
 
-/*	public void onInputQueueCreated(InputQueue queue) {
+	public void onInputQueueCreated(InputQueue queue) {
 		if (!mDestroyed) {
 			mCurInputQueue = queue;
 			onInputQueueCreatedNative(mNativeHandle, queue.getNativePtr());
 		}
-	}*/
+	}
 
-/*	public void onInputQueueDestroyed(InputQueue queue) {
+	public void onInputQueueDestroyed(InputQueue queue) {
 		if (!mDestroyed) {
 			onInputQueueDestroyedNative(mNativeHandle, queue.getNativePtr());
 			mCurInputQueue = null;
 		}
-	}*/
+	}
 
 	public void onGlobalLayout() {
 /*		mNativeContentView.getLocationInWindow(mLocation);
