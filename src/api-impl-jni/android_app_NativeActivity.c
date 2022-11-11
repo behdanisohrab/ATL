@@ -544,20 +544,19 @@ Java_android_app_NativeActivity_onSurfaceDestroyedNative(JNIEnv* env, jobject cl
 }
 
 void
-Java_android_app_NativeActivity_onInputQueueCreatedNative(JNIEnv* env, jobject clazz, jlong handle, jint queuePtr)
+Java_android_app_NativeActivity_onInputQueueCreatedNative(JNIEnv* env, jobject clazz, jlong handle, jlong queue)
 {
 	printf("STUB - onInputChannelCreated_native\n");
-/*	if (handle != 0) {
+	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onInputQueueCreated != NULL) {
-			AInputQueue* queue = reinterpret_cast<AInputQueue*>(queuePtr);
 			code->callbacks.onInputQueueCreated(code, queue);
 		}
-	}*/
+	}
 }
 
 void
-Java_android_app_NativeActivity_onInputQueueDestroyedNative(JNIEnv* env, jobject clazz, jlong handle, jint queuePtr)
+Java_android_app_NativeActivity_onInputQueueDestroyedNative(JNIEnv* env, jobject clazz, jlong handle, jlong queuePtr)
 {
 	printf("STUB - onInputChannelDestroyed_native\n");
 /*	if (handle != 0) {

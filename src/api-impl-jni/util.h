@@ -59,6 +59,10 @@ struct handle_cache {
 	} audio_track_periodic_listener;
 	struct {
 		jclass class;
+		jmethodID onInputQueueCreated;
+	} input_queue_callback;
+	struct {
+		jclass class;
 		jmethodID setLayoutParams;
 	} view;
 };

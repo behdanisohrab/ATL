@@ -33,4 +33,10 @@ public class Window {
 	}
 
 	private native void set_widget_as_root(long native_window, long widget);
+
+	public native void take_input_queue(long native_window, InputQueue.Callback callback, InputQueue queue);
+
+	public void takeInputQueue(InputQueue.Callback callback) {
+		take_input_queue(native_window, callback, new InputQueue());
+	}
 }

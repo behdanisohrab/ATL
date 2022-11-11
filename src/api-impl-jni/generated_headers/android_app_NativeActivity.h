@@ -122,18 +122,18 @@ JNIEXPORT void JNICALL Java_android_app_NativeActivity_onSurfaceDestroyedNative
 /*
  * Class:     android_app_NativeActivity
  * Method:    onInputQueueCreatedNative
- * Signature: (JI)V
+ * Signature: (JJ)V
  */
 JNIEXPORT void JNICALL Java_android_app_NativeActivity_onInputQueueCreatedNative
-  (JNIEnv *, jobject, jlong, jint);
+  (JNIEnv *, jobject, jlong, jlong);
 
 /*
  * Class:     android_app_NativeActivity
  * Method:    onInputQueueDestroyedNative
- * Signature: (JI)V
+ * Signature: (JJ)V
  */
 JNIEXPORT void JNICALL Java_android_app_NativeActivity_onInputQueueDestroyedNative
-  (JNIEnv *, jobject, jlong, jint);
+  (JNIEnv *, jobject, jlong, jlong);
 
 /*
  * Class:     android_app_NativeActivity
