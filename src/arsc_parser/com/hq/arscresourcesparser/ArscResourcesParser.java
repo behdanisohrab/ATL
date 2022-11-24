@@ -81,6 +81,9 @@ public class ArscResourcesParser {
 		System.out.println("¯¯ in getResourceId");
 		ResTableValueEntry res = (ResTableValueEntry)arscFile.getResourceByName(name, typeId);
 
-		return res.entryId;
+		if(res != null)
+			return res.entryId;
+		else
+			return 0;
 	}
 }

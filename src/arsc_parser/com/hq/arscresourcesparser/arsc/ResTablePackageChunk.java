@@ -132,6 +132,10 @@ public class ResTablePackageChunk {
 		System.out.println("¯¯ in ResTablePackageChunk - getResourceByName");
 
         List<BaseTypeChunk> typeList = typeInfoIndexer.get(typeId); // The first chunk in typeList should be ResTableTypeSpecChunk
+		if(typeList == null) {
+			System.out.println("¯¯ typeList is null, this is sus...");
+			return null;
+		}
         for (int i = 1; i < typeList.size(); ++i) {
             if (typeList.get(i) instanceof ResTableTypeInfoChunk) {
                 ResTableTypeInfoChunk x = (ResTableTypeInfoChunk) typeList.get(i);
