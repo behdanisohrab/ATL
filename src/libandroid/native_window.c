@@ -222,7 +222,6 @@ static void on_resize(GtkWidget* self, gint width, gint height, struct wl_egl_wi
 
 ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 {
-
 	int width;
 	int height;
 
@@ -375,6 +374,10 @@ EGLDisplay bionic_eglGetDisplay(NativeDisplayType native_display)
 
 EGLSurface bionic_eglCreateWindowSurface(EGLDisplay display, EGLConfig config, struct ANativeWindow *native_window, EGLint const *attrib_list)
 {
+	// better than crashing (TODO: check if apps try to use the NULL value anyway)
+	if(!native_window)
+		return NULL;
+
 	PrintConfigAttributes(display, config);
 	EGLSurface ret = eglCreateWindowSurface(display, config, native_window->egl_window, attrib_list);
 
