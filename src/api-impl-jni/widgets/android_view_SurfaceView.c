@@ -24,7 +24,7 @@ struct _SurfaceViewWidgetClass
 
 G_DEFINE_TYPE(SurfaceViewWidget, surface_view_widget, GTK_TYPE_WIDGET)
 
-static void surface_view_widget_init (SurfaceViewWidget *wrapper_widget)
+static void surface_view_widget_init (SurfaceViewWidget *surface_view_widget)
 {
 
 }
