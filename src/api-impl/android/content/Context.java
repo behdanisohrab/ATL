@@ -16,6 +16,7 @@ import android.util.DisplayMetrics;
 import android.content.SharedPreferences;
 import android.app.SharedPreferencesImpl;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.app.Application;
 
 import android.view.WindowManager;
@@ -41,6 +42,8 @@ public class Context extends Object {
 	static DisplayMetrics dm;
 	static Configuration config;
 	static Resources r;
+
+	static String apk_path = "/tmp/APK_PATH_SHOULD_HAVE_BEEN_FILLED_IN_BY_CODE_IN_main.c/";
 
 	public /*← FIXME?*/ static Application this_application;
 
@@ -96,6 +99,8 @@ public class Context extends Object {
 				return new UsbManager();
 			case "vibrator":
 				return new Vibrator();
+			case "power":
+				return new PowerManager();
 			default:
 				System.out.println("!!!!!!! getSystemService: case >"+name+"< is not implemented yet");
 				return null;
@@ -113,6 +118,10 @@ public class Context extends Object {
 
 	public String getPackageName() {
 		return "com.example.demo_app";
+	}
+
+	public String getPackageCodePath() {
+		return apk_path;
 	}
 
 	public final String getString(int resId) {

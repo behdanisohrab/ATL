@@ -61,4 +61,8 @@ public class TextUtils {
         final CharSequence delimiter = ","; // ????
         return join(delimiter, list);
     }
+
+	public static boolean isEmpty(CharSequence str) {
+		return str.equals(""); // presumably?
+	}
 }

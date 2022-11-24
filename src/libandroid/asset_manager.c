@@ -23,6 +23,25 @@ typedef void * jobject;
 #define ASSET_DIR "assets/"
 char *get_app_data_dir();
 
+int AAsset_openFileDescriptor(struct AAsset *asset, off_t *out_start, off_t *out_length)
+{
+	int ret;
+	int fd = asset->fd;
+
+	printf("openning asset's file descriptor: : %d\n", fd);
+
+	struct stat statbuf;
+
+	ret = fstat(fd, &statbuf);
+	if(ret)
+		printf("oopsie, fstat failed on fd: %d with errno: %d\n", fd, errno);
+
+	*out_start = 0; // on android, we would be returning the fd of the app's apk, and this would be the offet to a non-compressed archive member
+	*out_length = statbuf.st_size; // similarly, this would be the size of the section of memory containing the non-compressed archive member
+
+	return fd;
+}
+
 struct AAsset* AAssetManager_open(struct AAssetManager *amgr, const char *file_name, int mode)
 {
 	char *app_data_dir = get_app_data_dir();

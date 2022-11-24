@@ -1,4 +1,5 @@
 hax_jar = jar('hax', [
+              	'android/accounts/Account.java',
               	'android/annotation/PrivateApi.java',
               	'android/annotation/SdkConstant.java',
               	'android/annotation/SuppressLint.java',
@@ -44,6 +45,7 @@ hax_jar = jar('hax', [
               	'android/content/pm/PermissionGroupInfo.java',
               	'android/content/pm/PermissionInfo.java',
               	'android/content/pm/ProviderInfo.java',
+              	'android/content/pm/ResolveInfo.java',
               	'android/content/pm/ServiceInfo.java',
               	'android/content/pm/Signature.java',
               	'android/content/pm/VerifierInfo.java',
@@ -114,6 +116,7 @@ hax_jar = jar('hax', [
               	'android/os/Parcelable.java',
               	'android/os/ParcelFileDescriptor.java',
               	'android/os/PatternMatcher.java',
+              	'android/os/PowerManager.java',
               	'android/os/Process.java',
               	'android/os/RemoteException.java',
               	'android/os/ResultReceiver.java',
