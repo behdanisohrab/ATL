@@ -226,7 +226,7 @@ public class Handler {
      */
     public Handler(Looper looper, Callback callback, boolean async) {
         mLooper = looper;
-        mQueue = looper.mQueue;
+        mQueue = null/*looper.mQueue*/;
         mCallback = callback;
         mAsynchronous = async;
     }

@@ -16,17 +16,14 @@
 
 package android.database;
 
-//import android.content.ContentResolver;
-//import android.net.Uri;
+import android.database.ContentObserver;
+import android.content.ContentResolver;
+import android.net.Uri;
 import android.os.Bundle;
 
 import java.io.Closeable;
 
-class Uri {}
-class ContentResolver {}
-
 class CharArrayBuffer {}
-class ContentObserver {}
 class DataSetObserver {}
 
 /**

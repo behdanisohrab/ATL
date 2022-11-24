@@ -42,6 +42,7 @@ public class Context extends Object {
 	static DisplayMetrics dm;
 	static Configuration config;
 	static Resources r;
+	static ApplicationInfo application_info;
 
 	static String apk_path = "/tmp/APK_PATH_SHOULD_HAVE_BEEN_FILLED_IN_BY_CODE_IN_main.c/";
 
@@ -59,14 +60,21 @@ public class Context extends Object {
 		config = new Configuration();
 		r = new Resources(assets, dm, config);
 		this_application = new Application(); // TODO: the application context is presumably not identical to the Activity context, what is the difference for us though?
+		application_info = new ApplicationInfo();
 	}
 
 	public Context() {
 		System.out.println("new Context! this one is: " + this);
 	}
 
+	public Resources.Theme getTheme() {
+		return r.newTheme();
+	}
+
 	public ApplicationInfo getApplicationInfo () {
-		return new ApplicationInfo();
+		// TODO: do this somewhere saner?
+		application_info.nativeLibraryDir = (new File(getDataDirFile(), "lib")).getAbsolutePath();
+		return application_info;
 	}
 
 	public Context getApplicationContext() {
