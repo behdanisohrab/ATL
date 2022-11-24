@@ -250,8 +250,6 @@ Java_android_app_NativeActivity_loadNativeCode(JNIEnv* env, jobject clazz, jstri
 		jstring externalDataDir, int sdkVersion,
 		jobject jAssetMgr, jbyteArray savedState)
 {
-	printf("STUB - loadNativeCode_native\n");
-
 	const char* pathStr = (*env)->GetStringUTFChars(env, path, NULL);
 	struct NativeCode* code = NULL;
 
@@ -280,7 +278,7 @@ Java_android_app_NativeActivity_loadNativeCode(JNIEnv* env, jobject clazz, jstri
 */
 		int msgpipe[2];
 		if (pipe(msgpipe)) {
-			printf("could not create pipe: %s", strerror(errno));
+			fprintf(stderr, "could not create pipe: %s", strerror(errno));
 			NativeCode_destroy(code);
 			return 0;
 		}
@@ -312,12 +310,13 @@ Java_android_app_NativeActivity_loadNativeCode(JNIEnv* env, jobject clazz, jstri
 		code->native_activity.env = env;
 		code->native_activity.clazz = (*env)->NewGlobalRef(env, clazz);
 
-		code->native_activity.internalDataPath = (*env)->GetStringUTFChars(env, internalDataDir, NULL);
-		(*env)->ReleaseStringUTFChars(env, internalDataDir, code->native_activity.internalDataPath);
+		char *tmp;
+		code->native_activity.internalDataPath = strdup(tmp = (*env)->GetStringUTFChars(env, internalDataDir, NULL));
+		(*env)->ReleaseStringUTFChars(env, internalDataDir, tmp);
 
 		if (externalDataDir != NULL) {
-			code->native_activity.externalDataPath = (*env)->GetStringUTFChars(env, externalDataDir, NULL);
-			(*env)->ReleaseStringUTFChars(env, externalDataDir, code->native_activity.externalDataPath);
+			code->native_activity.externalDataPath = strdup(tmp = (*env)->GetStringUTFChars(env, externalDataDir, NULL));
+			(*env)->ReleaseStringUTFChars(env, externalDataDir, tmp);
 		} else {
 			code->native_activity.externalDataPath = NULL; // TODO: or ""?
 		}
