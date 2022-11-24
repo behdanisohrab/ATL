@@ -1,5 +1,7 @@
+#include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <unistd.h>
 
 #include <gtk/gtk.h>
 
@@ -60,6 +62,8 @@ enum {
 	AMOTION_EVENT_ACTION_BUTTON_RELEASE = 12
 };
 
+// TODO: since we have to shove this struct through pipes, we might want to use different structs
+// for each event and have an event type field consistent between them so we know what to cast to
 struct AInputEvent {
 	double x;
 	double y;
@@ -153,71 +157,89 @@ struct android_poll_source {
     void (*process)(struct android_app* app, struct android_poll_source* source);
 };
 
-// ugly; if this is < 0, there are no events
-// we return this from AInputQueue_getEvent,
-// and we don't want to have an actual queue
-static int32_t fixme_ugly_are_there_events = -1;
-
+// TODO: malloc on getEvent and free on finishEvent? malloc isn't very fast though, and events can in principle be pretty frequent
 struct AInputEvent fixme_ugly_current_event;
 
-static gboolean on_event(GtkEventControllerLegacy* self, GdkEvent* event, struct android_poll_source *poll_source)
+static inline void make_touch_event(GdkEvent* event, GtkEventControllerLegacy* event_controller, struct AInputEvent *ainput_event)
 {
-	double x;
-	double y;
+	GtkWidget *window = gtk_event_controller_get_widget(event_controller);
+	GtkWidget *child;
 
-	// TODO: this doesn't work for multitouch
+	gdk_event_get_position(event, &ainput_event->x, &ainput_event->y);
+
+	// the window's coordinate system starts at the top left of the header bar, which is not ideal
+	// apps expect it to start at the top left of the area where child widgets get placed, so that
+	// the top left of the window is the same as the top left of a single widget filling the entire window
+	// while it's quite hacky, the following should realistically work for most if not all cases
+	if(child = gtk_window_get_child(GTK_WINDOW(window)))
+		gtk_widget_translate_coordinates(window, child, ainput_event->x, ainput_event->y, &ainput_event->x, &ainput_event->y);
+
 	switch(gdk_event_get_event_type(event)) {
 		case GDK_BUTTON_PRESS:
-			gdk_event_get_position(event, &x, &y);
-			fixme_ugly_current_event.x = x;
-			fixme_ugly_current_event.y = y;
-			fixme_ugly_current_event.action = AMOTION_EVENT_ACTION_DOWN;
-			fixme_ugly_are_there_events = 0; // not < 0, so there are events
-			poll_source->process(poll_source->app, poll_source);
-			if(fixme_ugly_are_there_events != -1)
-				fprintf(stderr, "sus: poll_source->callback finished, but 'fixme_ugly_are_there_events' is not -1 (it's %d)\n"
-						       "this should *probably* not happen?\n", fixme_ugly_are_there_events);
+		case GDK_TOUCH_BEGIN:
+			ainput_event->action = AMOTION_EVENT_ACTION_DOWN;
 			break;
 		case GDK_BUTTON_RELEASE:
-			gdk_event_get_position(event, &x, &y);
-			fixme_ugly_current_event.x = x;
-			fixme_ugly_current_event.y = y;
-			fixme_ugly_current_event.action = AMOTION_EVENT_ACTION_UP;
-			fixme_ugly_are_there_events = 0; // not < 0, so there are events
-			poll_source->process(poll_source->app, poll_source);
-			if(fixme_ugly_are_there_events != -1)
-				fprintf(stderr, "sus: poll_source->callback finished, but 'fixme_ugly_are_there_events' is not -1 (it's %d)\n"
-						       "this should *probably* not happen?\n", fixme_ugly_are_there_events);
+		case GDK_TOUCH_END:
+			ainput_event->action = AMOTION_EVENT_ACTION_UP;
 			break;
 		case GDK_MOTION_NOTIFY:
-			gdk_event_get_position(event, &x, &y);
-			fixme_ugly_current_event.x = x;
-			fixme_ugly_current_event.y = y;
-			fixme_ugly_current_event.action = AMOTION_EVENT_ACTION_MOVE;
-			fixme_ugly_are_there_events = 0; // not < 0, so there are events
-			poll_source->process(poll_source->app, poll_source);
-			if(fixme_ugly_are_there_events != -1)
-				fprintf(stderr, "sus: poll_source->callback finished, but 'fixme_ugly_are_there_events' is not -1 (it's %d)\n"
-						       "this should *probably* not happen?\n", fixme_ugly_are_there_events);
+		case GDK_TOUCH_UPDATE:
+			ainput_event->action = AMOTION_EVENT_ACTION_MOVE;
+			break;
+		default:
+			fprintf(stderr, "%s: %s: passed in GdkEvent is not a touch event or equivalent\n", __FILE__, __func__);
 			break;
 	}
 }
 
-void AInputQueue_attachLooper(AInputQueue* queue, struct ALooper* looper, int ident, Looper_callbackFunc callback, void* data)
+static gboolean on_event(GtkEventControllerLegacy* self, GdkEvent* event, int input_queue_pipe_fd)
+{
+	struct AInputEvent ainput_event;
+
+	// TODO: this doesn't work for multitouch
+	switch(gdk_event_get_event_type(event)) {
+		// mouse click/move (currently we convert these to touch events)
+		case GDK_BUTTON_PRESS:
+		case GDK_BUTTON_RELEASE:
+		case GDK_MOTION_NOTIFY:
+		// touchscreen
+		case GDK_TOUCH_BEGIN:
+		case GDK_TOUCH_END:
+		case GDK_TOUCH_UPDATE:
+			make_touch_event(event, self, &ainput_event);
+			write(input_queue_pipe_fd, &ainput_event, sizeof(struct AInputEvent));
+			break;
+	}
+}
+
+// FIXME put this in a header file
+struct input_queue {
+	int fd;
+	GtkEventController *controller;
+};
+
+void AInputQueue_attachLooper(struct input_queue* queue, struct ALooper* looper, int ident, Looper_callbackFunc callback, void* data)
 {
 	struct android_poll_source *poll_source = (struct android_poll_source *)data;
 	printf("AInputQueue_attachLooper called: queue: %p, looper: %p, ident: %d, callback %p, data: %p, process_func: %p\n", queue, looper, ident, callback, poll_source, poll_source->process);
 
-	GtkEventController *controller = (GtkEventController *)queue; // TODO: is there a saner thing to pass here?
-
-	g_signal_connect(controller, "event", G_CALLBACK(on_event), (gpointer)poll_source);
+	int input_queue_pipe[2];
+	if (pipe(input_queue_pipe)) {
+		fprintf(stderr, "could not create pipe: %s", strerror(errno));
+		return;
+	}
+	fcntl(input_queue_pipe[0], F_SETFL, O_NONBLOCK);
+	ALooper_addFd(looper, input_queue_pipe[0], ident, (1 << 0)/*? ALOOPER_EVENT_INPUT*/, callback, data);
+	g_signal_connect(queue->controller, "event", G_CALLBACK(on_event), (gpointer)input_queue_pipe[1]);
+	queue->fd = input_queue_pipe[0];
 }
 
-int32_t AInputQueue_getEvent(AInputQueue* queue, struct AInputEvent** outEvent)
+int32_t AInputQueue_getEvent(struct input_queue *queue, struct AInputEvent** outEvent)
 {
-	if(fixme_ugly_are_there_events == 0) {
+	if(read(queue->fd, &fixme_ugly_current_event, sizeof(struct AInputEvent)) == sizeof(struct AInputEvent)) {
 		*outEvent = &fixme_ugly_current_event;
-		return fixme_ugly_are_there_events;
+		return 0;
 	} else {
 		return -1; // no events or error
 	}
@@ -230,5 +252,5 @@ int32_t AInputQueue_preDispatchEvent(AInputQueue* queue, struct AInputEvent* eve
 
 void AInputQueue_finishEvent(AInputQueue* queue, struct AInputEvent* event, int handled)
 {
-	fixme_ugly_are_there_events = -1;
+	// should we do something here?
 }
