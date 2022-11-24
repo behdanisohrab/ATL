@@ -23,6 +23,23 @@ marshal_files = gnome.genmarshal('marshal',
 	internal: true,
 )
 
+
+# libandroid
+libandroid_so = shared_library('android', [
+                          	'src/libandroid/asset_manager.c',
+                          	'src/libandroid/configuration.c',
+                          	'src/libandroid/input.c',
+                          	'src/libandroid/looper.c',
+                          	'src/libandroid/media.c',
+                          	'src/libandroid/native_window.c',
+                          	'src/libandroid/sensor.c',
+                          ],
+                          install: true,
+                          soversion: 0,
+                          dependencies: [
+                          	dependency('gtk4'), dependency('jni'), dependency('glfw3')
+                          ])
+
 libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/egl/com_google_android_gles_jni_EGLImpl.c',
                                                                   	'src/api-impl-jni/android_os_Environment.c',
@@ -52,6 +69,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   dependencies: [
                                                                   	dependency('gtk4'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni')
                                                                   ],
+                                                                  link_with: [ libandroid_so ],
                                                                   link_args: [
                                                                   	'-lasound'
                                                                   ])
@@ -67,22 +85,6 @@ executable('android-translation-layer', [
                    link_args: [
                    	'-rdynamic'
                    ])
-
-# libandroid
-shared_library('android', [
-                          	'src/libandroid/asset_manager.c',
-                          	'src/libandroid/configuration.c',
-                          	'src/libandroid/input.c',
-                          	'src/libandroid/looper.c',
-                          	'src/libandroid/media.c',
-                          	'src/libandroid/native_window.c',
-                          	'src/libandroid/sensor.c',
-                          ],
-                          install: true,
-                          soversion: 0,
-                          dependencies: [
-                          	dependency('gtk4'), dependency('jni'), dependency('glfw3')
-                          ])
 
 # hax_arsc_parser.dex (named as classes2.dex so it works inside a jar)
 subdir('src/arsc_parser')
