@@ -20,13 +20,13 @@ import android.annotation.SdkConstant;
 import android.annotation.SdkConstant.SdkConstantType;
 import android.content.ComponentName;
 import android.content.Context;
-//import android.content.Intent;
-//import android.content.IntentFilter;
-//import android.content.IntentSender;
-//import android.content.res.Resources;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.IntentSender;
+import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 //import android.graphics.drawable.Drawable;
-//import android.net.Uri;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.UserHandle;
 import android.util.AndroidException;
@@ -36,20 +36,14 @@ import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
 
-class Uri {}
-class Resources {}
 class IPackageInstallObserver {}
 class VerificationParams {}
 class ContainerEncryptionParams {}
 class IPackageDeleteObserver {}
 class IPackageDataObserver {}
-class IntentSender {}
 class IPackageStatsObserver {}
-class IntentFilter {}
-class Intent { public Intent(String action) {} }
 class VerifierDeviceIdentity {}
 class IPackageMoveObserver {}
-class ResolveInfo {}
 class Drawable {}
 
 /**
@@ -2165,7 +2159,7 @@ public class PackageManager {
      */
     public List<ResolveInfo> queryIntentActivities(Intent intent,
             int flags) {
-		return null;
+		return new ArrayList<ResolveInfo>();
 	}
 
     /**
@@ -2189,7 +2183,7 @@ public class PackageManager {
      */
     public List<ResolveInfo> queryIntentActivitiesAsUser(Intent intent,
             int flags, int userId) {
-		return null;
+		return new ArrayList<ResolveInfo>();
 	}
 
 
@@ -2303,7 +2297,7 @@ public class PackageManager {
      */
     public List<ResolveInfo> queryIntentServices(Intent intent,
             int flags) {
-		return null;
+		return new ArrayList<ResolveInfo>();
 	}
 
     /**

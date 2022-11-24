@@ -17,6 +17,7 @@
 package android.content.pm;
 
 import android.content.ComponentName;
+import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
