@@ -59,13 +59,20 @@ char *construct_classpath(char *prefix, char **cp_array, size_t len)
 	return result;
 }
 
+#define JDWP_ARG "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address="
+
 JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, char *api_impl_natives_dir, char *app_lib_dir) {
 	JavaVM* jvm;
 	JNIEnv* env;
 	JavaVMInitArgs args;
-	JavaVMOption options[3];
+	JavaVMOption options[4];
 	args.version = JNI_VERSION_1_6;
 	args.nOptions = 3;
+	char jdwp_option_string[sizeof(JDWP_ARG) + 5] = JDWP_ARG;// 5 chars for port number, NULL byte is counted by sizeof
+
+	const char* jdwp_port = getenv("JDWP_LISTEN");
+	if(jdwp_port)
+		args.nOptions += 1;
 
 	if(getenv("RUN_FROM_BUILDDIR")) {
 		options[0].optionString = construct_classpath("-Djava.library.path=", (char *[]){"./", app_lib_dir}, 2);
@@ -78,6 +85,10 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 	// TODO: request resources.arsc from concrete apk instead of taking the first one in classpath
 	options[1].optionString = construct_classpath("-Djava.class.path=", (char *[]){api_impl_jar, apk_classpath, microg_apk}, 3);
 	options[2].optionString = "-verbose:jni";
+	if(jdwp_port) {
+		strncat(jdwp_option_string, jdwp_port, 5); // 5 chars is enough for a port number, and won't overflow our array
+		options[3].optionString = jdwp_option_string;
+	}
 
 	args.options = options;
 	args.ignoreUnrecognized = JNI_FALSE;
@@ -89,6 +100,19 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 		printf("JVM launched successfully\n");
 	}
 	return env;
+}
+
+gboolean hacky_on_window_focus_changed_callback(JNIEnv *env)
+{
+	if(gtk_widget_get_width(window) != 0) {
+		(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onWindowFocusChanged, true);
+		if((*env)->ExceptionCheck(env))
+			(*env)->ExceptionDescribe(env);
+
+		return G_SOURCE_REMOVE;
+	}
+
+	return G_SOURCE_CONTINUE;
 }
 
 // this is exported by the shim bionic linker
@@ -259,10 +283,14 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	_SET_STATIC_INT_FIELD(display_class, "window_width", d->window_width);
 	_SET_STATIC_INT_FIELD(display_class, "window_height", d->window_height);
 
+	// some apps need the apk path since they directly read their apk
+	jclass context_class = (*env)->FindClass(env, "android/content/Context");
+	_SET_STATIC_OBJ_FIELD(context_class, "apk_path", "java/lang/String", _JSTRING(apk_classpath));
+
 	FIXME__WIDTH = d->window_width;
 	FIXME__HEIGHT = d->window_height;
 
-	window = gtk_application_window_new (app);
+	window = gtk_application_window_new(app);
 	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.set_window, _INTPTR(window));
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
@@ -306,9 +334,8 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
-	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onWindowFocusChanged, true);
-	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);
+	g_timeout_add(10, G_SOURCE_FUNC(hacky_on_window_focus_changed_callback), env);
+
 
 	jobject input_queue_callback = g_object_get_data(G_OBJECT(window), "input_queue_callback");
 	if(input_queue_callback) {
