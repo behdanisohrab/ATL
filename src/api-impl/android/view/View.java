@@ -3,6 +3,7 @@ package android.view;
 import android.util.AttributeSet;
 import android.util.LayoutDirection;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.Canvas;
 
@@ -746,6 +747,10 @@ public class View extends Object {
 		native_set_size_request(MeasureSpec.getSize(measuredWidth), MeasureSpec.getSize(measuredHeight));
 	}
 
+	public Resources getResources() {
+		return Context.this_application.getResources();
+	}
+
 	public native void setGravity(int gravity);
 	public native void setOnTouchListener(OnTouchListener l);
 	public native void setOnClickListener(OnClickListener l);
@@ -757,6 +762,12 @@ public class View extends Object {
 	private native void native_set_size_request(int width, int height);
 
 // --- stubs
+
+	public void setContentDescription(CharSequence contentDescription) {
+		System.out.println("setContentDescription called with: >"+contentDescription+"<");
+	}
+
+	public void setId(int id) {}
 
 	public void setOnKeyListener(OnKeyListener l) {}
 

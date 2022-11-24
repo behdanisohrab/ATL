@@ -1,6 +1,7 @@
 package android.provider;
 
 import android.content.ContentResolver;
+import android.net.Uri;
 import android.util.AndroidException;
 
 public class Settings {
@@ -25,14 +26,29 @@ public class Settings {
 		}
 	}
 	public static final class System {
-		public static int getInt (ContentResolver cr, String key, int def) {
-			java.lang.System.out.println("!!!! Settings$System.getInt(def: "+def+"): unknown key: >"+key+"<");
-			return def; // FIXME
+		public static final Uri CONTENT_URI = null;//Uri.parse("content://settings/system");
+
+		public static int getInt(ContentResolver cr, String key, int def) {
+			int ret = getInt(cr, key);
+			if(ret != -1) {
+				return ret;
+			} else {
+				return def; // FIXME
+			}
 		}
 
-		public static int getInt (ContentResolver cr, String key) {
-			java.lang.System.out.println("!!!! Settings$System.getInt: unknown key: >"+key+"<");
-			return 0;
+		public static int getInt(ContentResolver cr, String key) {
+			switch(key) {
+				case "accelerometer_rotation":
+					return 0; // degrees? no clue
+				default:
+					java.lang.System.out.println("!!!! Settings$System.getInt: unknown key: >"+key+"<");
+					return 0; // TODO: should be -1 probably?
+			}
+		}
+
+		public static Uri getUriFor(String name) {
+			return null;
 		}
 	}
 

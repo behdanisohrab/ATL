@@ -114,8 +114,19 @@ public class Intent {
 		return this; //??
 	}
 
-	public Intent setClass (Context packageContext, Class<?> cls) {
+	public Intent setClass(Context packageContext, Class<?> cls) {
 		return this; //??
 	}
 
+	public String getStringExtra(String name) {
+		return null;
+	}
+
+	public Uri getData() {
+		return null;
+	}
+
+	public boolean getBooleanExtra(String name, boolean defaultValue) {
+		return defaultValue;
+	}
 }

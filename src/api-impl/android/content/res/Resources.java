@@ -1258,8 +1258,8 @@ public class Resources {
             int len = attrs.length;
             TypedArray array = getCachedStyledAttributes(len);
             array.mRsrcs = attrs;
-            AssetManager.applyStyle(mTheme, 0, 0, 0, attrs,
-                    array.mData, array.mIndices);
+/*            AssetManager.applyStyle(mTheme, 0, 0, 0, attrs,
+                    array.mData, array.mIndices);*/
             return array;
         }
 
@@ -1288,7 +1288,7 @@ public class Resources {
             int len = attrs.length;
             TypedArray array = getCachedStyledAttributes(len);
             array.mRsrcs = attrs;
-
+/*
             AssetManager.applyStyle(mTheme, 0, resid, 0, attrs,
                     array.mData, array.mIndices);
             if (false) {
@@ -1316,7 +1316,7 @@ public class Resources {
                         + "=" + value;
                 }
                 System.out.println(s);
-            }
+            }*/
             return array;
         }
 
@@ -1372,7 +1372,7 @@ public class Resources {
                 int[] attrs, int defStyleAttr, int defStyleRes) {
             int len = attrs.length;
             TypedArray array = getCachedStyledAttributes(len);
-
+/*
             // XXX note that for now we only work with compiled XML files.
             // To support generic XML files we will need to manually parse
             // out the attributes from the XML file (applying type information
@@ -1414,7 +1414,7 @@ public class Resources {
                 }
                 System.out.println(s);
             }
-
+*/
             return array;
         }
 
@@ -1465,7 +1465,7 @@ public class Resources {
 
         /*package*/ Theme() {
             mAssets = Resources.this.mAssets;
-            mTheme = mAssets.createTheme();
+            mTheme = 0/*mAssets.createTheme()*/;
         }
 
         private final AssetManager mAssets;

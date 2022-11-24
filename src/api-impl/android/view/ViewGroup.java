@@ -49,13 +49,8 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 	public native void addView(View child, int index, LayoutParams params);
 
-    public native void removeView(View view);/* {
-		System.out.println("NOT_IMPLEMENTED: ViewGroup.removeView: Gtk4 doesn't have a generic function for removing a child of GtkView, so you must override this function in the actual widget's class");
-	}*/
-	public native void removeAllViews();/* {
-		System.out.println("NOT_IMPLEMENTED: ViewGroup.removeAllViews: Gtk4 doesn't have a generic function for removing a child of GtkView, so you must override this function in the actual widget's class");
-		new Exception().printStackTrace();
-	}*/
+    public native void removeView(View view);
+	public native void removeAllViews();
 
 	public View getChildAt(int index) {
 		return children.get(index);
@@ -65,6 +60,10 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 	public LayoutParams generateLayoutParams(AttributeSet attrs) {
 		return new LayoutParams(/*getContext(), attrs*/);
+	}
+
+	public void bringChildToFront(View child) {
+		// TODO: actually implement this (might make sense to implement it in the subclasses instead), when applicable
 	}
 
 	public static class LayoutParams {
