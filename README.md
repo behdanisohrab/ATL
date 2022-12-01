@@ -11,19 +11,19 @@ build instructions:
 then, to run from builddir:  
 `cd builddir`  
 and  
-`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ANDROID_APP_DATA_DIR=../test_apks/example_data_dir/ ./android_translation_layer ../test_apks/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity`  
+`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ANDROID_APP_DATA_DIR=../test_apks/example_data_dir/ ./android-translation-layer ../test_apks/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity`  
 (for an example of a full game working that can be distributed along this)
 or  
-`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ANDROID_APP_DATA_DIR=../test_apks/example_data_dir/ ./android_translation_layer ../test_apks/gles3jni.apk -l com/android/gles3jni/GLES3JNIActivity`  
+`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ANDROID_APP_DATA_DIR=../test_apks/example_data_dir/ ./android-translation-layer ../test_apks/gles3jni.apk -l com/android/gles3jni/GLES3JNIActivity`  
 (for a sample app using OpenGL from native code to do it's rendering) (note: the lib in `test_apks/example_data_dir/gles3jni.apk/lib/` is for x86_64, make sure you extract the lib for your architecture from the apk)  
 
 to install:  
 `meson install`  
 
 to run after installataion:  
-`ANDROID_APP_DATA_DIR=[data dir] android_translation_layer [path to apk] -l [activity to launch]`  
+`ANDROID_APP_DATA_DIR=[data dir] android-translation-layer [path to apk] -l [activity to launch]`  
 or just  
-`android_translation_layer [path to apk] -l [activity to launch]`  
+`android-translation-layer [path to apk] -l [activity to launch]`  
 to use the default data dir of `~/.local/share/android_translation_layer/`
 
 NOTE: for apps which use the built-in NativeActivity mechanism, simply specify `-l android/app/NativeActivity`  
@@ -36,7 +36,7 @@ TODO_LONGTERM: parse AndroidManifest.xml
 
 NOTE: some apps don't like runtime changes to resolution, and currently GLSurfaceView will stretch instead of changing resolution  
 to sidestep this, we allow for specifying the initial resolution, which will currently always get passed as the screen resolution to the app and to GLSurfaceView even when you resize the window.
-example with custom width/height: `android_translation_layer path/to/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity -w 540 -h 960`
+example with custom width/height: `android-translation-layer path/to/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity -w 540 -h 960`
 
 NOTE: you might need to copy some files out from the apk under `ANDROID_APP_DATA_DIR` 
 (defaults to `~/.local/share/android_translation_layer/`), e.g the `assets` folder;  
@@ -66,7 +66,7 @@ for general description of the architecure, see `doc/Architecture.md`
 
 screenshot:
 
-![angry birds 3.2.0, Worms 2 Armageddon, and gravity defied running side by side by side](https://gitlab.com/Mis012/android_translation_layer_PoC/-/raw/master/screenshot_2.png)
+![angry birds 3.2.0, Worms 2 Armageddon, and gravity defied running side by side by side](https://gitlab.com/Mis012/android-translation-layer_PoC/-/raw/master/screenshot_2.png)
 
 ##### FAQ:
 
