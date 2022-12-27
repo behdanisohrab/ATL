@@ -10,7 +10,10 @@
 #include <unistd.h>
 
 struct AAssetManager {
+	char dummy;
 };
+
+struct AAssetManager dummy_asset_manager;
 
 struct AAsset{
 	int fd;
@@ -114,7 +117,8 @@ off_t AAsset_getLength(struct AAsset *asset)
 }
 struct AAssetManager * AAssetManager_fromJava(JNIEnv *env, jobject assetManager)
 {
-	return NULL;
+	// some apps don't like if we return NULL here
+	return &dummy_asset_manager;
 }
 
 int AAsset_read(struct AAsset *asset, void *buf, size_t count) {
