@@ -47,8 +47,8 @@ public class Activity extends Context {
 	}
 
 	public Intent getIntent() {
-		return null; // this is the main activity, and it wasn't opened as a result of someone calling "open with"
-//		return new Intent();
+//		return null; // this is the main activity, and it wasn't opened as a result of someone calling "open with"
+		return new Intent(); // seems some apps don't consider this nullable...
 	}
 
 	public int getRequestedOrientation() {
