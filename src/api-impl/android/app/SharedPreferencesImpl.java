@@ -365,7 +365,8 @@ public final class SharedPreferencesImpl implements SharedPreferences {
                 };
 
 //            QueuedWork.add(awaitCommit);
-			awaitCommit.run();
+// since we've made this synchronous, we can't exactly start "waiting" for the commit before we made the commit
+//			awaitCommit.run();
 
             Runnable postWriteRunnable = new Runnable() {
                     public void run() {

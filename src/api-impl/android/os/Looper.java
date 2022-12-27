@@ -114,8 +114,9 @@ public final class Looper {
      * Run the message queue in this thread. Be sure to call
      * {@link #quit()} to end the loop.
      */
-    public static void loop() {/*
-        final Looper me = myLooper();
+    public static void loop() {
+		System.out.println("oops, Looper.loop called... and we don't implement that");
+        /*final Looper me = myLooper();
         if (me == null) {
             throw new RuntimeException("No Looper; Looper.prepare() wasn't called on this thread.");
         }

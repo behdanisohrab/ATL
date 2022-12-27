@@ -595,7 +595,21 @@ public class Handler {
             return false;
         }
         return enqueueMessage(queue, msg, uptimeMillis);*/
-		return true;
+		if(mCallback != null) {
+//			System.out.println("Handler.sendMessageAtTime: directly calling mCallback.handleMessage)");
+			if(msg.callback != null) {
+				msg.callback.run();
+			}
+			return mCallback.handleMessage(msg);
+		} else {
+//			System.out.println("Handler.sendMessageAtTime: not directly calling mCallback.handleMessage - mCallback is null)");
+/* do this in this case as well?
+			if(msg.callback != null) {
+				msg.callback.run();
+			}
+*/
+			return true; // false?
+		}
     }
 
     /**
