@@ -40,6 +40,11 @@
 #include <gtk/gtk.h>
 #include <gdk/wayland/gdkwayland.h>
 
+// FIXME: move this together with the other stuff that doesn't belong in this file
+#include <openxr/openxr.h>
+#define XR_USE_PLATFORM_EGL
+#include <openxr/openxr_platform.h>
+
 #include <jni.h>
 
 // FIXME: put the header in a common place
@@ -108,22 +113,22 @@ typedef struct ANativeWindow_Buffer {
  */
 void ANativeWindow_acquire(struct ANativeWindow *native_window)
 {
-   // FIXME: refcount
+	// FIXME: refcount
 }
 
 void ANativeWindow_release(struct ANativeWindow *native_window)
 {
-   // FIXME: refcount
+	// FIXME: refcount
 }
 
 int32_t ANativeWindow_getWidth(struct ANativeWindow *native_window)
 {
-   return gtk_widget_get_width(native_window->surface_view_widget);
+	return gtk_widget_get_width(native_window->surface_view_widget);
 }
 
 int32_t ANativeWindow_getHeight(struct ANativeWindow *native_window)
 {
-   return gtk_widget_get_height(native_window->surface_view_widget);
+	return gtk_widget_get_height(native_window->surface_view_widget);
 }
 
 /**
@@ -187,6 +192,11 @@ int32_t ANativeWindow_lock(ANativeWindow* window, ANativeWindow_Buffer* outBuffe
 int32_t ANativeWindow_unlockAndPost(ANativeWindow* window)
 {
 	return -1;
+}
+
+int32_t ANativeWindow_setFrameRate(ANativeWindow *window, float frameRate, int8_t compatibility)
+{
+	return 0; // success
 }
 
 /**
@@ -359,17 +369,31 @@ static void PrintConfigAttributes(EGLDisplay display, EGLConfig config)
 
 extern GtkWindow *window; // TODO: how do we get rid of this? the app won't pass anyhting useful to eglGetDisplay
 
+// this is an extension that only android implements, we can hopefully get away with just stubbing it
+EGLBoolean bionic_eglPresentationTimeANDROID(EGLDisplay dpy, EGLSurface surface, EGLnsecsANDROID time)
+{
+	return EGL_TRUE;
+}
+
 EGLDisplay bionic_eglGetDisplay(NativeDisplayType native_display)
 {
-	/*
-	 * On android, at least SDL passes 0 (EGL_DISPLAY_DEFAULT) to eglGetDisplay and uses the resulting display.
-	 * We obviously want to make the app use the correct display, which may happen to be a different one
-	 * than the "default" display (especially on Wayland)
-	 */
-	GdkDisplay *display = gtk_root_get_display(GTK_ROOT(window));
-	struct wl_display *wl_display = gdk_wayland_display_get_wl_display(display);
+	// XXX - we can't use pbuffers with wayland EGLDisplay, for now one has to use an env to bypass
+	// our EGLDisplay substitution in VR usecases (the XWayland display does support pbuffers, but
+	// is different from the display the SurfaceView is on, which means trying to draw to that will
+	// not work)
+	if(getenv("UGLY_HACK_FOR_VR")) {
+		return eglGetDisplay(native_display);
+	} else {
+		/*
+		 * On android, at least SDL passes 0 (EGL_DISPLAY_DEFAULT) to eglGetDisplay and uses the resulting display.
+		 * We obviously want to make the app use the correct display, which may happen to be a different one
+		 * than the "default" display (especially on Wayland)
+		 */
+		GdkDisplay *display = gtk_root_get_display(GTK_ROOT(window));
+		struct wl_display *wl_display = gdk_wayland_display_get_wl_display(display);
 
-	return eglGetPlatformDisplay(EGL_PLATFORM_WAYLAND_KHR, wl_display, NULL);
+		return eglGetPlatformDisplay(EGL_PLATFORM_WAYLAND_KHR, wl_display, NULL);
+	}
 }
 
 EGLSurface bionic_eglCreateWindowSurface(EGLDisplay display, EGLConfig config, struct ANativeWindow *native_window, EGLint const *attrib_list)
@@ -387,4 +411,53 @@ EGLSurface bionic_eglCreateWindowSurface(EGLDisplay display, EGLConfig config, s
 	printf("EGL::: ret: %p\n", ret);
 
 	return ret;
+}
+
+// FIXME 2: this BLATANTLY belongs elsewhere
+
+static void xrInitializeLoaderKHR_noop() //FIXME: does it really return void?
+{
+	printf("STUB: xrInitializeLoaderKHR_noop called\n");
+}
+
+struct XrGraphicsBindingOpenGLESAndroidKHR {
+    XrStructureType	type;
+    const void* next;
+    EGLDisplay display;
+    EGLConfig config;
+    EGLContext context;
+};
+
+XrResult bionic_xrCreateSession(XrInstance instance, XrSessionCreateInfo *createInfo, XrSession *session)
+{
+	// TODO: check the type and handle Vulkan
+	struct XrGraphicsBindingOpenGLESAndroidKHR *android_bind = createInfo->next;
+
+	XrGraphicsBindingEGLMNDX egl_bind = {XR_TYPE_GRAPHICS_BINDING_EGL_MNDX};
+	egl_bind.getProcAddress = eglGetProcAddress;
+	egl_bind.display = android_bind->display;
+	egl_bind.config = android_bind->config;
+	egl_bind.context = android_bind->context;
+	createInfo->next = &egl_bind;
+	xrCreateSession(instance, createInfo, session);
+}
+
+
+
+XrResult bionic_xrGetInstanceProcAddr(XrInstance instance, const char *name, PFN_xrVoidFunction *func)
+{
+	if(!strcmp(name, "xrInitializeLoaderKHR")) {
+		*func = xrInitializeLoaderKHR_noop;
+		return (XrResult)xrInitializeLoaderKHR_noop; //TODO: is this correct return value?
+	} else {
+		return xrGetInstanceProcAddr(instance, name, func);
+	}
+}
+
+void * bionic_xrCreateInstance(XrInstanceCreateInfo *createInfo, XrInstance *instance)
+{
+	const char* enabled_exts[2] = {"XR_KHR_opengl_es_enable", "XR_MNDX_egl_enable"};
+	createInfo->enabledExtensionCount = 2;
+	createInfo->enabledExtensionNames = enabled_exts;
+	xrCreateInstance(createInfo, instance);
 }
