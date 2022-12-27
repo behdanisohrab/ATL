@@ -48,7 +48,18 @@ ITANIUM_OBJ_RET_WRAPPER_NOARGS(ALooper, ALooper_forThread, _ZN7android6Looper12g
 ITANIUM_OBJ_RET_WRAPPER_DEC(ALooper, ALooper_prepare, _ZN7android6Looper7prepareEi, int opts)
 ITANIUM_OBJ_RET_WRAPPER_BODY(ALooper, ALooper_prepare, _ZN7android6Looper7prepareEi, opts)
 
-int _ZN7android6Looper7pollAllEiPiS1_PPv(void *this, int timeoutMillis, int* outFd, int* outEvents, void** outData);
+
+void _ZNK7android7RefBase9incStrongEPKv(ALooper *this, void *unused);
+void ALooper_acquire(ALooper* looper) {
+	_ZNK7android7RefBase9incStrongEPKv(looper, (void*)ALooper_acquire);
+}
+
+void _ZNK7android7RefBase9decStrongEPKv(ALooper *this, void *unused);
+void ALooper_release(ALooper* looper) {
+    _ZNK7android7RefBase9decStrongEPKv(looper, (void*)ALooper_acquire);
+}
+
+int _ZN7android6Looper7pollAllEiPiS1_PPv(ALooper *this, int timeoutMillis, int* outFd, int* outEvents, void** outData);
 int ALooper_pollAll(int timeoutMillis, int* outFd, int* outEvents, void** outData)
 {
 	ALooper *looper = ALooper_forThread();
@@ -60,8 +71,12 @@ int ALooper_pollAll(int timeoutMillis, int* outFd, int* outEvents, void** outDat
 	return _ZN7android6Looper7pollAllEiPiS1_PPv(looper, timeoutMillis, outFd, outEvents,  outData);
 }
 
-int _ZN7android6Looper5addFdEiiiPFiiiPvES1_(void *this, int fd, int ident, int events, Looper_callbackFunc callback, void* data);
+int _ZN7android6Looper5addFdEiiiPFiiiPvES1_(ALooper *this, int fd, int ident, int events, Looper_callbackFunc callback, void* data);
 int ALooper_addFd(ALooper* looper, int fd, int ident, int events, Looper_callbackFunc callback, void* data)
 {
 	return _ZN7android6Looper5addFdEiiiPFiiiPvES1_(looper, fd, ident, events, callback, data);
+}
+void _ZN7android6Looper4wakeEv(ALooper *this);
+void ALooper_wake(ALooper* looper) {
+    _ZN7android6Looper4wakeEv(looper);
 }
