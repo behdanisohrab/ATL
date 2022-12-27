@@ -18,8 +18,31 @@ int attribute_set_get_int(JNIEnv *env, jobject attrs, char *attribute, char *sch
 	return (*env)->CallIntMethod(env, attrs, handle_cache.attribute_set.getAttributeValue_int, _JSTRING(schema), _JSTRING(attribute), default_value);
 }
 
+JavaVM *jvm;
+
+// TODO: use this everywhere, not just for gdb helper functions
+JNIEnv * get_jni_env(void)
+{
+	JNIEnv *env;
+	(*jvm)->GetEnv(jvm, (void**)&env, JNI_VERSION_1_6);
+	return env;
+}
+
+JNIEnv * _gdb_get_jni_env(void)
+{
+	return get_jni_env();
+}
+
+void _gdb_get_java_stack_trace(void)
+{
+	JNIEnv *env = get_jni_env();
+	(*env)->ExceptionDescribe(env);
+}
+
 void set_up_handle_cache(JNIEnv *env, char *apk_main_activity_class)
 {
+	(*env)->GetJavaVM(env, &jvm);
+
 	handle_cache.apk_main_activity.class = _REF((*env)->FindClass(env, apk_main_activity_class));
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
@@ -70,6 +93,9 @@ void set_up_handle_cache(JNIEnv *env, char *apk_main_activity_class)
 
 	handle_cache.input_queue_callback.class = _REF((*env)->FindClass(env, "android/view/InputQueue$Callback"));
 	handle_cache.input_queue_callback.onInputQueueCreated = _METHOD(handle_cache.input_queue_callback.class, "onInputQueueCreated", "(Landroid/view/InputQueue;)V");
+
+	handle_cache.surface_holder_callback.class = _REF((*env)->FindClass(env, "android/view/SurfaceHolder$Callback"));
+	handle_cache.surface_holder_callback.surfaceCreated = _METHOD(handle_cache.surface_holder_callback.class, "surfaceCreated", "(Landroid/view/SurfaceHolder;)V");
 
 	handle_cache.view.class = _REF((*env)->FindClass(env, "android/view/View"));
 	if((*env)->ExceptionCheck(env))

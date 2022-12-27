@@ -63,6 +63,10 @@ struct handle_cache {
 	} input_queue_callback;
 	struct {
 		jclass class;
+		jmethodID surfaceCreated;
+	} surface_holder_callback;
+	struct {
+		jclass class;
 		jmethodID setLayoutParams;
 	} view;
 };
