@@ -15,12 +15,19 @@ import android.view.View;
 
 import android.view.MotionEvent;
 
-public class GLSurfaceView extends View { // TODO: have this extend SurfaceView once that one is implemented?
+import android.view.SurfaceHolder;
+
+public class GLSurfaceView extends View implements SurfaceHolder.Callback { // TODO: have this extend SurfaceView once that one is implemented?
 	EGLContextFactory context_factory = new default_ContextFactory();
 	EGLConfigChooser config_chooser = new boolean_ConfigChooser(true);
 	EGL10 java_egl_wrapper;
 	GL10 java_gl_wrapper;
 	int opengl_version = 1;
+
+	// from SurfaceHolder.Callback
+	public void surfaceCreated(SurfaceHolder surfaceHolder) {}
+	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+	public void surfaceDestroyed(SurfaceHolder holder) {}
 
 	public GLSurfaceView(AttributeSet attrs) {
 		super(attrs);

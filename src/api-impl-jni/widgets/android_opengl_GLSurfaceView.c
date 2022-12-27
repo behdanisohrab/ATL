@@ -319,6 +319,11 @@ static void on_realize(GtkGLArea *gl_area, struct jni_gl_callback_data *d)
 	render_priv->egl_image = eglCreateImage(eglDisplay, render_priv->eglContext, EGL_GL_TEXTURE_2D, (EGLClientBuffer)(intptr_t)render_priv->renderedTexture, NULL);
 	check_egl_error();
 
+	// the GLSurfaceView implements SurfaceHolder.Callback, and the app may expect that we call the `surfaceCreated` method
+	(*env)->CallVoidMethod(env, d->this, handle_cache.surface_holder_callback.surfaceCreated, NULL);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
 	// Here we call the app's onSurfaceCreated callback. This is the android API's equivalent of the `realize` callback that we are currently in.
 	___GL_TRACE___("---- calling onSurfaceCreated");
 	(*env)->CallVoidMethod(env, d->renderer, handle_cache.renderer.onSurfaceCreated, _GET_OBJ_FIELD(d->this, "java_gl_wrapper", "Ljavax/microedition/khronos/opengles/GL10;"), NULL); // FIXME passing NULL only works if the app doesn't use these parameters
@@ -425,12 +430,28 @@ check_gl_error();
 
 struct jni_callback_data { JavaVM *jvm; jobject this; jclass this_class; };
 
-static void call_ontouch_callback(int action, float x, float y, struct jni_callback_data *d)
+static void call_ontouch_callback(GtkEventControllerLegacy* event_controller, int action, double x, double y, struct jni_callback_data *d)
 {
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, action, x, y);
+	// translate to the GLSurfaceArea widget's coordinates, since that's what the app expects
+
+	double off_x;
+	double off_y;
+
+	GtkWidget *gl_area = gtk_event_controller_get_widget(event_controller);
+	GtkWidget *window = GTK_WIDGET(gtk_widget_get_native(gl_area));
+
+	// compensate for offset between the widget coordinates and the surface coordinates
+	gtk_native_get_surface_transform(GTK_NATIVE(window), &off_x, &off_y);
+	x -= off_x;
+	y -= off_y;
+	gtk_widget_translate_coordinates(window, gl_area, x, y, &x, &y);
+
+	// execute the Java callback function
+
+	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, action, (float)x, (float)y);
 
 	(*env)->CallBooleanMethod(env, d->this, handle_cache.gl_surface_view.onTouchEvent, motion_event);
 
@@ -449,15 +470,15 @@ static gboolean on_event(GtkEventControllerLegacy* self, GdkEvent* event, struct
 	switch(gdk_event_get_event_type(event)) {
 		case GDK_BUTTON_PRESS:
 			gdk_event_get_position(event, &x, &y);
-			call_ontouch_callback(MOTION_EVENT_ACTION_DOWN, (float)x, (float)y, d);
+			call_ontouch_callback(self, MOTION_EVENT_ACTION_DOWN, x, y, d);
 			break;
 		case GDK_BUTTON_RELEASE:
 			gdk_event_get_position(event, &x, &y);
-			call_ontouch_callback(MOTION_EVENT_ACTION_UP, (float)x, (float)y, d);
+			call_ontouch_callback(self, MOTION_EVENT_ACTION_UP, x, y, d);
 			break;
 		case GDK_MOTION_NOTIFY:
 			gdk_event_get_position(event, &x, &y);
-			call_ontouch_callback(MOTION_EVENT_ACTION_MOVE, (float)x, (float)y, d);
+			call_ontouch_callback(self, MOTION_EVENT_ACTION_MOVE, x, y, d);
 			break;
 	}
 }
