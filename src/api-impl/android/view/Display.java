@@ -14,11 +14,31 @@ public final class Display {
 		outMetrics.heightPixels = this.window_height;
 	}
 
+	public int getWidth() {
+		return window_width;
+	}
+
+	public int getHeight() {
+		return window_height;
+	}
+
 	public int getRotation() {
 		return 0/*ROTATION_0*/;
 	}
 
 	public float getRefreshRate() {
 		return 60; // FIXME
+	}
+
+	public long getAppVsyncOffsetNanos() {
+		return 0; // what else would we return here?
+	}
+
+	public int getDisplayId() {
+		return 0;
+	}
+
+	public long getPresentationDeadlineNanos() {
+		return 0; // what else...
 	}
 }

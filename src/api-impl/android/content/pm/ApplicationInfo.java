@@ -653,4 +653,6 @@ public class ApplicationInfo extends PackageItemInfo {
     @Override protected ApplicationInfo getApplicationInfo() {
         return this;
     }
+
+	public String[] splitPublicSourceDirs = new String[0];
 }

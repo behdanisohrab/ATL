@@ -131,6 +131,7 @@ hax_jar = jar('hax', [
               	'android/R.java',
               	'android/support/multidex/MultiDexApplication.java',
               	'android/support/v4/app/FragmentActivity.java',
+              	'android/support/v7/app/AppCompatActivity.java',
               	'android/telephony/PhoneStateListener.java',
               	'android/telephony/TelephonyManager.java',
               	'android/text/ClipboardManager.java',

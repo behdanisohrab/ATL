@@ -30,6 +30,7 @@ import android.media.AudioManager;
 import android.app.ActivityManager;
 import android.hardware.usb.UsbManager;
 import android.os.Vibrator;
+import android.hardware.display.DisplayManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +38,12 @@ import java.io.FileOutputStream;
 
 public class Context extends Object {
 	private final static String TAG = "Context";
+
+	public static final int MODE_PRIVATE = 0;
+	public static final String LOCATION_SERVICE = "location";
+	public static final String AUDIO_SERVICE = "audio";
+	public static final String DISPLAY_SERVICE = "display";
+	public static final String MEDIA_ROUTER_SERVICE = "media_router";
 
 	static AssetManager assets;
 	static DisplayMetrics dm;
@@ -65,6 +72,10 @@ public class Context extends Object {
 
 	public Context() {
 		System.out.println("new Context! this one is: " + this);
+	}
+
+	public int checkPermission (String permission, int pid, int uid) {
+		return getPackageManager().checkPermission(permission, "dummy");
 	}
 
 	public Resources.Theme getTheme() {
@@ -109,6 +120,8 @@ public class Context extends Object {
 				return new Vibrator();
 			case "power":
 				return new PowerManager();
+			case "display":
+				return new DisplayManager();
 			default:
 				System.out.println("!!!!!!! getSystemService: case >"+name+"< is not implemented yet");
 				return null;
@@ -189,6 +202,10 @@ public class Context extends Object {
 			obb_dir = new File(getDataDirFile(), "obb");
 		}
 		return obb_dir;
+	}
+
+	public File[] getObbDirs() {
+		return new File[]{getObbDir()};
 	}
 
 	// FIXME: should be something like /tmp/cache, but may need to create that directory
