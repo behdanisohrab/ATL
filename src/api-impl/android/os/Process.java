@@ -505,8 +505,10 @@ public class Process {
      * not have permission to modify the given thread, or to use the given
      * priority.
      */
-    public static final native void setThreadPriority(int tid, int priority)
-            throws IllegalArgumentException, SecurityException;
+    public static final /*native*/ void setThreadPriority(int tid, int priority)
+            throws IllegalArgumentException, SecurityException {
+		// TODO - this is clearly not critical
+	}
 
     /**
      * Call with 'false' to cause future calls to {@link #setThreadPriority(int)} to

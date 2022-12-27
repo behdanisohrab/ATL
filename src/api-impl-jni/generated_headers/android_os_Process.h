@@ -139,14 +139,6 @@ JNIEXPORT jint JNICALL Java_android_os_Process_getGidForName
 
 /*
  * Class:     android_os_Process
- * Method:    setThreadPriority
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_android_os_Process_setThreadPriority
-  (JNIEnv *, jclass, jint, jint);
-
-/*
- * Class:     android_os_Process
  * Method:    setCanSelfBackground
  * Signature: (Z)V
  */

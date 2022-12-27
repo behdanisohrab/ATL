@@ -622,8 +622,8 @@ public class Environment {
 	 *		 {@link #MEDIA_BAD_REMOVAL}, or {@link #MEDIA_UNMOUNTABLE}.
 	 */
 	public static String getExternalStorageState() {
-		final File externalDir = sCurrentUser.getExternalDirsForApp()[0];
-		return getStorageState(externalDir);
+		// we don't do stupid stuff like having this on a separate partition, so it should always be "mounted"
+		return MEDIA_MOUNTED;
 	}
 
 	/**

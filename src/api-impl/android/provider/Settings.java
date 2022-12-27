@@ -41,6 +41,8 @@ public class Settings {
 			switch(key) {
 				case "accelerometer_rotation":
 					return 0; // degrees? no clue
+				case "always_finish_activities":
+					return 0; // we certainly don't aggressively kill activities :P
 				default:
 					java.lang.System.out.println("!!!! Settings$System.getInt: unknown key: >"+key+"<");
 					return 0; // TODO: should be -1 probably?
