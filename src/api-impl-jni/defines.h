@@ -5,6 +5,9 @@
 
 #define DEG2RAD(deg) (deg * M_PI / 180)
 
+#define __likely__(x) __builtin_expect(x, 1)
+#define __unlikely__(x) __builtin_expect(x, 0)
+
 // these macros are a bit hacky, since they deliberately assume that env exists and refers to the JNI env
 
 #define _PTR(ptr)((void*)(intptr_t)(ptr))

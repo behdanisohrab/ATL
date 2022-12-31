@@ -375,6 +375,14 @@ EGLBoolean bionic_eglPresentationTimeANDROID(EGLDisplay dpy, EGLSurface surface,
 	return EGL_TRUE;
 }
 
+void (* bionic_eglGetProcAddress(char const *procname))(void)
+{
+	if(__unlikely__(!strcmp(procname, "eglPresentationTimeANDROID")))
+		return bionic_eglPresentationTimeANDROID;
+
+	return eglGetProcAddress(procname);
+}
+
 EGLDisplay bionic_eglGetDisplay(NativeDisplayType native_display)
 {
 	// XXX - we can't use pbuffers with wayland EGLDisplay, for now one has to use an env to bypass
