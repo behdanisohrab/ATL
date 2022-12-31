@@ -42,6 +42,10 @@ public class Activity extends Context {
 		return new WindowManagerImpl();
 	}
 
+	public String getCallingPackage() {
+		return null; // [from api reference] Note: if the calling activity is not expecting a result (that is it did not use the startActivityForResult(Intent, int) form that includes a request code), then the calling package will be null.
+	}
+
 	public ComponentName getComponentName() {
 		return null;
 	}

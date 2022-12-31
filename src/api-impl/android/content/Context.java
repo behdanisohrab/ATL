@@ -31,6 +31,7 @@ import android.app.ActivityManager;
 import android.hardware.usb.UsbManager;
 import android.os.Vibrator;
 import android.hardware.display.DisplayManager;
+import android.media.MediaRouter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -122,6 +123,8 @@ public class Context extends Object {
 				return new PowerManager();
 			case "display":
 				return new DisplayManager();
+			case "media_router":
+				return new MediaRouter();
 			default:
 				System.out.println("!!!!!!! getSystemService: case >"+name+"< is not implemented yet");
 				return null;

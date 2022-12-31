@@ -93,6 +93,7 @@ hax_jar = jar('hax', [
               	'android/media/AudioManager.java',
               	'android/media/AudioTrack.java',
               	'android/media/MediaPlayer.java',
+              	'android/media/MediaRouter.java',
               	'android/media/SoundPool.java',
               	'android/net/ConnectivityManager.java',
               	'android/net/NetworkInfo.java',
