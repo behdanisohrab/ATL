@@ -66,7 +66,7 @@ for general description of the architecure, see `doc/Architecture.md`
 
 screenshot:
 
-![angry birds 3.2.0, Worms 2 Armageddon, and gravity defied running side by side by side](https://gitlab.com/Mis012/android-translation-layer_PoC/-/raw/master/screenshot_2.png)
+![angry birds 3.2.0, Worms 2 Armageddon, and gravity defied running side by side by side](https://gitlab.com/Mis012/android_translation_layer_PoC/-/raw/master/screenshot_2.png)
 
 ##### FAQ:
 
