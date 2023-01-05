@@ -8,6 +8,7 @@
 
 #include <dlfcn.h>
 #include <errno.h>
+#include <locale.h>
 #include <stdio.h>
 #include <sys/stat.h>
 
@@ -21,9 +22,16 @@ GtkWidget *window;
 
 gboolean app_exit(GtkWindow* self, JNIEnv *env) // TODO: do more cleanup?
 {
-	/* -- run the main activity's onDestroy -- */
+	// in case some exception was left unhandled in native code, print it here so we don't confuse it with an exception thrown by onDestroy
+	if((*env)->ExceptionCheck(env)) {
+		fprintf(stderr, "app_exit: seems there was a pending exception... :");
+		(*env)->ExceptionDescribe(env);
+	}
 
+	/* -- run the main activity's onDestroy -- */
 	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onDestroy, NULL);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
 
 	return false;
 }
@@ -399,6 +407,10 @@ int main(int argc, char **argv/*, JNIEnv *env*/)
 
 	/* this has to be done in the main executable, so might as well do it here*/
 	init__r_debug();
+
+	// locale on android always behaves as en_US, and some apps might unbeknownst to them depend on that
+	// for correct functionality
+	setenv("LC_ALL", "en_US", 1);
 
 	struct jni_callback_data *callback_data = malloc(sizeof(struct jni_callback_data));
 	callback_data->apk_main_activity_class = NULL;
