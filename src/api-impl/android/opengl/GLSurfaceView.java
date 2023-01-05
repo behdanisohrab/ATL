@@ -141,6 +141,11 @@ public class GLSurfaceView extends View implements SurfaceHolder.Callback { // T
 		}
 	}
 
+	public void queueEvent(Runnable r) {
+		// just run it synchronously, why not
+		r.run();
+	}
+
     private static class boolean_ConfigChooser implements GLSurfaceView.EGLConfigChooser {
 		// TODO - what happens if we actually allow for 16 bits per color?
         private static int[] config_attribs_no_depth = {EGL10.EGL_RED_SIZE, 8, EGL10.EGL_GREEN_SIZE, 8, EGL10.EGL_BLUE_SIZE, 8, EGL10.EGL_ALPHA_SIZE, 0, EGL10.EGL_DEPTH_SIZE, 0,  EGL10.EGL_STENCIL_SIZE, 0, EGL10.EGL_NONE};
