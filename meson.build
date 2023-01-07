@@ -1,5 +1,10 @@
 project('android_translation_layer', ['c', 'java'], default_options: ['b_lundef=false'])
 
+javac = meson.get_compiler('java')
+if javac.version() != '1.8.0'
+	error('javac versions other than 1.8.0 are known to cause issues (you have: ', javac.version(), ')')
+endif
+
 gnome = import('gnome')
 
 incdir_dep = declare_dependency(include_directories: '.')
@@ -38,7 +43,7 @@ libandroid_so = shared_library('android', [
                           install: true,
                           soversion: 0,
                           dependencies: [
-                          	dependency('gtk4'), dependency('jni'), dependency('glfw3')
+                          	dependency('gtk4'), dependency('jni')
                           ])
 
 libtranslationlayer_so = shared_library('translation_layer_main', [
