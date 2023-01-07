@@ -461,6 +461,7 @@ static void call_ontouch_callback(GtkEventControllerLegacy* event_controller, in
 	(*env)->DeleteLocalRef(env, motion_event);
 }
 
+// TODO: find a way to reconcile this with libandroid/input.c
 static gboolean on_event(GtkEventControllerLegacy* self, GdkEvent* event, struct jni_callback_data *d)
 {
 	double x;
@@ -469,14 +470,17 @@ static gboolean on_event(GtkEventControllerLegacy* self, GdkEvent* event, struct
 	// TODO: this doesn't work for multitouch
 	switch(gdk_event_get_event_type(event)) {
 		case GDK_BUTTON_PRESS:
+		case GDK_TOUCH_BEGIN:
 			gdk_event_get_position(event, &x, &y);
 			call_ontouch_callback(self, MOTION_EVENT_ACTION_DOWN, x, y, d);
 			break;
 		case GDK_BUTTON_RELEASE:
+		case GDK_TOUCH_END:
 			gdk_event_get_position(event, &x, &y);
 			call_ontouch_callback(self, MOTION_EVENT_ACTION_UP, x, y, d);
 			break;
 		case GDK_MOTION_NOTIFY:
+		case GDK_TOUCH_UPDATE:
 			gdk_event_get_position(event, &x, &y);
 			call_ontouch_callback(self, MOTION_EVENT_ACTION_MOVE, x, y, d);
 			break;
