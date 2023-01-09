@@ -17,7 +17,11 @@ import android.view.MotionEvent;
 
 import android.view.SurfaceHolder;
 
-public class GLSurfaceView extends View implements SurfaceHolder.Callback { // TODO: have this extend SurfaceView once that one is implemented?
+import android.view.Surface;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+
+public class GLSurfaceView extends View implements SurfaceHolder.Callback { // TODO: have this extend SurfaceView?
 	EGLContextFactory context_factory = new default_ContextFactory();
 	EGLConfigChooser config_chooser = new boolean_ConfigChooser(true);
 	EGL10 java_egl_wrapper;
@@ -144,6 +148,26 @@ public class GLSurfaceView extends View implements SurfaceHolder.Callback { // T
 	public void queueEvent(Runnable r) {
 		// just run it synchronously, why not
 		r.run();
+	}
+
+	private class DummySurfaceHolder implements SurfaceHolder {
+		public void addCallback(Callback callback) {}
+		public void removeCallback(Callback callback) {}
+		public boolean isCreating() {return false;}
+		public void setType(int type) {}
+		public void setFixedSize(int width, int height) {}
+		public void setSizeFromLayout() {}
+		public void setFormat(int format) {}
+		public void setKeepScreenOn(boolean screenOn) {}
+		public Canvas lockCanvas() {return null;}
+		public Canvas lockCanvas(Rect dirty) {return null;}
+		public void unlockCanvasAndPost(Canvas canvas) {}
+		public Rect getSurfaceFrame() {return null;}
+		public Surface getSurface() {return null;}
+	}
+
+	public SurfaceHolder getHolder() {
+		return (SurfaceHolder) new DummySurfaceHolder();
 	}
 
     private static class boolean_ConfigChooser implements GLSurfaceView.EGLConfigChooser {
