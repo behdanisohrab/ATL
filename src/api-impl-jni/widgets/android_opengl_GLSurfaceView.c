@@ -164,6 +164,20 @@ static void check_program_link_error(GLuint program)
 struct jni_gl_callback_data { JavaVM *jvm; jobject this; jobject renderer; bool first_time;};
 static void on_realize(GtkGLArea *gl_area, struct jni_gl_callback_data *d)
 {
+// ---
+	// compensate for offset between the widget coordinates and the surface coordinates
+	double off_x;
+	double off_y;
+
+	GtkWidget *window = GTK_WIDGET(gtk_widget_get_native(gl_area));
+	gtk_native_get_surface_transform(GTK_NATIVE(window), &off_x, &off_y);
+
+	FIXME__WIDTH -= off_x;
+	FIXME__HEIGHT -= off_y;
+// ---
+
+
+
 	gtk_gl_area_make_current(gl_area);
 
 	struct render_priv *render_priv = g_object_get_data(G_OBJECT(gl_area), "render_priv");
@@ -434,20 +448,6 @@ static void call_ontouch_callback(GtkEventControllerLegacy* event_controller, in
 {
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
-
-	// translate to the GLSurfaceArea widget's coordinates, since that's what the app expects
-
-	double off_x;
-	double off_y;
-
-	GtkWidget *gl_area = gtk_event_controller_get_widget(event_controller);
-	GtkWidget *window = GTK_WIDGET(gtk_widget_get_native(gl_area));
-
-	// compensate for offset between the widget coordinates and the surface coordinates
-	gtk_native_get_surface_transform(GTK_NATIVE(window), &off_x, &off_y);
-	x -= off_x;
-	y -= off_y;
-	gtk_widget_translate_coordinates(window, gl_area, x, y, &x, &y);
 
 	// execute the Java callback function
 

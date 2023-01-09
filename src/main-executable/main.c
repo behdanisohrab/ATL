@@ -310,6 +310,9 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 //	TODO: set icon according to how android gets it for the purposes of displaying it in the launcher
 //	gtk_window_set_icon_name(window, "weather-clear");
 
+	if(getenv("ATL_DISABLE_WINDOW_DECORATIONS"))
+		gtk_window_set_decorated(GTK_WINDOW(window), 0);
+
 	gtk_widget_show(window);
 
 	/* -- register our JNI library under the appropriate classloader -- */
