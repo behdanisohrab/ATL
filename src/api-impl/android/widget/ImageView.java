@@ -18,6 +18,12 @@ public class ImageView extends View {
 		native_constructor(context);
 	}
 
+	public ImageView(Context context, AttributeSet attrs, int xxx) {
+		super(context);
+
+		native_constructor(context);
+	}
+
 	private native void native_constructor(AttributeSet attrs);
 	private native void native_constructor(Context context);
 

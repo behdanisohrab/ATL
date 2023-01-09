@@ -5,4 +5,6 @@ public interface DialogInterface {
 	}
 	public interface OnClickListener {
 	}
+	public interface OnShowListener {
+	}
 }

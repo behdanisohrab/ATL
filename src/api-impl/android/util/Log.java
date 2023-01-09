@@ -207,7 +207,7 @@ public final class Log {
      * @return Whether or not that this is allowed to be logged.
      * @throws IllegalArgumentException is thrown if the tag.length() > 23.
      */
-    public static native boolean isLoggable(String tag, int level);
+    public static /*native*/ boolean isLoggable(String tag, int level) {return true;} // should be fiiiine?
 
     /*
      * Send a {@link #WARN} log message and log the exception.

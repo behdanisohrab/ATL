@@ -7,6 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef android_app_NativeActivity_MODE_PRIVATE
+#define android_app_NativeActivity_MODE_PRIVATE 0L
 /*
  * Class:     android_app_NativeActivity
  * Method:    loadNativeCode

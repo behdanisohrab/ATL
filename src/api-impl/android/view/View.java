@@ -7,6 +7,8 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.Canvas;
 
+import android.os.IBinder;
+
 import java.util.HashMap;
 
 public class View extends Object {
@@ -858,4 +860,16 @@ public class View extends Object {
 	}
 
 	public void setOnGenericMotionListener (View.OnGenericMotionListener l) {}
+
+	public IBinder getWindowToken() {
+		return new IBinder();
+	}
+
+	public void getLocationInWindow(int[] xxx) {}
+
+	public void addOnAttachStateChangeListener(OnAttachStateChangeListener l) {}
+
+	public Context getContext() {
+		return this.context;
+	}
 }
