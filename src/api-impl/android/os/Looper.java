@@ -105,9 +105,10 @@ public final class Looper {
     /** Returns the application's main looper, which lives in the main thread of the application.
      */
     public static Looper getMainLooper() {
-        synchronized (Looper.class) {
+		return new Looper();
+/*        synchronized (Looper.class) {
             return sMainLooper;
-        }
+        }*/
     }
 
     /**
@@ -167,10 +168,11 @@ public final class Looper {
      * null if the calling thread is not associated with a Looper.
      */
     public static Looper myLooper() {
-		if(sThreadLocal.get() == null) {
+		return new Looper();
+/*		if(sThreadLocal.get() == null) {
 			prepare(false);
 		}
-        return sThreadLocal.get();
+        return sThreadLocal.get();*/
     }
 
     /**
@@ -290,7 +292,8 @@ public final class Looper {
      * Return the Thread associated with this Looper.
      */
     public Thread getThread() {
-        return mThread;
+		return Thread.currentThread(); // ugly hack
+//        return mThread;
     }
 
     /** @hide */
