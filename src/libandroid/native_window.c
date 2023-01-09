@@ -45,6 +45,8 @@
 #define XR_USE_PLATFORM_EGL
 #include <openxr/openxr_platform.h>
 
+#include <dlfcn.h>
+
 #include <jni.h>
 
 // FIXME: put the header in a common place
@@ -423,6 +425,19 @@ EGLSurface bionic_eglCreateWindowSurface(EGLDisplay display, EGLConfig config, s
 
 // FIXME 2: this BLATANTLY belongs elsewhere
 
+typedef XrResult(*xr_func)();
+
+// avoid hard dependency on libopenxr_loader for the three functions that we only ever call when running a VR app
+static void *openxr_loader_handle = NULL;
+static inline __attribute__((__always_inline__)) XrResult xr_lazy_call(char *func_name, ...) {
+	if(!openxr_loader_handle) {
+		openxr_loader_handle = dlopen("libopenxr_loader.so.1", RTLD_LAZY);
+	}
+
+	xr_func func = dlsym(openxr_loader_handle, func_name);
+	return func(__builtin_va_arg_pack());
+}
+
 static void xrInitializeLoaderKHR_noop() //FIXME: does it really return void?
 {
 	printf("STUB: xrInitializeLoaderKHR_noop called\n");
@@ -447,7 +462,7 @@ XrResult bionic_xrCreateSession(XrInstance instance, XrSessionCreateInfo *create
 	egl_bind.config = android_bind->config;
 	egl_bind.context = android_bind->context;
 	createInfo->next = &egl_bind;
-	xrCreateSession(instance, createInfo, session);
+	return xr_lazy_call("xrCreateSession", instance, createInfo, session);
 }
 
 
@@ -458,14 +473,14 @@ XrResult bionic_xrGetInstanceProcAddr(XrInstance instance, const char *name, PFN
 		*func = xrInitializeLoaderKHR_noop;
 		return (XrResult)xrInitializeLoaderKHR_noop; //TODO: is this correct return value?
 	} else {
-		return xrGetInstanceProcAddr(instance, name, func);
+		return xr_lazy_call("xrGetInstanceProcAddr", instance, name, func);
 	}
 }
 
-void * bionic_xrCreateInstance(XrInstanceCreateInfo *createInfo, XrInstance *instance)
+XrResult bionic_xrCreateInstance(XrInstanceCreateInfo *createInfo, XrInstance *instance)
 {
 	const char* enabled_exts[2] = {"XR_KHR_opengl_es_enable", "XR_MNDX_egl_enable"};
 	createInfo->enabledExtensionCount = 2;
 	createInfo->enabledExtensionNames = enabled_exts;
-	xrCreateInstance(createInfo, instance);
+	return xr_lazy_call("xrCreateInstance", createInfo, instance);
 }
