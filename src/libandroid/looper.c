@@ -4,50 +4,45 @@
 typedef void ALooper;
 typedef int (*Looper_callbackFunc)(int fd, int events, void* data);
 
-/* macros for creating wrappers for methods which use C++ itanium ABI */
+/* helpers for creating wrappers for methods which use C++ itanium ABI */
 
 #ifdef __aarch64__
-
-#define ITANIUM_OBJ_RET_WRAPPER_DEC(ret_type, wrapper_name, mangled_name, ...) \
-void mangled_name(__VA_ARGS__); /* r8 used instead of implicit parameter, fun innit */\
-ret_type * wrapper_name(__VA_ARGS__)
-
-#define ITANIUM_OBJ_RET_WRAPPER_BODY(ret_type, wrapper_name, mangled_name, ...) \
-{ \
-	ret_type *ret; \
-	register ret_type **addr_of_ret asm("r8"); /* arm wants to be special :( */\
-	__asm__ ("" : : "" (addr_of_ret)); /* apparently __attribute__((used)) is not a thing */\
-	addr_of_ret = &ret; \
-	mangled_name(__VA_ARGS__); \
-	return ret; \
-}
-
+	#define ITANIUM_OBJRETCALL_DEC(ret_type, mangled_name, ...) \
+	void mangled_name(__VA_ARGS__); /* r8 used instead of implicit parameter, fun innit */
 #else
-
-#define ITANIUM_OBJ_RET_WRAPPER_DEC(ret_type, wrapper_name, mangled_name, ...) \
-void mangled_name(ret_type **ret, ##__VA_ARGS__); /* implicit first parameter used for return value */\
-ret_type * wrapper_name(__VA_ARGS__)
-
-#define ITANIUM_OBJ_RET_WRAPPER_BODY(ret_type, wrapper_name, mangled_name, ...) \
-{ \
-	ret_type *ret; \
-	mangled_name(&ret, ##__VA_ARGS__); \
-	return ret; \
-}
-
+	#define ITANIUM_OBJRETCALL_DEC(ret_type, mangled_name, ...) \
+	void mangled_name(ret_type **ret, ##__VA_ARGS__) /* implicit first parameter used for return value */
 #endif
 
-#define ITANIUM_OBJ_RET_WRAPPER_NOARGS(ret_type, wrapper_name, mangled_name) \
-ITANIUM_OBJ_RET_WRAPPER_DEC(ret_type, wrapper_name, mangled_name) \
-ITANIUM_OBJ_RET_WRAPPER_BODY(ret_type, wrapper_name, mangled_name)
+inline __attribute__((__always_inline__)) void * itanium_objretcall(void (*func)(), ...)
+{
+#ifdef __aarch64__
+	void *ret;
+	register void **addr_of_ret asm("r8"); /* arm wants to be special :( */
+	__asm__ ("" : : "" (addr_of_ret)); /* apparently __attribute__((used)) is not a thing */
+	addr_of_ret = &ret;
+	func(__builtin_va_arg_pack());
+	return ret;
+#else
+	void *ret;
+	func(&ret, __builtin_va_arg_pack());
+	return ret;
+#endif
+}
 
-// ALooper * ALooper_forThread()
-ITANIUM_OBJ_RET_WRAPPER_NOARGS(ALooper, ALooper_forThread, _ZN7android6Looper12getForThreadEv)
+/* --- */
 
-// ALooper * ALooper_prepare(int opts)
-ITANIUM_OBJ_RET_WRAPPER_DEC(ALooper, ALooper_prepare, _ZN7android6Looper7prepareEi, int opts)
-ITANIUM_OBJ_RET_WRAPPER_BODY(ALooper, ALooper_prepare, _ZN7android6Looper7prepareEi, opts)
+ITANIUM_OBJRETCALL_DEC(ALooper, _ZN7android6Looper12getForThreadEv);
+ALooper * ALooper_forThread(void)
+{
+	return itanium_objretcall(_ZN7android6Looper12getForThreadEv);
+}
 
+ITANIUM_OBJRETCALL_DEC(ALooper, _ZN7android6Looper7prepareEi, int opts);
+ALooper * ALooper_prepare(int opts)
+{
+	return itanium_objretcall(_ZN7android6Looper7prepareEi, opts);
+}
 
 void _ZNK7android7RefBase9incStrongEPKv(ALooper *this, void *unused);
 void ALooper_acquire(ALooper* looper) {
