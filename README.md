@@ -68,45 +68,6 @@ screenshot:
 
 ![angry birds 3.2.0, Worms 2 Armageddon, and gravity defied running side by side by side](https://gitlab.com/Mis012/android_translation_layer_PoC/-/raw/master/screenshot_2.png)
 
-##### FAQ:
-
-Q:  
-	did you ever notice that most apps nowadays use at least some .so libraries?  
-	some apps even use them for 99% of their functionality!  
-
-A:  
-	recently, support for loading bionic-linked libraries was added, and two games which use  
-	GLSurfaceView (rendered to from native code) as their main UI element - Angry Birds 3.2.0  
-	and Worms 2 Armageddon - are currently fully playable
-
-Q:  
-	this seems pretty basic, most apps don't work at all...  
-A:  
-	we have three apps working for now, how fast that number grows depends on how many  
-	people work on reimplementing stuff :)  
-	there are probably more than enough people in the world with the required skills who don't have  
-	anything better to do for the number of implemented APIs to grow appreciably fast, maybe you are  
-	one of them? ;)
-
-Q:  
-	ok, so this can sorta run three apps. What's the catch?  
-
-A:  
-	well, first things first, technically I compiled Gravity Defied myself and removed  
-	some bug-reporting-init-related code which I got frustrated with stubbing out. however,  
-	adding more stubs should make that unnecessary.  
-	now for the second issue: `ANDROID_APP_DATA_DIR` contains some stuff that should instead be  
-	read from the apk, and some of this stuff is also externally converted (e.g Xml from binary  
-	form to actual Xml). obviously this is not ideal for user experience.  
-	NOTE: it seems that the binary form *might* be protobuf-based, which would make reading it  
-	directly easier.  
-	and the third issue: Gravity Defied is still extremely simple compared to most android apps,  
-	doesn't acknowledge compat layers, and the most intricate UI element is completely custom drawn  
-	using the canvas interface, in a manner that makes it easy to implement with cairo.  
-	angry birds (old version) and worms 2 armageddon were chosen because they similarly don't use  
-	compat layers, and basically the entire UI is custom drawn with OpenGL calls from native code.
-
-
 ##### Roadmap:
 
 - fix issues mention above
@@ -116,8 +77,6 @@ A:
 	- figure out a way to dynamically change the resolution of a GLSurfaceView
 
 - implement more stuff (there is a lot of it, and it won't get done if nobody helps... ideally pick a simple-ish application and stub/implement stuff until it works)
-
-- especially implement the alternatives to GLSurfaceView (using SurfaceView to get an EGL surface, native activity, not sure if there are others?) which would allow us to support a few more 99%-native applications with relative ease
 
 - explore using bubblewrap to enforce the security policies that google helpfully forces apps to comply with (and our own security policies, like no internet access for apps which really shouldn't need it and are not scummy enough to refuse to launch without it)
 

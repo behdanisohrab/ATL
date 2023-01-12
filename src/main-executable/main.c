@@ -360,7 +360,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 static void activate(GtkApplication *app, struct jni_callback_data *d)
 {
-	printf("error: usage: ./main [app.apk] [path/to/activity]\nyou can specify --help to see the list of options\n");
+	printf("error: usage: ./android-translation-layer [app.apk] -l [path/to/activity]\nyou can specify --help to see the list of options\n");
 	exit(1);
 }
 
@@ -424,7 +424,7 @@ int main(int argc, char **argv/*, JNIEnv *env*/)
 
 	// cmdline related setup
 	init_cmd_parameters(G_APPLICATION(app), callback_data);
-	g_application_set_option_context_summary(G_APPLICATION(app), "actual usage:\nLD_PRELOAD=libpthread_bio.so ./dalvik/dalvik -verbose:jni -cp hax_arsc_parser.dex:hax_xmlpull.dex:hax.dex:main.dex:${1}:com.google.android.gms.apk org/launch/main ${2}\nwhere ${1} is the path to the apk and ${2} is the cmdline");
+	g_application_set_option_context_summary(G_APPLICATION(app), "a translation layer for running android applications natively on Linux");
 
  	g_signal_connect(app, "activate", G_CALLBACK (activate), callback_data);
  	g_signal_connect(app, "open", G_CALLBACK (open), callback_data);
