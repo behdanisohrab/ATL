@@ -32,6 +32,8 @@ import android.hardware.usb.UsbManager;
 import android.os.Vibrator;
 import android.hardware.display.DisplayManager;
 import android.media.MediaRouter;
+import android.app.NotificationManager;
+import android.app.AlarmManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -125,6 +127,10 @@ public class Context extends Object {
 				return new DisplayManager();
 			case "media_router":
 				return new MediaRouter();
+			case "notification":
+				return new NotificationManager();
+			case "alarm":
+				return new AlarmManager();
 			default:
 				System.out.println("!!!!!!! getSystemService: case >"+name+"< is not implemented yet");
 				return null;
@@ -260,6 +266,8 @@ public class Context extends Object {
 
 		return -1; // PackageManager.PERMISSION_DENIED
 	}
+
+	public void registerComponentCallbacks(ComponentCallbacks callbacks) {}
 
 	// these may not look like typical stubs, but they definitely are stubs
 	public final TypedArray obtainStyledAttributes (AttributeSet set, int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
