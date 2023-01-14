@@ -14,6 +14,9 @@ public class Intent {
 	public Intent (Context packageContext, Class<?> cls) {}
 	public Intent (String action, Uri uri, Context packageContext, Class<?> cls) {}
 
+	public Intent setFlags(int flags) {
+		return this; //??
+	}
 	public Intent setPackage(String packageName) {
 		return this; //??
 	}

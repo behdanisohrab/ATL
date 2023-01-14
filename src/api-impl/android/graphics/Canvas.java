@@ -365,6 +365,8 @@ public class Canvas {
 		native_drawLine(cairo_context, widget, startX, startY, stopX, stopY, paint.getColor());
 	}
 
+	public void setBitmap(Bitmap bitmap) {}
+
 	private static native void native_drawLine(long cairo_context, long widget, float startX, float startY, float stopX, float stopY, int paint_color); // TODO: pass all the other relevant parameters extracted from paint
 	private static native void native_drawBitmap(long cairo_context, long widget, long pixbuf, float src_x, float src_y, float dest_x, float dest_y, Paint paint); // TODO: make use of "paint"?
 	private static native void native_rotate(long cairo_context, long widget, float angle);
