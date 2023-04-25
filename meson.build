@@ -2,7 +2,7 @@ project('android_translation_layer', ['c', 'java'], default_options: ['b_lundef=
 
 javac = meson.get_compiler('java')
 if javac.version() != '1.8.0'
-	error('javac versions other than 1.8.0 are known to cause issues (you have: ', javac.version(), ')')
+	warning('javac versions other than 1.8.0 are known to cause issues at least on aarch64 alpine (you have: ', javac.version(), ')')
 endif
 
 gnome = import('gnome')
