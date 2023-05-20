@@ -246,7 +246,7 @@ hax_jar = jar('hax', [
               	'javax/microedition/khronos/opengles/GL.java',
               ],
               dependencies: [
-              	declare_dependency(link_with: hax_arsc_parser_jar)
+              	declare_dependency(link_with: hax_arsc_lib_jar)
               ],
               java_args: [
               	'-bootclasspath', bootclasspath,
