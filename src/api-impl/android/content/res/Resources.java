@@ -43,7 +43,7 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-import libcore.icu.NativePluralRules;
+import android.icu.text.PluralRules;
 
 class Movie {}
 class Drawable { class ConstantState {} }
@@ -126,7 +126,7 @@ public class Resources {
     /*package*/ final AssetManager mAssets;
     private final Configuration mConfiguration = new Configuration();
     /*package*/ final DisplayMetrics mMetrics = new DisplayMetrics();
-    private NativePluralRules mPluralRule;
+    private PluralRules mPluralRule;
 
     private CompatibilityInfo mCompatibilityInfo = CompatibilityInfo.DEFAULT_COMPATIBILITY_INFO;
     private WeakReference<IBinder> mToken;
@@ -274,9 +274,9 @@ public class Resources {
      *         possibly styled text information.
      */
     public CharSequence getQuantityText(int id, int quantity) throws NotFoundException {
-        NativePluralRules rule = getPluralRule();
+        PluralRules rule = getPluralRule();
         CharSequence res = mAssets.getResourceBagText(id,
-                attrForQuantityCode(rule.quantityForInt(quantity)));
+                attrForQuantityCode(rule.select(quantity)));
         if (res != null) {
             return res;
         }
@@ -286,36 +286,36 @@ public class Resources {
         }
         throw new NotFoundException("Plural resource ID #0x" + Integer.toHexString(id)
                 + " quantity=" + quantity
-                + " item=" + stringForQuantityCode(rule.quantityForInt(quantity)));
+                + " item=" + rule.select(quantity));
     }
 
-    private NativePluralRules getPluralRule() {
+    private PluralRules getPluralRule() {
         synchronized (sSync) {
             if (mPluralRule == null) {
-                mPluralRule = NativePluralRules.forLocale(mConfiguration.locale);
+                mPluralRule = PluralRules.forLocale(mConfiguration.locale);
             }
             return mPluralRule;
         }
     }
 
-    private static int attrForQuantityCode(int quantityCode) {
+    private static int attrForQuantityCode(String quantityCode) {
         switch (quantityCode) {
-            case NativePluralRules.ZERO: return 0x01000005;
-            case NativePluralRules.ONE:  return 0x01000006;
-            case NativePluralRules.TWO:  return 0x01000007;
-            case NativePluralRules.FEW:  return 0x01000008;
-            case NativePluralRules.MANY: return 0x01000009;
+            case PluralRules.KEYWORD_ZERO: return 0x01000005;
+            case PluralRules.KEYWORD_ONE:  return 0x01000006;
+            case PluralRules.KEYWORD_TWO:  return 0x01000007;
+            case PluralRules.KEYWORD_FEW:  return 0x01000008;
+            case PluralRules.KEYWORD_MANY: return 0x01000009;
             default:                     return ID_OTHER;
         }
     }
 
-    private static String stringForQuantityCode(int quantityCode) {
+    private static String stringForQuantityCode(String quantityCode) {
         switch (quantityCode) {
-            case NativePluralRules.ZERO: return "zero";
-            case NativePluralRules.ONE:  return "one";
-            case NativePluralRules.TWO:  return "two";
-            case NativePluralRules.FEW:  return "few";
-            case NativePluralRules.MANY: return "many";
+            case PluralRules.KEYWORD_ZERO: return "zero";
+            case PluralRules.KEYWORD_ONE:  return "one";
+            case PluralRules.KEYWORD_TWO:  return "two";
+            case PluralRules.KEYWORD_FEW:  return "few";
+            case PluralRules.KEYWORD_MANY: return "many";
             default:                     return "other";
         }
     }
@@ -1623,7 +1623,7 @@ public class Resources {
         }
         synchronized (sSync) {
             if (mPluralRule != null) {
-                mPluralRule = NativePluralRules.forLocale(config.locale);
+                mPluralRule = PluralRules.forLocale(config.locale);
             }
         }
     }

@@ -1,1 +1,0 @@
-this is the non-dexed version of the main libcore jar; it implements the java stdlib - java.* etc; we use it as our bootclasspath, since it includes xmlpull etc

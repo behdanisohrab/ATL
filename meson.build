@@ -6,6 +6,7 @@ if javac.version() != '1.8.0'
 endif
 
 gnome = import('gnome')
+fs = import('fs')
 
 incdir_dep = declare_dependency(include_directories: '.')
 add_project_dependencies(incdir_dep, language: 'c')
@@ -21,6 +22,15 @@ libart_dep = [
 libdl_bio_dep = [
 	cc.find_library('dl_bio')
 ]
+if fs.is_file('/usr' / get_option('libdir') / 'java/core-all_classes.jar')
+  bootclasspath = '/usr' / get_option('libdir') / 'java/core-all_classes.jar'
+elif fs.is_file('/usr/local' / get_option('libdir') / 'java/core-all_classes.jar')
+  bootclasspath = '/usr/local' / get_option('libdir') / 'java/core-all_classes.jar'
+elif fs.is_file(get_option('prefix') / get_option('libdir') / 'java/core-all_classes.jar')
+  bootclasspath = get_option('prefix') / get_option('libdir') / 'java/core-all_classes.jar'
+else
+  error('bootclasspath "core-all_classes.jar" not found')
+endif
 
 marshal_files = gnome.genmarshal('marshal',
 	sources: 'src/api-impl-jni/widgets/marshal.list',
