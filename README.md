@@ -43,9 +43,6 @@ example with custom width/height: `android-translation-layer path/to/org.happysa
 
 NOTE: you might need to copy some files out from the apk under `ANDROID_APP_DATA_DIR` 
 (defaults to `~/.local/share/android_translation_layer/`), e.g the `assets` folder;  
-additionally, resources (`res`) currently need to be "decompiled" (e.g. by apktool, though this 
-additionally replaces hex IDs with string names, which then needs to be manually reversed;
-android studio's `inspect apk` feature is known to keep the integers)  
 NOTE: on X11, Gtk might decide to use GLX, which completely messes up our EGL-dependent code.
 If you have a debug build of Gtk, you can use GDK_DEBUG=gl-egl to force the use of EGL  
 NOTE: we don't currently handle signed apks; simply remove the META-INF folder from an apk to skip signature verification
