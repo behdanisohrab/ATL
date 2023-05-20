@@ -1,5 +1,5 @@
 #### directory structure
-`src/arsc_parser/` - Java .arsc parser I found somewhere, with fixes (should eventually get replaced by C code)
+`src/ARSCLib/` - Java .arsc library used to parse binary xml resources in apks
 `doc/` - documentation
 `src/api-impl/` - Java code implementing the android APIs
 `src/api-impl-jni/` - C code implementing things which it doesn't make sense to do in Java (ideally this would be most things)
