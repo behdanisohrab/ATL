@@ -27,16 +27,23 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.FileReader;
 
+import android.content.Context;
 import android.os.ParcelFileDescriptor;
 import android.os.Trace;
 import android.util.Log;
 import android.util.TypedValue;
 import java.util.ArrayList;
 import java.io.FileDescriptor;
+import java.util.Enumeration;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * Provides access to an application's raw asset files; see {@link Resources}
@@ -326,7 +333,8 @@ public final class AssetManager {
      * @see #list
      */
     public final InputStream open(String fileName, int accessMode) throws IOException {
-	int asset;
+        int asset;
+        // try loading from filesystem
         synchronized (this) {
             if (!mOpen) {
                 throw new RuntimeException("Assetmanager has been closed");
@@ -338,7 +346,8 @@ public final class AssetManager {
                 return res;
             }
         }
-        throw new FileNotFoundException("Asset file: " + fileName + ", errno: " + asset);
+        // alternatively load directly from APK
+        return ClassLoader.getSystemClassLoader().getResourceAsStream("assets/" + fileName);
     }
 
     public final AssetFileDescriptor openFd(String fileName)
@@ -424,7 +433,8 @@ public final class AssetManager {
      * @param accessMode Desired access mode for retrieving the data.
      */
     public final InputStream openNonAsset(int cookie, String fileName, int accessMode) throws IOException {
-	int asset;
+        int asset;
+        // try loading from filesystem
         synchronized (this) {
             if (!mOpen) {
                 throw new RuntimeException("Assetmanager has been closed");
@@ -436,7 +446,8 @@ public final class AssetManager {
                 return res;
             }
         }
-        throw new FileNotFoundException("Asset absolute file: " + fileName + ", errno: " + asset);
+        // alternatively load directly from APK
+        return ClassLoader.getSystemClassLoader().getResourceAsStream(fileName);
     }
 
     public final AssetFileDescriptor openNonAssetFd(String fileName)
@@ -661,6 +672,30 @@ public final class AssetManager {
         }
 
         return cookies;
+    }
+
+    private static void extractFromAPK(String path, String target) throws IOException {
+        if (path.endsWith("/")) {   // directory
+            try (JarFile apk = new JarFile(Context.this_application.getPackageCodePath())) {
+                Enumeration<JarEntry> entries = apk.entries();
+                while(entries.hasMoreElements()) {
+                    JarEntry entry = entries.nextElement();
+                    if (entry.getName().startsWith(path)) {
+                        extractFromAPK(entry.getName(), entry.getName().replace(path, target));
+                    }
+                }
+            }
+        } else {   // single file
+            Path file = Paths.get(android.os.Environment.getExternalStorageDirectory().getPath(), target);
+            if (!Files.exists(file)) {
+                try(InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(path)) {
+                    if(inputStream != null) {
+                        Files.createDirectories(file.getParent());
+                        Files.copy(inputStream, file);
+                    }
+                }
+            }
+        }
     }
 
     /**

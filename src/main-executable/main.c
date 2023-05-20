@@ -330,6 +330,8 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	jmethodID loadLibrary_with_classloader = _METHOD(java_runtime_class, "loadLibrary", "(Ljava/lang/String;Ljava/lang/ClassLoader;)V");
 	(*env)->CallVoidMethod(env, java_runtime, loadLibrary_with_classloader, _JSTRING("translation_layer_main"), class_loader);
 
+	extract_from_apk("assets/", "assets/");
+
 	/* -- run the main activity's onCreate -- */
 
 	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onCreate, NULL);

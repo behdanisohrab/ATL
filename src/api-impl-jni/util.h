@@ -69,6 +69,10 @@ struct handle_cache {
 		jclass class;
 		jmethodID setLayoutParams;
 	} view;
+	struct {
+		jclass class;
+		jmethodID extractFromAPK;
+	} asset_manager;
 };
 
 extern struct handle_cache handle_cache;
@@ -76,5 +80,6 @@ extern struct handle_cache handle_cache;
 const char * attribute_set_get_string(JNIEnv *env, jobject attrs, char *attribute, char *schema);
 int attribute_set_get_int(JNIEnv *env, jobject attrs, char *attribute, char *schema, int default_value);
 void set_up_handle_cache(JNIEnv *env, char *apk_main_activity_class);
+void extract_from_apk(const char *path, const char *target);
 
 #endif
