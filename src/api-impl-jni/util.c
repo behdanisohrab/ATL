@@ -43,10 +43,11 @@ void set_up_handle_cache(JNIEnv *env, char *apk_main_activity_class)
 {
 	(*env)->GetJavaVM(env, &jvm);
 
-	handle_cache.apk_main_activity.class = _REF((*env)->FindClass(env, apk_main_activity_class));
+	handle_cache.apk_main_activity.class = _REF((*env)->FindClass(env, "android/app/Activity"));
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
-	handle_cache.apk_main_activity.object = _REF((*env)->NewObject(env, handle_cache.apk_main_activity.class, _METHOD(handle_cache.apk_main_activity.class, "<init>", "()V")));
+	jmethodID createMainActivity = _STATIC_METHOD(handle_cache.apk_main_activity.class, "createMainActivity", "(Ljava/lang/String;)Landroid/app/Activity;");
+	handle_cache.apk_main_activity.object = _REF((*env)->CallStaticObjectMethod(env, handle_cache.apk_main_activity.class, createMainActivity, _JSTRING(apk_main_activity_class)));
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 	handle_cache.apk_main_activity.onCreate = _METHOD(handle_cache.apk_main_activity.class, "onCreate", "(Landroid/os/Bundle;)V");
