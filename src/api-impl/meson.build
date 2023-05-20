@@ -249,7 +249,7 @@ hax_jar = jar('hax', [
               	declare_dependency(link_with: hax_arsc_parser_jar)
               ],
               java_args: [
-              	'-bootclasspath', join_paths(dir_base, 'jars/core-libart-hostdex_classes.jar'),
+              	'-bootclasspath', bootclasspath,
               	'-source', '1.7', '-target', '1.7',
               	'-h', join_paths(dir_base, 'src/api-impl-jni/generated_headers')
               ])

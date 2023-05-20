@@ -109,7 +109,7 @@ public class ManifestDigest {
         final int N = mDigest.length;
         for (int i = 0; i < N; i++) {
             final byte b = mDigest[i];
-            IntegralToString.appendByteAsHex(sb, b, false);
+            sb.append(String.format("%02x", b));
             sb.append(',');
         }
         sb.append('}');

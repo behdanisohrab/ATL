@@ -20,7 +20,7 @@ hax_arsc_parser_jar = jar('hax_arsc_parser', [
                                              	'com/hq/arscresourcesparser/stream/PositionInputStream.java'
                                              ],
                                              java_args: [
-                                             	'-bootclasspath', join_paths(dir_base, 'jars/core-libart-hostdex_classes.jar'),
+                                             	'-bootclasspath', bootclasspath,
                                              	'-source', '1.7', '-target', '1.7'
                                              ])
 

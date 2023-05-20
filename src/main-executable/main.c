@@ -296,7 +296,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	// some apps need the apk path since they directly read their apk
 	jclass context_class = (*env)->FindClass(env, "android/content/Context");
-	_SET_STATIC_OBJ_FIELD(context_class, "apk_path", "java/lang/String", _JSTRING(apk_classpath));
+	_SET_STATIC_OBJ_FIELD(context_class, "apk_path", "Ljava/lang/String;", _JSTRING(apk_classpath));
 
 	FIXME__WIDTH = d->window_width;
 	FIXME__HEIGHT = d->window_height;
