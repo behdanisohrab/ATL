@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 
 import android.widget.TextView;
@@ -136,15 +137,7 @@ public class Activity extends Context {
     public void setContentView(int layoutResID) throws Exception {
 		System.out.println("- setContentView - yay!");
 
-		String layout_xml_file = android.os.Environment.getExternalStorageDirectory().getPath() + "/" + getString(layoutResID);
-
-		System.out.println("loading layout from: " + layout_xml_file);
-
-		XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-		factory.setNamespaceAware(true);
-		XmlPullParser xpp = factory.newPullParser();
-
-		xpp.setInput( new FileReader(layout_xml_file) );
+		XmlResourceParser xpp = Context.this_application.getResources().getLayout(layoutResID);
 
 		root_view = layout_inflater.inflate(xpp, null, false);
 

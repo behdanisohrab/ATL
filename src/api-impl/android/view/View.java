@@ -692,7 +692,7 @@ public class View extends Object {
 	public View() {} // FIXME
 
 	public View(AttributeSet attrs) {
-		id = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "id", 0);
+		id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
 
 		if(id != 0)
 			view_by_id.put(id, this);

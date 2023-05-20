@@ -19,6 +19,9 @@ package android.content.res;
 import com.reandroid.arsc.chunk.TableBlock;
 import com.reandroid.arsc.value.ResValueMap;
 
+import com.reandroid.arsc.chunk.xml.ResXmlPullParser;
+import com.reandroid.arsc.chunk.xml.ResXmlDocument;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
@@ -479,13 +482,12 @@ public final class AssetManager {
         block.close();
         return rp;*/
 
-		XmlPullParserFactory factory = XmlPullParserFactory.newInstance("android.util.DecompiledXmlResourceParser", this.getClass());
-		factory.setNamespaceAware(true);
-		XmlPullParser xpp = factory.newPullParser();
-
-		xpp.setInput( new FileReader(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + fileName) );
-
-		return (XmlResourceParser)xpp;
+        InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName);
+        ResXmlDocument resXmlDocument = new ResXmlDocument();
+        resXmlDocument.readBytes(inStream);
+        ResXmlPullParser xpp = new ResXmlPullParser();
+        xpp.setResXmlDocument(resXmlDocument);
+        return xpp;
     }
 
     /**

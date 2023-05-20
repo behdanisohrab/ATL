@@ -213,11 +213,8 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	if(ret) {
 		printf("can't stat %s (%s); we don't currently support parsing certain resources from the apk file, "
 		       "so you will need to create this directory and put in those resources\n"
-		       "some of these resources need to be preprocessed, apktool is mostly fine except it replaces "
-		       "the numeric values in the layout xml files with what it assumes was in the source xml; "
-		       "android studio's apk anylyzer (for example) leaves the 'compiled' integer values that our code expects\n"
 		       "NOTE: if the app you're trying to run doesn't use any such resources, simply create the directory "
-		       "and leave it empty (this will be done automatically once the maunal preprocessing step is not required)\n",
+		       "and leave it empty (this will be done automatically once the maunal extraction step is not required)\n",
 		       app_data_dir, strerror(errno));
 		exit(1);
 	}
