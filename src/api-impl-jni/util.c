@@ -103,4 +103,12 @@ void set_up_handle_cache(JNIEnv *env, char *apk_main_activity_class)
 	handle_cache.view.setLayoutParams = _METHOD(handle_cache.view.class, "setLayoutParams", "(Landroid/view/ViewGroup$LayoutParams;)V");
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
+
+	handle_cache.asset_manager.class = _REF((*env)->FindClass(env, "android/content/res/AssetManager"));
+	handle_cache.asset_manager.extractFromAPK = _STATIC_METHOD(handle_cache.asset_manager.class, "extractFromAPK", "(Ljava/lang/String;Ljava/lang/String;)V");
+}
+
+void extract_from_apk(const char *path, const char *target) {
+	JNIEnv *env = get_jni_env();
+	(*env)->CallStaticObjectMethod(env, handle_cache.asset_manager.class, handle_cache.asset_manager.extractFromAPK, _JSTRING(path), _JSTRING(target));
 }

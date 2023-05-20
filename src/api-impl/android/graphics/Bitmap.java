@@ -19,10 +19,15 @@ package android.graphics;
 import android.util.DisplayMetrics;
 
 import java.io.OutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 
 public final class Bitmap {
     /**
@@ -111,7 +116,18 @@ public final class Bitmap {
 	} // FIXME
 
 	Bitmap(String path) {
-		pixbuf = native_bitmap_from_path(android.os.Environment.getExternalStorageDirectory().getPath() + "/" + path);
+        Path file = Paths.get(android.os.Environment.getExternalStorageDirectory().getPath(), path);
+        if (!Files.exists(file)) {
+            try (InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(path)) {
+                if (inputStream != null) {
+                    Files.createDirectories(file.getParent());
+                    Files.copy(inputStream, file);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+		pixbuf = native_bitmap_from_path(file.toString());
 
 		mIsMutable = false;
 		mIsPremultiplied = false;
