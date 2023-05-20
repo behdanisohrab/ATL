@@ -18,13 +18,41 @@ import android.view.WindowManagerImpl;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
+
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public class Activity extends Context {
 	LayoutInflater layout_inflater;
 	Window window = new Window();
 	int requested_orientation = -1 /*ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED*/; // dummy
+
+	/**
+	 * Helper function to be called from native code to construct main activity
+	 *
+	 * @param className  class name of activity or null
+	 * @return  instance of main activity class
+	 */
+	private static Activity createMainActivity(String className) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
+		if (className == null) {
+			InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
+			AndroidManifestBlock block = AndroidManifestBlock.load(inStream);
+			className = block.getMainActivity().searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString();
+			if (className.startsWith(".")) {
+				className = block.getPackageName() + className;
+			}
+		} else {
+			className = className.replace('/', '.');
+		}
+		Class<? extends Activity> cls = Class.forName(className).asSubclass(Activity.class);
+		Constructor<? extends Activity> constructor = cls.getConstructor();
+		return constructor.newInstance();
+	}
 
 	protected void set_window(long native_window) {
 		window.native_window = native_window;

@@ -280,11 +280,6 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	free(app_lib_dir);
 
-	if(!d->apk_main_activity_class) {
-		printf("error: missing required option --launch-activity <activity>.\nyou can specify --help to see the list of options\n");
-		exit(1);
-	}
-
 	set_up_handle_cache(env, d->apk_main_activity_class);
 
 	jclass display_class = (*env)->FindClass(env, "android/view/Display");
