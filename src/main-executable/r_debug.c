@@ -7,7 +7,7 @@
 #include <link.h>
 
 // the dynamic section
-extern Elf64_Dyn _DYNAMIC[];
+extern ElfW(Dyn) _DYNAMIC[];
 
 extern struct r_debug *_r_debug_ptr;
 // this has to be called from the main executable, since that's the only one guaranteed to have the debug section filled in
@@ -17,7 +17,7 @@ void init__r_debug() {
 	_r_debug_ptr = &_r_debug;
 #else
 	int i = 0;
-	Elf64_Dyn current;
+	ElfW(Dyn) current;
 
 	do {
 		current = _DYNAMIC[i];
