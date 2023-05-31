@@ -102,7 +102,8 @@ executable('android-translation-layer', [
                    ],
                    link_args: [
                    	'-rdynamic'
-                   ])
+                   ],
+                   install_rpath: get_option('prefix') / get_option('libdir') / 'art:' + get_option('prefix') / get_option('libdir') / 'java/dex/android_translation_layer/natives')
 
 # hax_arsc_lib.dex (named as classes2.dex so it works inside a jar)
 subdir('src/ARSCLib')
