@@ -4,44 +4,27 @@
 typedef void ALooper;
 typedef int (*Looper_callbackFunc)(int fd, int events, void* data);
 
-/* helpers for creating wrappers for methods which use C++ itanium ABI */
-
-#ifdef __aarch64__
-	#define ITANIUM_OBJRETCALL_DEC(ret_type, mangled_name, ...) \
-	void mangled_name(__VA_ARGS__); /* r8 used instead of implicit parameter, fun innit */
-#else
-	#define ITANIUM_OBJRETCALL_DEC(ret_type, mangled_name, ...) \
-	void mangled_name(ret_type **ret, ##__VA_ARGS__) /* implicit first parameter used for return value */
-#endif
-
-inline __attribute__((__always_inline__)) void * itanium_objretcall(void (*func)(), ...)
-{
-#ifdef __aarch64__
-	void *ret;
-	register void **addr_of_ret asm("r8"); /* arm wants to be special :( */
-	__asm__ ("" : : "" (addr_of_ret)); /* apparently __attribute__((used)) is not a thing */
-	addr_of_ret = &ret;
-	func(__builtin_va_arg_pack());
-	return ret;
-#else
-	void *ret;
-	func(&ret, __builtin_va_arg_pack());
-	return ret;
-#endif
-}
+// dummy strong pointer class
+struct sp {
+	ALooper *ptr;
+	/* the struct has to be larger then 16 bytes, because on aarch64 the
+	* calling convention for returning structs larger than 16 bytes is the
+	* same as the calling convention for returning large C++ objects */
+	char filler[16];
+};
 
 /* --- */
 
-ITANIUM_OBJRETCALL_DEC(ALooper, _ZN7android6Looper12getForThreadEv);
+struct sp _ZN7android6Looper12getForThreadEv(void);
 ALooper * ALooper_forThread(void)
 {
-	return itanium_objretcall(_ZN7android6Looper12getForThreadEv);
+	return _ZN7android6Looper12getForThreadEv().ptr;
 }
 
-ITANIUM_OBJRETCALL_DEC(ALooper, _ZN7android6Looper7prepareEi, int opts);
+struct sp _ZN7android6Looper7prepareEi(int opts);
 ALooper * ALooper_prepare(int opts)
 {
-	return itanium_objretcall(_ZN7android6Looper7prepareEi, opts);
+	return _ZN7android6Looper7prepareEi(opts).ptr;
 }
 
 void _ZNK7android7RefBase9incStrongEPKv(ALooper *this, void *unused);
