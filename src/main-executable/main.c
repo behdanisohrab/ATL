@@ -16,6 +16,18 @@
 #define DEFFILEMODE (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)/* 0666*/
 #endif
 
+#ifdef __x86_64__
+#define NATIVE_ARCH "x86_64"
+#elifdef __i386__
+#define NATIVE_ARCH "x86"
+#elifdef __aarch64__
+#define NATIVE_ARCH "arm64-v8a"
+#elifdef __arm__
+#define NATIVE_ARCH "armeabi-v7a"
+#else
+#error unknown native architecture
+#endif
+
 GtkWidget *window;
 
 // standard Gtk Application stuff, more or less
@@ -272,6 +284,8 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	char *app_lib_dir = malloc(strlen(app_data_dir) + strlen("/lib") + 1); // +1 for NULL
 	strcpy(app_lib_dir, app_data_dir);
 	strcat(app_lib_dir, "/lib");
+	// create lib dir
+	mkdir(app_lib_dir, DEFFILEMODE | S_IXUSR | S_IXGRP | S_IXOTH);
 
 	// calling directly into the shim bionic linker to whitelist the app's lib dir as containing bionic-linked libraries
 	dl_parse_library_path(app_lib_dir, ":");
@@ -326,6 +340,8 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	(*env)->CallVoidMethod(env, java_runtime, loadLibrary_with_classloader, _JSTRING("translation_layer_main"), class_loader);
 
 	extract_from_apk("assets/", "assets/");
+	/* extract native libraries from apk*/
+	extract_from_apk("lib/" NATIVE_ARCH "/", "lib/");
 
 	/* -- run the main activity's onCreate -- */
 

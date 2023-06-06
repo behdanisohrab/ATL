@@ -29,14 +29,6 @@ or just
 `android-translation-layer [path to apk] -l [activity to launch]`  
 to use the default data dir of `~/.local/share/android_translation_layer/`
 
-NOTE: for apps which use the built-in NativeActivity mechanism, simply specify `-l android/app/NativeActivity`  
-if `android.app.lib_name` is set in the manifest, you currently need to rename the lib to `libmain.so`, which is the default. 
-in cases where there's alread a different lib with that name, you need to add a way to pass the lib name to the NativeActivity class  
-if `android.app.func_name` is set in the manifest, then you need to add a way to pass this to the NativeActivity class 
-(currently, the default of `ANativeActivity_onCreate` is always used, which works for all apps using `android_native_app_glue`)  
-TODO: figure out a mechanism for passing these to the NativeActivity class
-TODO_LONGTERM: parse AndroidManifest.xml
-
 NOTE: some apps don't like runtime changes to resolution, and currently GLSurfaceView will stretch instead of changing resolution  
 to sidestep this, we allow for specifying the initial resolution, which will currently always get passed as the screen resolution to the app and to GLSurfaceView even when you resize the window.
 example with custom width/height: `android-translation-layer path/to/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity -w 540 -h 960`
