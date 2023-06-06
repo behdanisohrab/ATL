@@ -37,6 +37,12 @@ import android.view.WindowManager;
 //import android.view.inputmethod.InputMethodManager;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
+import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
+import com.reandroid.arsc.chunk.xml.ResXmlElement;
 
 /**
  * Convenience for implementing an activity that will be implemented
@@ -160,6 +166,30 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 		} catch (PackageManager.NameNotFoundException e) {
 			throw new RuntimeException("Error getting activity info", e);
 		}*/
+
+		// parse AndroidManifest.xml to get name and entry of native lib
+		try (InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml")) {
+			for (ResXmlElement activity: AndroidManifestBlock.load(inStream).listActivities()) {
+				if (!getClass().getName().equals(activity.searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString())) {
+					continue;
+				}
+				for (ResXmlElement metaData: activity.listElements(AndroidManifestBlock.TAG_meta_data)) {
+                    ResXmlAttribute name = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_name);
+                    ResXmlAttribute value = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_value);
+                    if (name == null || value == null){
+                        continue;
+                    }
+                    if (META_DATA_LIB_NAME.equals(name.getValueAsString())){
+                        libname = value.getValueAsString();
+                    }
+                    if (META_DATA_FUNC_NAME.equals(name.getValueAsString())){
+                        funcname = value.getValueAsString();
+                    }
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		String path = null;
 
