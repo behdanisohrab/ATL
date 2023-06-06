@@ -311,20 +311,20 @@ public final class AssetManager {
      * @see #open(String)
      * @see #list
      */
-    public final InputStream open(String fileName, int accessMode)
-        throws IOException {
+    public final InputStream open(String fileName, int accessMode) throws IOException {
+	int asset;
         synchronized (this) {
             if (!mOpen) {
                 throw new RuntimeException("Assetmanager has been closed");
             }
-            int asset = openAsset(fileName, accessMode);
-            if (asset != 0) {
+            asset = openAsset(fileName, accessMode);
+            if (asset >= 0) {
                 AssetInputStream res = new AssetInputStream(asset);
                 incRefsLocked(res.hashCode());
                 return res;
             }
         }
-        throw new FileNotFoundException("Asset file: " + fileName);
+        throw new FileNotFoundException("Asset file: " + fileName + ", errno: " + asset);
     }
 
     public final AssetFileDescriptor openFd(String fileName)
@@ -405,20 +405,20 @@ public final class AssetManager {
      * @param fileName Name of the asset to retrieve.
      * @param accessMode Desired access mode for retrieving the data.
      */
-    public final InputStream openNonAsset(int cookie, String fileName, int accessMode)
-        throws IOException {
+    public final InputStream openNonAsset(int cookie, String fileName, int accessMode) throws IOException {
+	int asset;
         synchronized (this) {
             if (!mOpen) {
                 throw new RuntimeException("Assetmanager has been closed");
             }
-            int asset = openNonAssetNative(cookie, fileName, accessMode);
-            if (asset != 0) {
+            asset = openNonAssetNative(cookie, fileName, accessMode);
+            if (asset >= 0) {
                 AssetInputStream res = new AssetInputStream(asset);
                 incRefsLocked(res.hashCode());
                 return res;
             }
         }
-        throw new FileNotFoundException("Asset absolute file: " + fileName);
+        throw new FileNotFoundException("Asset absolute file: " + fileName + ", errno: " + asset);
     }
 
     public final AssetFileDescriptor openNonAssetFd(String fileName)
@@ -493,20 +493,20 @@ public final class AssetManager {
      * @param cookie Identifier of the package to be opened.
      * @param fileName Name of the asset to retrieve.
      */
-    /*package*/ final XmlBlock openXmlBlockAsset(int cookie, String fileName)
-        throws IOException {
+    /*package*/ final XmlBlock openXmlBlockAsset(int cookie, String fileName) throws IOException {
+	int xmlBlock;
         synchronized (this) {
             if (!mOpen) {
                 throw new RuntimeException("Assetmanager has been closed");
             }
-            int xmlBlock = openXmlAssetNative(cookie, fileName);
-            if (xmlBlock != 0) {
+            xmlBlock = openXmlAssetNative(cookie, fileName);
+            if (xmlBlock >= 0) {
                 XmlBlock res = new XmlBlock(this, xmlBlock);
                 incRefsLocked(res.hashCode());
                 return res;
             }
         }
-        throw new FileNotFoundException("Asset XML file: " + fileName);
+        throw new FileNotFoundException("Asset XML file: " + fileName + ", errno : " + xmlBlock);
     }
 
     /*package*/ void xmlBlockGone(int id) {
