@@ -220,18 +220,14 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	strcat(app_data_dir, apk_name);
 	strcat(app_data_dir, "/");
 
-	struct stat dont_care;
-	ret = stat(app_data_dir, &dont_care);
-	if(ret) {
-		printf("can't stat %s (%s); we don't currently support parsing certain resources from the apk file, "
-		       "so you will need to create this directory and put in those resources\n"
-		       "NOTE: if the app you're trying to run doesn't use any such resources, simply create the directory "
-		       "and leave it empty (this will be done automatically once the maunal extraction step is not required)\n",
-		       app_data_dir, strerror(errno));
+	ret = mkdir(app_data_dir, DEFFILEMODE | S_IXUSR | S_IXGRP | S_IXOTH);
+	if(ret && errno != EEXIST) {
+		fprintf(stderr, "can't create app data dir %s (%s)\n", app_data_dir, strerror(errno));
 		exit(1);
 	}
 
 	// check for api-impl.jar and com.google.android.gms.apk in './' first (for running from builddir), and in system install path second
+	struct stat dont_care;
 	ret = stat(API_IMPL_JAR_PATH_LOCAL, &dont_care);
 	errno_localdir = errno;
 	if(!ret) {
