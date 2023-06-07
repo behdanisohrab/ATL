@@ -14,11 +14,11 @@ build instructions:
 then, to run from builddir:  
 `cd builddir`  
 and  
-`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ANDROID_APP_DATA_DIR=../test_apks/example_data_dir/ ./android-translation-layer ../test_apks/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity`  
+`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ./android-translation-layer ../test_apks/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity`  
 (for an example of a full game working that can be distributed along this)
 or  
-`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ANDROID_APP_DATA_DIR=../test_apks/example_data_dir/ ./android-translation-layer ../test_apks/gles3jni.apk -l com/android/gles3jni/GLES3JNIActivity`  
-(for a sample app using OpenGL from native code to do it's rendering) (note: the lib in `test_apks/example_data_dir/gles3jni.apk/lib/` is for x86_64, make sure you extract the lib for your architecture from the apk)  
+`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ./android-translation-layer ../test_apks/gles3jni.apk -l com/android/gles3jni/GLES3JNIActivity`  
+(for a sample app using OpenGL from native code to do it's rendering)  
 
 to install:  
 `meson install`  
@@ -33,8 +33,6 @@ NOTE: some apps don't like runtime changes to resolution, and currently GLSurfac
 to sidestep this, we allow for specifying the initial resolution, which will currently always get passed as the screen resolution to the app and to GLSurfaceView even when you resize the window.
 example with custom width/height: `android-translation-layer path/to/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity -w 540 -h 960`
 
-NOTE: you might need to copy some files out from the apk under `ANDROID_APP_DATA_DIR` 
-(defaults to `~/.local/share/android_translation_layer/`), e.g the `assets` folder;  
 NOTE: on X11, Gtk might decide to use GLX, which completely messes up our EGL-dependent code.
 If you have a debug build of Gtk, you can use GDK_DEBUG=gl-egl to force the use of EGL  
 NOTE: we don't currently handle signed apks; simply remove the META-INF folder from an apk to skip signature verification
