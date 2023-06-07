@@ -58,10 +58,11 @@ char *construct_classpath(char *prefix, char **cp_array, size_t len)
 	char *result = malloc(result_len);
 	strcpy(result, prefix);
 	for(int i = 0; i < len; i++) {
-		if(cp_array[i])
+		if(cp_array[i]) {
 			strcat(result, cp_array[i]);
-		if (i < (len - 1))
-			strcat(result, ":");
+			if (i < (len - 1))
+				strcat(result, ":");
+		}
 	}
 
 	return result;
@@ -148,7 +149,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 */
 	char *dex_install_dir;
 	char *api_impl_jar;
-	char *microg_apk;
+	char *microg_apk = NULL;
 	int errno_libdir;
 	int errno_localdir;
 	int ret;
