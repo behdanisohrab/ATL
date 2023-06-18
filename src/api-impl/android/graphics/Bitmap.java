@@ -334,7 +334,7 @@ public final class Bitmap {
      */
     public void recycle() {
         if (!mRecycled) {
-            if (nativeRecycle(mNativeBitmap)) {
+            if (nativeRecycle(pixbuf)) {
                 // return value indicates whether native pixel object was actually recycled.
                 // false indicates that it is still in use at the native level and these
                 // objects should not be collected now. They will be collected later when the
@@ -1352,7 +1352,7 @@ public final class Bitmap {
             return; // nothing to do
         }
         checkPixelsAccess(x, y, width, height, offset, stride, pixels);
-        nativeGetPixels(mNativeBitmap, pixels, offset, stride,
+        nativeGetPixels(pixbuf, pixels, offset, stride,
                         x, y, width, height, mIsPremultiplied);
     }
 
@@ -1571,7 +1571,7 @@ public final class Bitmap {
     private static native Bitmap nativeCopy(int srcBitmap, int nativeConfig,
                                             boolean isMutable);
     private static native void nativeDestructor(int nativeBitmap);
-    private static native boolean nativeRecycle(int nativeBitmap);
+    private static native boolean nativeRecycle(long nativeBitmap);
     private static native void nativeReconfigure(int nativeBitmap, int width, int height,
                                                  int config, int allocSize);
 
@@ -1584,7 +1584,7 @@ public final class Bitmap {
 
     private static native int nativeGetPixel(int nativeBitmap, int x, int y,
                                              boolean isPremultiplied);
-    private static native void nativeGetPixels(int nativeBitmap, int[] pixels,
+    private static native void nativeGetPixels(long nativeBitmap, int[] pixels,
                                                int offset, int stride, int x, int y,
                                                int width, int height, boolean isPremultiplied);
 

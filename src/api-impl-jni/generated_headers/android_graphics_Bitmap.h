@@ -54,10 +54,10 @@ JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeDestructor
 /*
  * Class:     android_graphics_Bitmap
  * Method:    nativeRecycle
- * Signature: (I)Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Bitmap_nativeRecycle
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_graphics_Bitmap
@@ -110,10 +110,10 @@ JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_nativeGetPixel
 /*
  * Class:     android_graphics_Bitmap
  * Method:    nativeGetPixels
- * Signature: (I[IIIIIIIZ)V
+ * Signature: (J[IIIIIIIZ)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeGetPixels
-  (JNIEnv *, jclass, jint, jintArray, jint, jint, jint, jint, jint, jint, jboolean);
+  (JNIEnv *, jclass, jlong, jintArray, jint, jint, jint, jint, jint, jint, jboolean);
 
 /*
  * Class:     android_graphics_Bitmap

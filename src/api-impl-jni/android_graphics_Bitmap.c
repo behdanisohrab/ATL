@@ -26,3 +26,29 @@ JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_getHeight(JNIEnv *env, jobje
 
 	return gdk_pixbuf_get_height(pixbuf);
 }
+
+JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeGetPixels(JNIEnv *env, jclass, jlong bitmapHandle, jintArray pixelArray, jint offset, jint stride, jint x, jint y, jint width, jint height, jboolean premultiplied) {
+	int i,j;
+	GdkPixbuf *pixbuf = _PTR(bitmapHandle);
+	g_assert(gdk_pixbuf_get_n_channels(pixbuf) == 4);
+	g_assert(gdk_pixbuf_get_colorspace(pixbuf) == GDK_COLORSPACE_RGB);
+	jint *dst = (*env)->GetIntArrayElements(env, pixelArray, NULL);
+	jint *d = dst + offset;
+	const guint8 *src = gdk_pixbuf_read_pixels(pixbuf);
+	int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+	src += y * rowstride + x;
+	for (i=0; i<height; i++) {
+		for (j=0; j<width; j++) {
+			d[j] = src[4*j+3] << 24 | src[4*j+0] << 16 | src[4*j+1] << 8 | src[4*j+2];
+		}
+		d += stride;
+		src += rowstride;
+	}
+	(*env)->ReleaseIntArrayElements(env, pixelArray, dst, 0);
+}
+
+JNIEXPORT jboolean JNICALL Java_android_graphics_Bitmap_nativeRecycle(JNIEnv *env, jclass, jlong bitmapHandle) {
+	GdkPixbuf *pixbuf = _PTR(bitmapHandle);
+	g_object_unref(pixbuf);
+	return true;
+}
