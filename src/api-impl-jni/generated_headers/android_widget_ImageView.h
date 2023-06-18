@@ -165,6 +165,14 @@ JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1constructor__Landro
 JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1constructor__Landroid_content_Context_2
   (JNIEnv *, jobject, jobject);
 
+/*
+ * Class:     android_widget_ImageView
+ * Method:    native_setPixbuf
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1setPixbuf
+  (JNIEnv *, jobject, jlong);
+
 #ifdef __cplusplus
 }
 #endif

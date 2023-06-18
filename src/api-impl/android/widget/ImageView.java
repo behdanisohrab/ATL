@@ -2,7 +2,8 @@ package android.widget;
 
 import android.util.AttributeSet;
 import android.content.Context;
-
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.View;
 
 public class ImageView extends View {
@@ -10,6 +11,8 @@ public class ImageView extends View {
 		super(attrs);
 
 		native_constructor(attrs);
+        int resource = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "src", 0);
+        setImageResource(resource);
 	}
 
 	public ImageView(Context context) {
@@ -26,8 +29,14 @@ public class ImageView extends View {
 
 	private native void native_constructor(AttributeSet attrs);
 	private native void native_constructor(Context context);
+	private native void native_setPixbuf(long pixbuf);
 
-	public /*native*/ void setImageResource(final int resid) {}
+	public /*native*/ void setImageResource(final int resid) {
+        if (Context.this_application.getResources().getString(resid).endsWith(".xml"))
+            return;
+        Bitmap bitmap = BitmapFactory.decodeResource(Context.this_application.getResources(), resid);
+        native_setPixbuf(bitmap.pixbuf);
+    }
 	public void setAdjustViewBounds(boolean adjustViewBounds) {}
 
 	public void setScaleType(ScaleType scaleType) {}
