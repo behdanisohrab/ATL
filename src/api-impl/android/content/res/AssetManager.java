@@ -27,7 +27,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.Trace;
 import android.util.Log;
 import android.util.TypedValue;
-
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -329,18 +329,22 @@ public final class AssetManager {
 
     public final AssetFileDescriptor openFd(String fileName)
             throws IOException {
-/*        synchronized (this) {
+        int asset;
+        synchronized (this) {
             if (!mOpen) {
                 throw new RuntimeException("Assetmanager has been closed");
             }
-            ParcelFileDescriptor pfd = openAssetFd(fileName, mOffsets);
+            asset = openAsset(fileName, 0);
+            FileDescriptor fd = new FileDescriptor();
+            fd.setInt$(asset);
+            ParcelFileDescriptor pfd = new ParcelFileDescriptor(fd);
             if (pfd != null) {
-                return new AssetFileDescriptor(pfd, mOffsets[0], mOffsets[1]);
+                AssetFileDescriptor afd = new AssetFileDescriptor(pfd, mOffsets[0], mOffsets[1]);
+                afd.fileName = "/assets/" + fileName;
+                return afd;
             }
         }
-        throw new FileNotFoundException("Asset file: " + fileName);*/
-		throw new IOException("FIXME: 'public final AssetFileDescriptor openFd(String fileName)': throwing an exception, which makes e.g SDL2 fall back to using something that we actually have implemented");
-//		return null; // FIXME
+        throw new FileNotFoundException("Asset file: " + fileName);
     }
 
     /**
