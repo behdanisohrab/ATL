@@ -69,6 +69,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/views/android_view_ViewGroup.c',
                                                                   	'src/api-impl-jni/android_graphics_Bitmap.c',
                                                                   	'src/api-impl-jni/android_app_NativeActivity.c',
+                                                                  	'src/api-impl-jni/android_opengl_GLES20.c',
                                                                   ] + marshal_files,
                                                                   install: true,
                                                                   install_dir : get_option('libdir') / 'java/dex/android_translation_layer/natives',
