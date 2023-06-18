@@ -319,7 +319,7 @@ public final class AssetManager {
             }
             asset = openAsset(fileName, accessMode);
             if (asset >= 0) {
-                AssetInputStream res = new AssetInputStream(asset);
+                AssetInputStream res = new AssetInputStream(asset, "/assets/" + fileName);
                 incRefsLocked(res.hashCode());
                 return res;
             }
@@ -413,7 +413,7 @@ public final class AssetManager {
             }
             asset = openNonAssetNative(cookie, fileName, accessMode);
             if (asset >= 0) {
-                AssetInputStream res = new AssetInputStream(asset);
+                AssetInputStream res = new AssetInputStream(asset, fileName);
                 incRefsLocked(res.hashCode());
                 return res;
             }
@@ -554,10 +554,11 @@ public final class AssetManager {
         public final int getAssetInt() {
             return mAsset;
         }
-        private AssetInputStream(int asset)
+        private AssetInputStream(int asset, String fileName)
         {
             mAsset = asset;
             mLength = getAssetLength(asset);
+            this.fileName = fileName;
         }
         public final int read() throws IOException {
             return readAssetChar(mAsset);
@@ -609,6 +610,7 @@ public final class AssetManager {
         private int mAsset;
         private long mLength;
         private long mMarkPos;
+        public String fileName;
     }
 
     /**

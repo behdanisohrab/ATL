@@ -567,8 +567,8 @@ public class BitmapFactory {
         Trace.traceBegin(Trace.TRACE_TAG_GRAPHICS, "decodeBitmap");
         try {
             if (is instanceof AssetManager.AssetInputStream) {
-                final int asset = ((AssetManager.AssetInputStream) is).getAssetInt();
-                bm = nativeDecodeAsset(asset, outPadding, opts);
+                final String fileName = ((AssetManager.AssetInputStream) is).fileName;
+                bm = new Bitmap(fileName);
             } else {
                 bm = decodeStreamInternal(is, outPadding, opts);
             }
