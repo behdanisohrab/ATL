@@ -158,9 +158,8 @@ JNIEXPORT void JNICALL Java_android_view_View_setVisibility(JNIEnv *env, jobject
 		case android_view_View_VISIBLE:
 			gtk_widget_set_visible(widget, true);
 			break;
+		// TODO: View.INVISIBLE should still reserve layout space for the hidden view
 		case android_view_View_INVISIBLE:
-			printf("!!! View.INVISIBLE not implemented, now is a good time to check what it's supposed to do ;)\n");
-			break;
 		case android_view_View_GONE:
 			gtk_widget_set_visible(widget, false);
 			break;
