@@ -56,6 +56,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/drawables/ninepatch.c',
                                                                   	'src/api-impl-jni/android_content_res_AssetManager.c',
                                                                   	'src/api-impl-jni/audio/android_media_AudioTrack.c',
+                                                                  	'src/api-impl-jni/audio/android_media_SoundPool.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_RelativeLayout.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_ScrollView.c',
                                                                   	'src/api-impl-jni/widgets/android_opengl_GLSurfaceView.c',

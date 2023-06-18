@@ -42,6 +42,7 @@ public class AssetFileDescriptor implements Closeable {
     private final long mStartOffset;
     private final long mLength;
     private final Bundle mExtras;
+    public String fileName;
 
     /**
      * Create a new AssetFileDescriptor from the given values.
