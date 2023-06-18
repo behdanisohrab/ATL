@@ -100,7 +100,7 @@ public class Build {
          * The user-visible SDK version of the framework; its possible
          * values are defined in {@link Build.VERSION_CODES}.
          */
-        public static final int SDK_INT = 0;
+        public static final int SDK_INT = Build.VERSION_CODES.GINGERBREAD;
 
         /**
          * The current development codename, or the string "REL" if this is
