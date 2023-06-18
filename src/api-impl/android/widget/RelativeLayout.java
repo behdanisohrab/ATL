@@ -38,6 +38,10 @@ public class RelativeLayout extends ViewGroup {
 			super(width, height, weight);
 		}
 
+		public LayoutParams(ViewGroup.MarginLayoutParams source) {
+			super(source.width, source.height, source.weight);
+		}
+
 		public void addRule(int verb) {}
 		public void addRule(int verb, int anchor) {}
 	}

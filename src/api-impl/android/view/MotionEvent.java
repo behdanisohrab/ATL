@@ -1621,7 +1621,9 @@ public final class MotionEvent extends InputEvent {
 		}
 
 		MotionEvent ev = obtain();
-		ev.mNativePtr = nativeCopy(ev.mNativePtr, other.mNativePtr, true /*keepHistory*/);
+		ev.action = other.action;
+		ev.coord_x = other.coord_x;
+		ev.coord_y = other.coord_y;
 		return ev;
 	}
 

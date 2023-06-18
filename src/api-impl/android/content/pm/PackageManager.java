@@ -1383,8 +1383,12 @@ public class PackageManager {
      * @see #GET_UNINSTALLED_PACKAGES
      */
     public PackageInfo getPackageInfo(String packageName, int flags) throws NameNotFoundException {
-		return new PackageInfo();
-	}
+      PackageInfo packageInfo = new PackageInfo();
+      if ((flags & GET_SIGNATURES) == GET_SIGNATURES) {
+          packageInfo.signatures = new Signature[0];
+      }
+      return packageInfo;
+    }
 
     /**
      * Map from the current package names in use on the device to whatever

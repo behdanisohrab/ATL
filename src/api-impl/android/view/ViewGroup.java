@@ -66,6 +66,16 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		// TODO: actually implement this (might make sense to implement it in the subclasses instead), when applicable
 	}
 
+	/**
+     * Returns the number of children in the group.
+     *
+     * @return a positive integer representing the number of children in
+     *         the group
+     */
+    public int getChildCount() {
+        return children.size();
+    }
+
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;
 		public static final int MATCH_PARENT = -1;
@@ -97,5 +107,20 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		 * Used to animate layouts.
 		 */
 //		public LayoutAnimationController.AnimationParameters layoutAnimationParameters;
+	}
+
+	public static class MarginLayoutParams extends ViewGroup.LayoutParams{
+
+		public MarginLayoutParams() {
+			super();
+		}
+
+        public MarginLayoutParams(int width, int height) {
+			super(width, height);
+		}
+
+		public MarginLayoutParams(int width, int height, float weight) {
+			super(width, height, weight);
+		}
 	}
 }
