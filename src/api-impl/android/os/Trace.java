@@ -119,7 +119,7 @@ public final class Trace {
      * synchronized, and sEnabledTags is volatile (prevents word tearing).
      */
     private static long cacheEnabledTags() {
-        long tags = nativeGetEnabledTags();
+        long tags = 0;
         sEnabledTags = tags;
         return tags;
     }

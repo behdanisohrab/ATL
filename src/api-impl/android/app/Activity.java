@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import android.widget.TextView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.view.Window;
 import android.view.WindowManager;
@@ -168,6 +169,10 @@ public class Activity extends Context {
             }
         });*/
     }
+
+	public void setContentView(View view, ViewGroup.LayoutParams layoutParams) {
+		setContentView(view);
+	}
 
 	public void setContentView(View view) {
 		window.setContentView(view);

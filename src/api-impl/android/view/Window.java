@@ -39,4 +39,8 @@ public class Window {
 	public void takeInputQueue(InputQueue.Callback callback) {
 		take_input_queue(native_window, callback, new InputQueue());
 	}
+
+	public boolean requestFeature(int featureId) {
+		return false;
+	}
 }

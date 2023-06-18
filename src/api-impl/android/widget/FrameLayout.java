@@ -31,7 +31,7 @@ public class FrameLayout extends ViewGroup {
 		addView(child, index, null);
 	}
 
-	public static class LayoutParams extends ViewGroup.LayoutParams {
+	public static class LayoutParams extends ViewGroup.MarginLayoutParams {
         public LayoutParams(int width, int height) {
 			super(width, height);
 		}

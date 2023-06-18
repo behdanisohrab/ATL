@@ -872,4 +872,7 @@ public class View extends Object {
 	public Context getContext() {
 		return this.context;
 	}
+
+	public void refreshDrawableState() {
+	}
 }
