@@ -54,6 +54,7 @@ extern int FIXME__HEIGHT;
 JNIEXPORT void JNICALL Java_android_opengl_GLSurfaceView_native_1constructor__Landroid_content_Context_2(JNIEnv *env, jobject this, jobject context)
 {
 	GtkWidget *wrapper = wrapper_widget_new();
+	gtk_widget_set_vexpand(wrapper, TRUE);
 	GtkWidget *gl_area = gtk_gl_area_new();
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), gl_area);
 	_SET_LONG_FIELD(this, "widget", _INTPTR(gl_area));
