@@ -59,11 +59,13 @@ char *construct_classpath(char *prefix, char **cp_array, size_t len)
 	strcpy(result, prefix);
 	for(int i = 0; i < len; i++) {
 		if(cp_array[i]) {
-			strcat(result, cp_array[i]);
-			if (i < (len - 1))
+			if (i > 0)
 				strcat(result, ":");
+			strcat(result, cp_array[i]);
 		}
 	}
+
+	printf("construct_classpath: returning >%s<\n", result);
 
 	return result;
 }
