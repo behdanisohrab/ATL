@@ -17,5 +17,5 @@
 package javax.microedition.khronos.egl;
 
 public interface EGL11 extends EGL10 {
-    int EGL_CONTEXT_LOST                = 0x300E;
+	int EGL_CONTEXT_LOST = 0x300E;
 }

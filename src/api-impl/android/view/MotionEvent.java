@@ -178,8 +178,8 @@ public final class MotionEvent extends InputEvent {
 	/**
 	 * Bit mask of the parts of the action code that are the action itself.
 	 */
-	public static final int ACTION_MASK			 = 0xff;
-	
+	public static final int ACTION_MASK = 0xff;
+
 	/**
 	 * Constant for {@link #getActionMasked}: A pressed gesture has started, the
 	 * motion contains the initial starting location.
@@ -189,36 +189,36 @@ public final class MotionEvent extends InputEvent {
 	 * Use {@link #getButtonState} to retrieve the button state.
 	 * </p>
 	 */
-	public static final int ACTION_DOWN			 = 0;
-	
+	public static final int ACTION_DOWN = 0;
+
 	/**
 	 * Constant for {@link #getActionMasked}: A pressed gesture has finished, the
 	 * motion contains the final release location as well as any intermediate
 	 * points since the last down or move event.
 	 */
-	public static final int ACTION_UP			   = 1;
-	
+	public static final int ACTION_UP = 1;
+
 	/**
 	 * Constant for {@link #getActionMasked}: A change has happened during a
 	 * press gesture (between {@link #ACTION_DOWN} and {@link #ACTION_UP}).
 	 * The motion contains the most recent point, as well as any intermediate
 	 * points since the last down or move event.
 	 */
-	public static final int ACTION_MOVE			 = 2;
-	
+	public static final int ACTION_MOVE = 2;
+
 	/**
 	 * Constant for {@link #getActionMasked}: The current gesture has been aborted.
 	 * You will not receive any more points in it.  You should treat this as
 	 * an up event, but not perform any action that you normally would.
 	 */
-	public static final int ACTION_CANCEL		   = 3;
-	
+	public static final int ACTION_CANCEL = 3;
+
 	/**
 	 * Constant for {@link #getActionMasked}: A movement has happened outside of the
 	 * normal bounds of the UI element.  This does not provide a full gesture,
 	 * but only the initial location of the movement/touch.
 	 */
-	public static final int ACTION_OUTSIDE		  = 4;
+	public static final int ACTION_OUTSIDE = 4;
 
 	/**
 	 * Constant for {@link #getActionMasked}: A non-primary pointer has gone down.
@@ -229,8 +229,8 @@ public final class MotionEvent extends InputEvent {
 	 * unmasked action returned by {@link #getAction}.
 	 * </p>
 	 */
-	public static final int ACTION_POINTER_DOWN	 = 5;
-	
+	public static final int ACTION_POINTER_DOWN = 5;
+
 	/**
 	 * Constant for {@link #getActionMasked}: A non-primary pointer has gone up.
 	 * <p>
@@ -240,7 +240,7 @@ public final class MotionEvent extends InputEvent {
 	 * unmasked action returned by {@link #getAction}.
 	 * </p>
 	 */
-	public static final int ACTION_POINTER_UP	   = 6;
+	public static final int ACTION_POINTER_UP = 6;
 
 	/**
 	 * Constant for {@link #getActionMasked}: A change happened but the pointer
@@ -255,7 +255,7 @@ public final class MotionEvent extends InputEvent {
 	 * {@link View#onTouchEvent(MotionEvent)}.
 	 * </p>
 	 */
-	public static final int ACTION_HOVER_MOVE	   = 7;
+	public static final int ACTION_HOVER_MOVE = 7;
 
 	/**
 	 * Constant for {@link #getActionMasked}: The motion event contains relative
@@ -271,7 +271,7 @@ public final class MotionEvent extends InputEvent {
 	 * {@link View#onTouchEvent(MotionEvent)}.
 	 * </p>
 	 */
-	public static final int ACTION_SCROLL		   = 8;
+	public static final int ACTION_SCROLL = 8;
 
 	/**
 	 * Constant for {@link #getActionMasked}: The pointer is not down but has entered the
@@ -284,7 +284,7 @@ public final class MotionEvent extends InputEvent {
 	 * {@link View#onTouchEvent(MotionEvent)}.
 	 * </p>
 	 */
-	public static final int ACTION_HOVER_ENTER	  = 9;
+	public static final int ACTION_HOVER_ENTER = 9;
 
 	/**
 	 * Constant for {@link #getActionMasked}: The pointer is not down but has exited the
@@ -297,7 +297,7 @@ public final class MotionEvent extends InputEvent {
 	 * {@link View#onTouchEvent(MotionEvent)}.
 	 * </p>
 	 */
-	public static final int ACTION_HOVER_EXIT	   = 10;
+	public static final int ACTION_HOVER_EXIT = 10;
 
 	/**
 	 * Bits in the action code that represent a pointer index, used with
@@ -309,8 +309,8 @@ public final class MotionEvent extends InputEvent {
 	 *
 	 * @see #getActionIndex
 	 */
-	public static final int ACTION_POINTER_INDEX_MASK  = 0xff00;
-	
+	public static final int ACTION_POINTER_INDEX_MASK = 0xff00;
+
 	/**
 	 * Bit shift for the action bits holding the pointer index as
 	 * defined by {@link #ACTION_POINTER_INDEX_MASK}.
@@ -324,57 +324,57 @@ public final class MotionEvent extends InputEvent {
 	 * data index associated with {@link #ACTION_POINTER_DOWN}.
 	 */
 	@Deprecated
-	public static final int ACTION_POINTER_1_DOWN   = ACTION_POINTER_DOWN | 0x0000;
-	
+	public static final int ACTION_POINTER_1_DOWN = ACTION_POINTER_DOWN | 0x0000;
+
 	/**
 	 * @deprecated Use {@link #ACTION_POINTER_INDEX_MASK} to retrieve the
 	 * data index associated with {@link #ACTION_POINTER_DOWN}.
 	 */
 	@Deprecated
-	public static final int ACTION_POINTER_2_DOWN   = ACTION_POINTER_DOWN | 0x0100;
-	
+	public static final int ACTION_POINTER_2_DOWN = ACTION_POINTER_DOWN | 0x0100;
+
 	/**
 	 * @deprecated Use {@link #ACTION_POINTER_INDEX_MASK} to retrieve the
 	 * data index associated with {@link #ACTION_POINTER_DOWN}.
 	 */
 	@Deprecated
-	public static final int ACTION_POINTER_3_DOWN   = ACTION_POINTER_DOWN | 0x0200;
-	
+	public static final int ACTION_POINTER_3_DOWN = ACTION_POINTER_DOWN | 0x0200;
+
 	/**
 	 * @deprecated Use {@link #ACTION_POINTER_INDEX_MASK} to retrieve the
 	 * data index associated with {@link #ACTION_POINTER_UP}.
 	 */
 	@Deprecated
-	public static final int ACTION_POINTER_1_UP	 = ACTION_POINTER_UP | 0x0000;
-	
+	public static final int ACTION_POINTER_1_UP = ACTION_POINTER_UP | 0x0000;
+
 	/**
 	 * @deprecated Use {@link #ACTION_POINTER_INDEX_MASK} to retrieve the
 	 * data index associated with {@link #ACTION_POINTER_UP}.
 	 */
 	@Deprecated
-	public static final int ACTION_POINTER_2_UP	 = ACTION_POINTER_UP | 0x0100;
-	
+	public static final int ACTION_POINTER_2_UP = ACTION_POINTER_UP | 0x0100;
+
 	/**
 	 * @deprecated Use {@link #ACTION_POINTER_INDEX_MASK} to retrieve the
 	 * data index associated with {@link #ACTION_POINTER_UP}.
 	 */
 	@Deprecated
-	public static final int ACTION_POINTER_3_UP	 = ACTION_POINTER_UP | 0x0200;
-	
+	public static final int ACTION_POINTER_3_UP = ACTION_POINTER_UP | 0x0200;
+
 	/**
 	 * @deprecated Renamed to {@link #ACTION_POINTER_INDEX_MASK} to match
 	 * the actual data contained in these bits.
 	 */
 	@Deprecated
-	public static final int ACTION_POINTER_ID_MASK  = 0xff00;
-	
+	public static final int ACTION_POINTER_ID_MASK = 0xff00;
+
 	/**
 	 * @deprecated Renamed to {@link #ACTION_POINTER_INDEX_SHIFT} to match
 	 * the actual data contained in these bits.
 	 */
 	@Deprecated
 	public static final int ACTION_POINTER_ID_SHIFT = 8;
-	
+
 	/**
 	 * This flag indicates that the window that received this motion event is partly
 	 * or wholly obscured by another visible window above it.  This flag is set to true
@@ -1195,38 +1195,38 @@ public final class MotionEvent extends InputEvent {
 	// Symbolic names of all button states in bit order from least significant
 	// to most significant.
 	private static final String[] BUTTON_SYMBOLIC_NAMES = new String[] {
-		"BUTTON_PRIMARY",
-		"BUTTON_SECONDARY",
-		"BUTTON_TERTIARY",
-		"BUTTON_BACK",
-		"BUTTON_FORWARD",
-		"0x00000020",
-		"0x00000040",
-		"0x00000080",
-		"0x00000100",
-		"0x00000200",
-		"0x00000400",
-		"0x00000800",
-		"0x00001000",
-		"0x00002000",
-		"0x00004000",
-		"0x00008000",
-		"0x00010000",
-		"0x00020000",
-		"0x00040000",
-		"0x00080000",
-		"0x00100000",
-		"0x00200000",
-		"0x00400000",
-		"0x00800000",
-		"0x01000000",
-		"0x02000000",
-		"0x04000000",
-		"0x08000000",
-		"0x10000000",
-		"0x20000000",
-		"0x40000000",
-		"0x80000000",
+	    "BUTTON_PRIMARY",
+	    "BUTTON_SECONDARY",
+	    "BUTTON_TERTIARY",
+	    "BUTTON_BACK",
+	    "BUTTON_FORWARD",
+	    "0x00000020",
+	    "0x00000040",
+	    "0x00000080",
+	    "0x00000100",
+	    "0x00000200",
+	    "0x00000400",
+	    "0x00000800",
+	    "0x00001000",
+	    "0x00002000",
+	    "0x00004000",
+	    "0x00008000",
+	    "0x00010000",
+	    "0x00020000",
+	    "0x00040000",
+	    "0x00080000",
+	    "0x00100000",
+	    "0x00200000",
+	    "0x00400000",
+	    "0x00800000",
+	    "0x01000000",
+	    "0x02000000",
+	    "0x04000000",
+	    "0x08000000",
+	    "0x10000000",
+	    "0x20000000",
+	    "0x40000000",
+	    "0x80000000",
 	};
 
 	/**
@@ -1296,8 +1296,7 @@ public final class MotionEvent extends InputEvent {
 	private static int[] gSharedTempPointerIndexMap;
 
 	private static final void ensureSharedTempPointerCapacity(int desiredCapacity) {
-		if (gSharedTempPointerCoords == null
-				|| gSharedTempPointerCoords.length < desiredCapacity) {
+		if (gSharedTempPointerCoords == null || gSharedTempPointerCoords.length < desiredCapacity) {
 			int capacity = gSharedTempPointerCoords != null ? gSharedTempPointerCoords.length : 8;
 			while (capacity < desiredCapacity) {
 				capacity *= 2;
@@ -1314,16 +1313,16 @@ public final class MotionEvent extends InputEvent {
 	private MotionEvent mNext;
 
 	private static native int nativeInitialize(int nativePtr,
-			int deviceId, int source, int action, int flags, int edgeFlags,
-			int metaState, int buttonState,
-			float xOffset, float yOffset, float xPrecision, float yPrecision,
-			long downTimeNanos, long eventTimeNanos,
-			int pointerCount, PointerProperties[] pointerIds, PointerCoords[] pointerCoords);
+						   int deviceId, int source, int action, int flags, int edgeFlags,
+						   int metaState, int buttonState,
+						   float xOffset, float yOffset, float xPrecision, float yPrecision,
+						   long downTimeNanos, long eventTimeNanos,
+						   int pointerCount, PointerProperties[] pointerIds, PointerCoords[] pointerCoords);
 	private static native int nativeCopy(int destNativePtr, int sourceNativePtr,
-			boolean keepHistory);
+					     boolean keepHistory);
 	private static native void nativeDispose(int nativePtr);
 	private static native void nativeAddBatch(int nativePtr, long eventTimeNanos,
-			PointerCoords[] pointerCoords, int metaState);
+						  PointerCoords[] pointerCoords, int metaState);
 
 	private static native int nativeGetDeviceId(int nativePtr);
 	private static native int nativeGetSource(int nativePtr);
@@ -1353,13 +1352,13 @@ public final class MotionEvent extends InputEvent {
 	private static native int nativeGetHistorySize(int nativePtr);
 	private static native long nativeGetEventTimeNanos(int nativePtr, int historyPos);
 	private static native float nativeGetRawAxisValue(int nativePtr,
-			int axis, int pointerIndex, int historyPos);
+							  int axis, int pointerIndex, int historyPos);
 	private static native float nativeGetAxisValue(int nativePtr,
-			int axis, int pointerIndex, int historyPos);
+						       int axis, int pointerIndex, int historyPos);
 	private static native void nativeGetPointerCoords(int nativePtr,
-			int pointerIndex, int historyPos, PointerCoords outPointerCoords);
+							  int pointerIndex, int historyPos, PointerCoords outPointerCoords);
 	private static native void nativeGetPointerProperties(int nativePtr,
-			int pointerIndex, PointerProperties outPointerProperties);
+							      int pointerIndex, PointerProperties outPointerProperties);
 
 	private static native void nativeScale(int nativePtr, float scale);
 	private static native void nativeTransform(int nativePtr, Matrix matrix);
@@ -1367,7 +1366,6 @@ public final class MotionEvent extends InputEvent {
 	int action;
 	float coord_x;
 	float coord_y;
-
 
 	private MotionEvent() {
 	}
@@ -1377,7 +1375,6 @@ public final class MotionEvent extends InputEvent {
 		this.coord_x = coord_x;
 		this.coord_y = coord_y;
 	}
-
 
 	@Override
 	protected void finalize() throws Throwable {
@@ -1410,9 +1407,9 @@ public final class MotionEvent extends InputEvent {
 	 * Create a new MotionEvent, filling in all of the basic values that
 	 * define the motion.
 	 *
-	 * @param downTime The time (in ms) when the user originally pressed down to start 
+	 * @param downTime The time (in ms) when the user originally pressed down to start
 	 * a stream of position events.  This must be obtained from {@link SystemClock#uptimeMillis()}.
-	 * @param eventTime The the time (in ms) when this specific event was generated.  This 
+	 * @param eventTime The the time (in ms) when this specific event was generated.  This
 	 * must be obtained from {@link SystemClock#uptimeMillis()}.
 	 * @param action The kind of action being performed, such as {@link #ACTION_DOWN}.
 	 * @param pointerCount The number of pointers that will be in this event.
@@ -1435,23 +1432,23 @@ public final class MotionEvent extends InputEvent {
 	 * @param flags The motion event flags.
 	 */
 	static public MotionEvent obtain(long downTime, long eventTime,
-			int action, int pointerCount, PointerProperties[] pointerProperties,
-			PointerCoords[] pointerCoords, int metaState, int buttonState,
-			float xPrecision, float yPrecision, int deviceId,
-			int edgeFlags, int source, int flags) {
+					 int action, int pointerCount, PointerProperties[] pointerProperties,
+					 PointerCoords[] pointerCoords, int metaState, int buttonState,
+					 float xPrecision, float yPrecision, int deviceId,
+					 int edgeFlags, int source, int flags) {
 		MotionEvent ev = obtain();
 		ev.mNativePtr = nativeInitialize(ev.mNativePtr,
-				deviceId, source, action, flags, edgeFlags, metaState, buttonState,
-				0, 0, xPrecision, yPrecision,
-				downTime * NS_PER_MS, eventTime * NS_PER_MS,
-				pointerCount, pointerProperties, pointerCoords);
+						 deviceId, source, action, flags, edgeFlags, metaState, buttonState,
+						 0, 0, xPrecision, yPrecision,
+						 downTime * NS_PER_MS, eventTime * NS_PER_MS,
+						 pointerCount, pointerProperties, pointerCoords);
 		return ev;
 	}
 
 	/**
 	 * Create a new MotionEvent, filling in all of the basic values that
 	 * define the motion.
-	 * 
+	 *
 	 * @param downTime The time (in ms) when the user originally pressed down to start
 	 * a stream of position events.  This must be obtained from {@link SystemClock#uptimeMillis()}.
 	 * @param eventTime The the time (in ms) when this specific event was generated.  This
@@ -1479,9 +1476,9 @@ public final class MotionEvent extends InputEvent {
 	 */
 	@Deprecated
 	static public MotionEvent obtain(long downTime, long eventTime,
-			int action, int pointerCount, int[] pointerIds, PointerCoords[] pointerCoords,
-			int metaState, float xPrecision, float yPrecision, int deviceId,
-			int edgeFlags, int source, int flags) {
+					 int action, int pointerCount, int[] pointerIds, PointerCoords[] pointerCoords,
+					 int metaState, float xPrecision, float yPrecision, int deviceId,
+					 int edgeFlags, int source, int flags) {
 		synchronized (gSharedTempLock) {
 			ensureSharedTempPointerCapacity(pointerCount);
 			final PointerProperties[] pp = gSharedTempPointerProperties;
@@ -1490,8 +1487,8 @@ public final class MotionEvent extends InputEvent {
 				pp[i].id = pointerIds[i];
 			}
 			return obtain(downTime, eventTime, action, pointerCount, pp,
-					pointerCoords, metaState, 0, xPrecision, yPrecision, deviceId,
-					edgeFlags, source, flags);
+				      pointerCoords, metaState, 0, xPrecision, yPrecision, deviceId,
+				      edgeFlags, source, flags);
 		}
 	}
 
@@ -1525,8 +1522,8 @@ public final class MotionEvent extends InputEvent {
 	 * MotionEvent.
 	 */
 	static public MotionEvent obtain(long downTime, long eventTime, int action,
-			float x, float y, float pressure, float size, int metaState,
-			float xPrecision, float yPrecision, int deviceId, int edgeFlags) {
+					 float x, float y, float pressure, float size, int metaState,
+					 float xPrecision, float yPrecision, int deviceId, int edgeFlags) {
 		MotionEvent ev = obtain();
 		synchronized (gSharedTempLock) {
 			ensureSharedTempPointerCapacity(1);
@@ -1542,10 +1539,10 @@ public final class MotionEvent extends InputEvent {
 			pc[0].size = size;
 
 			ev.mNativePtr = nativeInitialize(ev.mNativePtr,
-					deviceId, /*InputDevice.SOURCE_UNKNOWN*/0, action, 0, edgeFlags, metaState, 0,
-					0, 0, xPrecision, yPrecision,
-					downTime * NS_PER_MS, eventTime * NS_PER_MS,
-					1, pp, pc);
+							 deviceId, /*InputDevice.SOURCE_UNKNOWN*/ 0, action, 0, edgeFlags, metaState, 0,
+							 0, 0, xPrecision, yPrecision,
+							 downTime * NS_PER_MS, eventTime * NS_PER_MS,
+							 1, pp, pc);
 			return ev;
 		}
 	}
@@ -1579,16 +1576,16 @@ public final class MotionEvent extends InputEvent {
 	 * numbers are arbitrary and you shouldn't depend on the values.
 	 * @param edgeFlags A bitfield indicating which edges, if any, were touched by this
 	 * MotionEvent.
-	 * 
+	 *
 	 * @deprecated Use {@link #obtain(long, long, int, float, float, float, float, int, float, float, int, int)}
 	 * instead.
 	 */
 	@Deprecated
 	static public MotionEvent obtain(long downTime, long eventTime, int action,
-			int pointerCount, float x, float y, float pressure, float size, int metaState,
-			float xPrecision, float yPrecision, int deviceId, int edgeFlags) {
+					 int pointerCount, float x, float y, float pressure, float size, int metaState,
+					 float xPrecision, float yPrecision, int deviceId, int edgeFlags) {
 		return obtain(downTime, eventTime, action, x, y, pressure, size,
-				metaState, xPrecision, yPrecision, deviceId, edgeFlags);
+			      metaState, xPrecision, yPrecision, deviceId, edgeFlags);
 	}
 
 	/**
@@ -1607,9 +1604,9 @@ public final class MotionEvent extends InputEvent {
 	 * the event was generated.
 	 */
 	static public MotionEvent obtain(long downTime, long eventTime, int action,
-			float x, float y, int metaState) {
+					 float x, float y, int metaState) {
 		return obtain(downTime, eventTime, action, x, y, 1.0f, 1.0f,
-				metaState, 1.0f, 1.0f, 0, 0);
+			      metaState, 1.0f, 1.0f, 0, 0);
 	}
 
 	/**
@@ -1641,7 +1638,9 @@ public final class MotionEvent extends InputEvent {
 		return ev;
 	}
 
-	/** @hide */
+	/**
+	 * @hide
+	 */
 	@Override
 	public MotionEvent copy() {
 		return obtain(this);
@@ -1681,21 +1680,27 @@ public final class MotionEvent extends InputEvent {
 		}
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final int getDeviceId() {
 		return 1; // FIXME: implement this properly
-//		return nativeGetDeviceId(mNativePtr);
+			  //		return nativeGetDeviceId(mNativePtr);
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final int getSource() {
-		return  4098/*SOURCE_TOUCHSCREEN*/; // TODO: reflect reality
-//		return nativeGetSource(mNativePtr);
+		return 4098 /*SOURCE_TOUCHSCREEN*/; // TODO: reflect reality
+						    //		return nativeGetSource(mNativePtr);
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final void setSource(int source) {
 		nativeSetSource(mNativePtr, source);
@@ -1758,14 +1763,18 @@ public final class MotionEvent extends InputEvent {
 		return nativeGetFlags(mNativePtr);
 	}
 
-	/** @hide */
+	/**
+	 * @hide
+	 */
 	@Override
 	public final boolean isTainted() {
 		final int flags = getFlags();
 		return (flags & FLAG_TAINTED) != 0;
 	}
 
-	/** @hide */
+	/**
+	 * @hide
+	 */
 	@Override
 	public final void setTainted(boolean tainted) {
 		final int flags = getFlags();
@@ -1848,7 +1857,7 @@ public final class MotionEvent extends InputEvent {
 	 * @see #AXIS_PRESSURE
 	 */
 	public final float getPressure() {
-//		return nativeGetAxisValue(mNativePtr, AXIS_PRESSURE, 0, HISTORY_CURRENT);
+		//		return nativeGetAxisValue(mNativePtr, AXIS_PRESSURE, 0, HISTORY_CURRENT);
 		return 0;
 	}
 
@@ -1861,7 +1870,7 @@ public final class MotionEvent extends InputEvent {
 	public final float getSize() {
 		return nativeGetAxisValue(mNativePtr, AXIS_SIZE, 0, HISTORY_CURRENT);
 	}
-	
+
 	/**
 	 * {@link #getTouchMajor(int)} for the first pointer index (may be an
 	 * arbitrary pointer identifier).
@@ -1881,7 +1890,7 @@ public final class MotionEvent extends InputEvent {
 	public final float getTouchMinor() {
 		return nativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, 0, HISTORY_CURRENT);
 	}
-	
+
 	/**
 	 * {@link #getToolMajor(int)} for the first pointer index (may be an
 	 * arbitrary pointer identifier).
@@ -1932,7 +1941,7 @@ public final class MotionEvent extends InputEvent {
 	public final int getPointerCount() {
 		return 1; // TODO: implement this properly
 	}
-	
+
 	/**
 	 * Return the pointer identifier associated with a particular pointer
 	 * data index is this event.  The identifier tells you the actual pointer
@@ -1965,7 +1974,7 @@ public final class MotionEvent extends InputEvent {
 
 	/**
 	 * Given a pointer identifier, find the index of its data in the event.
-	 * 
+	 *
 	 * @param pointerId The identifier of the pointer to be found.
 	 * @return Returns either the index of the pointer (for use with
 	 * {@link #getX(int)} et al.), or -1 if there is no data available for
@@ -1979,8 +1988,8 @@ public final class MotionEvent extends InputEvent {
 	 * Returns the X coordinate of this event for the given pointer
 	 * <em>index</em> (use {@link #getPointerId(int)} to find the pointer
 	 * identifier for this index).
-	 * Whole numbers are pixels; the 
-	 * value may have a fraction for input devices that are sub-pixel precise. 
+	 * Whole numbers are pixels; the
+	 * value may have a fraction for input devices that are sub-pixel precise.
 	 * @param pointerIndex Raw index of pointer to retrieve.  Value may be from 0
 	 * (the first pointer that is down) to {@link #getPointerCount()}-1.
 	 *
@@ -2019,7 +2028,7 @@ public final class MotionEvent extends InputEvent {
 	 * @see #AXIS_PRESSURE
 	 */
 	public final float getPressure(int pointerIndex) {
-//		return nativeGetAxisValue(mNativePtr, AXIS_PRESSURE, pointerIndex, HISTORY_CURRENT);
+		//		return nativeGetAxisValue(mNativePtr, AXIS_PRESSURE, pointerIndex, HISTORY_CURRENT);
 		return 0;
 	}
 
@@ -2040,7 +2049,7 @@ public final class MotionEvent extends InputEvent {
 	public final float getSize(int pointerIndex) {
 		return nativeGetAxisValue(mNativePtr, AXIS_SIZE, pointerIndex, HISTORY_CURRENT);
 	}
-	
+
 	/**
 	 * Returns the length of the major axis of an ellipse that describes the touch
 	 * area at the point of contact for the given pointer
@@ -2054,7 +2063,7 @@ public final class MotionEvent extends InputEvent {
 	public final float getTouchMajor(int pointerIndex) {
 		return nativeGetAxisValue(mNativePtr, AXIS_TOUCH_MAJOR, pointerIndex, HISTORY_CURRENT);
 	}
-	
+
 	/**
 	 * Returns the length of the minor axis of an ellipse that describes the touch
 	 * area at the point of contact for the given pointer
@@ -2068,7 +2077,7 @@ public final class MotionEvent extends InputEvent {
 	public final float getTouchMinor(int pointerIndex) {
 		return nativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, pointerIndex, HISTORY_CURRENT);
 	}
-	
+
 	/**
 	 * Returns the length of the major axis of an ellipse that describes the size of
 	 * the approaching tool for the given pointer
@@ -2084,7 +2093,7 @@ public final class MotionEvent extends InputEvent {
 	public final float getToolMajor(int pointerIndex) {
 		return nativeGetAxisValue(mNativePtr, AXIS_TOOL_MAJOR, pointerIndex, HISTORY_CURRENT);
 	}
-	
+
 	/**
 	 * Returns the length of the minor axis of an ellipse that describes the size of
 	 * the approaching tool for the given pointer
@@ -2100,7 +2109,7 @@ public final class MotionEvent extends InputEvent {
 	public final float getToolMinor(int pointerIndex) {
 		return nativeGetAxisValue(mNativePtr, AXIS_TOOL_MINOR, pointerIndex, HISTORY_CURRENT);
 	}
-	
+
 	/**
 	 * Returns the orientation of the touch area and tool area in radians clockwise from vertical
 	 * for the given pointer <em>index</em> (use {@link #getPointerId(int)} to find the pointer
@@ -2139,7 +2148,7 @@ public final class MotionEvent extends InputEvent {
 	/**
 	 * Populates a {@link PointerCoords} object with pointer coordinate data for
 	 * the specified pointer index.
-	 * 
+	 *
 	 * @param pointerIndex Raw index of pointer to retrieve.  Value may be from 0
 	 * (the first pointer that is down) to {@link #getPointerCount()}-1.
 	 * @param outPointerCoords The pointer coordinate object to populate.
@@ -2161,7 +2170,7 @@ public final class MotionEvent extends InputEvent {
 	 * @see PointerProperties
 	 */
 	public final void getPointerProperties(int pointerIndex,
-			PointerProperties outPointerProperties) {
+					       PointerProperties outPointerProperties) {
 		nativeGetPointerProperties(mNativePtr, pointerIndex, outPointerProperties);
 	}
 
@@ -2391,7 +2400,7 @@ public final class MotionEvent extends InputEvent {
 	public final float getHistoricalTouchMinor(int pos) {
 		return nativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, 0, pos);
 	}
-	
+
 	/**
 	 * {@link #getHistoricalToolMajor(int, int)} for the first pointer index (may be an
 	 * arbitrary pointer identifier).
@@ -2421,7 +2430,7 @@ public final class MotionEvent extends InputEvent {
 	public final float getHistoricalToolMinor(int pos) {
 		return nativeGetAxisValue(mNativePtr, AXIS_TOOL_MINOR, 0, pos);
 	}
-	
+
 	/**
 	 * {@link #getHistoricalOrientation(int, int)} for the first pointer index (may be an
 	 * arbitrary pointer identifier).
@@ -2499,7 +2508,7 @@ public final class MotionEvent extends InputEvent {
 	 * (the first pointer that is down) to {@link #getPointerCount()}-1.
 	 * @param pos Which historical value to return; must be less than
 	 * {@link #getHistorySize}
-	 * 
+	 *
 	 * @see #getHistorySize
 	 * @see #getPressure(int)
 	 * @see #AXIS_PRESSURE
@@ -2517,7 +2526,7 @@ public final class MotionEvent extends InputEvent {
 	 * (the first pointer that is down) to {@link #getPointerCount()}-1.
 	 * @param pos Which historical value to return; must be less than
 	 * {@link #getHistorySize}
-	 * 
+	 *
 	 * @see #getHistorySize
 	 * @see #getSize(int)
 	 * @see #AXIS_SIZE
@@ -2525,7 +2534,7 @@ public final class MotionEvent extends InputEvent {
 	public final float getHistoricalSize(int pointerIndex, int pos) {
 		return nativeGetAxisValue(mNativePtr, AXIS_SIZE, pointerIndex, pos);
 	}
-	
+
 	/**
 	 * Returns a historical touch major axis coordinate, as per {@link #getTouchMajor(int)}, that
 	 * occurred between this event and the previous event for the given pointer.
@@ -2535,7 +2544,7 @@ public final class MotionEvent extends InputEvent {
 	 * (the first pointer that is down) to {@link #getPointerCount()}-1.
 	 * @param pos Which historical value to return; must be less than
 	 * {@link #getHistorySize}
-	 * 
+	 *
 	 * @see #getHistorySize
 	 * @see #getTouchMajor(int)
 	 * @see #AXIS_TOUCH_MAJOR
@@ -2553,7 +2562,7 @@ public final class MotionEvent extends InputEvent {
 	 * (the first pointer that is down) to {@link #getPointerCount()}-1.
 	 * @param pos Which historical value to return; must be less than
 	 * {@link #getHistorySize}
-	 * 
+	 *
 	 * @see #getHistorySize
 	 * @see #getTouchMinor(int)
 	 * @see #AXIS_TOUCH_MINOR
@@ -2571,7 +2580,7 @@ public final class MotionEvent extends InputEvent {
 	 * (the first pointer that is down) to {@link #getPointerCount()}-1.
 	 * @param pos Which historical value to return; must be less than
 	 * {@link #getHistorySize}
-	 * 
+	 *
 	 * @see #getHistorySize
 	 * @see #getToolMajor(int)
 	 * @see #AXIS_TOOL_MAJOR
@@ -2589,7 +2598,7 @@ public final class MotionEvent extends InputEvent {
 	 * (the first pointer that is down) to {@link #getPointerCount()}-1.
 	 * @param pos Which historical value to return; must be less than
 	 * {@link #getHistorySize}
-	 * 
+	 *
 	 * @see #getHistorySize
 	 * @see #getToolMinor(int)
 	 * @see #AXIS_TOOL_MINOR
@@ -2607,7 +2616,7 @@ public final class MotionEvent extends InputEvent {
 	 * (the first pointer that is down) to {@link #getPointerCount()}-1.
 	 * @param pos Which historical value to return; must be less than
 	 * {@link #getHistorySize}
-	 * 
+	 *
 	 * @see #getHistorySize
 	 * @see #getOrientation(int)
 	 * @see #AXIS_ORIENTATION
@@ -2640,22 +2649,22 @@ public final class MotionEvent extends InputEvent {
 	 * as per {@link #getPointerCoords}, that occurred between this event and the previous
 	 * event for the given pointer.
 	 * Only applies to ACTION_MOVE events.
-	 * 
+	 *
 	 * @param pointerIndex Raw index of pointer to retrieve.  Value may be from 0
 	 * (the first pointer that is down) to {@link #getPointerCount()}-1.
 	 * @param pos Which historical value to return; must be less than
 	 * {@link #getHistorySize}
 	 * @param outPointerCoords The pointer coordinate object to populate.
-	 * 
+	 *
 	 * @see #getHistorySize
 	 * @see #getPointerCoords
 	 * @see PointerCoords
 	 */
 	public final void getHistoricalPointerCoords(int pointerIndex, int pos,
-			PointerCoords outPointerCoords) {
+						     PointerCoords outPointerCoords) {
 		nativeGetPointerCoords(mNativePtr, pointerIndex, pos, outPointerCoords);
 	}
-	
+
 	/**
 	 * Returns a bitfield indicating which edges, if any, were touched by this
 	 * MotionEvent. For touch events, clients can use this to determine if the
@@ -2712,7 +2721,7 @@ public final class MotionEvent extends InputEvent {
 		float oldY = getY();
 		offsetLocation(x - oldX, y - oldY);
 	}
-	
+
 	/**
 	 * Applies a transformation matrix to all of the points in the event.
 	 *
@@ -2741,7 +2750,7 @@ public final class MotionEvent extends InputEvent {
 	 * @param metaState Meta key state.
 	 */
 	public final void addBatch(long eventTime, float x, float y,
-			float pressure, float size, int metaState) {
+				   float pressure, float size, int metaState) {
 		synchronized (gSharedTempLock) {
 			ensureSharedTempPointerCapacity(1);
 			final PointerCoords[] pc = gSharedTempPointerCoords;
@@ -2791,9 +2800,7 @@ public final class MotionEvent extends InputEvent {
 			return false;
 		}
 
-		if (nativeGetDeviceId(mNativePtr) != nativeGetDeviceId(event.mNativePtr)
-				|| nativeGetSource(mNativePtr) != nativeGetSource(event.mNativePtr)
-				|| nativeGetFlags(mNativePtr) != nativeGetFlags(event.mNativePtr)) {
+		if (nativeGetDeviceId(mNativePtr) != nativeGetDeviceId(event.mNativePtr) || nativeGetSource(mNativePtr) != nativeGetSource(event.mNativePtr) || nativeGetFlags(mNativePtr) != nativeGetFlags(event.mNativePtr)) {
 			return false;
 		}
 
@@ -2836,7 +2843,7 @@ public final class MotionEvent extends InputEvent {
 	 * @hide
 	 */
 	public final boolean isWithinBoundsNoHistory(float left, float top,
-			float right, float bottom) {
+						     float right, float bottom) {
 		final int pointerCount = nativeGetPointerCount(mNativePtr);
 		for (int i = 0; i < pointerCount; i++) {
 			final float x = nativeGetAxisValue(mNativePtr, AXIS_X, i, HISTORY_CURRENT);
@@ -2877,15 +2884,15 @@ public final class MotionEvent extends InputEvent {
 				pc[i].y = clamp(pc[i].y, top, bottom);
 			}
 			ev.mNativePtr = nativeInitialize(ev.mNativePtr,
-					nativeGetDeviceId(mNativePtr), nativeGetSource(mNativePtr),
-					nativeGetAction(mNativePtr), nativeGetFlags(mNativePtr),
-					nativeGetEdgeFlags(mNativePtr), nativeGetMetaState(mNativePtr),
-					nativeGetButtonState(mNativePtr),
-					nativeGetXOffset(mNativePtr), nativeGetYOffset(mNativePtr),
-					nativeGetXPrecision(mNativePtr), nativeGetYPrecision(mNativePtr),
-					nativeGetDownTimeNanos(mNativePtr),
-					nativeGetEventTimeNanos(mNativePtr, HISTORY_CURRENT),
-					pointerCount, pp, pc);
+							 nativeGetDeviceId(mNativePtr), nativeGetSource(mNativePtr),
+							 nativeGetAction(mNativePtr), nativeGetFlags(mNativePtr),
+							 nativeGetEdgeFlags(mNativePtr), nativeGetMetaState(mNativePtr),
+							 nativeGetButtonState(mNativePtr),
+							 nativeGetXOffset(mNativePtr), nativeGetYOffset(mNativePtr),
+							 nativeGetXPrecision(mNativePtr), nativeGetYPrecision(mNativePtr),
+							 nativeGetDownTimeNanos(mNativePtr),
+							 nativeGetEventTimeNanos(mNativePtr, HISTORY_CURRENT),
+							 pointerCount, pp, pc);
 			return ev;
 		}
 	}
@@ -2918,8 +2925,7 @@ public final class MotionEvent extends InputEvent {
 
 			final int oldAction = nativeGetAction(mNativePtr);
 			final int oldActionMasked = oldAction & ACTION_MASK;
-			final int oldActionPointerIndex = (oldAction & ACTION_POINTER_INDEX_MASK)
-					>> ACTION_POINTER_INDEX_SHIFT;
+			final int oldActionPointerIndex = (oldAction & ACTION_POINTER_INDEX_MASK) >> ACTION_POINTER_INDEX_SHIFT;
 			int newActionPointerIndex = -1;
 			int newPointerCount = 0;
 			int newIdBits = 0;
@@ -2948,11 +2954,11 @@ public final class MotionEvent extends InputEvent {
 				} else if (newPointerCount == 1) {
 					// The first/last pointer went down/up.
 					newAction = oldActionMasked == ACTION_POINTER_DOWN
-							? ACTION_DOWN : ACTION_UP;
+							? ACTION_DOWN
+							: ACTION_UP;
 				} else {
 					// A secondary pointer went down/up.
-					newAction = oldActionMasked
-							| (newActionPointerIndex << ACTION_POINTER_INDEX_SHIFT);
+					newAction = oldActionMasked | (newActionPointerIndex << ACTION_POINTER_INDEX_SHIFT);
 				}
 			} else {
 				// Simple up/down/cancel/move or other motion action.
@@ -2970,14 +2976,14 @@ public final class MotionEvent extends InputEvent {
 				final long eventTimeNanos = nativeGetEventTimeNanos(mNativePtr, historyPos);
 				if (h == 0) {
 					ev.mNativePtr = nativeInitialize(ev.mNativePtr,
-							nativeGetDeviceId(mNativePtr), nativeGetSource(mNativePtr),
-							newAction, nativeGetFlags(mNativePtr),
-							nativeGetEdgeFlags(mNativePtr), nativeGetMetaState(mNativePtr),
-							nativeGetButtonState(mNativePtr),
-							nativeGetXOffset(mNativePtr), nativeGetYOffset(mNativePtr),
-							nativeGetXPrecision(mNativePtr), nativeGetYPrecision(mNativePtr),
-							nativeGetDownTimeNanos(mNativePtr), eventTimeNanos,
-							newPointerCount, pp, pc);
+									 nativeGetDeviceId(mNativePtr), nativeGetSource(mNativePtr),
+									 newAction, nativeGetFlags(mNativePtr),
+									 nativeGetEdgeFlags(mNativePtr), nativeGetMetaState(mNativePtr),
+									 nativeGetButtonState(mNativePtr),
+									 nativeGetXOffset(mNativePtr), nativeGetYOffset(mNativePtr),
+									 nativeGetXPrecision(mNativePtr), nativeGetYPrecision(mNativePtr),
+									 nativeGetDownTimeNanos(mNativePtr), eventTimeNanos,
+									 newPointerCount, pp, pc);
 				} else {
 					nativeAddBatch(ev.mNativePtr, eventTimeNanos, pc, 0);
 				}
@@ -2996,12 +3002,11 @@ public final class MotionEvent extends InputEvent {
 			msg.append(", id[").append(i).append("]=").append(getPointerId(i));
 			msg.append(", x[").append(i).append("]=").append(getX(i));
 			msg.append(", y[").append(i).append("]=").append(getY(i));
-			msg.append(", toolType[").append(i).append("]=").append(
-					toolTypeToString(getToolType(i)));
+			msg.append(", toolType[").append(i).append("]=").append(toolTypeToString(getToolType(i)));
 		}
 
 		msg.append(", buttonState=").append(MotionEvent.buttonStateToString(getButtonState()));
-		msg.append(", metaState=").append(/*KeyEvent.metaStateToString(getMetaState())*/"FIXME");
+		msg.append(", metaState=").append(/*KeyEvent.metaStateToString(getMetaState())*/ "FIXME");
 		msg.append(", flags=0x").append(Integer.toHexString(getFlags()));
 		msg.append(", edgeFlags=0x").append(Integer.toHexString(getEdgeFlags()));
 		msg.append(", pointerCount=").append(pointerCount);
@@ -3145,11 +3150,11 @@ public final class MotionEvent extends InputEvent {
 
 	/**
 	 * Transfer object for pointer coordinates.
-	 * 
+	 *
 	 * Objects of this type can be used to specify the pointer coordinates when
 	 * creating new {@link MotionEvent} objects and to query pointer coordinates
 	 * in bulk.
-	 * 
+	 *
 	 * Refer to {@link InputDevice} for information about how different kinds of
 	 * input devices and sources represent pointer coordinates.
 	 */
@@ -3174,7 +3179,9 @@ public final class MotionEvent extends InputEvent {
 			copyFrom(other);
 		}
 
-		/** @hide */
+		/**
+		 * @hide
+		 */
 		public static PointerCoords[] createArray(int size) {
 			PointerCoords[] array = new PointerCoords[size];
 			for (int i = 0; i < size; i++) {
@@ -3189,14 +3196,14 @@ public final class MotionEvent extends InputEvent {
 		 * @see MotionEvent#AXIS_X
 		 */
 		public float x;
-		
+
 		/**
 		 * The Y component of the pointer movement.
 		 *
 		 * @see MotionEvent#AXIS_Y
 		 */
 		public float y;
-		
+
 		/**
 		 * A normalized value that describes the pressure applied to the device
 		 * by a finger or other tool.
@@ -3207,7 +3214,7 @@ public final class MotionEvent extends InputEvent {
 		 * @see MotionEvent#AXIS_PRESSURE
 		 */
 		public float pressure;
-		
+
 		/**
 		 * A normalized value that describes the approximate size of the pointer touch area
 		 * in relation to the maximum detectable size of the device.
@@ -3220,7 +3227,7 @@ public final class MotionEvent extends InputEvent {
 		 * @see MotionEvent#AXIS_SIZE
 		 */
 		public float size;
-		
+
 		/**
 		 * The length of the major axis of an ellipse that describes the touch area at
 		 * the point of contact.
@@ -3230,7 +3237,7 @@ public final class MotionEvent extends InputEvent {
 		 * @see MotionEvent#AXIS_TOUCH_MAJOR
 		 */
 		public float touchMajor;
-		
+
 		/**
 		 * The length of the minor axis of an ellipse that describes the touch area at
 		 * the point of contact.
@@ -3240,7 +3247,7 @@ public final class MotionEvent extends InputEvent {
 		 * @see MotionEvent#AXIS_TOUCH_MINOR
 		 */
 		public float touchMinor;
-		
+
 		/**
 		 * The length of the major axis of an ellipse that describes the size of
 		 * the approaching tool.
@@ -3252,7 +3259,7 @@ public final class MotionEvent extends InputEvent {
 		 * @see MotionEvent#AXIS_TOOL_MAJOR
 		 */
 		public float toolMajor;
-		
+
 		/**
 		 * The length of the minor axis of an ellipse that describes the size of
 		 * the approaching tool.
@@ -3264,7 +3271,7 @@ public final class MotionEvent extends InputEvent {
 		 * @see MotionEvent#AXIS_TOOL_MINOR
 		 */
 		public float toolMinor;
-		
+
 		/**
 		 * The orientation of the touch area and tool area in radians clockwise from vertical.
 		 * An angle of 0 radians indicates that the major axis of contact is oriented
@@ -3425,13 +3432,13 @@ public final class MotionEvent extends InputEvent {
 							if (count < values.length) {
 								if (index != count) {
 									System.arraycopy(values, index, values, index + 1,
-											count - index);
+											 count - index);
 								}
 							} else {
 								float[] newValues = new float[count * 2];
 								System.arraycopy(values, 0, newValues, 0, index);
 								System.arraycopy(values, index, newValues, index + 1,
-										count - index);
+										 count - index);
 								values = newValues;
 								mPackedAxisValues = values;
 							}
@@ -3467,7 +3474,9 @@ public final class MotionEvent extends InputEvent {
 			copyFrom(other);
 		}
 
-		/** @hide */
+		/**
+		 * @hide
+		 */
 		public static PointerProperties[] createArray(int size) {
 			PointerProperties[] array = new PointerProperties[size];
 			for (int i = 0; i < size; i++) {

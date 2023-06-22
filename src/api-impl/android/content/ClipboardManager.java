@@ -15,10 +15,10 @@
  */
 package android.content;
 import android.content.Context;
-import android.os.Message;
-import android.os.RemoteException;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.RemoteException;
 import android.util.Log;
 import java.util.ArrayList;
 
@@ -49,78 +49,80 @@ class ClipDescription {}
  * @see android.content.Context#getSystemService
  */
 public class ClipboardManager extends android.text.ClipboardManager {
-    static final int MSG_REPORT_PRIMARY_CLIP_CHANGED = 1;
-    /**
-     * Defines a listener callback that is invoked when the primary clip on the clipboard changes.
-     * Objects that want to register a listener call
-     * {@link android.content.ClipboardManager#addPrimaryClipChangedListener(OnPrimaryClipChangedListener)
-     * addPrimaryClipChangedListener()} with an
-     * object that implements OnPrimaryClipChangedListener.
-     *
-     */
-    public interface OnPrimaryClipChangedListener {
-        /**
-         * Callback that is invoked by {@link android.content.ClipboardManager} when the primary
-         * clip changes.
-         */
-        void onPrimaryClipChanged();
-    }
-    /** {@hide} */
-    public ClipboardManager(Context context, Handler handler) {
-    }
-    public ClipboardManager() {
-    }
-    /**
-     * Sets the current primary clip on the clipboard.  This is the clip that
-     * is involved in normal cut and paste operations.
-     *
-     * @param clip The clipped data item to set.
-     */
-    public void setPrimaryClip(ClipData clip) {
-    }
-    /**
-     * Returns the current primary clip on the clipboard.
-     */
-    public ClipData getPrimaryClip() {
-	    return null;
-    }
-    /**
-     * Returns a description of the current primary clip on the clipboard
-     * but not a copy of its data.
-     */
-    public ClipDescription getPrimaryClipDescription() {
-	    return null;
-    }
-    /**
-     * Returns true if there is currently a primary clip on the clipboard.
-     */
-    public boolean hasPrimaryClip() {
-            return false;
-    }
-    public void addPrimaryClipChangedListener(OnPrimaryClipChangedListener what) {
-    }
-    public void removePrimaryClipChangedListener(OnPrimaryClipChangedListener what) {
-    }
-    /**
-     * @deprecated Use {@link #getPrimaryClip()} instead.  This retrieves
-     * the primary clip and tries to coerce it to a string.
-     */
-    public CharSequence getText() {
-        return null;
-    }
-    /**
-     * @deprecated Use {@link #setPrimaryClip(ClipData)} instead.  This
-     * creates a ClippedItem holding the given text and sets it as the
-     * primary clip.  It has no label or icon.
-     */
-    public void setText(CharSequence text) {
-    }
-    /**
-     * @deprecated Use {@link #hasPrimaryClip()} instead.
-     */
-    public boolean hasText() {
-            return false;
-    }
-    void reportPrimaryClipChanged() {
-    }
+	static final int MSG_REPORT_PRIMARY_CLIP_CHANGED = 1;
+	/**
+	 * Defines a listener callback that is invoked when the primary clip on the clipboard changes.
+	 * Objects that want to register a listener call
+	 * {@link android.content.ClipboardManager#addPrimaryClipChangedListener(OnPrimaryClipChangedListener)
+	 * addPrimaryClipChangedListener()} with an
+	 * object that implements OnPrimaryClipChangedListener.
+	 *
+	 */
+	public interface OnPrimaryClipChangedListener {
+		/**
+		 * Callback that is invoked by {@link android.content.ClipboardManager} when the primary
+		 * clip changes.
+		 */
+		void onPrimaryClipChanged();
+	}
+	/**
+	 * {@hide}
+	 */
+	public ClipboardManager(Context context, Handler handler) {
+	}
+	public ClipboardManager() {
+	}
+	/**
+	 * Sets the current primary clip on the clipboard.  This is the clip that
+	 * is involved in normal cut and paste operations.
+	 *
+	 * @param clip The clipped data item to set.
+	 */
+	public void setPrimaryClip(ClipData clip) {
+	}
+	/**
+	 * Returns the current primary clip on the clipboard.
+	 */
+	public ClipData getPrimaryClip() {
+		return null;
+	}
+	/**
+	 * Returns a description of the current primary clip on the clipboard
+	 * but not a copy of its data.
+	 */
+	public ClipDescription getPrimaryClipDescription() {
+		return null;
+	}
+	/**
+	 * Returns true if there is currently a primary clip on the clipboard.
+	 */
+	public boolean hasPrimaryClip() {
+		return false;
+	}
+	public void addPrimaryClipChangedListener(OnPrimaryClipChangedListener what) {
+	}
+	public void removePrimaryClipChangedListener(OnPrimaryClipChangedListener what) {
+	}
+	/**
+	 * @deprecated Use {@link #getPrimaryClip()} instead.  This retrieves
+	 * the primary clip and tries to coerce it to a string.
+	 */
+	public CharSequence getText() {
+		return null;
+	}
+	/**
+	 * @deprecated Use {@link #setPrimaryClip(ClipData)} instead.  This
+	 * creates a ClippedItem holding the given text and sets it as the
+	 * primary clip.  It has no label or icon.
+	 */
+	public void setText(CharSequence text) {
+	}
+	/**
+	 * @deprecated Use {@link #hasPrimaryClip()} instead.
+	 */
+	public boolean hasText() {
+		return false;
+	}
+	void reportPrimaryClipChanged() {
+	}
 }

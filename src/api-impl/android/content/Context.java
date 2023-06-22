@@ -1,40 +1,36 @@
 package android.content;
 
-import android.util.Log;
-
-import android.content.pm.PackageManager;
+import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.Application;
+import android.app.KeyguardManager;
+import android.app.NotificationManager;
+import android.app.SharedPreferencesImpl;
+import android.content.BroadcastReceiver;
+import android.content.ClipboardManager;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.content.Intent;
-import android.content.BroadcastReceiver;
-
-import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.content.SharedPreferences;
-import android.app.SharedPreferencesImpl;
+import android.hardware.SensorManager;
+import android.hardware.display.DisplayManager;
+import android.hardware.usb.UsbManager;
+import android.media.AudioManager;
+import android.media.MediaRouter;
+import android.net.ConnectivityManager;
 import android.os.Looper;
 import android.os.PowerManager;
-import android.app.Application;
-
+import android.os.Vibrator;
+import android.telephony.TelephonyManager;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
-import android.content.ClipboardManager;
-import android.hardware.SensorManager;
-import android.net.ConnectivityManager;
-import android.app.KeyguardManager;
-import android.telephony.TelephonyManager;
-import android.media.AudioManager;
-import android.app.ActivityManager;
-import android.hardware.usb.UsbManager;
-import android.os.Vibrator;
-import android.hardware.display.DisplayManager;
-import android.media.MediaRouter;
-import android.app.NotificationManager;
-import android.app.AlarmManager;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -77,7 +73,7 @@ public class Context extends Object {
 		System.out.println("new Context! this one is: " + this);
 	}
 
-	public int checkPermission (String permission, int pid, int uid) {
+	public int checkPermission(String permission, int pid, int uid) {
 		return getPackageManager().checkPermission(permission, "dummy");
 	}
 
@@ -85,7 +81,7 @@ public class Context extends Object {
 		return r.newTheme();
 	}
 
-	public ApplicationInfo getApplicationInfo () {
+	public ApplicationInfo getApplicationInfo() {
 		// TODO: do this somewhere saner?
 		application_info.nativeLibraryDir = (new File(getDataDirFile(), "lib")).getAbsolutePath();
 		return application_info;
@@ -132,7 +128,7 @@ public class Context extends Object {
 			case "alarm":
 				return new AlarmManager();
 			default:
-				System.out.println("!!!!!!! getSystemService: case >"+name+"< is not implemented yet");
+				System.out.println("!!!!!!! getSystemService: case >" + name + "< is not implemented yet");
 				return null;
 		}
 	}
@@ -175,11 +171,11 @@ public class Context extends Object {
 			return new File(base, name);
 		}
 		throw new IllegalArgumentException(
-				"File " + name + " contains a path separator");
+		    "File " + name + " contains a path separator");
 	}
 
 	private File getDataDirFile() {
-		if(data_dir == null) {
+		if (data_dir == null) {
 			data_dir = android.os.Environment.getExternalStorageDirectory();
 		}
 		return data_dir;
@@ -190,7 +186,7 @@ public class Context extends Object {
 			files_dir = new File(getDataDirFile(), "files");
 		}
 		if (!files_dir.exists()) {
-			if(!files_dir.mkdirs()) {
+			if (!files_dir.mkdirs()) {
 				if (files_dir.exists()) {
 					// spurious failure; probably racing with another process for this app
 					return files_dir;
@@ -207,29 +203,29 @@ public class Context extends Object {
 	}
 
 	public File getObbDir() {
-	if (obb_dir == null) {
+		if (obb_dir == null) {
 			obb_dir = new File(getDataDirFile(), "obb");
 		}
 		return obb_dir;
 	}
 
 	public File[] getObbDirs() {
-		return new File[]{getObbDir()};
+		return new File[] {getObbDir()};
 	}
 
 	// FIXME: should be something like /tmp/cache, but may need to create that directory
 	public File getCacheDir() {
-			if (cache_dir == null) {
-				cache_dir = new File("/tmp/");
-			}
-			return cache_dir;
+		if (cache_dir == null) {
+			cache_dir = new File("/tmp/");
+		}
+		return cache_dir;
 	}
 
 	private File getPreferencesDir() {
-			if (prefs_dir == null) {
-				prefs_dir = new File(getDataDirFile(), "shared_prefs");
-			}
-			return prefs_dir;
+		if (prefs_dir == null) {
+			prefs_dir = new File(getDataDirFile(), "shared_prefs");
+		}
+		return prefs_dir;
 	}
 
 	public File getSharedPrefsFile(String name) {
@@ -237,7 +233,7 @@ public class Context extends Object {
 	}
 
 	public SharedPreferences getSharedPreferences(String name, int mode) {
-		System.out.println("\n\n...> getSharedPreferences("+name+",)\n\n");
+		System.out.println("\n\n...> getSharedPreferences(" + name + ",)\n\n");
 		File prefsFile = getSharedPrefsFile(name);
 		return new SharedPreferencesImpl(prefsFile, mode);
 	}
@@ -248,7 +244,7 @@ public class Context extends Object {
 	}
 
 	public ComponentName startService(Intent service) {
-		return new ComponentName("","");
+		return new ComponentName("", "");
 	}
 
 	// FIXME - it should be *trivial* to do actually implement this
@@ -257,12 +253,12 @@ public class Context extends Object {
 	}
 
 	public FileOutputStream openFileOutput(String name, int mode) throws java.io.FileNotFoundException {
-		System.out.println("openFileOutput called for: '"+name+"'");
+		System.out.println("openFileOutput called for: '" + name + "'");
 		return new FileOutputStream(android.os.Environment.getExternalStorageDirectory().getPath() + "/files/" + name);
 	}
 
 	public int checkCallingOrSelfPermission(String permission) {
-		System.out.println("!!! app wants to know if it has a permission: >"+permission+"<");
+		System.out.println("!!! app wants to know if it has a permission: >" + permission + "<");
 
 		return -1; // PackageManager.PERMISSION_DENIED
 	}
@@ -270,8 +266,8 @@ public class Context extends Object {
 	public void registerComponentCallbacks(ComponentCallbacks callbacks) {}
 
 	// these may not look like typical stubs, but they definitely are stubs
-	public final TypedArray obtainStyledAttributes (AttributeSet set, int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
-	public final TypedArray obtainStyledAttributes (AttributeSet set, int[] attrs, int defStyleAttr, int defStyleRes) { return new TypedArray(r, new int[1000], new int[1000], 0); }
-	public final TypedArray obtainStyledAttributes (int resid, int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
-	public final TypedArray obtainStyledAttributes (int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
+	public final TypedArray obtainStyledAttributes(AttributeSet set, int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
+	public final TypedArray obtainStyledAttributes(AttributeSet set, int[] attrs, int defStyleAttr, int defStyleRes) { return new TypedArray(r, new int[1000], new int[1000], 0); }
+	public final TypedArray obtainStyledAttributes(int resid, int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
+	public final TypedArray obtainStyledAttributes(int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
 }

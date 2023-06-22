@@ -17,12 +17,10 @@
 package android.os;
 
 import android.content.Context;
-//import android.text.TextUtils;
+// import android.text.TextUtils;
 import android.util.Log;
-
-//import com.android.internal.annotations.GuardedBy;
-//import com.google.android.collect.Lists;
-	
+// import com.android.internal.annotations.GuardedBy;
+// import com.google.android.collect.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,7 +42,9 @@ public class Environment {
 	private static final String ENV_SECONDARY_STORAGE = "SECONDARY_STORAGE";
 	private static final String ENV_ANDROID_ROOT = "ANDROID_ROOT";
 
-	/** {@hide} */
+	/**
+	 * {@hide}
+	 */
 	public static final String DIR_ANDROID = "Android";
 	private static final String DIR_DATA = "data";
 	private static final String DIR_MEDIA = "media";
@@ -52,7 +52,9 @@ public class Environment {
 	private static final String DIR_FILES = "files";
 	private static final String DIR_CACHE = "cache";
 
-	/** {@hide} */
+	/**
+	 * {@hide}
+	 */
 	@Deprecated
 	public static final String DIRECTORY_ANDROID = DIR_ANDROID;
 
@@ -60,7 +62,7 @@ public class Environment {
 	private static final File DIR_MEDIA_STORAGE = getDirectory(ENV_MEDIA_STORAGE, "/data/media");
 
 	private static final String CANONCIAL_EMULATED_STORAGE_TARGET = getCanonicalPathOrNull(
-			ENV_EMULATED_STORAGE_TARGET);
+	    ENV_EMULATED_STORAGE_TARGET);
 
 	private static final String SYSTEM_PROPERTY_EFS_ENABLED = "persist.security.efs.enabled";
 
@@ -72,14 +74,16 @@ public class Environment {
 	private static volatile StorageVolume sPrimaryVolume;
 
 	private static StorageVolume getPrimaryVolume() {
-			return null;
+		return null;
 	}
 
 	static {
 		initForCurrentUser();
 	}
 
-	/** {@hide} */
+	/**
+	 * {@hide}
+	 */
 	public static void initForCurrentUser() {
 		final int userId = UserHandle.myUserId();
 		sCurrentUser = new UserEnvironment(userId);
@@ -89,15 +93,23 @@ public class Environment {
 		}
 	}
 
-	/** {@hide} */
+	/**
+	 * {@hide}
+	 */
 	public static class UserEnvironment {
 		// TODO: generalize further to create package-specific environment
 
-		/** External storage dirs, as visible to vold */
+		/**
+		 * External storage dirs, as visible to vold
+		 */
 		private final File[] mExternalDirsForVold = null;
-		/** External storage dirs, as visible to apps */
+		/**
+		 * External storage dirs, as visible to apps
+		 */
 		private final File[] mExternalDirsForApp = null;
-		/** Primary emulated storage dir for direct access */
+		/**
+		 * Primary emulated storage dir for direct access
+		 */
 		private final File mEmulatedDirForDirect = null;
 
 		public UserEnvironment(int userId) {
@@ -106,7 +118,7 @@ public class Environment {
 
 		@Deprecated
 		public File getExternalStorageDirectory() {
-			return Environment.getExternalStorageDirectory();/*mExternalDirsForApp[0];*/
+			return Environment.getExternalStorageDirectory(); /*mExternalDirsForApp[0];*/
 		}
 
 		@Deprecated
@@ -236,14 +248,12 @@ public class Environment {
 		return false;
 	}
 
-	private static final File DATA_DIRECTORY
-			= getDirectory("ANDROID_DATA", "/data");
+	private static final File DATA_DIRECTORY = getDirectory("ANDROID_DATA", "/data");
 
 	/**
 	 * @hide
 	 */
-	private static final File SECURE_DATA_DIRECTORY
-			= getDirectory("ANDROID_SECURE_DATA", "/data/secure");
+	private static final File SECURE_DATA_DIRECTORY = getDirectory("ANDROID_SECURE_DATA", "/data/secure");
 
 	private static final File DOWNLOAD_CACHE_DIRECTORY = getDirectory("DOWNLOAD_CACHE", "/cache");
 
@@ -312,7 +322,7 @@ public class Environment {
 	 * @see #isExternalStorageRemovable()
 	 */
 	public static File getExternalStorageDirectory() {
-		if(app_data_dir_file == null) {
+		if (app_data_dir_file == null) {
 			app_data_dir_file = new File(native_get_app_data_dir());
 		}
 
@@ -321,23 +331,31 @@ public class Environment {
 
 	private static native String native_get_app_data_dir();
 
-	/** {@hide} */
+	/**
+	 * {@hide}
+	 */
 	public static File getLegacyExternalStorageDirectory() {
 		return new File(System.getenv(ENV_EXTERNAL_STORAGE));
 	}
 
-	/** {@hide} */
+	/**
+	 * {@hide}
+	 */
 	public static File getLegacyExternalStorageObbDirectory() {
 		return buildPath(getLegacyExternalStorageDirectory(), DIR_ANDROID, DIR_OBB);
 	}
 
-	/** {@hide} */
+	/**
+	 * {@hide}
+	 */
 	public static File getEmulatedStorageSource(int userId) {
 		// /mnt/shell/emulated/0
 		return new File(System.getenv(ENV_EMULATED_STORAGE_SOURCE), String.valueOf(userId));
 	}
 
-	/** {@hide} */
+	/**
+	 * {@hide}
+	 */
 	public static File getEmulatedStorageObbSource() {
 		// /mnt/shell/emulated/obb
 		return new File(System.getenv(ENV_EMULATED_STORAGE_SOURCE), DIR_OBB);
@@ -353,7 +371,7 @@ public class Environment {
 	 * type.
 	 */
 	public static String DIRECTORY_MUSIC = "Music";
-	
+
 	/**
 	 * Standard directory in which to place any audio files that should be
 	 * in the list of podcasts that the user can select (not as regular
@@ -365,7 +383,7 @@ public class Environment {
 	 * type.
 	 */
 	public static String DIRECTORY_PODCASTS = "Podcasts";
-	
+
 	/**
 	 * Standard directory in which to place any audio files that should be
 	 * in the list of ringtones that the user can select (not as regular
@@ -377,7 +395,7 @@ public class Environment {
 	 * type.
 	 */
 	public static String DIRECTORY_RINGTONES = "Ringtones";
-	
+
 	/**
 	 * Standard directory in which to place any audio files that should be
 	 * in the list of alarms that the user can select (not as regular
@@ -389,7 +407,7 @@ public class Environment {
 	 * type.
 	 */
 	public static String DIRECTORY_ALARMS = "Alarms";
-	
+
 	/**
 	 * Standard directory in which to place any audio files that should be
 	 * in the list of notifications that the user can select (not as regular
@@ -401,7 +419,7 @@ public class Environment {
 	 * type.
 	 */
 	public static String DIRECTORY_NOTIFICATIONS = "Notifications";
-	
+
 	/**
 	 * Standard directory in which to place pictures that are available to
 	 * the user.  Note that this is primarily a convention for the top-level
@@ -409,7 +427,7 @@ public class Environment {
 	 * in any directory.
 	 */
 	public static String DIRECTORY_PICTURES = "Pictures";
-	
+
 	/**
 	 * Standard directory in which to place movies that are available to
 	 * the user.  Note that this is primarily a convention for the top-level
@@ -417,7 +435,7 @@ public class Environment {
 	 * in any directory.
 	 */
 	public static String DIRECTORY_MOVIES = "Movies";
-	
+
 	/**
 	 * Standard directory in which to place files that have been downloaded by
 	 * the user.  Note that this is primarily a convention for the top-level
@@ -427,7 +445,7 @@ public class Environment {
 	 * backwards compatibility reasons.
 	 */
 	public static String DIRECTORY_DOWNLOADS = "Download";
-	
+
 	/**
 	 * The traditional location for pictures and videos when mounting the
 	 * device as a camera.  Note that this is primarily a convention for the
@@ -447,24 +465,24 @@ public class Environment {
 	 * manage their own files, so you should be careful about what you put here
 	 * to ensure you don't erase their files or get in the way of their own
 	 * organization.
-	 * 
+	 *
 	 * <p>On devices with multiple users (as described by {@link UserManager}),
 	 * each user has their own isolated external storage. Applications only
 	 * have access to the external storage for the user they're running as.</p>
 	 *
 	 * <p>Here is an example of typical code to manipulate a picture on
 	 * the public external storage:</p>
-	 * 
+	 *
 	 * {@sample development/samples/ApiDemos/src/com/example/android/apis/content/ExternalStorage.java
 	 * public_picture}
-	 * 
+	 *
 	 * @param type The type of storage directory to return.  Should be one of
 	 * {@link #DIRECTORY_MUSIC}, {@link #DIRECTORY_PODCASTS},
 	 * {@link #DIRECTORY_RINGTONES}, {@link #DIRECTORY_ALARMS},
 	 * {@link #DIRECTORY_NOTIFICATIONS}, {@link #DIRECTORY_PICTURES},
 	 * {@link #DIRECTORY_MOVIES}, {@link #DIRECTORY_DOWNLOADS}, or
 	 * {@link #DIRECTORY_DCIM}.  May not be null.
-	 * 
+	 *
 	 * @return Returns the File path for the directory.  Note that this
 	 * directory may not yet exist, so you must make sure it exists before
 	 * using it such as with {@link File#mkdirs File.mkdirs()}.
@@ -491,7 +509,7 @@ public class Environment {
 		throwIfUserRequired();
 		return sCurrentUser.buildExternalStorageAppDataDirs(packageName);
 	}
-	
+
 	/**
 	 * Generates the raw path to an application's media
 	 * @hide
@@ -500,7 +518,7 @@ public class Environment {
 		throwIfUserRequired();
 		return sCurrentUser.buildExternalStorageAppMediaDirs(packageName);
 	}
-	
+
 	/**
 	 * Generates the raw path to an application's OBB files
 	 * @hide
@@ -509,7 +527,7 @@ public class Environment {
 		throwIfUserRequired();
 		return sCurrentUser.buildExternalStorageAppObbDirs(packageName);
 	}
-	
+
 	/**
 	 * Generates the path to an application's files.
 	 * @hide
@@ -527,7 +545,7 @@ public class Environment {
 		throwIfUserRequired();
 		return sCurrentUser.buildExternalStorageAppCacheDirs(packageName);
 	}
-	
+
 	/**
 	 * Return the download/cache content directory.
 	 */
@@ -613,7 +631,7 @@ public class Environment {
 
 	/**
 	 * Returns the current state of the primary "external" storage device.
-	 * 
+	 *
 	 * @see #getExternalStorageDirectory()
 	 * @return one of {@link #MEDIA_UNKNOWN}, {@link #MEDIA_REMOVED},
 	 *		 {@link #MEDIA_UNMOUNTED}, {@link #MEDIA_CHECKING},
@@ -695,7 +713,9 @@ public class Environment {
 		}
 	}
 
-	/** {@hide} */
+	/**
+	 * {@hide}
+	 */
 	public static void setUserRequired(boolean userRequired) {
 		sUserRequired = userRequired;
 	}
@@ -703,7 +723,7 @@ public class Environment {
 	private static void throwIfUserRequired() {
 		if (sUserRequired) {
 			Log.wtf(TAG, "Path requests must specify a user by using UserEnvironment",
-					new Throwable());
+				new Throwable());
 		}
 	}
 
@@ -751,8 +771,7 @@ public class Environment {
 	 */
 	public static File maybeTranslateEmulatedPathToInternal(File path) {
 		// Fast return if not emulated, or missing variables
-		if (!Environment.isExternalStorageEmulated()
-				|| CANONCIAL_EMULATED_STORAGE_TARGET == null) {
+		if (!Environment.isExternalStorageEmulated() || CANONCIAL_EMULATED_STORAGE_TARGET == null) {
 			return path;
 		}
 
@@ -760,7 +779,7 @@ public class Environment {
 			final String rawPath = path.getCanonicalPath();
 			if (rawPath.startsWith(CANONCIAL_EMULATED_STORAGE_TARGET)) {
 				final File internalPath = new File(DIR_MEDIA_STORAGE,
-						rawPath.substring(CANONCIAL_EMULATED_STORAGE_TARGET.length()));
+								   rawPath.substring(CANONCIAL_EMULATED_STORAGE_TARGET.length()));
 				if (internalPath.exists()) {
 					return internalPath;
 				}

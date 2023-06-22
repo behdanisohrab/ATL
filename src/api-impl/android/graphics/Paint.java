@@ -35,12 +35,12 @@ public class Paint {
 		 * Geometry and text drawn with this style will be filled, ignoring all
 		 * stroke-related settings in the paint.
 		 */
-		FILL			(0),
+		FILL(0),
 		/**
 		 * Geometry and text drawn with this style will be stroked, respecting
 		 * the stroke-related fields on the paint.
 		 */
-		STROKE		  (1),
+		STROKE(1),
 		/**
 		 * Geometry and text drawn with this style will be both filled and
 		 * stroked at the same time, respecting the stroke-related fields on
@@ -48,8 +48,8 @@ public class Paint {
 		 * is oriented counter-clockwise. This restriction does not apply to
 		 * either FILL or STROKE.
 		 */
-		FILL_AND_STROKE (2);
-		
+		FILL_AND_STROKE(2);
+
 		Style(int nativeInt) {
 			this.nativeInt = nativeInt;
 		}
@@ -58,46 +58,47 @@ public class Paint {
 
 	public static class FontMetrics {
 		/**
-		 * The maximum distance above the baseline for the tallest glyph in 
+		 * The maximum distance above the baseline for the tallest glyph in
 		 * the font at a given text size.
 		 */
-		public float   top;
+		public float top;
 		/**
 		 * The recommended distance above the baseline for singled spaced text.
 		 */
-		public float   ascent;
+		public float ascent;
 		/**
 		 * The recommended distance below the baseline for singled spaced text.
 		 */
-		public float   descent;
+		public float descent;
 		/**
-		 * The maximum distance below the baseline for the lowest glyph in 
+		 * The maximum distance below the baseline for the lowest glyph in
 		 * the font at a given text size.
 		 */
-		public float   bottom;
+		public float bottom;
 		/**
 		 * The recommended additional space to add between lines of text.
 		 */
-		public float   leading;
+		public float leading;
 	}
 
 	public static class FontMetricsInt {
-		public int   top;
-		public int   ascent;
-		public int   descent;
-		public int   bottom;
-		public int   leading;
+		public int top;
+		public int ascent;
+		public int descent;
+		public int bottom;
+		public int leading;
 
-		@Override public String toString() {
+		@Override
+		public String toString() {
 			return "FontMetricsInt: top=" + top + " ascent=" + ascent +
-					" descent=" + descent + " bottom=" + bottom +
-					" leading=" + leading;
+			    " descent=" + descent + " bottom=" + bottom +
+			    " leading=" + leading;
 		}
 	}
 
-	public /*native*/ int getFlags() {return 0;}
+	public /*native*/ int getFlags() { return 0; }
 
-	public /*native*/ int getHinting() {return 0;}
+	public /*native*/ int getHinting() { return 0; }
 	public /*native*/ void setHinting(int mode) {}
 
 	public /*native*/ void setDither(boolean dither) {}
@@ -107,43 +108,42 @@ public class Paint {
 	public /*native*/ void setStrikeThruText(boolean strikeThruText) {}
 	public /*native*/ void setFakeBoldText(boolean fakeBoldText) {}
 
-	public /*native*/ int getAlpha() {return 0;}
+	public /*native*/ int getAlpha() { return 0; }
 	public /*native*/ void setAlpha(int a) {}
-	public /*native*/ float getStrokeWidth() {return 0;}
+	public /*native*/ float getStrokeWidth() { return 0; }
 
-	public /*native*/ float getStrokeMiter() {return 0;}
+	public /*native*/ float getStrokeMiter() { return 0; }
 	public /*native*/ void setStrokeMiter(float miter) {}
-	public /*native*/ float getTextSize() {return 0;}
+	public /*native*/ float getTextSize() { return 0; }
 
-	public /*native*/ float getTextScaleX() {return 0;}
+	public /*native*/ float getTextScaleX() { return 0; }
 	public /*native*/ void setTextScaleX(float scaleX) {}
-	public /*native*/ float getTextSkewX() {return 0;}
+	public /*native*/ float getTextSkewX() { return 0; }
 	public /*native*/ void setTextSkewX(float skewX) {}
 
-	public /*native*/ float descent() {return 0;}
-	public /*native*/ float getFontMetrics(FontMetrics metrics) {return 0;}
-	public /*native*/ int getFontMetricsInt(FontMetricsInt fmi) {return 0;}
+	public /*native*/ float descent() { return 0; }
+	public /*native*/ float getFontMetrics(FontMetrics metrics) { return 0; }
+	public /*native*/ int getFontMetricsInt(FontMetricsInt fmi) { return 0; }
 
 	public void setShadowLayer(float radius, float dx, float dy, int color) {}
 
-	public Xfermode setXfermode(Xfermode xfermode) {return xfermode;}
+	public Xfermode setXfermode(Xfermode xfermode) { return xfermode; }
 
 	public enum Cap {
 		/**
 		 * The stroke ends with the path, and does not project beyond it.
 		 */
-		BUTT    (0),
+		BUTT(0),
 		/**
 		 * The stroke projects out as a semicircle, with the center at the
 		 * end of the path.
 		 */
-		ROUND   (1),
+		ROUND(1),
 		/**
 		 * The stroke projects out as a square, with the center at the end
 		 * of the path.
 		 */
-		SQUARE  (2);
-
+		SQUARE(2);
 
 		private Cap(int nativeInt) {}
 	}
@@ -152,20 +152,20 @@ public class Paint {
 		/**
 		 * The outer edges of a join meet at a sharp angle
 		 */
-		MITER   (0),
+		MITER(0),
 		/**
 		 * The outer edges of a join meet in a circular arc.
 		 */
-		ROUND   (1),
+		ROUND(1),
 		/**
 		 * The outer edges of a join meet with a straight line
 		 */
-		BEVEL   (2);
+		BEVEL(2);
 
 		private Join(int nativeInt) {}
 	}
 
-    public void setStrokeCap(Cap cap) {}
+	public void setStrokeCap(Cap cap) {}
 
 	public void setStrokeJoin(Join join) {}
 }

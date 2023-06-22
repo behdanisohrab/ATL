@@ -23,64 +23,64 @@ package android.os;
  * and handing that Messenger to another process.
  */
 public final class Messenger {
-    private final IMessenger mTarget;
+	private final IMessenger mTarget;
 
-    /**
-     * Create a new Messenger pointing to the given Handler.  Any Message
-     * objects sent through this Messenger will appear in the Handler as if
-     * {@link Handler#sendMessage(Message) Handler.sendMessage(Message)} had
-     * been called directly.
-     * 
-     * @param target The Handler that will receive sent messages.
-     */
-    public Messenger(Handler target) {
-        mTarget = target.getIMessenger();
-    }
-    
-    /**
-     * Send a Message to this Messenger's Handler.
-     * 
-     * @param message The Message to send.  Usually retrieved through
-     * {@link Message#obtain() Message.obtain()}.
-     * 
-     * @throws RemoteException Throws DeadObjectException if the target
-     * Handler no longer exists.
-     */
-    public void send(Message message) throws RemoteException {
-        mTarget.send(message);
-    }
-    
-    /**
-     * Retrieve the IBinder that this Messenger is using to communicate with
-     * its associated Handler.
-     * 
-     * @return Returns the IBinder backing this Messenger.
-     */
-    public IBinder getBinder() {
-        return null;//mTarget.asBinder();
-    }
-    
-    /**
-     * Comparison operator on two Messenger objects, such that true
-     * is returned then they both point to the same Handler.
-     */
-    public boolean equals(Object otherObj) {
-        /*if (otherObj == null) {
-            return false;
-        }
-        try {
-            return mTarget.asBinder().equals(((Messenger)otherObj)
-                    .mTarget.asBinder());
-        } catch (ClassCastException e) {
-        }*/
-        return false;
-    }
+	/**
+	 * Create a new Messenger pointing to the given Handler.  Any Message
+	 * objects sent through this Messenger will appear in the Handler as if
+	 * {@link Handler#sendMessage(Message) Handler.sendMessage(Message)} had
+	 * been called directly.
+	 *
+	 * @param target The Handler that will receive sent messages.
+	 */
+	public Messenger(Handler target) {
+		mTarget = target.getIMessenger();
+	}
 
-    public int hashCode() {
-        return 0;//mTarget.asBinder().hashCode();
-    }
-    
-    public int describeContents() {
-        return 0;
-    }
+	/**
+	 * Send a Message to this Messenger's Handler.
+	 *
+	 * @param message The Message to send.  Usually retrieved through
+	 * {@link Message#obtain() Message.obtain()}.
+	 *
+	 * @throws RemoteException Throws DeadObjectException if the target
+	 * Handler no longer exists.
+	 */
+	public void send(Message message) throws RemoteException {
+		mTarget.send(message);
+	}
+
+	/**
+	 * Retrieve the IBinder that this Messenger is using to communicate with
+	 * its associated Handler.
+	 *
+	 * @return Returns the IBinder backing this Messenger.
+	 */
+	public IBinder getBinder() {
+		return null; // mTarget.asBinder();
+	}
+
+	/**
+	 * Comparison operator on two Messenger objects, such that true
+	 * is returned then they both point to the same Handler.
+	 */
+	public boolean equals(Object otherObj) {
+		/*if (otherObj == null) {
+		    return false;
+		}
+		try {
+		    return mTarget.asBinder().equals(((Messenger)otherObj)
+			    .mTarget.asBinder());
+		} catch (ClassCastException e) {
+		}*/
+		return false;
+	}
+
+	public int hashCode() {
+		return 0; // mTarget.asBinder().hashCode();
+	}
+
+	public int describeContents() {
+		return 0;
+	}
 }

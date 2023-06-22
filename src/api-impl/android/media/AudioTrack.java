@@ -31,10 +31,10 @@ public class AudioTrack {
 		this.bufferSizeInBytes = bufferSizeInBytes;
 		this.mode = mode;
 
-		System.out.println("\n\n\nAudioTrack("+streamType+", "+sampleRateInHz+", "+channelConfig+", "+audioFormat+", "+bufferSizeInBytes+", "+mode+"); called\n\n\n\n");
+		System.out.println("\n\n\nAudioTrack(" + streamType + ", " + sampleRateInHz + ", " + channelConfig + ", " + audioFormat + ", " + bufferSizeInBytes + ", " + mode + "); called\n\n\n\n");
 
 		int num_channels;
-		switch(channelConfig) {
+		switch (channelConfig) {
 			case 2:
 				num_channels = 1;
 				break;
@@ -45,14 +45,14 @@ public class AudioTrack {
 		native_constructor(streamType, sampleRateInHz, num_channels, audioFormat, bufferSizeInBytes, mode);
 	}
 
-	public static native int getMinBufferSize (int sampleRateInHz, int channelConfig, int audioFormat);
+	public static native int getMinBufferSize(int sampleRateInHz, int channelConfig, int audioFormat);
 
 	public void setPlaybackPositionUpdateListener(OnPlaybackPositionUpdateListener listener) {
 		this.periodic_update_listener = listener;
 	}
 
 	public int setPositionNotificationPeriod(int periodInFrames) {
-		System.out.println("\n\n\nsetPositionNotificationPeriod("+periodInFrames+"); called\n\n\n\n");
+		System.out.println("\n\n\nsetPositionNotificationPeriod(" + periodInFrames + "); called\n\n\n\n");
 		return 0; // SUCCESS
 	}
 
@@ -74,5 +74,5 @@ public class AudioTrack {
 		System.out.println("calling release(), how did this not get reported before DIDREEEEEEEEEEEEEEEEEEEEEEEEE\n");
 	}
 
-	public native int write (byte[] audioData, int offsetInBytes, int sizeInBytes);
+	public native int write(byte[] audioData, int offsetInBytes, int sizeInBytes);
 }

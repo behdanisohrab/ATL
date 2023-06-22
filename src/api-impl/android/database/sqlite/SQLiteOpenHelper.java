@@ -4,29 +4,30 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
 public abstract class SQLiteOpenHelper {
-    public SQLiteOpenHelper(Context context, String name, CursorFactory factory, int version) {
-        this(context, name, factory, version, null);
-    }
+	public SQLiteOpenHelper(Context context, String name, CursorFactory factory, int version) {
+		this(context, name, factory, version, null);
+	}
 
-    public SQLiteOpenHelper(Context context, String name, CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
-        if (version < 1) throw new IllegalArgumentException("Version must be >= 1, was " + version);
+	public SQLiteOpenHelper(Context context, String name, CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
+		if (version < 1)
+			throw new IllegalArgumentException("Version must be >= 1, was " + version);
 
-/*        mContext = context;
-        mName = name;
-        mFactory = factory;
-        mNewVersion = version;
-        mErrorHandler = errorHandler;*/
-    }
+		/*        mContext = context;
+			mName = name;
+			mFactory = factory;
+			mNewVersion = version;
+			mErrorHandler = errorHandler;*/
+	}
 
-	public void close () {}
+	public void close() {}
 
-    public SQLiteDatabase getWritableDatabase() {
-        synchronized (this) {
-            return getDatabaseLocked(true);
-        }
-    }
+	public SQLiteDatabase getWritableDatabase() {
+		synchronized (this) {
+			return getDatabaseLocked(true);
+		}
+	}
 
-    private SQLiteDatabase getDatabaseLocked(boolean writable) {
+	private SQLiteDatabase getDatabaseLocked(boolean writable) {
 		return SQLiteDatabase.create(null); // return an empty database, surely the app can handle that
 		/*
         if (mDatabase != null) {

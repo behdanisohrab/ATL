@@ -22,16 +22,18 @@ package android.opengl;
  *
  */
 public class EGLConfig extends EGLObjectHandle {
-    private EGLConfig(int handle) {
-        super(handle);
-    }
+	private EGLConfig(int handle) {
+		super(handle);
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof EGLConfig)) return false;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof EGLConfig))
+			return false;
 
-        EGLConfig that = (EGLConfig) o;
-        return getHandle() == that.getHandle();
-    }
+		EGLConfig that = (EGLConfig)o;
+		return getHandle() == that.getHandle();
+	}
 }

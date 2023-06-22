@@ -11,13 +11,13 @@ public class AudioManager {
 	}
 
 	public String getProperty(String name) {
-		switch(name) {
+		switch (name) {
 			case PROPERTY_OUTPUT_FRAMES_PER_BUFFER:
 				return "256"; // FIXME arbitrary
 			case PROPERTY_OUTPUT_SAMPLE_RATE:
 				return "44100"; // FIXME arbitrary
 			default:
-				System.out.println("AudioManager.getProperty: >"+name+"< not handled");
+				System.out.println("AudioManager.getProperty: >" + name + "< not handled");
 				return "";
 		}
 	}
@@ -29,7 +29,7 @@ public class AudioManager {
 		return 0;
 	}
 
-	public int getStreamVolume (int streamType) {
+	public int getStreamVolume(int streamType) {
 		return 0; // arbitrary, shouldn't matter too much?
 	}
 }

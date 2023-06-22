@@ -1,8 +1,7 @@
 package android.widget;
 
-import android.util.AttributeSet;
 import android.content.Context;
-
+import android.util.AttributeSet;
 import android.view.View;
 
 public class ProgressBar extends View {
@@ -15,7 +14,7 @@ public class ProgressBar extends View {
 	public ProgressBar(Context context) {
 		super(context);
 
-//		native_constructor(context);
+		//		native_constructor(context);
 	}
 
 	private native void native_constructor(AttributeSet attrs);

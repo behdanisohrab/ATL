@@ -22,70 +22,65 @@ package android.content.pm;
  * AndroidManifest.xml's &lt;uses-feature&gt; tag.
  */
 public class FeatureInfo {
-    /**
-     * The name of this feature, for example "android.hardware.camera".  If
-     * this is null, then this is an OpenGL ES version feature as described
-     * in {@link #reqGlEsVersion}.
-     */
-    public String name;
-    
-    /**
-     * Default value for {@link #reqGlEsVersion};
-     */
-    public static final int GL_ES_VERSION_UNDEFINED = 0;
-    
-    /**
-     * The GLES version used by an application. The upper order 16 bits represent the
-     * major version and the lower order 16 bits the minor version.  Only valid
-     * if {@link #name} is null.
-     */
-    public int reqGlEsVersion;
+	/**
+	 * The name of this feature, for example "android.hardware.camera".  If
+	 * this is null, then this is an OpenGL ES version feature as described
+	 * in {@link #reqGlEsVersion}.
+	 */
+	public String name;
 
-    /**
-     * Set on {@link #flags} if this feature has been required by the application.
-     */
-    public static final int FLAG_REQUIRED = 0x0001;
-    
-    /**
-     * Additional flags.  May be zero or more of {@link #FLAG_REQUIRED}.
-     */
-    public int flags;
-    
-    public FeatureInfo() {
-    }
+	/**
+	 * Default value for {@link #reqGlEsVersion};
+	 */
+	public static final int GL_ES_VERSION_UNDEFINED = 0;
 
-    public FeatureInfo(FeatureInfo orig) {
-        name = orig.name;
-        reqGlEsVersion = orig.reqGlEsVersion;
-        flags = orig.flags;
-    }
+	/**
+	 * The GLES version used by an application. The upper order 16 bits represent the
+	 * major version and the lower order 16 bits the minor version.  Only valid
+	 * if {@link #name} is null.
+	 */
+	public int reqGlEsVersion;
 
-    public String toString() {
-        if (name != null) {
-            return "FeatureInfo{"
-                    + Integer.toHexString(System.identityHashCode(this))
-                    + " " + name + " fl=0x" + Integer.toHexString(flags) + "}";
-        } else {
-            return "FeatureInfo{"
-                    + Integer.toHexString(System.identityHashCode(this))
-                    + " glEsVers=" + getGlEsVersion()
-                    + " fl=0x" + Integer.toHexString(flags) + "}";
-        }
-    }
+	/**
+	 * Set on {@link #flags} if this feature has been required by the application.
+	 */
+	public static final int FLAG_REQUIRED = 0x0001;
 
-    public int describeContents() {
-        return 0;
-    }
+	/**
+	 * Additional flags.  May be zero or more of {@link #FLAG_REQUIRED}.
+	 */
+	public int flags;
 
-    /**
-     * This method extracts the major and minor version of reqGLEsVersion attribute
-     * and returns it as a string. Say reqGlEsVersion value of 0x00010002 is returned
-     * as 1.2
-     * @return String representation of the reqGlEsVersion attribute
-     */
-    public String getGlEsVersion() {
-        int major = ((reqGlEsVersion & 0xffff0000) >> 16);
-        int minor = reqGlEsVersion & 0x0000ffff;
-        return String.valueOf(major)+"."+String.valueOf(minor);
-    }
+	public FeatureInfo() {
+	}
+
+	public FeatureInfo(FeatureInfo orig) {
+		name = orig.name;
+		reqGlEsVersion = orig.reqGlEsVersion;
+		flags = orig.flags;
+	}
+
+	public String toString() {
+		if (name != null) {
+			return "FeatureInfo{" + Integer.toHexString(System.identityHashCode(this)) + " " + name + " fl=0x" + Integer.toHexString(flags) + "}";
+		} else {
+			return "FeatureInfo{" + Integer.toHexString(System.identityHashCode(this)) + " glEsVers=" + getGlEsVersion() + " fl=0x" + Integer.toHexString(flags) + "}";
+		}
+	}
+
+	public int describeContents() {
+		return 0;
+	}
+
+	/**
+	 * This method extracts the major and minor version of reqGLEsVersion attribute
+	 * and returns it as a string. Say reqGlEsVersion value of 0x00010002 is returned
+	 * as 1.2
+	 * @return String representation of the reqGlEsVersion attribute
+	 */
+	public String getGlEsVersion() {
+		int major = ((reqGlEsVersion & 0xffff0000) >> 16);
+		int minor = reqGlEsVersion & 0x0000ffff;
+		return String.valueOf(major) + "." + String.valueOf(minor);
+	}
 }

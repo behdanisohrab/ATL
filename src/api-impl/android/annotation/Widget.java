@@ -16,10 +16,10 @@
 
 package android.annotation;
 
-import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Indicates a class is a widget usable by application developers to create UI.
@@ -31,7 +31,7 @@ import java.lang.annotation.RetentionPolicy;
  * </ul>
  * @hide
  */
-@Target({ ElementType.TYPE })
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface Widget {
 }

@@ -16,41 +16,39 @@
 
 package android.text;
 
-
 /**
  * This is the class for text whose content is immutable but to which
  * markup objects can be attached and detached.
  * For mutable text, see {@link SpannableStringBuilder}.
  */
 public class SpannableString
-extends SpannableStringInternal
-implements CharSequence, GetChars, Spannable
-{
-    public SpannableString(CharSequence source) {
-        super(source, 0, source.length());
-    }
+    extends SpannableStringInternal
+    implements CharSequence, GetChars, Spannable {
+	public SpannableString(CharSequence source) {
+		super(source, 0, source.length());
+	}
 
-    private SpannableString(CharSequence source, int start, int end) {
-        super(source, start, end);
-    }
+	private SpannableString(CharSequence source, int start, int end) {
+		super(source, start, end);
+	}
 
-    public static SpannableString valueOf(CharSequence source) {
-        if (source instanceof SpannableString) {
-            return (SpannableString) source;
-        } else {
-            return new SpannableString(source);
-        }
-    }
+	public static SpannableString valueOf(CharSequence source) {
+		if (source instanceof SpannableString) {
+			return (SpannableString)source;
+		} else {
+			return new SpannableString(source);
+		}
+	}
 
-    public void setSpan(Object what, int start, int end, int flags) {
-        super.setSpan(what, start, end, flags);
-    }
+	public void setSpan(Object what, int start, int end, int flags) {
+		super.setSpan(what, start, end, flags);
+	}
 
-    public void removeSpan(Object what) {
-        super.removeSpan(what);
-    }
+	public void removeSpan(Object what) {
+		super.removeSpan(what);
+	}
 
-    public final CharSequence subSequence(int start, int end) {
-        return new SpannableString(this, start, end);
-    }
+	public final CharSequence subSequence(int start, int end) {
+		return new SpannableString(this, start, end);
+	}
 }

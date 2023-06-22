@@ -16,33 +16,31 @@
 
 package android.text;
 
-
 /**
  * This is the class for text whose content and markup are immutable.
  * For mutable markup, see {@link SpannableString}; for mutable text,
  * see {@link SpannableStringBuilder}.
  */
 public final class SpannedString
-extends SpannableStringInternal
-implements CharSequence, GetChars, Spanned
-{
-    public SpannedString(CharSequence source) {
-        super(source, 0, source.length());
-    }
+    extends SpannableStringInternal
+    implements CharSequence, GetChars, Spanned {
+	public SpannedString(CharSequence source) {
+		super(source, 0, source.length());
+	}
 
-    private SpannedString(CharSequence source, int start, int end) {
-        super(source, start, end);
-    }
+	private SpannedString(CharSequence source, int start, int end) {
+		super(source, start, end);
+	}
 
-    public CharSequence subSequence(int start, int end) {
-        return new SpannedString(this, start, end);
-    }
+	public CharSequence subSequence(int start, int end) {
+		return new SpannedString(this, start, end);
+	}
 
-    public static SpannedString valueOf(CharSequence source) {
-        if (source instanceof SpannedString) {
-            return (SpannedString) source;
-        } else {
-            return new SpannedString(source);
-        }
-    }
+	public static SpannedString valueOf(CharSequence source) {
+		if (source instanceof SpannedString) {
+			return (SpannedString)source;
+		} else {
+			return new SpannedString(source);
+		}
+	}
 }

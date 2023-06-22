@@ -25,33 +25,37 @@ import java.security.PublicKey;
  * @hide
  */
 public class VerifierInfo {
-    /** Package name of the verifier. */
-    public final String packageName;
+	/**
+	 * Package name of the verifier.
+	 */
+	public final String packageName;
 
-    /** Signatures used to sign the package verifier's package. */
-    public final PublicKey publicKey;
+	/**
+	 * Signatures used to sign the package verifier's package.
+	 */
+	public final PublicKey publicKey;
 
-    /**
-     * Creates an object that represents a verifier info object.
-     *
-     * @param packageName the package name in Java-style. Must not be {@code
-     *            null} or empty.
-     * @param publicKey the public key for the signer encoded in Base64. Must
-     *            not be {@code null} or empty.
-     * @throws IllegalArgumentException if either argument is null or empty.
-     */
-    public VerifierInfo(String packageName, PublicKey publicKey) {
-        if (packageName == null || packageName.length() == 0) {
-            throw new IllegalArgumentException("packageName must not be null or empty");
-        } else if (publicKey == null) {
-            throw new IllegalArgumentException("publicKey must not be null");
-        }
+	/**
+	 * Creates an object that represents a verifier info object.
+	 *
+	 * @param packageName the package name in Java-style. Must not be {@code
+	 *            null} or empty.
+	 * @param publicKey the public key for the signer encoded in Base64. Must
+	 *            not be {@code null} or empty.
+	 * @throws IllegalArgumentException if either argument is null or empty.
+	 */
+	public VerifierInfo(String packageName, PublicKey publicKey) {
+		if (packageName == null || packageName.length() == 0) {
+			throw new IllegalArgumentException("packageName must not be null or empty");
+		} else if (publicKey == null) {
+			throw new IllegalArgumentException("publicKey must not be null");
+		}
 
-        this.packageName = packageName;
-        this.publicKey = publicKey;
-    }
+		this.packageName = packageName;
+		this.publicKey = publicKey;
+	}
 
-    public int describeContents() {
-        return 0;
-    }
+	public int describeContents() {
+		return 0;
+	}
 }

@@ -23,28 +23,28 @@ package android.util;
  * @hide
  */
 public class PrefixPrinter implements Printer {
-    private final Printer mPrinter;
-    private final String mPrefix;
+	private final Printer mPrinter;
+	private final String mPrefix;
 
-    /**
-     * Creates a new PrefixPrinter.
-     *
-     * <p>If prefix is null or empty, the provided printer is returned, rather
-     * than making a prefixing printer.
-     */
-    public static Printer create(Printer printer, String prefix) {
-        if (prefix == null || prefix.equals("")) {
-            return printer;
-        }
-        return new PrefixPrinter(printer, prefix);
-    }
+	/**
+	 * Creates a new PrefixPrinter.
+	 *
+	 * <p>If prefix is null or empty, the provided printer is returned, rather
+	 * than making a prefixing printer.
+	 */
+	public static Printer create(Printer printer, String prefix) {
+		if (prefix == null || prefix.equals("")) {
+			return printer;
+		}
+		return new PrefixPrinter(printer, prefix);
+	}
 
-    private PrefixPrinter(Printer printer, String prefix) {
-        mPrinter = printer;
-        mPrefix = prefix;
-    }
+	private PrefixPrinter(Printer printer, String prefix) {
+		mPrinter = printer;
+		mPrefix = prefix;
+	}
 
-    public void println(String str) {
-        mPrinter.println(mPrefix + str);
-    }
+	public void println(String str) {
+		mPrinter.println(mPrefix + str);
+	}
 }

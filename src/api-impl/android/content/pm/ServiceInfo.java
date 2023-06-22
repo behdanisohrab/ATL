@@ -24,65 +24,63 @@ import android.util.Printer;
  * AndroidManifest.xml's &lt;service&gt; tags.
  */
 public class ServiceInfo extends ComponentInfo {
-    /**
-     * Optional name of a permission required to be able to access this
-     * Service.  From the "permission" attribute.
-     */
-    public String permission;
+	/**
+	 * Optional name of a permission required to be able to access this
+	 * Service.  From the "permission" attribute.
+	 */
+	public String permission;
 
-    /**
-     * Bit in {@link #flags}: If set, the service will automatically be
-     * stopped by the system if the user removes a task that is rooted
-     * in one of the application's activities.  Set from the
-     * {@link android.R.attr#stopWithTask} attribute.
-     */
-    public static final int FLAG_STOP_WITH_TASK = 0x0001;
+	/**
+	 * Bit in {@link #flags}: If set, the service will automatically be
+	 * stopped by the system if the user removes a task that is rooted
+	 * in one of the application's activities.  Set from the
+	 * {@link android.R.attr#stopWithTask} attribute.
+	 */
+	public static final int FLAG_STOP_WITH_TASK = 0x0001;
 
-    /**
-     * Bit in {@link #flags}: If set, the service will run in its own
-     * isolated process.  Set from the
-     * {@link android.R.attr#isolatedProcess} attribute.
-     */
-    public static final int FLAG_ISOLATED_PROCESS = 0x0002;
+	/**
+	 * Bit in {@link #flags}: If set, the service will run in its own
+	 * isolated process.  Set from the
+	 * {@link android.R.attr#isolatedProcess} attribute.
+	 */
+	public static final int FLAG_ISOLATED_PROCESS = 0x0002;
 
-    /**
-     * Bit in {@link #flags}: If set, a single instance of the service will
-     * run for all users on the device.  Set from the
-     * {@link android.R.attr#singleUser} attribute.
-     */
-    public static final int FLAG_SINGLE_USER = 0x40000000;
+	/**
+	 * Bit in {@link #flags}: If set, a single instance of the service will
+	 * run for all users on the device.  Set from the
+	 * {@link android.R.attr#singleUser} attribute.
+	 */
+	public static final int FLAG_SINGLE_USER = 0x40000000;
 
-    /**
-     * Options that have been set in the service declaration in the
-     * manifest.
-     * These include:
-     * {@link #FLAG_STOP_WITH_TASK}, {@link #FLAG_ISOLATED_PROCESS},
-     * {@link #FLAG_SINGLE_USER}.
-     */
-    public int flags;
+	/**
+	 * Options that have been set in the service declaration in the
+	 * manifest.
+	 * These include:
+	 * {@link #FLAG_STOP_WITH_TASK}, {@link #FLAG_ISOLATED_PROCESS},
+	 * {@link #FLAG_SINGLE_USER}.
+	 */
+	public int flags;
 
-    public ServiceInfo() {
-    }
+	public ServiceInfo() {
+	}
 
-    public ServiceInfo(ServiceInfo orig) {
-        super(orig);
-        permission = orig.permission;
-        flags = orig.flags;
-    }
+	public ServiceInfo(ServiceInfo orig) {
+		super(orig);
+		permission = orig.permission;
+		flags = orig.flags;
+	}
 
-    public void dump(Printer pw, String prefix) {
-        super.dumpFront(pw, prefix);
-        pw.println(prefix + "permission=" + permission);
-        pw.println(prefix + "flags=0x" + Integer.toHexString(flags));
-    }
-    
-    public String toString() {
-        return "ServiceInfo{"
-            + Integer.toHexString(System.identityHashCode(this))
-            + " " + name + "}";
-    }
+	public void dump(Printer pw, String prefix) {
+		super.dumpFront(pw, prefix);
+		pw.println(prefix + "permission=" + permission);
+		pw.println(prefix + "flags=0x" + Integer.toHexString(flags));
+	}
 
-    public int describeContents() {
-        return 0;
-    }
+	public String toString() {
+		return "ServiceInfo{" + Integer.toHexString(System.identityHashCode(this)) + " " + name + "}";
+	}
+
+	public int describeContents() {
+		return 0;
+	}
 }

@@ -23,9 +23,9 @@ package android.util;
  * {@link android.util.PrintWriterPrinter}.
  */
 public interface Printer {
-    /**
-     * Write a line of text to the output.  There is no need to terminate
-     * the given string with a newline.
-     */
-    void println(String x);
+	/**
+	 * Write a line of text to the output.  There is no need to terminate
+	 * the given string with a newline.
+	 */
+	void println(String x);
 }

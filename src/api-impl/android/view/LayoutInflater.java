@@ -3,14 +3,11 @@ package android.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Xml;
-
+import java.io.FileReader;
+import java.lang.reflect.Constructor;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.lang.reflect.Constructor;
-
-import java.io.FileReader;
 
 public class LayoutInflater {
 
@@ -26,18 +23,18 @@ public class LayoutInflater {
 		return null;
 	}
 
-	public void setFactory2 (Factory2 factory) {
+	public void setFactory2(Factory2 factory) {
 		this.factory2 = factory;
 	}
 
-	public static LayoutInflater from (Context context) {
+	public static LayoutInflater from(Context context) {
 		return new LayoutInflater();
 	}
 
 	public final View createView(String name, String prefix, AttributeSet attrs) throws Exception {
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> createView("+name+", "+prefix+", "+attrs+");");
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> createView(" + name + ", " + prefix + ", " + attrs + ");");
 
-		String view_class_name = prefix+name;
+		String view_class_name = prefix + name;
 		Class view_class = Class.forName(view_class_name);
 
 		Constructor constructor = view_class.getConstructor(AttributeSet.class);
@@ -53,7 +50,7 @@ public class LayoutInflater {
 	protected View onCreateView(String name, AttributeSet attrs) throws Exception {
 		try { // FIXME ugly
 			return createView(name, "android.view.", attrs);
-		} catch(java.lang.ClassNotFoundException e) {
+		} catch (java.lang.ClassNotFoundException e) {
 			return createView(name, "android.widget.", attrs);
 		}
 	}
@@ -82,14 +79,13 @@ public class LayoutInflater {
 
 		System.out.println("Created view is: " + view);
 		return view;
-
 	}
 
-    public View inflate(int resource, ViewGroup root) throws Exception {
-        return inflate(resource, root, root != null);
-    }
+	public View inflate(int resource, ViewGroup root) throws Exception {
+		return inflate(resource, root, root != null);
+	}
 
-    public View inflate(int layoutResID, ViewGroup root, boolean attachToRoot) throws Exception {
+	public View inflate(int layoutResID, ViewGroup root, boolean attachToRoot) throws Exception {
 
 		String layout_xml_file = android.os.Environment.getExternalStorageDirectory().getPath() + "/" + Context.this_application.getString(layoutResID);
 
@@ -99,10 +95,10 @@ public class LayoutInflater {
 		factory.setNamespaceAware(true);
 		XmlPullParser xpp = factory.newPullParser();
 
-		xpp.setInput( new FileReader(layout_xml_file) );
+		xpp.setInput(new FileReader(layout_xml_file));
 
-        return inflate(xpp, root, attachToRoot);
-    }
+		return inflate(xpp, root, attachToRoot);
+	}
 
 	public View inflate(XmlPullParser parser, ViewGroup root, boolean attachToRoot) throws Exception {
 
@@ -113,7 +109,7 @@ public class LayoutInflater {
 		// Look for the root node.
 		int type;
 		while ((type = parser.next()) != XmlPullParser.START_TAG &&
-				type != XmlPullParser.END_DOCUMENT) {
+		       type != XmlPullParser.END_DOCUMENT) {
 			// Empty
 		}
 
@@ -186,7 +182,8 @@ public class LayoutInflater {
 		int type;
 
 		while (((type = parser.next()) != XmlPullParser.END_TAG ||
-				parser.getDepth() > depth) && type != XmlPullParser.END_DOCUMENT) {
+			parser.getDepth() > depth) &&
+		       type != XmlPullParser.END_DOCUMENT) {
 
 			if (type != XmlPullParser.START_TAG) {
 				continue;
@@ -196,7 +193,7 @@ public class LayoutInflater {
 
 			if (name.equals("requestFocus")) {
 				throw new Exception("<requestFocus /> not supported atm");
-				//parseRequestFocus(parser, parent);
+				// parseRequestFocus(parser, parent);
 			} else if (name.equals("include")) {
 				throw new Exception("<include /> not supported atm");
 				/*if (parser.getDepth() == 0) {
@@ -214,13 +211,14 @@ public class LayoutInflater {
 				viewGroup.addView(view, params);*/
 			} else {
 				final View view = createViewFromTag(parent, name, attrs);
-				final ViewGroup viewGroup = (ViewGroup) parent;
+				final ViewGroup viewGroup = (ViewGroup)parent;
 				final ViewGroup.LayoutParams params = viewGroup.generateLayoutParams(attrs);
 				rInflate(parser, view, attrs, true);
 				viewGroup.addView(view, params);
 			}
 		}
 
-		if (finishInflate) parent.onFinishInflate();
+		if (finishInflate)
+			parent.onFinishInflate();
 	}
 }

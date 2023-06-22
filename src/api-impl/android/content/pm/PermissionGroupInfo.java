@@ -16,7 +16,7 @@
 
 package android.content.pm;
 
-//import android.text.TextUtils;
+// import android.text.TextUtils;
 
 /**
  * Information you can retrieve about a particular security permission
@@ -24,80 +24,78 @@ package android.content.pm;
  * AndroidManifest.xml's &lt;permission-group&gt; tags.
  */
 public class PermissionGroupInfo extends PackageItemInfo {
-    /**
-     * A string resource identifier (in the package's resources) of this
-     * permission's description.  From the "description" attribute or,
-     * if not set, 0.
-     */
-    public int descriptionRes;
+	/**
+	 * A string resource identifier (in the package's resources) of this
+	 * permission's description.  From the "description" attribute or,
+	 * if not set, 0.
+	 */
+	public int descriptionRes;
 
-    /**
-     * The description string provided in the AndroidManifest file, if any.  You
-     * probably don't want to use this, since it will be null if the description
-     * is in a resource.  You probably want
-     * {@link PermissionInfo#loadDescription} instead.
-     */
-    public CharSequence nonLocalizedDescription;
+	/**
+	 * The description string provided in the AndroidManifest file, if any.  You
+	 * probably don't want to use this, since it will be null if the description
+	 * is in a resource.  You probably want
+	 * {@link PermissionInfo#loadDescription} instead.
+	 */
+	public CharSequence nonLocalizedDescription;
 
-    /**
-     * Flag for {@link #flags}, corresponding to <code>personalInfo</code>
-     * value of {@link android.R.attr#permissionGroupFlags}.
-     */
-    public static final int FLAG_PERSONAL_INFO = 1<<0;
+	/**
+	 * Flag for {@link #flags}, corresponding to <code>personalInfo</code>
+	 * value of {@link android.R.attr#permissionGroupFlags}.
+	 */
+	public static final int FLAG_PERSONAL_INFO = 1 << 0;
 
-    /**
-     * Additional flags about this group as given by
-     * {@link android.R.attr#permissionGroupFlags}.
-     */
-    public int flags;
+	/**
+	 * Additional flags about this group as given by
+	 * {@link android.R.attr#permissionGroupFlags}.
+	 */
+	public int flags;
 
-    /**
-     * Prioritization of this group, for visually sorting with other groups.
-     */
-    public int priority;
+	/**
+	 * Prioritization of this group, for visually sorting with other groups.
+	 */
+	public int priority;
 
-    public PermissionGroupInfo() {
-    }
+	public PermissionGroupInfo() {
+	}
 
-    public PermissionGroupInfo(PermissionGroupInfo orig) {
-        super(orig);
-        descriptionRes = orig.descriptionRes;
-        nonLocalizedDescription = orig.nonLocalizedDescription;
-        flags = orig.flags;
-        priority = orig.priority;
-    }
+	public PermissionGroupInfo(PermissionGroupInfo orig) {
+		super(orig);
+		descriptionRes = orig.descriptionRes;
+		nonLocalizedDescription = orig.nonLocalizedDescription;
+		flags = orig.flags;
+		priority = orig.priority;
+	}
 
-    /**
-     * Retrieve the textual description of this permission.  This
-     * will call back on the given PackageManager to load the description from
-     * the application.
-     *
-     * @param pm A PackageManager from which the label can be loaded; usually
-     * the PackageManager from which you originally retrieved this item.
-     *
-     * @return Returns a CharSequence containing the permission's description.
-     * If there is no description, null is returned.
-     */
-    public CharSequence loadDescription(PackageManager pm) {
-        if (nonLocalizedDescription != null) {
-            return nonLocalizedDescription;
-        }
-        if (descriptionRes != 0) {
-            CharSequence label = pm.getText(packageName, descriptionRes, null);
-            if (label != null) {
-                return label;
-            }
-        }
-        return null;
-    }
+	/**
+	 * Retrieve the textual description of this permission.  This
+	 * will call back on the given PackageManager to load the description from
+	 * the application.
+	 *
+	 * @param pm A PackageManager from which the label can be loaded; usually
+	 * the PackageManager from which you originally retrieved this item.
+	 *
+	 * @return Returns a CharSequence containing the permission's description.
+	 * If there is no description, null is returned.
+	 */
+	public CharSequence loadDescription(PackageManager pm) {
+		if (nonLocalizedDescription != null) {
+			return nonLocalizedDescription;
+		}
+		if (descriptionRes != 0) {
+			CharSequence label = pm.getText(packageName, descriptionRes, null);
+			if (label != null) {
+				return label;
+			}
+		}
+		return null;
+	}
 
-    public String toString() {
-        return "PermissionGroupInfo{"
-            + Integer.toHexString(System.identityHashCode(this))
-            + " " + name + " flgs=0x" + Integer.toHexString(flags) + "}";
-    }
+	public String toString() {
+		return "PermissionGroupInfo{" + Integer.toHexString(System.identityHashCode(this)) + " " + name + " flgs=0x" + Integer.toHexString(flags) + "}";
+	}
 
-    public int describeContents() {
-        return 0;
-    }
+	public int describeContents() {
+		return 0;
+	}
 }
