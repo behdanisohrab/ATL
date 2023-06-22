@@ -221,6 +221,10 @@ public class Context extends Object {
 		return cache_dir;
 	}
 
+	public File getExternalCacheDir() {
+		return getCacheDir();
+	}
+
 	private File getPreferencesDir() {
 		if (prefs_dir == null) {
 			prefs_dir = new File(getDataDirFile(), "shared_prefs");
