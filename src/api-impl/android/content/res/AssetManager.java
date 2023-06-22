@@ -343,7 +343,11 @@ public final class AssetManager {
 			}
 		}
 		// alternatively load directly from APK
-		return ClassLoader.getSystemClassLoader().getResourceAsStream("assets/" + fileName);
+		InputStream ret = ClassLoader.getSystemClassLoader().getResourceAsStream("assets/" + fileName);
+		if(ret == null)
+			throw new FileNotFoundException("Asset file: " + fileName + ", errno: " + asset);
+
+		return ret;
 	}
 
 	public final AssetFileDescriptor openFd(String fileName)
