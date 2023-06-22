@@ -1,10 +1,10 @@
 package android.widget;
 
-import android.view.View;
 import android.content.Context;
+import android.view.View;
 
 public class EditText extends TextView {
-	public EditText(Context context){
+	public EditText(Context context) {
 		super(context);
 	}
 }

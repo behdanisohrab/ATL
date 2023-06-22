@@ -5,23 +5,21 @@ import android.view.ViewGroup;
 
 public class GestureOverlayView extends ViewGroup {
 
-    public GestureOverlayView(Context context) {
-    }
+	public GestureOverlayView(Context context) {
+	}
 
-    public void setGestureStrokeType(int type) {
-    }
+	public void setGestureStrokeType(int type) {
+	}
 
-    public void setEventsInterceptionEnabled(boolean enabled) {
-    }
+	public void setEventsInterceptionEnabled(boolean enabled) {
+	}
 
-    public void setGestureVisible(boolean enabled) {
-    }
+	public void setGestureVisible(boolean enabled) {
+	}
 
-    public void addOnGesturePerformedListener(OnGesturePerformedListener listener) {
-    }
+	public void addOnGesturePerformedListener(OnGesturePerformedListener listener) {
+	}
 
-    public interface OnGesturePerformedListener {
-
-    }
-    
+	public interface OnGesturePerformedListener {
+	}
 }

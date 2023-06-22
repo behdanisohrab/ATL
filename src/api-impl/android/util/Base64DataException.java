@@ -24,7 +24,7 @@ import java.io.IOException;
  * to be disambiguated from errors in the underlying streams (e.g. actual connection errors.)
  */
 public class Base64DataException extends IOException {
-    public Base64DataException(String detailMessage) {
-        super(detailMessage);
-    }
+	public Base64DataException(String detailMessage) {
+		super(detailMessage);
+	}
 }

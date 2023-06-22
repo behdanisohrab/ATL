@@ -21,11 +21,11 @@ import android.util.AndroidException;
  * Parent exception for all Binder remote-invocation errors
  */
 public class RemoteException extends AndroidException {
-    public RemoteException() {
-        super();
-    }
+	public RemoteException() {
+		super();
+	}
 
-    public RemoteException(String message) {
-        super(message);
-    }
+	public RemoteException(String message) {
+		super(message);
+	}
 }

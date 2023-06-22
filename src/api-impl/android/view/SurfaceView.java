@@ -1,10 +1,8 @@
 package android.view;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-
-import android.content.Context;
-
 import java.util.ArrayList;
 
 public class SurfaceView extends View {
@@ -38,7 +36,7 @@ public class SurfaceView extends View {
 
 		@Override
 		public boolean isCreating() {
-	//		return mIsCreating;
+			//		return mIsCreating;
 			return false;
 		}
 
@@ -53,40 +51,40 @@ public class SurfaceView extends View {
 
 		@Override
 		public void removeCallback(Callback callback) {
-	/*		synchronized (mCallbacks) {
-			mCallbacks.remove(callback);
-			}*/
+			/*		synchronized (mCallbacks) {
+					mCallbacks.remove(callback);
+					}*/
 		}
 
 		@Override
 		public void setFixedSize(int width, int height) {
-	/*		if (mRequestedWidth != width || mRequestedHeight != height) {
-			mRequestedWidth = width;
-			mRequestedHeight = height;
-			requestLayout();
-			}*/
+			/*		if (mRequestedWidth != width || mRequestedHeight != height) {
+					mRequestedWidth = width;
+					mRequestedHeight = height;
+					requestLayout();
+					}*/
 		}
 
 		@Override
 		public void setSizeFromLayout() {
-	/*		if (mRequestedWidth != -1 || mRequestedHeight != -1) {
-			mRequestedWidth = mRequestedHeight = -1;
-			requestLayout();
-			}*/
+			/*		if (mRequestedWidth != -1 || mRequestedHeight != -1) {
+					mRequestedWidth = mRequestedHeight = -1;
+					requestLayout();
+					}*/
 		}
 
 		@Override
 		public void setFormat(int format) {
-	/*
-			// for backward compatibility reason, OPAQUE always
-			// means 565 for SurfaceView
-			if (format == PixelFormat.OPAQUE)
-			format = PixelFormat.RGB_565;
+			/*
+					// for backward compatibility reason, OPAQUE always
+					// means 565 for SurfaceView
+					if (format == PixelFormat.OPAQUE)
+					format = PixelFormat.RGB_565;
 
-			mRequestedFormat = format;
-			if (mWindow != null) {
-			updateWindow(false, false);
-			}*/
+					mRequestedFormat = format;
+					if (mWindow != null) {
+					updateWindow(false, false);
+					}*/
 		}
 
 		/**
@@ -94,13 +92,13 @@ public class SurfaceView extends View {
 		 */
 		@Override
 		@Deprecated
-		public void setType(int type) { }
+		public void setType(int type) {}
 
 		@Override
 		public void setKeepScreenOn(boolean screenOn) {
-	//		Message msg = mHandler.obtainMessage(KEEP_SCREEN_ON_MSG);
-	//		msg.arg1 = screenOn ? 1 : 0;
-	//		mHandler.sendMessage(msg);
+			//		Message msg = mHandler.obtainMessage(KEEP_SCREEN_ON_MSG);
+			//		msg.arg1 = screenOn ? 1 : 0;
+			//		mHandler.sendMessage(msg);
 		}
 
 		/**
@@ -114,7 +112,7 @@ public class SurfaceView extends View {
 		 */
 		@Override
 		public Canvas lockCanvas() {
-	//		return internalLockCanvas(null);
+			//		return internalLockCanvas(null);
 			return null;
 		}
 
@@ -135,46 +133,46 @@ public class SurfaceView extends View {
 		 */
 		@Override
 		public Canvas lockCanvas(Rect inOutDirty) {
-	//		return internalLockCanvas(inOutDirty);
+			//		return internalLockCanvas(inOutDirty);
 			return null;
 		}
 
 		private final Canvas internalLockCanvas(Rect dirty) {
-	/*		mSurfaceLock.lock();
+			/*		mSurfaceLock.lock();
 
-			if (DEBUG) Log.i(TAG, "Locking canvas... stopped="
-				+ mDrawingStopped + ", win=" + mWindow);
+					if (DEBUG) Log.i(TAG, "Locking canvas... stopped="
+						+ mDrawingStopped + ", win=" + mWindow);
 
-			Canvas c = null;
-			if (!mDrawingStopped && mWindow != null) {
-			try {
-				c = mSurface.lockCanvas(dirty);
-			} catch (Exception e) {
-				Log.e(LOG_TAG, "Exception locking surface", e);
-			}
-			}
+					Canvas c = null;
+					if (!mDrawingStopped && mWindow != null) {
+					try {
+						c = mSurface.lockCanvas(dirty);
+					} catch (Exception e) {
+						Log.e(LOG_TAG, "Exception locking surface", e);
+					}
+					}
 
-			if (DEBUG) Log.i(TAG, "Returned canvas: " + c);
-			if (c != null) {
-			mLastLockTime = SystemClock.uptimeMillis();
-			return c;
-			}
+					if (DEBUG) Log.i(TAG, "Returned canvas: " + c);
+					if (c != null) {
+					mLastLockTime = SystemClock.uptimeMillis();
+					return c;
+					}
 
-			// If the Surface is not ready to be drawn, then return null,
-			// but throttle calls to this function so it isn't called more
-			// than every 100ms.
-			long now = SystemClock.uptimeMillis();
-			long nextTime = mLastLockTime + 100;
-			if (nextTime > now) {
-			try {
-				Thread.sleep(nextTime-now);
-			} catch (InterruptedException e) {
-			}
-			now = SystemClock.uptimeMillis();
-			}
-			mLastLockTime = now;
-			mSurfaceLock.unlock();
-	*/
+					// If the Surface is not ready to be drawn, then return null,
+					// but throttle calls to this function so it isn't called more
+					// than every 100ms.
+					long now = SystemClock.uptimeMillis();
+					long nextTime = mLastLockTime + 100;
+					if (nextTime > now) {
+					try {
+						Thread.sleep(nextTime-now);
+					} catch (InterruptedException e) {
+					}
+					now = SystemClock.uptimeMillis();
+					}
+					mLastLockTime = now;
+					mSurfaceLock.unlock();
+			*/
 			return null;
 		}
 
@@ -186,8 +184,8 @@ public class SurfaceView extends View {
 		 */
 		@Override
 		public void unlockCanvasAndPost(Canvas canvas) {
-	//		mSurface.unlockCanvasAndPost(canvas);
-	//		mSurfaceLock.unlock();
+			//		mSurface.unlockCanvasAndPost(canvas);
+			//		mSurfaceLock.unlock();
 		}
 
 		@Override
@@ -197,7 +195,7 @@ public class SurfaceView extends View {
 
 		@Override
 		public Rect getSurfaceFrame() {
-	//		return mSurfaceFrame;
+			//		return mSurfaceFrame;
 			return null;
 		}
 	};

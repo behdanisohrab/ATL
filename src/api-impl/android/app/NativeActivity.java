@@ -21,7 +21,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
-//import android.graphics.PixelFormat;
+// import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
@@ -34,15 +34,13 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
-//import android.view.inputmethod.InputMethodManager;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
 import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
 import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
 import com.reandroid.arsc.chunk.xml.ResXmlElement;
+// import android.view.inputmethod.InputMethodManager;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Convenience for implementing an activity that will be implemented
@@ -62,7 +60,7 @@ import com.reandroid.arsc.chunk.xml.ResXmlElement;
  * {@sample development/ndk/platforms/android-9/samples/native-activity/jni/main.c all}
  */
 public class NativeActivity extends Activity implements SurfaceHolder.Callback,
-		InputQueue.Callback, OnGlobalLayoutListener {
+							InputQueue.Callback, OnGlobalLayoutListener {
 	/**
 	 * Optional meta-that can be in the manifest for this component, specifying
 	 * the name of the native shared library to load.  If not specified,
@@ -81,7 +79,7 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 	private static final String KEY_NATIVE_SAVED_STATE = "android:native_state";
 
 	private NativeContentView mNativeContentView;
-//	private InputMethodManager mIMM;
+	//	private InputMethodManager mIMM;
 
 	private long mNativeHandle;
 
@@ -99,8 +97,8 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 	private boolean mDestroyed;
 
 	private native long loadNativeCode(String path, String funcname, MessageQueue queue,
-			String internalDataPath, String obbPath, String externalDataPath, int sdkVersion,
-			AssetManager assetMgr, byte[] savedState);
+					   String internalDataPath, String obbPath, String externalDataPath, int sdkVersion,
+					   AssetManager assetMgr, byte[] savedState);
 	private native void unloadNativeCode(long handle);
 
 	private native void onStartNative(long handle);
@@ -113,7 +111,7 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 	private native void onWindowFocusChangedNative(long handle, boolean focused);
 	private native void onSurfaceCreatedNative(long handle, Surface surface);
 	private native void onSurfaceChangedNative(long handle, Surface surface,
-			int format, int width, int height);
+						   int format, int width, int height);
 	private native void onSurfaceRedrawNeededNative(long handle, Surface surface);
 	private native void onSurfaceDestroyedNative(long handle);
 	private native void onInputQueueCreatedNative(long handle, long queuePtr);
@@ -128,7 +126,7 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 		}
 
 		public NativeContentView(Context context, AttributeSet attrs) {
-			super(context/*, attrs*/);
+			super(context /*, attrs*/);
 		}
 	}
 
@@ -169,22 +167,22 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 
 		// parse AndroidManifest.xml to get name and entry of native lib
 		try (InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml")) {
-			for (ResXmlElement activity: AndroidManifestBlock.load(inStream).listActivities()) {
+			for (ResXmlElement activity : AndroidManifestBlock.load(inStream).listActivities()) {
 				if (!getClass().getName().equals(activity.searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString())) {
 					continue;
 				}
-				for (ResXmlElement metaData: activity.listElements(AndroidManifestBlock.TAG_meta_data)) {
-                    ResXmlAttribute name = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_name);
-                    ResXmlAttribute value = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_value);
-                    if (name == null || value == null){
-                        continue;
-                    }
-                    if (META_DATA_LIB_NAME.equals(name.getValueAsString())){
-                        libname = value.getValueAsString();
-                    }
-                    if (META_DATA_FUNC_NAME.equals(name.getValueAsString())){
-                        funcname = value.getValueAsString();
-                    }
+				for (ResXmlElement metaData : activity.listElements(AndroidManifestBlock.TAG_meta_data)) {
+					ResXmlAttribute name = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_name);
+					ResXmlAttribute value = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_value);
+					if (name == null || value == null) {
+						continue;
+					}
+					if (META_DATA_LIB_NAME.equals(name.getValueAsString())) {
+						libname = value.getValueAsString();
+					}
+					if (META_DATA_FUNC_NAME.equals(name.getValueAsString())) {
+						funcname = value.getValueAsString();
+					}
 				}
 			}
 		} catch (IOException e) {
@@ -194,7 +192,7 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 		String path = null;
 
 		File libraryFile = new File(new File(android.os.Environment.getExternalStorageDirectory(), "lib"),
-				System.mapLibraryName(libname));
+					    System.mapLibraryName(libname));
 		if (libraryFile.exists()) {
 			path = libraryFile.getPath();
 		}
@@ -204,12 +202,13 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 		}
 
 		byte[] nativeSavedState = savedInstanceState != null
-				? savedInstanceState.getByteArray(KEY_NATIVE_SAVED_STATE) : null;
+					      ? savedInstanceState.getByteArray(KEY_NATIVE_SAVED_STATE)
+					      : null;
 
 		mNativeHandle = loadNativeCode(path, funcname, Looper.myQueue(),
-				getAbsolutePath(getFilesDir()), getAbsolutePath(getObbDir()),
-				getAbsolutePath(getExternalFilesDir(null)),
-				Build.VERSION.SDK_INT, getAssets(), nativeSavedState);
+					       getAbsolutePath(getFilesDir()), getAbsolutePath(getObbDir()),
+					       getAbsolutePath(getExternalFilesDir(null)),
+					       Build.VERSION.SDK_INT, getAssets(), nativeSavedState);
 
 		if (mNativeHandle == 0) {
 			throw new IllegalArgumentException("Unable to load native library: " + path);

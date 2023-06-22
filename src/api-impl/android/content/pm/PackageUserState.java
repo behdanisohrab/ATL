@@ -25,33 +25,35 @@ import java.util.HashSet;
  * @hide
  */
 public class PackageUserState {
-    public boolean stopped;
-    public boolean notLaunched;
-    public boolean installed;
-    public boolean blocked; // Is the app restricted by owner / admin
-    public int enabled;
+	public boolean stopped;
+	public boolean notLaunched;
+	public boolean installed;
+	public boolean blocked; // Is the app restricted by owner / admin
+	public int enabled;
 
-    public String lastDisableAppCaller;
+	public String lastDisableAppCaller;
 
-    public HashSet<String> disabledComponents;
-    public HashSet<String> enabledComponents;
+	public HashSet<String> disabledComponents;
+	public HashSet<String> enabledComponents;
 
-    public PackageUserState() {
-        installed = true;
-        blocked = false;
-        enabled = COMPONENT_ENABLED_STATE_DEFAULT;
-    }
+	public PackageUserState() {
+		installed = true;
+		blocked = false;
+		enabled = COMPONENT_ENABLED_STATE_DEFAULT;
+	}
 
-    public PackageUserState(PackageUserState o) {
-        installed = o.installed;
-        stopped = o.stopped;
-        notLaunched = o.notLaunched;
-        enabled = o.enabled;
-        blocked = o.blocked;
-        lastDisableAppCaller = o.lastDisableAppCaller;
-        disabledComponents = o.disabledComponents != null
-                ? new HashSet<String>(o.disabledComponents) : null;
-        enabledComponents = o.enabledComponents != null
-                ? new HashSet<String>(o.enabledComponents) : null;
-    }
+	public PackageUserState(PackageUserState o) {
+		installed = o.installed;
+		stopped = o.stopped;
+		notLaunched = o.notLaunched;
+		enabled = o.enabled;
+		blocked = o.blocked;
+		lastDisableAppCaller = o.lastDisableAppCaller;
+		disabledComponents = o.disabledComponents != null
+					 ? new HashSet<String>(o.disabledComponents)
+					 : null;
+		enabledComponents = o.enabledComponents != null
+					? new HashSet<String>(o.enabledComponents)
+					: null;
+	}
 }

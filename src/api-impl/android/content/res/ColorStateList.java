@@ -16,19 +16,16 @@
 
 package android.content.res;
 
-import com.android.internal.util.ArrayUtils;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.StateSet;
 import android.util.Xml;
-
+import com.android.internal.util.ArrayUtils;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *
@@ -59,242 +56,240 @@ import java.util.Arrays;
  */
 public class ColorStateList {
 
-    private int[][] mStateSpecs; // must be parallel to mColors
-    private int[] mColors;      // must be parallel to mStateSpecs
-    private int mDefaultColor = 0xffff0000;
+	private int[][] mStateSpecs; // must be parallel to mColors
+	private int[] mColors;	     // must be parallel to mStateSpecs
+	private int mDefaultColor = 0xffff0000;
 
-    private static final int[][] EMPTY = new int[][] { new int[0] };
-    private static final SparseArray<WeakReference<ColorStateList>> sCache =
-                            new SparseArray<WeakReference<ColorStateList>>();
+	private static final int[][] EMPTY = new int[][] {new int[0]};
+	private static final SparseArray<WeakReference<ColorStateList>> sCache =
+	    new SparseArray<WeakReference<ColorStateList>>();
 
-    private ColorStateList() { }
+	private ColorStateList() {}
 
-    /**
-     * Creates a ColorStateList that returns the specified mapping from
-     * states to colors.
-     */
-    public ColorStateList(int[][] states, int[] colors) {
-        mStateSpecs = states;
-        mColors = colors;
+	/**
+	 * Creates a ColorStateList that returns the specified mapping from
+	 * states to colors.
+	 */
+	public ColorStateList(int[][] states, int[] colors) {
+		mStateSpecs = states;
+		mColors = colors;
 
-        if (states.length > 0) {
-            mDefaultColor = colors[0];
+		if (states.length > 0) {
+			mDefaultColor = colors[0];
 
-            for (int i = 0; i < states.length; i++) {
-                if (states[i].length == 0) {
-                    mDefaultColor = colors[i];
-                }
-            }
-        }
-    }
+			for (int i = 0; i < states.length; i++) {
+				if (states[i].length == 0) {
+					mDefaultColor = colors[i];
+				}
+			}
+		}
+	}
 
-    /**
-     * Creates or retrieves a ColorStateList that always returns a single color.
-     */
-    public static ColorStateList valueOf(int color) {
-        // TODO: should we collect these eventually?
-        synchronized (sCache) {
-            WeakReference<ColorStateList> ref = sCache.get(color);
-            ColorStateList csl = ref != null ? ref.get() : null;
+	/**
+	 * Creates or retrieves a ColorStateList that always returns a single color.
+	 */
+	public static ColorStateList valueOf(int color) {
+		// TODO: should we collect these eventually?
+		synchronized (sCache) {
+			WeakReference<ColorStateList> ref = sCache.get(color);
+			ColorStateList csl = ref != null ? ref.get() : null;
 
-            if (csl != null) {
-                return csl;
-            }
+			if (csl != null) {
+				return csl;
+			}
 
-            csl = new ColorStateList(EMPTY, new int[] { color });
-            sCache.put(color, new WeakReference<ColorStateList>(csl));
-            return csl;
-        }
-    }
+			csl = new ColorStateList(EMPTY, new int[] {color});
+			sCache.put(color, new WeakReference<ColorStateList>(csl));
+			return csl;
+		}
+	}
 
-    /**
-     * Create a ColorStateList from an XML document, given a set of {@link Resources}.
-     */
-    public static ColorStateList createFromXml(Resources r, XmlPullParser parser)
-            throws XmlPullParserException, IOException {
+	/**
+	 * Create a ColorStateList from an XML document, given a set of {@link Resources}.
+	 */
+	public static ColorStateList createFromXml(Resources r, XmlPullParser parser)
+	    throws XmlPullParserException, IOException {
 
-        AttributeSet attrs = Xml.asAttributeSet(parser);
+		AttributeSet attrs = Xml.asAttributeSet(parser);
 
-        int type;
-        while ((type=parser.next()) != XmlPullParser.START_TAG
-                   && type != XmlPullParser.END_DOCUMENT) {
-        }
+		int type;
+		while ((type = parser.next()) != XmlPullParser.START_TAG && type != XmlPullParser.END_DOCUMENT) {
+		}
 
-        if (type != XmlPullParser.START_TAG) {
-            throw new XmlPullParserException("No start tag found");
-        }
+		if (type != XmlPullParser.START_TAG) {
+			throw new XmlPullParserException("No start tag found");
+		}
 
-        return createFromXmlInner(r, parser, attrs);
-    }
+		return createFromXmlInner(r, parser, attrs);
+	}
 
-    /* Create from inside an XML document.  Called on a parser positioned at
-     * a tag in an XML document, tries to create a ColorStateList from that tag.
-     * Returns null if the tag is not a valid ColorStateList.
-     */
-    private static ColorStateList createFromXmlInner(Resources r, XmlPullParser parser,
-            AttributeSet attrs) throws XmlPullParserException, IOException {
+	/* Create from inside an XML document.  Called on a parser positioned at
+	 * a tag in an XML document, tries to create a ColorStateList from that tag.
+	 * Returns null if the tag is not a valid ColorStateList.
+	 */
+	private static ColorStateList createFromXmlInner(Resources r, XmlPullParser parser,
+							 AttributeSet attrs) throws XmlPullParserException, IOException {
 
-        ColorStateList colorStateList;
+		ColorStateList colorStateList;
 
-        final String name = parser.getName();
+		final String name = parser.getName();
 
-        if (name.equals("selector")) {
-            colorStateList = new ColorStateList();
-        } else {
-            throw new XmlPullParserException(
-                parser.getPositionDescription() + ": invalid drawable tag " + name);
-        }
+		if (name.equals("selector")) {
+			colorStateList = new ColorStateList();
+		} else {
+			throw new XmlPullParserException(
+			    parser.getPositionDescription() + ": invalid drawable tag " + name);
+		}
 
-        colorStateList.inflate(r, parser, attrs);
-        return colorStateList;
-    }
+		colorStateList.inflate(r, parser, attrs);
+		return colorStateList;
+	}
 
-    /**
-     * Creates a new ColorStateList that has the same states and
-     * colors as this one but where each color has the specified alpha value
-     * (0-255).
-     */
-    public ColorStateList withAlpha(int alpha) {
-        int[] colors = new int[mColors.length];
+	/**
+	 * Creates a new ColorStateList that has the same states and
+	 * colors as this one but where each color has the specified alpha value
+	 * (0-255).
+	 */
+	public ColorStateList withAlpha(int alpha) {
+		int[] colors = new int[mColors.length];
 
-        int len = colors.length;
-        for (int i = 0; i < len; i++) {
-            colors[i] = (mColors[i] & 0xFFFFFF) | (alpha << 24);
-        }
+		int len = colors.length;
+		for (int i = 0; i < len; i++) {
+			colors[i] = (mColors[i] & 0xFFFFFF) | (alpha << 24);
+		}
 
-        return new ColorStateList(mStateSpecs, colors);
-    }
+		return new ColorStateList(mStateSpecs, colors);
+	}
 
-    /**
-     * Fill in this object based on the contents of an XML "selector" element.
-     */
-    private void inflate(Resources r, XmlPullParser parser, AttributeSet attrs)
-        throws XmlPullParserException, IOException {
+	/**
+	 * Fill in this object based on the contents of an XML "selector" element.
+	 */
+	private void inflate(Resources r, XmlPullParser parser, AttributeSet attrs)
+	    throws XmlPullParserException, IOException {
 
-        int type;
+		int type;
 
-        final int innerDepth = parser.getDepth()+1;
-        int depth;
+		final int innerDepth = parser.getDepth() + 1;
+		int depth;
 
-        int listAllocated = 20;
-        int listSize = 0;
-        int[] colorList = new int[listAllocated];
-        int[][] stateSpecList = new int[listAllocated][];
+		int listAllocated = 20;
+		int listSize = 0;
+		int[] colorList = new int[listAllocated];
+		int[][] stateSpecList = new int[listAllocated][];
 
-        while ((type=parser.next()) != XmlPullParser.END_DOCUMENT
-               && ((depth=parser.getDepth()) >= innerDepth
-                   || type != XmlPullParser.END_TAG)) {
-            if (type != XmlPullParser.START_TAG) {
-                continue;
-            }
+		while ((type = parser.next()) != XmlPullParser.END_DOCUMENT && ((depth = parser.getDepth()) >= innerDepth || type != XmlPullParser.END_TAG)) {
+			if (type != XmlPullParser.START_TAG) {
+				continue;
+			}
 
-            if (depth > innerDepth || !parser.getName().equals("item")) {
-                continue;
-            }
+			if (depth > innerDepth || !parser.getName().equals("item")) {
+				continue;
+			}
 
-            int colorRes = 0;
-            int color = 0xffff0000;
-            boolean haveColor = false;
+			int colorRes = 0;
+			int color = 0xffff0000;
+			boolean haveColor = false;
 
-            int i;
-            int j = 0;
-            final int numAttrs = attrs.getAttributeCount();
-            int[] stateSpec = new int[numAttrs];
-            for (i = 0; i < numAttrs; i++) {
-                final int stateResId = attrs.getAttributeNameResource(i);
-                if (stateResId == 0) break;
-                if (stateResId == com.android.internal.R.attr.color) {
-                    colorRes = attrs.getAttributeResourceValue(i, 0);
+			int i;
+			int j = 0;
+			final int numAttrs = attrs.getAttributeCount();
+			int[] stateSpec = new int[numAttrs];
+			for (i = 0; i < numAttrs; i++) {
+				final int stateResId = attrs.getAttributeNameResource(i);
+				if (stateResId == 0)
+					break;
+				if (stateResId == com.android.internal.R.attr.color) {
+					colorRes = attrs.getAttributeResourceValue(i, 0);
 
-                    if (colorRes == 0) {
-                        color = attrs.getAttributeIntValue(i, color);
-                        haveColor = true;
-                    }
-                } else {
-                    stateSpec[j++] = attrs.getAttributeBooleanValue(i, false)
-                                  ? stateResId
-                                  : -stateResId;
-                }
-            }
-            stateSpec = StateSet.trimStateSet(stateSpec, j);
+					if (colorRes == 0) {
+						color = attrs.getAttributeIntValue(i, color);
+						haveColor = true;
+					}
+				} else {
+					stateSpec[j++] = attrs.getAttributeBooleanValue(i, false)
+							     ? stateResId
+							     : -stateResId;
+				}
+			}
+			stateSpec = StateSet.trimStateSet(stateSpec, j);
 
-            if (colorRes != 0) {
-                color = r.getColor(colorRes);
-            } else if (!haveColor) {
-                throw new XmlPullParserException(
-                        parser.getPositionDescription()
-                        + ": <item> tag requires a 'android:color' attribute.");
-            }
+			if (colorRes != 0) {
+				color = r.getColor(colorRes);
+			} else if (!haveColor) {
+				throw new XmlPullParserException(
+				    parser.getPositionDescription() + ": <item> tag requires a 'android:color' attribute.");
+			}
 
-            if (listSize == 0 || stateSpec.length == 0) {
-                mDefaultColor = color;
-            }
-            
-            if (listSize + 1 >= listAllocated) {
-                listAllocated = ArrayUtils.idealIntArraySize(listSize + 1);
+			if (listSize == 0 || stateSpec.length == 0) {
+				mDefaultColor = color;
+			}
 
-                int[] ncolor = new int[listAllocated];
-                System.arraycopy(colorList, 0, ncolor, 0, listSize);
+			if (listSize + 1 >= listAllocated) {
+				listAllocated = ArrayUtils.idealIntArraySize(listSize + 1);
 
-                int[][] nstate = new int[listAllocated][];
-                System.arraycopy(stateSpecList, 0, nstate, 0, listSize);
+				int[] ncolor = new int[listAllocated];
+				System.arraycopy(colorList, 0, ncolor, 0, listSize);
 
-                colorList = ncolor;
-                stateSpecList = nstate;
-            }
+				int[][] nstate = new int[listAllocated][];
+				System.arraycopy(stateSpecList, 0, nstate, 0, listSize);
 
-            colorList[listSize] = color;
-            stateSpecList[listSize] = stateSpec;
-            listSize++;
-        }
+				colorList = ncolor;
+				stateSpecList = nstate;
+			}
 
-        mColors = new int[listSize];
-        mStateSpecs = new int[listSize][];
-        System.arraycopy(colorList, 0, mColors, 0, listSize);
-        System.arraycopy(stateSpecList, 0, mStateSpecs, 0, listSize);
-    }
+			colorList[listSize] = color;
+			stateSpecList[listSize] = stateSpec;
+			listSize++;
+		}
 
-    public boolean isStateful() {
-        return mStateSpecs.length > 1;
-    }
-    
-    /**
-     * Return the color associated with the given set of {@link android.view.View} states.
-     *
-     * @param stateSet an array of {@link android.view.View} states
-     * @param defaultColor the color to return if there's not state spec in this
-     * {@link ColorStateList} that matches the stateSet.
-     *
-     * @return the color associated with that set of states in this {@link ColorStateList}.
-     */
-    public int getColorForState(int[] stateSet, int defaultColor) {
-        final int setLength = mStateSpecs.length;
-        for (int i = 0; i < setLength; i++) {
-            int[] stateSpec = mStateSpecs[i];
-            if (StateSet.stateSetMatches(stateSpec, stateSet)) {
-                return mColors[i];
-            }
-        }
-        return defaultColor;
-    }
+		mColors = new int[listSize];
+		mStateSpecs = new int[listSize][];
+		System.arraycopy(colorList, 0, mColors, 0, listSize);
+		System.arraycopy(stateSpecList, 0, mStateSpecs, 0, listSize);
+	}
 
-    /**
-     * Return the default color in this {@link ColorStateList}.
-     *
-     * @return the default color in this {@link ColorStateList}.
-     */
-    public int getDefaultColor() {
-        return mDefaultColor;
-    }
+	public boolean isStateful() {
+		return mStateSpecs.length > 1;
+	}
 
-    public String toString() {
-        return "ColorStateList{" +
-               "mStateSpecs=" + Arrays.deepToString(mStateSpecs) +
-               "mColors=" + Arrays.toString(mColors) +
-               "mDefaultColor=" + mDefaultColor + '}';
-    }
+	/**
+	 * Return the color associated with the given set of {@link android.view.View} states.
+	 *
+	 * @param stateSet an array of {@link android.view.View} states
+	 * @param defaultColor the color to return if there's not state spec in this
+	 * {@link ColorStateList} that matches the stateSet.
+	 *
+	 * @return the color associated with that set of states in this {@link ColorStateList}.
+	 */
+	public int getColorForState(int[] stateSet, int defaultColor) {
+		final int setLength = mStateSpecs.length;
+		for (int i = 0; i < setLength; i++) {
+			int[] stateSpec = mStateSpecs[i];
+			if (StateSet.stateSetMatches(stateSpec, stateSet)) {
+				return mColors[i];
+			}
+		}
+		return defaultColor;
+	}
 
-    public int describeContents() {
-        return 0;
-    }
+	/**
+	 * Return the default color in this {@link ColorStateList}.
+	 *
+	 * @return the default color in this {@link ColorStateList}.
+	 */
+	public int getDefaultColor() {
+		return mDefaultColor;
+	}
+
+	public String toString() {
+		return "ColorStateList{"
+		    +
+		    "mStateSpecs=" + Arrays.deepToString(mStateSpecs) +
+		    "mColors=" + Arrays.toString(mColors) +
+		    "mDefaultColor=" + mDefaultColor + '}';
+	}
+
+	public int describeContents() {
+		return 0;
+	}
 }

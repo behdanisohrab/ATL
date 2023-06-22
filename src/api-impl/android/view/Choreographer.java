@@ -2,7 +2,7 @@ package android.view;
 
 public final class Choreographer {
 	public static interface FrameCallback {
-	    public void doFrame(long frametime_in_nanoseconds);
+		public void doFrame(long frametime_in_nanoseconds);
 	}
 
 	public static Choreographer getInstance() {
@@ -19,7 +19,7 @@ public final class Choreographer {
 		Thread async = new Thread(new Runnable() {
 		public void run() {
 			callback.doFrame(System.nanoTime());
-		}});
+		} });
 		async.start();
 	}
 }

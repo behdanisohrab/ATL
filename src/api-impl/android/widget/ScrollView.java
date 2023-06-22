@@ -1,10 +1,9 @@
 package android.widget;
 
-import android.util.AttributeSet;
 import android.content.Context;
-
-import android.view.ViewGroup;
+import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
 public class ScrollView extends ViewGroup {

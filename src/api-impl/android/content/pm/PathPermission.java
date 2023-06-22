@@ -23,21 +23,21 @@ import android.os.PatternMatcher;
  * in a {@link ProviderInfo}.
  */
 public class PathPermission extends PatternMatcher {
-    private final String mReadPermission;
-    private final String mWritePermission;
-    
-    public PathPermission(String pattern, int type, String readPermission,
-            String writePermission) {
-        super(pattern, type);
-        mReadPermission = readPermission;
-        mWritePermission = writePermission;
-    }
-    
-    public String getReadPermission() {
-        return mReadPermission;
-    }
-    
-    public String getWritePermission() {
-        return mWritePermission;
-    }
+	private final String mReadPermission;
+	private final String mWritePermission;
+
+	public PathPermission(String pattern, int type, String readPermission,
+			      String writePermission) {
+		super(pattern, type);
+		mReadPermission = readPermission;
+		mWritePermission = writePermission;
+	}
+
+	public String getReadPermission() {
+		return mReadPermission;
+	}
+
+	public String getWritePermission() {
+		return mWritePermission;
+	}
 }

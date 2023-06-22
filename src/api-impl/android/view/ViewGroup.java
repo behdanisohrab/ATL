@@ -1,8 +1,7 @@
 package android.view;
 
-import android.util.AttributeSet;
 import android.content.Context;
-
+import android.util.AttributeSet;
 import java.util.ArrayList;
 
 public class ViewGroup extends View implements ViewParent, ViewManager {
@@ -49,14 +48,14 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 	public native void addView(View child, int index, LayoutParams params);
 
-    public native void removeView(View view);
+	public native void removeView(View view);
 	public native void removeAllViews();
 
 	public View getChildAt(int index) {
 		return children.get(index);
 	}
 
-    public void updateViewLayout(View view, ViewGroup.LayoutParams params) {}
+	public void updateViewLayout(View view, ViewGroup.LayoutParams params) {}
 
 	public LayoutParams generateLayoutParams(AttributeSet attrs) {
 		return new LayoutParams(/*getContext(), attrs*/);
@@ -67,14 +66,14 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	/**
-     * Returns the number of children in the group.
-     *
-     * @return a positive integer representing the number of children in
-     *         the group
-     */
-    public int getChildCount() {
-        return children.size();
-    }
+	 * Returns the number of children in the group.
+	 *
+	 * @return a positive integer representing the number of children in
+	 *         the group
+	 */
+	public int getChildCount() {
+		return children.size();
+	}
 
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;
@@ -87,7 +86,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		public int gravity = -1;
 
 		public LayoutParams() {
-			//FIXME
+			// FIXME
 		}
 
 		public LayoutParams(int width, int height) {
@@ -109,13 +108,13 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 //		public LayoutAnimationController.AnimationParameters layoutAnimationParameters;
 	}
 
-	public static class MarginLayoutParams extends ViewGroup.LayoutParams{
+	public static class MarginLayoutParams extends ViewGroup.LayoutParams {
 
 		public MarginLayoutParams() {
 			super();
 		}
 
-        public MarginLayoutParams(int width, int height) {
+		public MarginLayoutParams(int width, int height) {
 			super(width, height);
 		}
 

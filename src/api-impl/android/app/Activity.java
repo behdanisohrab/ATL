@@ -1,31 +1,27 @@
 package android.app;
 
-import android.content.Context;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
-
-import android.widget.TextView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.LayoutInflater;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-
+import android.widget.TextView;
 import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 public class Activity extends Context {
 	LayoutInflater layout_inflater;
@@ -64,7 +60,7 @@ public class Activity extends Context {
 
 	public View root_view;
 
-	public final Application getApplication () {
+	public final Application getApplication() {
 		return (Application)getApplicationContext();
 	}
 
@@ -86,10 +82,10 @@ public class Activity extends Context {
 	}
 
 	public int getRequestedOrientation() {
-		return requested_orientation; 
+		return requested_orientation;
 	}
 
-	public void setRequestedOrientation (int orientation) {
+	public void setRequestedOrientation(int orientation) {
 		requested_orientation = orientation;
 	}
 
@@ -146,7 +142,7 @@ public class Activity extends Context {
 	}
 
 	public void onWindowFocusChanged(boolean hasFocus) {
-		System.out.println("- onWindowFocusChanged - yay! (hasFocus: "+hasFocus+")");
+		System.out.println("- onWindowFocusChanged - yay! (hasFocus: " + hasFocus + ")");
 
 		return;
 	}
@@ -162,7 +158,7 @@ public class Activity extends Context {
 
 	/* --- */
 
-    public void setContentView(int layoutResID) throws Exception {
+	public void setContentView(int layoutResID) throws Exception {
 		System.out.println("- setContentView - yay!");
 
 		XmlResourceParser xpp = Context.this_application.getResources().getLayout(layoutResID);
@@ -183,13 +179,13 @@ public class Activity extends Context {
 		w.showAll();
 
 
-        w.connect(new Window.DeleteEvent() {
-            public boolean onDeleteEvent(Widget source, Event event) {
-                Gtk.mainQuit();
-                return false;
-            }
-        });*/
-    }
+		w.connect(new Window.DeleteEvent() {
+			public boolean onDeleteEvent(Widget source, Event event) {
+				Gtk.mainQuit();
+				return false;
+			}
+		});*/
+	}
 
 	public void setContentView(View view, ViewGroup.LayoutParams layoutParams) {
 		setContentView(view);
@@ -204,7 +200,7 @@ public class Activity extends Context {
 		View view = View.view_by_id.get(id);
 		System.out.println("- findViewById - found this: " + view);
 
-		return (T) view;
+		return (T)view;
 	}
 
 	public void invalidateOptionsMenu() {
@@ -215,14 +211,14 @@ public class Activity extends Context {
 		return this.window;
 	}
 
-    public final void runOnUiThread(Runnable action) {
-        action.run(); // FIXME: running synchronously for now
-    }
+	public final void runOnUiThread(Runnable action) {
+		action.run(); // FIXME: running synchronously for now
+	}
 
-	protected void onActivityResult (int requestCode, int resultCode, Intent data) {}
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {}
 
-	public void startActivityForResult (Intent intent, int requestCode) {
-		System.out.println("startActivityForResult("+intent+", "+requestCode+") called, but we don't currently support multiple activities");
+	public void startActivityForResult(Intent intent, int requestCode) {
+		System.out.println("startActivityForResult(" + intent + ", " + requestCode + ") called, but we don't currently support multiple activities");
 		onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent()); // RESULT_CANCELED is the only pre-defined return value, so hopefully it works out for us
 	}
 }

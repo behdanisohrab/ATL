@@ -1,10 +1,9 @@
 package android.widget;
 
-import android.util.AttributeSet;
 import android.content.Context;
-
-import android.view.ViewGroup;
+import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
 public class RelativeLayout extends ViewGroup {
@@ -30,7 +29,7 @@ public class RelativeLayout extends ViewGroup {
 	public native void addView(View child, int index, ViewGroup.LayoutParams params);
 
 	public static class LayoutParams extends ViewGroup.LayoutParams {
-        public LayoutParams(int width, int height) {
+		public LayoutParams(int width, int height) {
 			super(width, height);
 		}
 

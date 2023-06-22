@@ -16,6 +16,5 @@
 
 package javax.microedition.khronos.egl;
 
-public abstract class EGLSurface
-{
+public abstract class EGLSurface {
 }

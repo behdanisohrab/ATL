@@ -17,6 +17,6 @@ import android.content.Context;
  *   <ul>
  */
 public class MultiDexApplication extends Application {
-  protected void attachBaseContext(Context base) {
-  }
+	protected void attachBaseContext(Context base) {
+	}
 }

@@ -1,10 +1,9 @@
 package android.widget;
 
-import android.util.AttributeSet;
 import android.content.Context;
-
-import android.view.ViewGroup;
+import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
 public class LinearLayout extends ViewGroup {
@@ -37,7 +36,7 @@ public class LinearLayout extends ViewGroup {
 	public void setWeightSum(float weightSum) {}
 
 	public static class LayoutParams extends ViewGroup.LayoutParams {
-        public LayoutParams(int width, int height) {
+		public LayoutParams(int width, int height) {
 			super(width, height);
 		}
 

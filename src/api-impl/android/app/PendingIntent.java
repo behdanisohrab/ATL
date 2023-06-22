@@ -13,9 +13,8 @@ public class PendingIntent {
 		return null;
 	}
 
-	public void send (Context context, int code, Intent intent) {}
+	public void send(Context context, int code, Intent intent) {}
 
 	public class CanceledException extends Exception {
-
 	}
 }

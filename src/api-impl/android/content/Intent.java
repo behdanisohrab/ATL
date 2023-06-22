@@ -3,16 +3,15 @@ package android.content;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
-
 import java.io.Serializable;
 
 public class Intent {
-	public Intent () {}
-	public Intent (Intent o) {}
-	public Intent (String action) {}
-	public Intent (String action, Uri uri) {}
-	public Intent (Context packageContext, Class<?> cls) {}
-	public Intent (String action, Uri uri, Context packageContext, Class<?> cls) {}
+	public Intent() {}
+	public Intent(Intent o) {}
+	public Intent(String action) {}
+	public Intent(String action, Uri uri) {}
+	public Intent(Context packageContext, Class<?> cls) {}
+	public Intent(String action, Uri uri, Context packageContext, Class<?> cls) {}
 
 	public Intent setFlags(int flags) {
 		return this; //??
@@ -21,7 +20,7 @@ public class Intent {
 		return this; //??
 	}
 
-	public Intent putExtra (String name, Parcelable value) {
+	public Intent putExtra(String name, Parcelable value) {
 		return this; //??
 	}
 

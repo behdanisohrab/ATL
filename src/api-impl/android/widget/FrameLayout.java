@@ -1,10 +1,9 @@
 package android.widget;
 
-import android.util.AttributeSet;
 import android.content.Context;
-
-import android.view.ViewGroup;
+import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
 public class FrameLayout extends ViewGroup {
@@ -32,7 +31,7 @@ public class FrameLayout extends ViewGroup {
 	}
 
 	public static class LayoutParams extends ViewGroup.MarginLayoutParams {
-        public LayoutParams(int width, int height) {
+		public LayoutParams(int width, int height) {
 			super(width, height);
 		}
 

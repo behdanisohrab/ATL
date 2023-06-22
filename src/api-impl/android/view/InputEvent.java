@@ -22,193 +22,201 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Common base class for input events.
  */
 public abstract class InputEvent {
-    /** @hide */
-    protected static final int PARCEL_TOKEN_MOTION_EVENT = 1;
-    /** @hide */
-    protected static final int PARCEL_TOKEN_KEY_EVENT = 2;
+	/**
+	 * @hide
+	 */
+	protected static final int PARCEL_TOKEN_MOTION_EVENT = 1;
+	/**
+	 * @hide
+	 */
+	protected static final int PARCEL_TOKEN_KEY_EVENT = 2;
 
-    // Next sequence number.
-    private static final AtomicInteger mNextSeq = new AtomicInteger();
+	// Next sequence number.
+	private static final AtomicInteger mNextSeq = new AtomicInteger();
 
-    /** @hide */
-    protected int mSeq;
+	/**
+	 * @hide
+	 */
+	protected int mSeq;
 
-    /** @hide */
-    protected boolean mRecycled;
+	/**
+	 * @hide
+	 */
+	protected boolean mRecycled;
 
-    private static final boolean TRACK_RECYCLED_LOCATION = false;
-    private RuntimeException mRecycledLocation;
+	private static final boolean TRACK_RECYCLED_LOCATION = false;
+	private RuntimeException mRecycledLocation;
 
-    /*package*/ InputEvent() {
-        mSeq = mNextSeq.getAndIncrement();
-    }
+	/*package*/ InputEvent() {
+		mSeq = mNextSeq.getAndIncrement();
+	}
 
-    /**
-     * Gets the id for the device that this event came from.  An id of
-     * zero indicates that the event didn't come from a physical device
-     * and maps to the default keymap.  The other numbers are arbitrary and
-     * you shouldn't depend on the values.
-     * 
-     * @return The device id.
-     * @see InputDevice#getDevice
-     */
-    public abstract int getDeviceId();
+	/**
+	 * Gets the id for the device that this event came from.  An id of
+	 * zero indicates that the event didn't come from a physical device
+	 * and maps to the default keymap.  The other numbers are arbitrary and
+	 * you shouldn't depend on the values.
+	 *
+	 * @return The device id.
+	 * @see InputDevice#getDevice
+	 */
+	public abstract int getDeviceId();
 
-    /**
-     * Gets the device that this event came from.
-     * 
-     * @return The device, or null if unknown.
-     */
-    public final InputDevice getDevice() {
-        return null/*InputDevice.getDevice(getDeviceId())*/;
-    }
+	/**
+	 * Gets the device that this event came from.
+	 *
+	 * @return The device, or null if unknown.
+	 */
+	public final InputDevice getDevice() {
+		return null /*InputDevice.getDevice(getDeviceId())*/;
+	}
 
-    /**
-     * Gets the source of the event.
-     * 
-     * @return The event source or {@link InputDevice#SOURCE_UNKNOWN} if unknown.
-     * @see InputDevice#getSources
-     */
-    public abstract int getSource();
+	/**
+	 * Gets the source of the event.
+	 *
+	 * @return The event source or {@link InputDevice#SOURCE_UNKNOWN} if unknown.
+	 * @see InputDevice#getSources
+	 */
+	public abstract int getSource();
 
-    /**
-     * Modifies the source of the event.
-     *
-     * @param source The new source.
-     * @hide
-     */
-    public abstract void setSource(int source);
+	/**
+	 * Modifies the source of the event.
+	 *
+	 * @param source The new source.
+	 * @hide
+	 */
+	public abstract void setSource(int source);
 
-    /**
-     * Determines whether the event is from the given source.
-     *
-     * @param source The input source to check against. This can be a specific device type, such as
-     * {@link InputDevice#SOURCE_TOUCH_NAVIGATION}, or a more generic device class, such as
-     * {@link InputDevice#SOURCE_CLASS_POINTER}.
-     * @return Whether the event is from the given source.
-     */
-    public boolean isFromSource(int source) {
-        return (getSource() & source) == source;
-    }
+	/**
+	 * Determines whether the event is from the given source.
+	 *
+	 * @param source The input source to check against. This can be a specific device type, such as
+	 * {@link InputDevice#SOURCE_TOUCH_NAVIGATION}, or a more generic device class, such as
+	 * {@link InputDevice#SOURCE_CLASS_POINTER}.
+	 * @return Whether the event is from the given source.
+	 */
+	public boolean isFromSource(int source) {
+		return (getSource() & source) == source;
+	}
 
-    /**
-     * Copies the event.
-     *
-     * @return A deep copy of the event.
-     * @hide
-     */
-    public abstract InputEvent copy();
+	/**
+	 * Copies the event.
+	 *
+	 * @return A deep copy of the event.
+	 * @hide
+	 */
+	public abstract InputEvent copy();
 
-    /**
-     * Recycles the event.
-     * This method should only be used by the system since applications do not
-     * expect {@link KeyEvent} objects to be recycled, although {@link MotionEvent}
-     * objects are fine.  See {@link KeyEvent#recycle()} for details.
-     * @hide
-     */
-    public void recycle() {
-        if (TRACK_RECYCLED_LOCATION) {
-            if (mRecycledLocation != null) {
-                throw new RuntimeException(toString() + " recycled twice!", mRecycledLocation);
-            }
-            mRecycledLocation = new RuntimeException("Last recycled here");
-        } else {
-            if (mRecycled) {
-                throw new RuntimeException(toString() + " recycled twice!");
-            }
-            mRecycled = true;
-        }
-    }
+	/**
+	 * Recycles the event.
+	 * This method should only be used by the system since applications do not
+	 * expect {@link KeyEvent} objects to be recycled, although {@link MotionEvent}
+	 * objects are fine.  See {@link KeyEvent#recycle()} for details.
+	 * @hide
+	 */
+	public void recycle() {
+		if (TRACK_RECYCLED_LOCATION) {
+			if (mRecycledLocation != null) {
+				throw new RuntimeException(toString() + " recycled twice!", mRecycledLocation);
+			}
+			mRecycledLocation = new RuntimeException("Last recycled here");
+		} else {
+			if (mRecycled) {
+				throw new RuntimeException(toString() + " recycled twice!");
+			}
+			mRecycled = true;
+		}
+	}
 
-    /**
-     * Conditionally recycled the event if it is appropriate to do so after
-     * dispatching the event to an application.
-     *
-     * If the event is a {@link MotionEvent} then it is recycled.
-     *
-     * If the event is a {@link KeyEvent} then it is NOT recycled, because applications
-     * expect key events to be immutable so once the event has been dispatched to
-     * the application we can no longer recycle it.
-     * @hide
-     */
-    public void recycleIfNeededAfterDispatch() {
-        recycle();
-    }
+	/**
+	 * Conditionally recycled the event if it is appropriate to do so after
+	 * dispatching the event to an application.
+	 *
+	 * If the event is a {@link MotionEvent} then it is recycled.
+	 *
+	 * If the event is a {@link KeyEvent} then it is NOT recycled, because applications
+	 * expect key events to be immutable so once the event has been dispatched to
+	 * the application we can no longer recycle it.
+	 * @hide
+	 */
+	public void recycleIfNeededAfterDispatch() {
+		recycle();
+	}
 
-    /**
-     * Reinitializes the event on reuse (after recycling).
-     * @hide
-     */
-    protected void prepareForReuse() {
-        mRecycled = false;
-        mRecycledLocation = null;
-        mSeq = mNextSeq.getAndIncrement();
-    }
+	/**
+	 * Reinitializes the event on reuse (after recycling).
+	 * @hide
+	 */
+	protected void prepareForReuse() {
+		mRecycled = false;
+		mRecycledLocation = null;
+		mSeq = mNextSeq.getAndIncrement();
+	}
 
-    /**
-     * Gets a private flag that indicates when the system has detected that this input event
-     * may be inconsistent with respect to the sequence of previously delivered input events,
-     * such as when a key up event is sent but the key was not down or when a pointer
-     * move event is sent but the pointer is not down.
-     *
-     * @return True if this event is tainted.
-     * @hide
-     */
-    public abstract boolean isTainted();
+	/**
+	 * Gets a private flag that indicates when the system has detected that this input event
+	 * may be inconsistent with respect to the sequence of previously delivered input events,
+	 * such as when a key up event is sent but the key was not down or when a pointer
+	 * move event is sent but the pointer is not down.
+	 *
+	 * @return True if this event is tainted.
+	 * @hide
+	 */
+	public abstract boolean isTainted();
 
-    /**
-     * Sets a private flag that indicates when the system has detected that this input event
-     * may be inconsistent with respect to the sequence of previously delivered input events,
-     * such as when a key up event is sent but the key was not down or when a pointer
-     * move event is sent but the pointer is not down.
-     *
-     * @param tainted True if this event is tainted.
-     * @hide
-     */
-    public abstract void setTainted(boolean tainted);
+	/**
+	 * Sets a private flag that indicates when the system has detected that this input event
+	 * may be inconsistent with respect to the sequence of previously delivered input events,
+	 * such as when a key up event is sent but the key was not down or when a pointer
+	 * move event is sent but the pointer is not down.
+	 *
+	 * @param tainted True if this event is tainted.
+	 * @hide
+	 */
+	public abstract void setTainted(boolean tainted);
 
-    /**
-     * Retrieve the time this event occurred,
-     * in the {@link android.os.SystemClock#uptimeMillis} time base.
-     *
-     * @return Returns the time this event occurred,
-     * in the {@link android.os.SystemClock#uptimeMillis} time base.
-     */
-    public abstract long getEventTime();
+	/**
+	 * Retrieve the time this event occurred,
+	 * in the {@link android.os.SystemClock#uptimeMillis} time base.
+	 *
+	 * @return Returns the time this event occurred,
+	 * in the {@link android.os.SystemClock#uptimeMillis} time base.
+	 */
+	public abstract long getEventTime();
 
-    /**
-     * Retrieve the time this event occurred,
-     * in the {@link android.os.SystemClock#uptimeMillis} time base but with
-     * nanosecond (instead of millisecond) precision.
-     * <p>
-     * The value is in nanosecond precision but it may not have nanosecond accuracy.
-     * </p>
-     *
-     * @return Returns the time this event occurred,
-     * in the {@link android.os.SystemClock#uptimeMillis} time base but with
-     * nanosecond (instead of millisecond) precision.
-     *
-     * @hide
-     */
-    public abstract long getEventTimeNano();
+	/**
+	 * Retrieve the time this event occurred,
+	 * in the {@link android.os.SystemClock#uptimeMillis} time base but with
+	 * nanosecond (instead of millisecond) precision.
+	 * <p>
+	 * The value is in nanosecond precision but it may not have nanosecond accuracy.
+	 * </p>
+	 *
+	 * @return Returns the time this event occurred,
+	 * in the {@link android.os.SystemClock#uptimeMillis} time base but with
+	 * nanosecond (instead of millisecond) precision.
+	 *
+	 * @hide
+	 */
+	public abstract long getEventTimeNano();
 
-    /**
-     * Gets the unique sequence number of this event.
-     * Every input event that is created or received by a process has a
-     * unique sequence number.  Moreover, a new sequence number is obtained
-     * each time an event object is recycled.
-     *
-     * Sequence numbers are only guaranteed to be locally unique within a process.
-     * Sequence numbers are not preserved when events are parceled.
-     *
-     * @return The unique sequence number of this event.
-     * @hide
-     */
-    public int getSequenceNumber() {
-        return mSeq;
-    }
+	/**
+	 * Gets the unique sequence number of this event.
+	 * Every input event that is created or received by a process has a
+	 * unique sequence number.  Moreover, a new sequence number is obtained
+	 * each time an event object is recycled.
+	 *
+	 * Sequence numbers are only guaranteed to be locally unique within a process.
+	 * Sequence numbers are not preserved when events are parceled.
+	 *
+	 * @return The unique sequence number of this event.
+	 * @hide
+	 */
+	public int getSequenceNumber() {
+		return mSeq;
+	}
 
-    public int describeContents() {
-        return 0;
-    }
+	public int describeContents() {
+		return 0;
+	}
 }

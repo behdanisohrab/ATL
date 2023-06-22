@@ -22,10 +22,10 @@ package android.text;
  * Spanned it was placed in.
  */
 public interface NoCopySpan {
-    /**
-     * Convenience equivalent for when you would just want a new Object() for
-     * a span but want it to be no-copy.  Use this instead.
-     */
-    public class Concrete implements NoCopySpan {
-    }
+	/**
+	 * Convenience equivalent for when you would just want a new Object() for
+	 * a span but want it to be no-copy.  Use this instead.
+	 */
+	public class Concrete implements NoCopySpan {
+	}
 }

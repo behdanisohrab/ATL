@@ -5,7 +5,7 @@ public interface InputFilter {
 		public LengthFilter(int max) {
 		}
 
-		public CharSequence filter (CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+		public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
 			return "";
 		}
 	}

@@ -22,26 +22,26 @@ package android.opengl;
  *
  */
 public abstract class EGLObjectHandle {
-    private final int mHandle;
+	private final int mHandle;
 
-    protected EGLObjectHandle(int handle) {
-        mHandle = handle;
-    }
+	protected EGLObjectHandle(int handle) {
+		mHandle = handle;
+	}
 
-    /**
-     * Returns the native handle of the wrapped EGL object. This handle can be
-     * cast to the corresponding native type on the native side.
-     *
-     * For example, EGLDisplay dpy = (EGLDisplay)handle;
-     *
-     * @return the native handle of the wrapped EGL object.
-     */
-    public int getHandle() {
-        return mHandle;
-    }
+	/**
+	 * Returns the native handle of the wrapped EGL object. This handle can be
+	 * cast to the corresponding native type on the native side.
+	 *
+	 * For example, EGLDisplay dpy = (EGLDisplay)handle;
+	 *
+	 * @return the native handle of the wrapped EGL object.
+	 */
+	public int getHandle() {
+		return mHandle;
+	}
 
-    @Override
-    public int hashCode() {
-        return getHandle();
-    }
+	@Override
+	public int hashCode() {
+		return getHandle();
+	}
 }
