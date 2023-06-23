@@ -1,6 +1,7 @@
 package android.view;
 
 import android.content.Context;
+import android.content.res.XmlResourceParser;
 import android.util.AttributeSet;
 import android.util.Xml;
 import java.io.FileReader;
@@ -87,15 +88,7 @@ public class LayoutInflater {
 
 	public View inflate(int layoutResID, ViewGroup root, boolean attachToRoot) throws Exception {
 
-		String layout_xml_file = android.os.Environment.getExternalStorageDirectory().getPath() + "/" + Context.this_application.getString(layoutResID);
-
-		System.out.println("loading layout from: " + layout_xml_file);
-
-		XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-		factory.setNamespaceAware(true);
-		XmlPullParser xpp = factory.newPullParser();
-
-		xpp.setInput(new FileReader(layout_xml_file));
+		XmlResourceParser xpp = Context.this_application.getResources().getLayout(layoutResID);
 
 		return inflate(xpp, root, attachToRoot);
 	}
