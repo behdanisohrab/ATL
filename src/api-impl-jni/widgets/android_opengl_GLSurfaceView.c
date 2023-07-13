@@ -8,6 +8,9 @@
 #include <GLES3/gl3ext.h>
 
 #include <gtk/gtk.h>
+#ifdef GDK_WINDOWING_WAYLAND
+#include <gdk/wayland/gdkwayland.h>
+#endif
 
 #include "../defines.h"
 #include "../util.h"
@@ -186,7 +189,14 @@ static void on_realize(GtkGLArea *gl_area, struct jni_gl_callback_data *d)
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	EGLDisplay eglDisplay = eglGetDisplay((EGLNativeDisplayType)0);
+	EGLNativeDisplayType display_id = EGL_DEFAULT_DISPLAY;
+#ifdef GDK_WINDOWING_WAYLAND
+	GdkDisplay *gdk_dpy = gdk_display_get_default();
+	if (GDK_IS_WAYLAND_DISPLAY(gdk_dpy)) {
+        display_id = (EGLNativeDisplayType)gdk_wayland_display_get_wl_display(gdk_dpy);
+    }
+#endif
+	EGLDisplay eglDisplay = eglGetDisplay(display_id);
 	EGLDisplay old_eglDisplay = eglGetCurrentDisplay();
 
 	d_printf("GTK version: >%d__%d__%d<\n", gtk_get_major_version(), gtk_get_minor_version(), gtk_get_micro_version());
@@ -366,7 +376,14 @@ static gboolean render(GtkGLArea *gl_area, GdkGLContext *context, struct jni_gl_
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	EGLDisplay eglDisplay = eglGetDisplay((EGLNativeDisplayType)0);
+	EGLNativeDisplayType display_id = EGL_DEFAULT_DISPLAY;
+#ifdef GDK_WINDOWING_WAYLAND
+	GdkDisplay *gdk_dpy = gdk_display_get_default();
+	if (GDK_IS_WAYLAND_DISPLAY(gdk_dpy)) {
+        display_id = (EGLNativeDisplayType)gdk_wayland_display_get_wl_display(gdk_dpy);
+    }
+#endif
+	EGLDisplay eglDisplay = eglGetDisplay(display_id);
 	EGLDisplay old_eglDisplay = eglGetCurrentDisplay();
 
 	// save the EGL state before we change it, so we can switch back later
