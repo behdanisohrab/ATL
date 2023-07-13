@@ -134,8 +134,8 @@ JNIEXPORT void JNICALL Java_android_view_View_setGravity(JNIEnv *env, jobject th
 		gtk_widget_set_halign(widget, GTK_ALIGN_FILL);
 
 	if(gravity == GRAVITY_CENTER) {
-		gtk_widget_set_valign(widget, GTK_ALIGN_FILL); // GTK_ALIGN_CENTER doesn't seem to be the right one?
-		gtk_widget_set_halign(widget, GTK_ALIGN_FILL); // ditto (GTK_ALIGN_CENTER)
+		gtk_widget_set_valign(widget, GTK_ALIGN_CENTER); // GTK_ALIGN_CENTER doesn't seem to be the right one?
+		gtk_widget_set_halign(widget, GTK_ALIGN_CENTER); // ditto (GTK_ALIGN_CENTER)
 		gtk_widget_set_hexpand(widget, true); // haxx or not?
 		gtk_widget_set_vexpand(widget, true); // seems to be the deciding factor for whether to expand, guess I should try on android
 	}
