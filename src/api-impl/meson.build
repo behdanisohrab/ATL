@@ -191,6 +191,8 @@ hax_jar = jar('hax', [
               	'android/util/TypedValue.java',
               	'android/util/Xml.java',
               	'android/util/XmlPullAttributes.java',
+              	'android/view/animation/AccelerateInterpolator.java',
+              	'android/view/animation/Interpolator.java',
               	'android/view/Choreographer.java',
               	'android/view/Display.java',
               	'android/view/Gravity.java',
