@@ -802,7 +802,10 @@ public class View extends Object {
 
 	public void invalidate(Rect dirty) {}
 	public void invalidate(int l, int t, int r, int b) {}
-	public void invalidate() {}
+	public void invalidate() {
+		nativeInvalidate(widget);
+	}
+	private static native void nativeInvalidate(long widget);
 
 	public void setBackgroundColor(int color) {}
 	public native void setVisibility(int visibility);

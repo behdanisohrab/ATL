@@ -231,3 +231,9 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, j
 
 	_SET_LONG_FIELD(this, "widget", (long)area);
 }
+
+JNIEXPORT void JNICALL Java_android_view_View_nativeInvalidate(JNIEnv *env, jclass, jlong widget_ptr) {
+	GtkWidget *widget = GTK_WIDGET(_PTR(widget_ptr));
+
+	gtk_widget_queue_draw(gtk_widget_get_parent(widget));
+}
