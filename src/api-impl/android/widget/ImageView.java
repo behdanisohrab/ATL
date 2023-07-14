@@ -12,8 +12,8 @@ public class ImageView extends View {
 
 	private Bitmap bitmap;
 
-	public ImageView(AttributeSet attrs) {
-		super(attrs);
+	public ImageView(Context context, AttributeSet attrs) {
+		super(context, attrs);
 
 		native_constructor(attrs);
 		int resource = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "src", 0);

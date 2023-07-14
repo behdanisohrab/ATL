@@ -35,12 +35,12 @@ public class LayoutInflater {
 	public final View createView(String name, String prefix, AttributeSet attrs) throws Exception {
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> createView(" + name + ", " + prefix + ", " + attrs + ");");
 
-		String view_class_name = prefix + name;
+		String view_class_name = prefix!=null ? prefix + name : name;
 		Class view_class = Class.forName(view_class_name);
 
-		Constructor constructor = view_class.getConstructor(AttributeSet.class);
+		Constructor constructor = view_class.getConstructor(Context.class, AttributeSet.class);
 
-		View view_instance = (View)constructor.newInstance(attrs);
+		View view_instance = (View)constructor.newInstance(Context.this_application, attrs);
 
 		return view_instance;
 	}

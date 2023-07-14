@@ -688,11 +688,14 @@ public class View extends Object {
 
 	public View() {} // FIXME
 
-	public View(AttributeSet attrs) {
-		id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
+	public View(Context context, AttributeSet attrs) {
+		this(context);
 
-		if (id != 0)
-			view_by_id.put(id, this);
+		if (attrs != null) {
+			id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
+			if (id != 0)
+				setId(id);
+		}
 	}
 
 	public View findViewById(int id) {
@@ -766,7 +769,9 @@ public class View extends Object {
 		System.out.println("setContentDescription called with: >" + contentDescription + "<");
 	}
 
-	public void setId(int id) {}
+	public void setId(int id) {
+		view_by_id.put(id, this);
+	}
 
 	public void setOnKeyListener(OnKeyListener l) {}
 

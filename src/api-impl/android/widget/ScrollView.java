@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
 public class ScrollView extends ViewGroup {
-	public ScrollView(AttributeSet attrs) {
-		super(attrs);
+	public ScrollView(Context context, AttributeSet attrs) {
+		super(context, attrs);
 
 		native_constructor(attrs);
 	}

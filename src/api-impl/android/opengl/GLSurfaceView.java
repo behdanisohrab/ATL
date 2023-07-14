@@ -27,8 +27,8 @@ public class GLSurfaceView extends View implements SurfaceHolder.Callback { // T
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 	public void surfaceDestroyed(SurfaceHolder holder) {}
 
-	public GLSurfaceView(AttributeSet attrs) {
-		super(attrs);
+	public GLSurfaceView(Context context, AttributeSet attrs) {
+		super(context, attrs);
 
 		java_egl_wrapper = (EGL10)EGLContext.getEGL();
 		java_gl_wrapper = (GL10)EGLContext.getGL();

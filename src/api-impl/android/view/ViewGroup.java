@@ -18,8 +18,14 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		children = new ArrayList<View>();
 	}
 
-	public ViewGroup(AttributeSet attrs) {
-		super(attrs);
+	public ViewGroup(Context context, AttributeSet attrs) {
+		super(context, attrs);
+
+		children = new ArrayList<View>();
+	}
+
+	public ViewGroup(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs);
 
 		children = new ArrayList<View>();
 	}

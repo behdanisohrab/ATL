@@ -5,8 +5,8 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class ProgressBar extends View {
-	public ProgressBar(AttributeSet attrs) {
-		super(attrs);
+	public ProgressBar(Context context, AttributeSet attrs) {
+		super(context, attrs);
 
 		native_constructor(attrs);
 	}
