@@ -64,7 +64,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	public void updateViewLayout(View view, ViewGroup.LayoutParams params) {}
 
 	public LayoutParams generateLayoutParams(AttributeSet attrs) {
-		return new LayoutParams(/*getContext(), attrs*/);
+		return new LayoutParams(getContext(), attrs);
 	}
 
 	public void bringChildToFront(View child) {
@@ -79,6 +79,14 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	 */
 	public int getChildCount() {
 		return children.size();
+	}
+
+	public void setMotionEventSplittingEnabled(boolean enabled) {}
+
+	public void setOnHierarchyChangeListener(OnHierarchyChangeListener listener) {}
+
+	public boolean checkLayoutParams(LayoutParams params) {
+		return true;
 	}
 
 	public static class LayoutParams {
@@ -106,6 +114,12 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 			this.weight = weight;
 		}
 
+		public LayoutParams(Context context, AttributeSet attrs) {
+			this.width = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "layout_width", 0);
+			this.height = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "layout_height", 0);
+			this.gravity = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "layout_gravity", -1);
+		}
+
 		public void setMargins(int left, int top, int right, int bottom) {}
 
 		/**
@@ -127,5 +141,13 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		public MarginLayoutParams(int width, int height, float weight) {
 			super(width, height, weight);
 		}
+
+		public MarginLayoutParams(Context context, AttributeSet attributeSet) {
+			super(context, attributeSet);
+		}
+	}
+
+	public interface OnHierarchyChangeListener {
+
 	}
 }
