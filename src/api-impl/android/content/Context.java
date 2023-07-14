@@ -20,6 +20,7 @@ import android.hardware.input.InputManager;
 import android.hardware.SensorManager;
 import android.hardware.display.DisplayManager;
 import android.hardware.usb.UsbManager;
+import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaRouter;
 import android.net.ConnectivityManager;
@@ -131,6 +132,8 @@ public class Context extends Object {
 				return new AlarmManager();
 			case "input":
 				return new InputManager();
+			case "location":
+				return new LocationManager();
 			default:
 				System.out.println("!!!!!!! getSystemService: case >" + name + "< is not implemented yet");
 				return null;

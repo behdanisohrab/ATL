@@ -327,7 +327,8 @@ public final class Sensor {
 	private int mFifoReservedEventCount;
 	private int mFifoMaxEventCount;
 
-	Sensor() {
+	Sensor(int type) {
+		mType = type;
 	}
 
 	/**

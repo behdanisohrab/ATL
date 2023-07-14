@@ -12,4 +12,12 @@ public class Criteria {
 	public static final int ACCURACY_HIGH = 3;
 
 	public void setAccuracy(int accuracy) {}
+
+	public void setAltitudeRequired(boolean required) {}
+
+	public void setBearingRequired(boolean required) {}
+
+	public void setCostAllowed(boolean allowed) {}
+
+	public void setPowerRequirement(int powerRequirement) {}
 }

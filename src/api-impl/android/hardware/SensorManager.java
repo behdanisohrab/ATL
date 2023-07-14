@@ -1,13 +1,31 @@
 package android.hardware;
 
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Handler;
 
 public class SensorManager {
 	public Sensor getDefaultSensor(int type) {
-		return null;
+		return new Sensor(type);
 	}
 
 	public boolean registerListener(SensorEventListener listener, Sensor sensor, int samplingPeriodUs, Handler handler) {
 		return true; // we could try saying that the sensor doesn't exist and hope the app just doesn't use it then, but as long as we never call the handler the app should leave this alone
+	}
+
+	public boolean registerListener(final SensorEventListener listener, Sensor sensor, int samplingPeriodUs) {
+		switch(sensor.getType()) {
+			case Sensor.TYPE_ORIENTATION:
+				new LocationManager().requestLocationUpdates(null, 0, 0, new LocationListener() {
+					@Override
+					public void onLocationChanged(Location location) {
+						listener.onSensorChanged(new SensorEvent(new float[]{(float)location.getBearing()}));
+					}
+				});
+				return true;
+			default:
+				return false;
+		}
 	}
 }
