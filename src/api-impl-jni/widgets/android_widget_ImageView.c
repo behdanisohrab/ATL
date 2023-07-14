@@ -12,6 +12,7 @@ JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1constructor__Landro
 	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *image = gtk_picture_new_for_resource("/org/gtk/libgtk/icons/16x16/status/image-missing.png"); // show "broken image" icon
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), image);
+	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 	_SET_LONG_FIELD(this, "widget", _INTPTR(image));}
 
 JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1constructor__Landroid_content_Context_2(JNIEnv *env, jobject this, jobject context)
@@ -19,6 +20,7 @@ JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1constructor__Landro
 	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *image = gtk_picture_new_for_resource("/org/gtk/libgtk/icons/16x16/status/image-missing.png"); // show "broken image" icon
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), image);
+	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 	_SET_LONG_FIELD(this, "widget", _INTPTR(image));
 }
 

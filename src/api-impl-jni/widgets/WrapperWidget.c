@@ -1,5 +1,7 @@
 #include <gtk/gtk.h>
 
+#include "../defines.h"
+#include "../util.h"
 #include "../drawables/ninepatch.h"
 
 #include "WrapperWidget.h"
@@ -52,6 +54,15 @@ static void wrapper_widget_init (WrapperWidget *wrapper_widget)
 static void wrapper_widget_dispose(GObject *wrapper_widget)
 {
 	gtk_widget_unparent(gtk_widget_get_first_child(GTK_WIDGET(wrapper_widget)));
+	WrapperWidget *wrapper = WRAPPER_WIDGET(wrapper_widget);
+	if (wrapper->jvm) {
+		JNIEnv *env;
+		(*wrapper->jvm)->GetEnv(wrapper->jvm, (void**)&env, JNI_VERSION_1_6);
+		if (wrapper->jobj)
+			_UNREF(wrapper->jobj);
+		if (wrapper->canvas)
+			_UNREF(wrapper->canvas);
+	}
 	G_OBJECT_CLASS (wrapper_widget_parent_class)->dispose (wrapper_widget);
 }
 
@@ -78,6 +89,29 @@ void wrapper_snapshot(GtkWidget* widget, GtkSnapshot* snapshot)
 		g_object_unref(texture);
 	}
 	gtk_widget_snapshot_child(widget, gtk_widget_get_first_child(widget), snapshot);
+
+	// if onDraw method is overwritten call it now
+	WrapperWidget *wrapper_widget = WRAPPER_WIDGET(widget);
+	GtkAllocation alloc;
+	gtk_widget_get_allocation(widget, &alloc);
+	if (wrapper_widget->draw_method) {
+		cairo_t *cr = gtk_snapshot_append_cairo (snapshot, &GRAPHENE_RECT_INIT(0, 0, alloc.width, alloc.height));
+
+		JNIEnv *env;
+		(*wrapper_widget->jvm)->GetEnv(wrapper_widget->jvm, (void**)&env, JNI_VERSION_1_6);
+		if(wrapper_widget->canvas == NULL) {
+			wrapper_widget->canvas = _REF((*env)->NewObject(env, handle_cache.canvas.class, handle_cache.canvas.constructor, _INTPTR(cr), 0));
+		} else {
+			_SET_LONG_FIELD(wrapper_widget->canvas, "cairo_context", _INTPTR(cr));
+		}
+
+		(*env)->CallVoidMethod(env, wrapper_widget->jobj, wrapper_widget->draw_method, wrapper_widget->canvas);
+
+		if((*env)->ExceptionCheck(env))
+			(*env)->ExceptionDescribe(env);
+
+		cairo_destroy (cr);
+	}
 }
 
 
@@ -101,4 +135,33 @@ GtkWidget * wrapper_widget_new(void)
 void wrapper_widget_set_child(WrapperWidget *parent, GtkWidget *child) // TODO: make sure there can only be one child
 {
 	gtk_widget_insert_before(child, GTK_WIDGET(parent), NULL);
+}
+
+static void on_mapped(GtkWidget* self, gpointer data)
+{
+	WrapperWidget *wrapper = WRAPPER_WIDGET(self);
+	if (wrapper->jvm) {
+		JNIEnv *env;
+		(*wrapper->jvm)->GetEnv(wrapper->jvm, (void**)&env, JNI_VERSION_1_6);
+
+		(*env)->CallVoidMethod(env, wrapper->jobj, wrapper->measure_method, gtk_widget_get_width(self), gtk_widget_get_height(self));
+	}
+}
+
+void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject jobj)
+{
+	JavaVM *jvm;
+	(*env)->GetJavaVM(env, &jvm);
+	wrapper->jvm = jvm;
+	wrapper->jobj = _REF(jobj);
+	jmethodID draw_method = _METHOD(_CLASS(jobj), "onDraw", "(Landroid/graphics/Canvas;)V");
+	if (draw_method != handle_cache.view.onDraw)
+		wrapper->draw_method = draw_method;
+
+	jmethodID measure_method = _METHOD(_CLASS(jobj), "onMeasure", "(II)V");
+	if (measure_method != handle_cache.view.onMeasure) {
+		wrapper->measure_method = measure_method;
+		// add a callback for when the widget is mapped, which will call onMeasure to figure out what size the widget wants to be
+		g_signal_connect(wrapper, "map", G_CALLBACK(on_mapped), NULL);
+	}
 }

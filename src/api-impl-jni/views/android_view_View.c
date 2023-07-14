@@ -166,43 +166,11 @@ JNIEXPORT void JNICALL Java_android_view_View_setVisibility(JNIEnv *env, jobject
 	}
 }
 
-// --- the stuff below only applies to widgets that override the OnDraw() method; other widgets are created by class-specific constructors.
-// FIXME: how do we handle someone subclassing something other then View and then overriding the onDraw/onMeasure method(s)?
-
-struct jni_callback_data { JavaVM *jvm; jobject this; jclass this_class; cairo_t *cached_cr; jobject canvas;};
-
-static void draw_function(GtkDrawingArea *area, cairo_t *cr, int width, int height, struct jni_callback_data *d)
-{
-	JNIEnv *env;
-	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
-
-	if(d->cached_cr != cr) {
-		if(d->canvas == NULL) {
-			d->canvas = _REF((*env)->NewObject(env, handle_cache.canvas.class, handle_cache.canvas.constructor, _INTPTR(cr), _INTPTR(area)));
-		} else {
-			_SET_LONG_FIELD(d->canvas, "cairo_context", _INTPTR(cr));
-		}
-		d->cached_cr = cr;
-	}
-
-	(*env)->CallVoidMethod(env, d->this, _METHOD(d->this_class, "onDraw", "(Landroid/graphics/Canvas;)V"), d->canvas);
-
-	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);
-}
-
-static void on_mapped(GtkWidget* self, struct jni_callback_data *d)
-{
-	JNIEnv *env;
-	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
-
-	(*env)->CallVoidMethod(env, d->this, _METHOD(d->this_class, "onMeasure", "(II)V"), gtk_widget_get_width(self), gtk_widget_get_height(self));
-}
-
 // FIXME: this is used in one other place as well, should probably go in util.c or gtk_util.c?
 gboolean tick_callback(GtkWidget* widget, GdkFrameClock* frame_clock, gpointer user_data)
 {
 	gtk_widget_queue_draw(widget);
+	gtk_widget_queue_draw(gtk_widget_get_parent(widget));
 	return G_SOURCE_CONTINUE;
 }
 
@@ -211,23 +179,9 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, j
 	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *area = gtk_drawing_area_new();
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), area);
-
-	JavaVM *jvm;
-	(*env)->GetJavaVM(env, &jvm);
-
-	struct jni_callback_data *callback_data = malloc(sizeof(struct jni_callback_data));
-	callback_data->jvm = jvm;
-	callback_data->this = _REF(this);
-	callback_data->this_class = _REF(_CLASS(this));
-	callback_data->cached_cr = NULL;
-	callback_data->canvas = NULL;
-
-	gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA(area), ( void(*)(GtkDrawingArea*,cairo_t*,int,int,gpointer) )draw_function, callback_data, NULL);
+	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 
 	gtk_widget_add_tick_callback(area, tick_callback, NULL, NULL);
-
-	// add a callback for when the widget is mapped, which will call onMeasure to figure out what size the widget wants to be
-	g_signal_connect(area, "map", G_CALLBACK(on_mapped), callback_data);
 
 	_SET_LONG_FIELD(this, "widget", (long)area);
 }
