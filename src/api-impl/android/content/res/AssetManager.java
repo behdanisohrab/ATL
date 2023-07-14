@@ -822,7 +822,14 @@ public final class AssetManager {
 
 	private native final String[] getArrayStringResource(int arrayRes);
 	private native final int[] getArrayStringInfo(int arrayRes);
-	/*package*/ native final int[] getArrayIntResource(int arrayRes);
+	/*package*/ final int[] getArrayIntResource(int arrayRes) {
+		ResValueMap children[] = tableBlock.search(arrayRes).pickOne().getResValueMapArray().getChildes();
+		int values[] = new int[children.length];
+		for (int i = 0; i < children.length; i++) {
+			values[i] = children[i].getData();
+		}
+		return values;
+	}
 
 	private /* native */ final void init() {}
 	private native final void destroy();
