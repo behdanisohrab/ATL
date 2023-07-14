@@ -21,6 +21,8 @@ import android.os.ParcelFileDescriptor;
 import android.os.Trace;
 import android.util.Log;
 import android.util.TypedValue;
+
+import com.reandroid.arsc.chunk.PackageBlock;
 import com.reandroid.arsc.chunk.TableBlock;
 import com.reandroid.arsc.chunk.xml.ResXmlDocument;
 import com.reandroid.arsc.chunk.xml.ResXmlPullParser;
@@ -33,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -107,9 +110,14 @@ public final class AssetManager {
 	 */
 	public AssetManager() {
 		try {
-			// NOTE: this enforces a particular order when specifying the MicroG .apk in classpath
-			InputStream inFile = ClassLoader.getSystemClassLoader().getResourceAsStream("resources.arsc");
-			tableBlock = TableBlock.load(inFile);
+			tableBlock = new TableBlock();
+			Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources("resources.arsc");
+			while (resources.hasMoreElements()) {
+				URL resource = resources.nextElement();
+				if (!resource.getFile().contains("com.google.android.gms")) { // ignore MicroG .apk
+					tableBlock.merge(TableBlock.load(resource.openStream()));
+				}
+			}
 		} catch (IOException e) {
 			Log.e(TAG, "failed to load resources.arsc" + e);
 		}
@@ -751,8 +759,14 @@ public final class AssetManager {
 	 */
 	/*package*/ /*native*/ final int getResourceIdentifier(String name, String type, String defPackage) {
 		System.out.println("getResourceIdentifier(" + name + "," + type + "," + defPackage + ") called");
+		for (PackageBlock packageBlock : tableBlock.listPackages()) {
+			if (packageBlock.getName().equals(defPackage)) {
+				return packageBlock.getEntry("", type, name).getResourceId();
+			}
+		}
 
-		return tableBlock.pickOne().getEntry("", type, name).getResourceId();
+		// package not found
+		return -1;
 	}
 
 	/*package*/ native final String getResourceName(int resid);

@@ -84,7 +84,7 @@ char *construct_classpath(char *prefix, char **cp_array, size_t len)
 
 #define JDWP_ARG "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address="
 
-JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, char *api_impl_natives_dir, char *app_lib_dir) {
+JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, char *framework_res_apk, char *api_impl_natives_dir, char *app_lib_dir) {
 	JavaVM* jvm;
 	JNIEnv* env;
 	JavaVMInitArgs args;
@@ -106,7 +106,7 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 
 	// microg is purposefully after the apk, so that we get the correct resources.arsc
 	// TODO: request resources.arsc from concrete apk instead of taking the first one in classpath
-	options[1].optionString = construct_classpath("-Djava.class.path=", (char *[]){api_impl_jar, apk_classpath, microg_apk}, 3);
+	options[1].optionString = construct_classpath("-Djava.class.path=", (char *[]){api_impl_jar, apk_classpath, microg_apk, framework_res_apk}, 4);
 	options[2].optionString = "-verbose:jni";
 	if(jdwp_port) {
 		strncat(jdwp_option_string, jdwp_port, 5); // 5 chars is enough for a port number, and won't overflow our array
@@ -147,9 +147,11 @@ void dl_parse_library_path(const char *path, char *delim);
 #define REL_API_IMPL_JAR_INSTALL_PATH "/android_translation_layer/api-impl.jar"
 #define REL_API_IMPL_NATIVES_INSTALL_PATH "/android_translation_layer/natives"
 #define REL_MICROG_APK_INSTALL_PATH "/microg/com.google.android.gms.apk"
+#define REL_FRAMEWORK_RES_INSTALL_PATH "/android/framework-res.apk"
 
 #define API_IMPL_JAR_PATH_LOCAL "./api-impl.jar"
 #define MICROG_APK_PATH_LOCAL "./com.google.android.gms.apk"
+#define FRAMEWORK_RES_PATH_LOCAL "./framework-res.apk"
 
 struct jni_callback_data { char *apk_main_activity_class; uint32_t window_width; uint32_t window_height;};
 static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* hint, struct jni_callback_data *d)
@@ -164,6 +166,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	char *dex_install_dir;
 	char *api_impl_jar;
 	char *microg_apk = NULL;
+	char *framework_res_apk = NULL;
 	int errno_libdir;
 	int errno_localdir;
 	int ret;
@@ -273,6 +276,28 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 		}
 	}
 
+	ret = stat(FRAMEWORK_RES_PATH_LOCAL, &dont_care);
+	errno_localdir = errno;
+	if(!ret) {
+		framework_res_apk = strdup(FRAMEWORK_RES_PATH_LOCAL); // for running out of builddir; using strdup so we can always safely call free on this
+	} else {
+		char *framework_res_install_dir = malloc(strlen(dex_install_dir) + strlen(REL_FRAMEWORK_RES_INSTALL_PATH) + 1); // +1 for NULL
+		strcpy(framework_res_install_dir, dex_install_dir);
+		strcat(framework_res_install_dir, REL_FRAMEWORK_RES_INSTALL_PATH);
+
+		ret = stat(framework_res_install_dir, &dont_care);
+		errno_libdir = errno;
+		if(!ret) {
+			framework_res_apk = framework_res_install_dir;
+		} else {
+			printf("warning: can't stat framework-res.apk; tried:\n"
+				   "\t\"" FRAMEWORK_RES_PATH_LOCAL "\", got - %s\n"
+				   "\t\"%s\", got - %s\n",
+			       strerror(errno_localdir),
+			       framework_res_install_dir, strerror(errno_libdir));
+		}
+	}
+
 	char *api_impl_natives_dir = malloc(strlen(dex_install_dir) + strlen(REL_API_IMPL_NATIVES_INSTALL_PATH) + 1); // +1 for NULL
 	strcpy(api_impl_natives_dir, dex_install_dir);
 	strcat(api_impl_natives_dir, REL_API_IMPL_NATIVES_INSTALL_PATH);
@@ -286,7 +311,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	// calling directly into the shim bionic linker to whitelist the app's lib dir as containing bionic-linked libraries
 	dl_parse_library_path(app_lib_dir, ":");
 
-	JNIEnv* env = create_vm(api_impl_jar, apk_classpath, microg_apk, api_impl_natives_dir, app_lib_dir);
+	JNIEnv* env = create_vm(api_impl_jar, apk_classpath, microg_apk, framework_res_apk, api_impl_natives_dir, app_lib_dir);
 
 	free(app_lib_dir);
 
