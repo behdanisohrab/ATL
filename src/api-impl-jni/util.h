@@ -68,6 +68,8 @@ struct handle_cache {
 	struct {
 		jclass class;
 		jmethodID setLayoutParams;
+		jmethodID onDraw;
+		jmethodID onMeasure;
 	} view;
 	struct {
 		jclass class;
