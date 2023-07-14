@@ -24,7 +24,10 @@ import android.util.TypedValue;
 import com.reandroid.arsc.chunk.TableBlock;
 import com.reandroid.arsc.chunk.xml.ResXmlDocument;
 import com.reandroid.arsc.chunk.xml.ResXmlPullParser;
+import com.reandroid.arsc.group.EntryGroup;
+import com.reandroid.arsc.value.ResValue;
 import com.reandroid.arsc.value.ResValueMap;
+import com.reandroid.arsc.value.ValueType;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -175,7 +178,13 @@ public final class AssetManager {
 	 * identifier for the current configuration / skin.
 	 */
 	/*package*/ final CharSequence getResourceText(int id) {
-		return tableBlock.search(id).pickOne().getResValue().getDataAsPoolString().get();
+		if (id == 0)
+			return "";
+		ResValue resValue = tableBlock.search(id).pickOne().getResValue();
+		if (resValue.getValueType() == ValueType.REFERENCE) {
+			return getResourceText(resValue.getData());
+		}
+		return resValue.getDataAsPoolString().get();
 	}
 
 	/**
@@ -221,8 +230,16 @@ public final class AssetManager {
 		    outValue.string = mStringBlocks[block].get(outValue.data);
 		    return true;
 		}*/
-		outValue.type = TypedValue.TYPE_STRING;
-		outValue.string = getResourceText(ident);
+		EntryGroup entryGroup = tableBlock.search(ident);
+		if (entryGroup == null)
+			return false;  // not found
+		ResValue resValue = entryGroup.pickOne().getResValue();
+		if (resValue == null)
+			return false;  // not found
+		outValue.type = resValue.getType();
+		outValue.data = resValue.getData();
+		if (outValue.type == TypedValue.TYPE_STRING)
+			outValue.string = getResourceText(ident);
 		return true;
 	}
 
