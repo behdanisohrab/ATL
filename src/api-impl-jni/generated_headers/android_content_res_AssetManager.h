@@ -347,14 +347,6 @@ JNIEXPORT jintArray JNICALL Java_android_content_res_AssetManager_getArrayString
 
 /*
  * Class:     android_content_res_AssetManager
- * Method:    getArrayIntResource
- * Signature: (I)[I
- */
-JNIEXPORT jintArray JNICALL Java_android_content_res_AssetManager_getArrayIntResource
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     android_content_res_AssetManager
  * Method:    destroy
  * Signature: ()V
  */

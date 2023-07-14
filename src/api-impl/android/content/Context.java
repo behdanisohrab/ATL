@@ -167,6 +167,10 @@ public class Context extends Object {
 		return r.getString(resId);
 	}
 
+	public final String getString (int resId, Object... formatArgs) {
+		return r.getString(resId, formatArgs);
+	}
+
 	public PackageManager getPackageManager() {
 		return new PackageManager();
 	}
