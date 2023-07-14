@@ -38,12 +38,13 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawLine(JNIEnv *env
 	cairo_stroke(cr);
 }
 
-JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawBitmap(JNIEnv *env , jclass this_class, jlong cairo_context, jlong widget, jlong _pixbuf, jfloat src_x, jfloat src_y , jfloat dest_x , jfloat dest_y, jobject paint)
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawBitmap(JNIEnv *env , jclass this_class, jlong cairo_context, jlong widget, jlong _pixbuf, jfloat src_x, jfloat src_y, jfloat dest_x , jfloat dest_y, jfloat dest_w , jfloat dest_h, jobject paint)
 {
 	cairo_t *cr = (cairo_t *)_PTR(cairo_context);
 	GdkPixbuf *pixbuf = (GdkPixbuf *)_PTR(_pixbuf);
 
 	cairo_translate(cr, dest_x, dest_y);
+	cairo_scale(cr, dest_w / gdk_pixbuf_get_width(pixbuf), dest_h / gdk_pixbuf_get_height(pixbuf));
 	gdk_cairo_set_source_pixbuf(cr, pixbuf, src_x, src_y);
 	cairo_paint(cr);
 	cairo_translate(cr, -dest_x, -dest_y);

@@ -34,10 +34,10 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawLine
 /*
  * Class:     android_graphics_Canvas
  * Method:    native_drawBitmap
- * Signature: (JJJFFFFLandroid/graphics/Paint;)V
+ * Signature: (JJJFFFFFFLandroid/graphics/Paint;)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawBitmap
-  (JNIEnv *, jclass, jlong, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jobject);
+  (JNIEnv *, jclass, jlong, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jobject);
 
 /*
  * Class:     android_graphics_Canvas

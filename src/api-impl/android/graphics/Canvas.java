@@ -252,7 +252,7 @@ public class Canvas {
 		if (dst == null) {
 			throw new NullPointerException();
 		}
-		native_drawBitmap(cairo_context, widget, bitmap.pixbuf, src.left, src.top, dst.left, dst.top, paint); // FIXME - ignores width/height
+		native_drawBitmap(cairo_context, widget, bitmap.pixbuf, src.left, src.top, dst.left, dst.top, dst.width(), dst.height(), paint); // FIXME - ignores width/height of source
 	}
 
 	/**
@@ -372,7 +372,7 @@ public class Canvas {
 	public void setBitmap(Bitmap bitmap) {}
 
 	private static native void native_drawLine(long cairo_context, long widget, float startX, float startY, float stopX, float stopY, int paint_color);	       // TODO: pass all the other relevant parameters extracted from paint
-	private static native void native_drawBitmap(long cairo_context, long widget, long pixbuf, float src_x, float src_y, float dest_x, float dest_y, Paint paint); // TODO: make use of "paint"?
+	private static native void native_drawBitmap(long cairo_context, long widget, long pixbuf, float src_x, float src_y, float dest_x, float dest_y, float dest_w, float dest_h, Paint paint); // TODO: make use of "paint"?
 	private static native void native_rotate(long cairo_context, long widget, float angle);
 	private static native void native_rotate_and_translate(long cairo_context, long widget, float angle, float tx, float ty);
 }
