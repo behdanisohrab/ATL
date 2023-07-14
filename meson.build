@@ -82,11 +82,12 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/android_graphics_Bitmap.c',
                                                                   	'src/api-impl-jni/android_app_NativeActivity.c',
                                                                   	'src/api-impl-jni/android_opengl_GLES20.c',
+                                                                  	'src/api-impl-jni/location/android_location_LocationManager.c',
                                                                   ] + marshal_files,
                                                                   install: true,
                                                                   install_dir : get_option('libdir') / 'java/dex/android_translation_layer/natives',
                                                                   dependencies: [
-                                                                  	dependency('gtk4'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni')
+                                                                  	dependency('gtk4'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni'), dependency('libportal')
                                                                   ],
                                                                   link_with: [ libandroid_so ],
                                                                   link_args: [
