@@ -8,8 +8,8 @@ import android.view.ViewGroup.LayoutParams;
 
 public class FrameLayout extends ViewGroup {
 
-	public FrameLayout(AttributeSet attrs) {
-		super(attrs);
+	public FrameLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
 
 		native_constructor(attrs);
 	}

@@ -17,8 +17,8 @@ public class TextView extends View {
 		id = _id;
 	}
 
-	public TextView(AttributeSet attrs) {
-		super(attrs);
+	public TextView(Context context, AttributeSet attrs) {
+		super(context, attrs);
 
 		native_constructor(attrs);
 	}
@@ -42,6 +42,10 @@ public class TextView extends View {
 
 		if (text instanceof android.text.Spanned)
 			native_set_markup(1);
+	}
+
+	public void setText(int resId) {
+		setText(getContext().getResources().getText(resId));
 	}
 
 	private native final void native_set_markup(int bool);

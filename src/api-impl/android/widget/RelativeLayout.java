@@ -10,8 +10,8 @@ public class RelativeLayout extends ViewGroup {
 
 	boolean orientation;
 
-	public RelativeLayout(AttributeSet attrs) {
-		super(attrs);
+	public RelativeLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
 
 		native_constructor(attrs);
 	}

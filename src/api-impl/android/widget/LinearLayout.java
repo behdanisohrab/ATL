@@ -10,8 +10,8 @@ public class LinearLayout extends ViewGroup {
 
 	boolean orientation;
 
-	public LinearLayout(AttributeSet attrs) {
-		super(attrs);
+	public LinearLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
 
 		native_constructor(attrs);
 	}
