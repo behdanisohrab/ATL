@@ -225,7 +225,7 @@ public class Handler {
 	 */
 	public Handler(Looper looper, Callback callback, boolean async) {
 		mLooper = looper;
-		mQueue = null /*looper.mQueue*/;
+		mQueue = looper.mQueue;
 		mCallback = callback;
 		mAsynchronous = async;
 	}
@@ -316,9 +316,7 @@ public class Handler {
 	 *         looper processing the message queue is exiting.
 	 */
 	public final boolean post(Runnable r) {
-		//       return  sendMessageDelayed(getPostMessage(r), 0);
-		r.run();
-		return true;
+		return sendMessageDelayed(getPostMessage(r), 0);
 	}
 
 	/**
@@ -571,29 +569,14 @@ public class Handler {
 	 *         occurs then the message will be dropped.
 	 */
 	public boolean sendMessageAtTime(Message msg, long uptimeMillis) {
-		/*        MessageQueue queue = mQueue;
-			if (queue == null) {
-			    RuntimeException e = new RuntimeException(
-				    this + " sendMessageAtTime() called with no mQueue");
-			    Log.w("Looper", e.getMessage(), e);
-			    return false;
-			}
-			return enqueueMessage(queue, msg, uptimeMillis);*/
-		if (mCallback != null) {
-			//			System.out.println("Handler.sendMessageAtTime: directly calling mCallback.handleMessage)");
-			if (msg.callback != null) {
-				msg.callback.run();
-			}
-			return mCallback.handleMessage(msg);
-		} else {
-			//			System.out.println("Handler.sendMessageAtTime: not directly calling mCallback.handleMessage - mCallback is null)");
-			/* do this in this case as well?
-						if(msg.callback != null) {
-							msg.callback.run();
-						}
-			*/
-			return true; // false?
+		MessageQueue queue = mQueue;
+		if (queue == null) {
+			RuntimeException e = new RuntimeException(
+			    this + " sendMessageAtTime() called with no mQueue");
+			Log.w("Looper", e.getMessage(), e);
+			return false;
 		}
+		return enqueueMessage(queue, msg, uptimeMillis);
 	}
 
 	/**
@@ -609,15 +592,14 @@ public class Handler {
 	 *         looper processing the message queue is exiting.
 	 */
 	public final boolean sendMessageAtFrontOfQueue(Message msg) {
-		/*MessageQueue queue = mQueue;
+		MessageQueue queue = mQueue;
 		if (queue == null) {
-		    RuntimeException e = new RuntimeException(
-			this + " sendMessageAtTime() called with no mQueue");
-		    Log.w("Looper", e.getMessage(), e);
-		    return false;
+			RuntimeException e = new RuntimeException(
+			    this + " sendMessageAtTime() called with no mQueue");
+			Log.w("Looper", e.getMessage(), e);
+			return false;
 		}
-		return enqueueMessage(queue, msg, 0);*/
-		return true;
+		return enqueueMessage(queue, msg, 0);
 	}
 
 	private boolean enqueueMessage(MessageQueue queue, Message msg, long uptimeMillis) {

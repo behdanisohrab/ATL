@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 
@@ -37,7 +38,7 @@ void ALooper_release(ALooper* looper) {
     _ZNK7android7RefBase9decStrongEPKv(looper, (void*)ALooper_acquire);
 }
 
-int _ZN7android6Looper7pollAllEiPiS1_PPv(ALooper *this, int timeoutMillis, int* outFd, int* outEvents, void** outData);
+int _ZN7android6Looper7pollAllEiPiS1_PPv(ALooper *this, int timeoutMillis, int *outFd, int *outEvents, void **outData);
 int ALooper_pollAll(int timeoutMillis, int* outFd, int* outEvents, void** outData)
 {
 	ALooper *looper = ALooper_forThread();
@@ -49,12 +50,34 @@ int ALooper_pollAll(int timeoutMillis, int* outFd, int* outEvents, void** outDat
 	return _ZN7android6Looper7pollAllEiPiS1_PPv(looper, timeoutMillis, outFd, outEvents,  outData);
 }
 
-int _ZN7android6Looper5addFdEiiiPFiiiPvES1_(ALooper *this, int fd, int ident, int events, Looper_callbackFunc callback, void* data);
+int _ZN7android6Looper8pollOnceEiPiS1_PPv(ALooper *this, int timeoutMillis, int *outFd, int *outEvents, void **outData);
+int ALooper_pollOnce(int timeoutMillis, int* outFd, int* outEvents, void** outData)
+{
+	ALooper *looper = ALooper_forThread();
+	if(!looper) {
+		fprintf(stderr, "ALooper_pollAll: ALooper_forThread returned NULL\n");
+		return 0;
+	}
+
+	return _ZN7android6Looper8pollOnceEiPiS1_PPv(looper, timeoutMillis, outFd, outEvents,  outData);
+}
+
+int _ZN7android6Looper5addFdEiiiPFiiiPvES1_(ALooper *this, int fd, int ident, int events, Looper_callbackFunc callback, void *data);
 int ALooper_addFd(ALooper* looper, int fd, int ident, int events, Looper_callbackFunc callback, void* data)
 {
 	return _ZN7android6Looper5addFdEiiiPFiiiPvES1_(looper, fd, ident, events, callback, data);
 }
+
 void _ZN7android6Looper4wakeEv(ALooper *this);
-void ALooper_wake(ALooper* looper) {
-    _ZN7android6Looper4wakeEv(looper);
+void ALooper_wake(ALooper *looper)
+{
+	_ZN7android6Looper4wakeEv(looper);
+}
+
+/* this is not part of the android API, but we use it internally */
+
+bool _ZNK7android6Looper9isPollingEv(ALooper *this);
+bool ALooper_isPolling(ALooper *looper)
+{
+	return _ZNK7android6Looper9isPollingEv(looper);
 }

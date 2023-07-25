@@ -17,6 +17,14 @@ JNIEXPORT jboolean JNICALL Java_android_os_SystemClock_setCurrentTimeMillis
 
 /*
  * Class:     android_os_SystemClock
+ * Method:    uptimeMillis
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_android_os_SystemClock_uptimeMillis
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     android_os_SystemClock
  * Method:    elapsedRealtime
  * Signature: ()J
  */

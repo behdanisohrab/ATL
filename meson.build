@@ -59,6 +59,7 @@ libandroid_so = shared_library('android', [
 libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/egl/com_google_android_gles_jni_EGLImpl.c',
                                                                   	'src/api-impl-jni/android_os_Environment.c',
+                                                                  	'src/api-impl-jni/android_os_MessageQueue.c',
                                                                   	'src/api-impl-jni/android_os_SystemClock.c',
                                                                   	'src/api-impl-jni/android_view_Window.c',
                                                                   	'src/api-impl-jni/util.c',
