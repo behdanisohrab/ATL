@@ -738,6 +738,7 @@ public final class Bundle implements Cloneable {
 	 */
 	public boolean getBoolean(String key, boolean defaultValue) {
 		Object o = mMap.get(key);
+		System.out.println("bundle.getBoolean(" + key + ", " + defaultValue + ") called");
 		if (o == null) {
 			return defaultValue;
 		}

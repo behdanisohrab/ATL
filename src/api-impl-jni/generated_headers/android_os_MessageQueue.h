@@ -10,42 +10,42 @@ extern "C" {
 /*
  * Class:     android_os_MessageQueue
  * Method:    nativeInit
- * Signature: ()I
+ * Signature: ()J
  */
-JNIEXPORT jint JNICALL Java_android_os_MessageQueue_nativeInit
+JNIEXPORT jlong JNICALL Java_android_os_MessageQueue_nativeInit
   (JNIEnv *, jclass);
 
 /*
  * Class:     android_os_MessageQueue
  * Method:    nativeDestroy
- * Signature: (I)V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_android_os_MessageQueue_nativeDestroy
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_os_MessageQueue
  * Method:    nativePollOnce
- * Signature: (II)V
+ * Signature: (JI)V
  */
 JNIEXPORT void JNICALL Java_android_os_MessageQueue_nativePollOnce
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     android_os_MessageQueue
  * Method:    nativeWake
- * Signature: (I)V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_android_os_MessageQueue_nativeWake
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_os_MessageQueue
  * Method:    nativeIsIdling
- * Signature: (I)Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_os_MessageQueue_nativeIsIdling
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }

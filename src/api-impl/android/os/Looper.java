@@ -53,13 +53,6 @@ import android.util.Printer;
 public final class Looper {
 	private static final String TAG = "Looper";
 
-	// FIXME
-	public Looper() {
-		mQueue = null;
-		mThread = Thread.currentThread();
-		System.out.println("making a fake Looper object, let's hope noone tries to actually use it");
-	}
-
 	// sThreadLocal.get() will return null unless you've called prepare().
 	static final ThreadLocal<Looper> sThreadLocal = new ThreadLocal<Looper>();
 	private static Looper sMainLooper; // guarded by Looper.class
@@ -84,7 +77,7 @@ public final class Looper {
 		if (sThreadLocal.get() != null) {
 			throw new RuntimeException("Only one Looper may be created per thread");
 		}
-		sThreadLocal.set(new Looper(/*quitAllowed*/));
+		sThreadLocal.set(new Looper(quitAllowed));
 	}
 
 	/**
@@ -107,10 +100,9 @@ public final class Looper {
 	 * Returns the application's main looper, which lives in the main thread of the application.
 	 */
 	public static Looper getMainLooper() {
-		return new Looper();
-		/*        synchronized (Looper.class) {
-			    return sMainLooper;
-			}*/
+		synchronized (Looper.class) {
+			return sMainLooper;
+		}
 	}
 
 	/**
@@ -118,51 +110,46 @@ public final class Looper {
 	 * {@link #quit()} to end the loop.
 	 */
 	public static void loop() {
-		System.out.println("oops, Looper.loop called... and we don't implement that");
-		/*final Looper me = myLooper();
+		final Looper me = myLooper();
 		if (me == null) {
-		    throw new RuntimeException("No Looper; Looper.prepare() wasn't called on this thread.");
+			throw new RuntimeException("No Looper; Looper.prepare() wasn't called on this thread.");
 		}
 		final MessageQueue queue = me.mQueue;
 
 		// Make sure the identity of this thread is that of the local process,
 		// and keep track of what that identity token actually is.
-	//        Binder.clearCallingIdentity();
-	//        final long ident = Binder.clearCallingIdentity();
+//		Binder.clearCallingIdentity();
+//		final long ident = Binder.clearCallingIdentity();
 
 		for (;;) {
-		    Message msg = queue.next(); // might block
-		    if (msg == null) {
-			// No message indicates that the message queue is quitting.
-			return;
-		    }
+			Message msg = queue.next(); // might block
+			if (msg == null) {
+				// No message indicates that the message queue is quitting.
+				return;
+			}
 
-		    // This must be in a local variable, in case a UI event sets the logger
-		    Printer logging = me.mLogging;
-		    if (logging != null) {
-			logging.println(">>>>> Dispatching to " + msg.target + " " +
-				msg.callback + ": " + msg.what);
-		    }
+			// This must be in a local variable, in case a UI event sets the logger
+			Printer logging = me.mLogging;
+			if (logging != null) {
+				logging.println(">>>>> Dispatching to " + msg.target + " " +
+						msg.callback + ": " + msg.what);
+			}
 
-		    msg.target.dispatchMessage(msg);
+			msg.target.dispatchMessage(msg);
 
-		    if (logging != null) {
-			logging.println("<<<<< Finished to " + msg.target + " " + msg.callback);
-		    }
+			if (logging != null) {
+				logging.println("<<<<< Finished to " + msg.target + " " + msg.callback);
+			}
 
-		    // Make sure that during the course of dispatching the
-		    // identity of the thread wasn't corrupted.
-	//            final long newIdent = Binder.clearCallingIdentity();
-	/*            if (ident != newIdent) {
-			Log.wtf(TAG, "Thread identity changed from 0x"
-				+ Long.toHexString(ident) + " to 0x"
-				+ Long.toHexString(newIdent) + " while dispatching to "
-				+ msg.target.getClass().getName() + " "
-				+ msg.callback + " what=" + msg.what);
-		    }* /
-
-		    msg.recycle();
-		}*/
+			// Make sure that during the course of dispatching the
+			// identity of the thread wasn't corrupted.
+/*			final long newIdent = Binder.clearCallingIdentity();
+			if (ident != newIdent) {
+				Log.wtf(TAG, "Thread identity changed from 0x" + Long.toHexString(ident) + " to 0x" + Long.toHexString(newIdent) + " while dispatching to " + msg.target.getClass().getName() + " " + msg.callback + " what=" + msg.what);
+			}
+*/
+			msg.recycle();
+		}
 	}
 
 	/**
@@ -170,11 +157,7 @@ public final class Looper {
 	 * null if the calling thread is not associated with a Looper.
 	 */
 	public static Looper myLooper() {
-		return new Looper();
-		/*		if(sThreadLocal.get() == null) {
-					prepare(false);
-				}
-			return sThreadLocal.get();*/
+		return sThreadLocal.get();
 	}
 
 	/**
@@ -293,8 +276,7 @@ public final class Looper {
 	 * Return the Thread associated with this Looper.
 	 */
 	public Thread getThread() {
-		return Thread.currentThread(); // ugly hack
-					       //        return mThread;
+		return mThread;
 	}
 
 	/**

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,6 +103,12 @@ public class Activity extends Context {
 
 	protected void onCreate(Bundle savedInstanceState) {
 		System.out.println("- onCreate - yay!");
+
+		/* TODO: this probably belongs elsewhere, but this is our entry point for better or worse */
+		Looper looper = Looper.myLooper();
+		if(looper == null) {
+			Looper.prepareMainLooper();
+		}
 
 		return;
 	}
@@ -212,7 +220,11 @@ public class Activity extends Context {
 	}
 
 	public final void runOnUiThread(Runnable action) {
-		action.run(); // FIXME: running synchronously for now
+		if(Looper.myLooper() == Looper.getMainLooper()) {
+			action.run();
+		} else {
+			new Handler(Looper.getMainLooper()).post(action);
+		}
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {}

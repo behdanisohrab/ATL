@@ -105,28 +105,25 @@ public final class SystemClock {
 	 * @param ms to sleep before returning, in milliseconds of uptime.
 	 */
 	public static void sleep(long ms) {
-		System.out.println("!!! sleep(...) doesn't work, need to implement uptimeMillis");
-	/*
-        long start = uptimeMillis();
-        long duration = ms;
-        boolean interrupted = false;
-        do {
-            try {
-                Thread.sleep(duration);
-            }
-            catch (InterruptedException e) {
-                interrupted = true;
-            }
-            duration = start + ms - uptimeMillis();
-        } while (duration > 0);
-        
-        if (interrupted) {
-            // Important: we don't want to quietly eat an interrupt() event,
-            // so we make sure to re-interrupt the thread so that the next
-            // call to Thread.sleep() or Object.wait() will be interrupted.
-            Thread.currentThread().interrupt();
-        }
-    */}
+		long start = uptimeMillis();
+		long duration = ms;
+		boolean interrupted = false;
+		do {
+			try {
+				Thread.sleep(duration);
+			} catch (InterruptedException e) {
+				interrupted = true;
+			}
+			duration = start + ms - uptimeMillis();
+		} while (duration > 0);
+
+		if (interrupted) {
+			// Important: we don't want to quietly eat an interrupt() event,
+			// so we make sure to re-interrupt the thread so that the next
+			// call to Thread.sleep() or Object.wait() will be interrupted.
+			Thread.currentThread().interrupt();
+		}
+	}
 
 	/**
 	 * Sets the current wall time, in milliseconds.  Requires the calling
@@ -141,9 +138,7 @@ public final class SystemClock {
 	 *
 	 * @return milliseconds of non-sleep uptime since boot.
 	 */
-	/*native */ public static long uptimeMillis() {
-		return 654000; // FIXME
-	}
+	native public static long uptimeMillis();
 
 	/**
 	 * Returns milliseconds since boot, including time spent in sleep.

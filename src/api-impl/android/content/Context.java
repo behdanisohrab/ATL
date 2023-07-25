@@ -33,6 +33,7 @@ import android.view.WindowManager;
 import android.view.WindowManagerImpl;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 public class Context extends Object {
@@ -138,8 +139,14 @@ public class Context extends Object {
 	}
 
 	public Looper getMainLooper() {
-		System.out.println("returning the main Looper, most definitely doing just that!");
-		return new Looper();
+		/* TODO: this is not what AOSP does, which could be a problem */
+		Looper looper = Looper.myLooper();
+		if(looper == null) {
+			Looper.prepare();
+			looper = Looper.myLooper();
+		}
+
+		return looper;
 	}
 
 	public String getPackageName() {
@@ -251,9 +258,12 @@ public class Context extends Object {
 		return new ComponentName("", "");
 	}
 
-	// FIXME - it should be *trivial* to do actually implement this
-	public FileInputStream openFileInput(String name) {
-		return null;
+	// TODO: do these both work? make them look more alike
+	public FileInputStream openFileInput(String name) throws FileNotFoundException {
+		System.out.println("openFileInput called for: '" + name + "'");
+		File file = new File(getFilesDir(), name);
+
+		return new FileInputStream(file);
 	}
 
 	public FileOutputStream openFileOutput(String name, int mode) throws java.io.FileNotFoundException {
