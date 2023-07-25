@@ -79,6 +79,7 @@ public class PackageItemInfo {
 	public Bundle metaData;
 
 	public PackageItemInfo() {
+		metaData = new Bundle();
 	}
 
 	public PackageItemInfo(PackageItemInfo orig) {

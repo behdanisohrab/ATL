@@ -1,5 +1,7 @@
 package android.media;
 
+import android.content.Context;
+
 public class MediaPlayer {
 	public interface OnCompletionListener {
 	}
@@ -17,4 +19,6 @@ public class MediaPlayer {
 	}
 	public interface MediaPlayerControl {
 	}
+
+	public static MediaPlayer create(Context context, int dummy) { return new MediaPlayer(); }
 }

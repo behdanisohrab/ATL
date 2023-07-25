@@ -233,4 +233,8 @@ public class Activity extends Context {
 		System.out.println("startActivityForResult(" + intent + ", " + requestCode + ") called, but we don't currently support multiple activities");
 		onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent()); // RESULT_CANCELED is the only pre-defined return value, so hopefully it works out for us
 	}
+
+	public final void showDialog(int id) {
+		System.out.println("Activity.showDialog(" + id + ") called");
+	}
 }

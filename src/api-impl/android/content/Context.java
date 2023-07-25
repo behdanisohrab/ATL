@@ -16,6 +16,7 @@ import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.hardware.input.InputManager;
 import android.hardware.SensorManager;
 import android.hardware.display.DisplayManager;
 import android.hardware.usb.UsbManager;
@@ -128,6 +129,8 @@ public class Context extends Object {
 				return new NotificationManager();
 			case "alarm":
 				return new AlarmManager();
+			case "input":
+				return new InputManager();
 			default:
 				System.out.println("!!!!!!! getSystemService: case >" + name + "< is not implemented yet");
 				return null;

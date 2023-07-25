@@ -16,6 +16,8 @@
 
 package android.util;
 
+import android.view.Display;
+
 /**
  * A structure describing general information about a display, such as its
  * size, density, and font scaling.
@@ -219,8 +221,8 @@ public class DisplayMetrics {
 	}
 
 	public void setToDefaults() {
-		widthPixels = 0;
-		heightPixels = 0;
+		widthPixels = Display.window_width;
+		heightPixels = Display.window_height;
 		density = DENSITY_DEVICE / (float)DENSITY_DEFAULT;
 		densityDpi = DENSITY_DEVICE;
 		scaledDensity = density;

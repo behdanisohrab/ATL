@@ -11,10 +11,12 @@ public class AlertDialog extends Dialog {
 		}
 
 		public AlertDialog.Builder setPositiveButton(int textId, DialogInterface.OnClickListener listener) {
+			System.out.println("AlertDialog.Builder setPositiveButton called with textId: '" + textId + "'");
 			return this;
 		}
 
 		public AlertDialog.Builder setPositiveButton(CharSequence text, DialogInterface.OnClickListener listener) {
+			System.out.println("AlertDialog.Builder setPositiveButton called with text: '" + text + "'");
 			return this;
 		}
 

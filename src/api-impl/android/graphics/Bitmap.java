@@ -1328,7 +1328,9 @@ public final class Bitmap {
 	public void eraseColor(int c) {
 		checkRecycled("Can't erase a recycled bitmap");
 		if (!isMutable()) {
-			throw new IllegalStateException("cannot erase immutable bitmaps");
+//			throw new IllegalStateException("cannot erase immutable bitmaps");
+			System.out.println("cannot erase immutable bitmaps");
+			return;
 		}
 		nativeErase(mNativeBitmap, c);
 	}
