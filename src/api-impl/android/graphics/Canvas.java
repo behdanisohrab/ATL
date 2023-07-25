@@ -6,6 +6,8 @@ public class Canvas {
 
 	public Canvas() {}
 
+	public Canvas(Bitmap bmp) {}
+
 	public Canvas(long cairo_context, long widget) {
 		this.cairo_context = cairo_context;
 		this.widget = widget;
