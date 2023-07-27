@@ -205,7 +205,7 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 					      ? savedInstanceState.getByteArray(KEY_NATIVE_SAVED_STATE)
 					      : null;
 
-		mNativeHandle = loadNativeCode(path, funcname, Looper.myQueue(),
+		mNativeHandle = loadNativeCode(path, funcname, /*Looper.myQueue()*/null,
 					       getAbsolutePath(getFilesDir()), getAbsolutePath(getObbDir()),
 					       getAbsolutePath(getExternalFilesDir(null)),
 					       Build.VERSION.SDK_INT, getAssets(), nativeSavedState);
