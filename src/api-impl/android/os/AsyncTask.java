@@ -639,6 +639,11 @@ public abstract class AsyncTask<Params, Progress, Result> {
 	}
 
 	private static class InternalHandler extends Handler {
+		/* undocumented change lifted from marshmallow; fixes crashes when the app uses this on a thread that doesn't have a looper */
+		public InternalHandler() {
+			super(Looper.getMainLooper());
+		}
+
 		@SuppressWarnings({"unchecked", "RawUseOfParameterizedType"})
 		@Override
 		public void handleMessage(Message msg) {
