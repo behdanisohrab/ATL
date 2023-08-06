@@ -19,7 +19,7 @@ package android.content.res;
 import android.content.pm.ActivityInfo;
 import android.icu.text.PluralRules;
 // import android.graphics.Movie;
-// import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable;
 // import android.graphics.drawable.ColorDrawable;
 // import android.graphics.drawable.Drawable.ConstantState;
 import android.os.Build;
@@ -42,9 +42,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 class Movie {}
-class Drawable {
-	class ConstantState {}
-}
 class ColorDrawable {}
 
 class ConstantState {}
