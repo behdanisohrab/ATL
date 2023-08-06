@@ -230,6 +230,7 @@ hax_jar = jar('hax', [
               	'android/widget/LinearLayout.java',
               	'android/widget/MediaController.java',
               	'android/widget/ProgressBar.java',
+              	'android/widget/RadioButton.java',
               	'android/widget/RelativeLayout.java',
               	'android/widget/ScrollView.java',
               	'android/widget/TextView.java',
