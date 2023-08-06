@@ -3,16 +3,22 @@ package android.widget;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 
 public class ImageView extends View {
+
+	private Bitmap bitmap;
+
 	public ImageView(AttributeSet attrs) {
 		super(attrs);
 
 		native_constructor(attrs);
 		int resource = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "src", 0);
-		setImageResource(resource);
+		if (resource != 0)
+			setImageResource(resource);
 	}
 
 	public ImageView(Context context) {
@@ -34,12 +40,16 @@ public class ImageView extends View {
 	public /*native*/ void setImageResource(final int resid) {
 		if (Context.this_application.getResources().getString(resid).endsWith(".xml"))
 			return;
-		Bitmap bitmap = BitmapFactory.decodeResource(Context.this_application.getResources(), resid);
+		bitmap = BitmapFactory.decodeResource(Context.this_application.getResources(), resid);
 		native_setPixbuf(bitmap.pixbuf);
 	}
 	public void setAdjustViewBounds(boolean adjustViewBounds) {}
 
 	public void setScaleType(ScaleType scaleType) {}
+
+	public Drawable getDrawable() {
+		return new BitmapDrawable(getContext().getResources(), bitmap);
+	}
 
 	/**
 	 * Options for scaling the bounds of an image to the bounds of this view.
