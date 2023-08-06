@@ -188,11 +188,10 @@ public class LayoutInflater {
 				throw new Exception("<requestFocus /> not supported atm");
 				// parseRequestFocus(parser, parent);
 			} else if (name.equals("include")) {
-				throw new Exception("<include /> not supported atm");
-				/*if (parser.getDepth() == 0) {
+				if (parser.getDepth() == 0) {
 					throw new Exception("<include /> cannot be the root element");
 				}
-				parseInclude(parser, parent, attrs);*/
+				parseInclude(parser, parent, attrs);
 			} else if (name.equals("merge")) {
 				throw new Exception("<merge /> must be the root element");
 			} else if (name.equals("blink")) {
@@ -213,5 +212,16 @@ public class LayoutInflater {
 
 		if (finishInflate)
 			parent.onFinishInflate();
+	}
+
+	private void parseInclude(XmlPullParser parser, View parent, AttributeSet attrs) throws Exception {
+		int layout = attrs.getAttributeResourceValue(null, "layout", 0);
+		View view = inflate(layout, (ViewGroup)parent, true);
+		if (view == null)
+			return;
+
+		int id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
+		if (id != 0)
+			view.setId(id);
 	}
 }

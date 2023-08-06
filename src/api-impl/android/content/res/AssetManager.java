@@ -494,6 +494,9 @@ public final class AssetManager {
 			return rp;*/
 
 		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName);
+		if (inStream == null) {
+			return null;
+		}
 		ResXmlDocument resXmlDocument = new ResXmlDocument();
 		resXmlDocument.readBytes(inStream);
 		ResXmlPullParser xpp = new ResXmlPullParser();
