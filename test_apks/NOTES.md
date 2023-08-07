@@ -15,10 +15,6 @@ additional notes:
 `OXR_DEBUG_GUI=1 monado-service` and use of the "debug readout of left eye" seem to be needed when not using a real HMD, ymmv  
 
 ##### known working cmdline for unity sample:
-`MESA_GL_VERSION_OVERRIDE=3.2 MESA_GLSL_VERSION_OVERRIDE=320 LINKER_DIE_AT_RUNTIME= RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ./android-translation-layer ../test_apks/sample_unity_app.apk -l com/unity3d/player/UnityPlayerActivity`  
+`LINKER_DIE_AT_RUNTIME= RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ./android-translation-layer ../test_apks/sample_unity_app.apk -l com/unity3d/player/UnityPlayerActivity`  
 explanation:  
-`MESA_GL_VERSION_OVERRIDE=3.2 MESA_GLSL_VERSION_OVERRIDE=320` - Unity seems to do a very dumb thing,
-where it checks what the available non-es GLSL version is (so 4xx on many devices) and then appends `es`
-to it (on some devices creating 4xx es - something that literally doesn't exist); if we tell it that
-we only have OpenGL 3.2, it will proceed to try and use OpenGL 3.2 ES, which actually exists  
 `LINKER_DIE_AT_RUNTIME=` - similar to above, functions are linked against which are not *really* needed  
