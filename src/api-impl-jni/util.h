@@ -14,7 +14,6 @@ struct handle_cache {
 		jmethodID onResume;
 		jmethodID onWindowFocusChanged;
 		jmethodID onDestroy;
-		jmethodID set_window;
 	} apk_main_activity;
 	struct {
 		jclass class;
@@ -81,7 +80,9 @@ extern struct handle_cache handle_cache;
 
 const char * attribute_set_get_string(JNIEnv *env, jobject attrs, char *attribute, char *schema);
 int attribute_set_get_int(JNIEnv *env, jobject attrs, char *attribute, char *schema, int default_value);
-void set_up_handle_cache(JNIEnv *env, char *apk_main_activity_class);
+void set_up_handle_cache(JNIEnv *env);
 void extract_from_apk(const char *path, const char *target);
+
+void prepare_main_looper(JNIEnv* env);
 
 #endif

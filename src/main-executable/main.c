@@ -315,7 +315,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	free(app_lib_dir);
 
-	set_up_handle_cache(env, d->apk_main_activity_class);
+	set_up_handle_cache(env);
 
 	jclass display_class = (*env)->FindClass(env, "android/view/Display");
 	_SET_STATIC_INT_FIELD(display_class, "window_width", d->window_width);
@@ -329,9 +329,6 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	FIXME__HEIGHT = d->window_height;
 
 	window = gtk_application_window_new(app);
-	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.set_window, _INTPTR(window));
-	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);
 
 	gtk_window_set_title(GTK_WINDOW(window), "com.example.demo_application");
 	gtk_window_set_default_size(GTK_WINDOW(window), d->window_width, d->window_height);
@@ -363,6 +360,15 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	extract_from_apk("assets/", "assets/");
 	/* extract native libraries from apk*/
 	extract_from_apk("lib/" NATIVE_ARCH "/", "lib/");
+
+	prepare_main_looper(env);
+
+	// construct main Activity
+	handle_cache.apk_main_activity.object = _REF((*env)->CallStaticObjectMethod(env, handle_cache.apk_main_activity.class,
+		_STATIC_METHOD(handle_cache.apk_main_activity.class, "createMainActivity", "(Ljava/lang/String;J)Landroid/app/Activity;"),
+		_JSTRING(d->apk_main_activity_class), _INTPTR(window)));
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
 
 	/* -- run the main activity's onCreate -- */
 

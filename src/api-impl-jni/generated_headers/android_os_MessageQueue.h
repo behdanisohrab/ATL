@@ -26,9 +26,9 @@ JNIEXPORT void JNICALL Java_android_os_MessageQueue_nativeDestroy
 /*
  * Class:     android_os_MessageQueue
  * Method:    nativePollOnce
- * Signature: (JI)V
+ * Signature: (JI)Z
  */
-JNIEXPORT void JNICALL Java_android_os_MessageQueue_nativePollOnce
+JNIEXPORT jboolean JNICALL Java_android_os_MessageQueue_nativePollOnce
   (JNIEnv *, jclass, jlong, jint);
 
 /*

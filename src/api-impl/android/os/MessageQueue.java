@@ -50,7 +50,7 @@ public final class MessageQueue {
 
 	private native static long nativeInit();
 	private native static void nativeDestroy(long ptr);
-	private native static void nativePollOnce(long ptr, int timeoutMillis);
+	private native static boolean nativePollOnce(long ptr, int timeoutMillis);
 	private native static void nativeWake(long ptr);
 	private native static boolean nativeIsIdling(long ptr);
 
@@ -134,7 +134,9 @@ public final class MessageQueue {
 
 			// We can assume mPtr != 0 because the loop is obviously still running.
 			// The looper will not call this method after the loop quits.
-			nativePollOnce(mPtr, nextPollTimeoutMillis);
+			if (nativePollOnce(mPtr, nextPollTimeoutMillis)) {
+				return null;  // thread is managed by glib, so return instead of blocking
+			}
 
 			synchronized (this) {
 				// Try to retrieve the next message.  Return if found.
