@@ -36,7 +36,7 @@ public class Activity extends Context {
 	 * @param className  class name of activity or null
 	 * @return  instance of main activity class
 	 */
-	private static Activity createMainActivity(String className) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
+	private static Activity createMainActivity(String className, long native_window) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 		if (className == null) {
 			InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
 			AndroidManifestBlock block = AndroidManifestBlock.load(inStream);
@@ -49,11 +49,9 @@ public class Activity extends Context {
 		}
 		Class<? extends Activity> cls = Class.forName(className).asSubclass(Activity.class);
 		Constructor<? extends Activity> constructor = cls.getConstructor();
-		return constructor.newInstance();
-	}
-
-	protected void set_window(long native_window) {
-		window.native_window = native_window;
+		Activity activity = constructor.newInstance();
+		activity.window.native_window = native_window;
+		return activity;
 	}
 
 	public Activity() {
@@ -103,12 +101,6 @@ public class Activity extends Context {
 
 	protected void onCreate(Bundle savedInstanceState) {
 		System.out.println("- onCreate - yay!");
-
-		/* TODO: this probably belongs elsewhere, but this is our entry point for better or worse */
-		Looper looper = Looper.myLooper();
-		if(looper == null) {
-			Looper.prepareMainLooper();
-		}
 
 		return;
 	}
