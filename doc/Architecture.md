@@ -6,6 +6,7 @@
 `src/libandroid/` - C code implementing `libandroid.so` (this is needed by most JNI libs which come with android apps)
 `src/main-executable` - code for the main executable, which sets stuff up (including the JVM) and launches the activity specified on the cmdline
 `test-apks/` - all apks known to somewhat work, except paid proprietary ones which we sadly can't really include
+`res/` - default resources taken from AOSP Android 6 release
 
 `./com.google.android.gms.apk`: microg; stopgap solution to run apps with GSF dependencies (fwiw, the actual solution will likely also use MicroG)
 
