@@ -147,11 +147,11 @@ void dl_parse_library_path(const char *path, char *delim);
 #define REL_API_IMPL_JAR_INSTALL_PATH "/android_translation_layer/api-impl.jar"
 #define REL_API_IMPL_NATIVES_INSTALL_PATH "/android_translation_layer/natives"
 #define REL_MICROG_APK_INSTALL_PATH "/microg/com.google.android.gms.apk"
-#define REL_FRAMEWORK_RES_INSTALL_PATH "/android/framework-res.apk"
+#define REL_FRAMEWORK_RES_INSTALL_PATH "/android_translation_layer/framework-res.apk"
 
 #define API_IMPL_JAR_PATH_LOCAL "./api-impl.jar"
 #define MICROG_APK_PATH_LOCAL "./com.google.android.gms.apk"
-#define FRAMEWORK_RES_PATH_LOCAL "./framework-res.apk"
+#define FRAMEWORK_RES_PATH_LOCAL "./res/framework-res.apk"
 
 struct jni_callback_data { char *apk_main_activity_class; uint32_t window_width; uint32_t window_height;};
 static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* hint, struct jni_callback_data *d)

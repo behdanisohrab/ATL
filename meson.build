@@ -123,4 +123,6 @@ custom_target('api-impl.jar', build_by_default: true, input: [hax_dex, hax_arsc_
               install_dir : get_option('libdir') / 'java/dex/android_translation_layer',
               command: ['jar', '-cvf', join_paths(builddir_base, 'api-impl.jar'), '-C', builddir_base, hax_dex, '-C', builddir_base, hax_arsc_lib_dex])
 
+#framework-res.apk
+subdir('res')
 
