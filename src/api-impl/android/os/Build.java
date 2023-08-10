@@ -118,19 +118,19 @@ public class Build {
 		public static final String RELEASE = getString("ro.build.version.release");
 
 		/**
+		 * The user-visible SDK version of the framework; its possible
+		 * values are defined in {@link Build.VERSION_CODES}.
+		 */
+		public static final int SDK_INT = Build.VERSION_CODES.GINGERBREAD;
+
+		/**
 		 * The user-visible SDK version of the framework in its raw String
 		 * representation; use {@link #SDK_INT} instead.
 		 *
 		 * @deprecated Use {@link #SDK_INT} to easily get this as an integer.
 		 */
 		@Deprecated
-		public static final String SDK = getString("ro.build.version.sdk");
-
-		/**
-		 * The user-visible SDK version of the framework; its possible
-		 * values are defined in {@link Build.VERSION_CODES}.
-		 */
-		public static final int SDK_INT = Build.VERSION_CODES.GINGERBREAD;
+		public static final String SDK = String.valueOf(SDK_INT);
 
 		/**
 		 * The current development codename, or the string "REL" if this is
