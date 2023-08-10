@@ -4,13 +4,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Intent {
+	private ComponentName component;
+	private Map<String, Object> extras = new HashMap<>();
+
 	public Intent() {}
 	public Intent(Intent o) {}
 	public Intent(String action) {}
 	public Intent(String action, Uri uri) {}
-	public Intent(Context packageContext, Class<?> cls) {}
+	public Intent(Context packageContext, Class<?> cls) {
+		setClass(packageContext, cls);
+	}
 	public Intent(String action, Uri uri, Context packageContext, Class<?> cls) {}
 
 	public Intent setFlags(int flags) {
@@ -21,107 +28,132 @@ public class Intent {
 	}
 
 	public Intent putExtra(String name, Parcelable value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, long[] value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, byte value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, double[] value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, CharSequence value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, boolean[] value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, int value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, char[] value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, byte[] value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, Parcelable[] value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, Bundle value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, CharSequence[] value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, float[] value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, double value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, int[] value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, String[] value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, short[] value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, boolean value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, String value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, long value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, char value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, Serializable value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, float value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent putExtra(String name, short value) {
-		return this; //??
+		extras.put(name, value);
+		return this;
 	}
 
 	public Intent setClass(Context packageContext, Class<?> cls) {
-		return this; //??
+		setComponent(new ComponentName(packageContext, cls));
+		return this;
 	}
 
 	public String getStringExtra(String name) {
-		return null;
+		return (String)extras.get(name);
 	}
 
 	public Uri getData() {
@@ -131,4 +163,27 @@ public class Intent {
 	public boolean getBooleanExtra(String name, boolean defaultValue) {
 		return defaultValue;
 	}
+
+	public String getAction() {
+		return null;
+	}
+
+	public Bundle getBundleExtra(String name) {
+		return (Bundle)extras.get(name);
+	}
+
+	public Intent setComponent(ComponentName component) {
+		this.component = component;
+		return this;
+	}
+	
+	public ComponentName getComponent() {
+		return component;
+	}
+
+	@Override
+	public String toString() {
+		return "Intent [component=" + component + ", extras=" + extras + "]";
+	}
+
 }
