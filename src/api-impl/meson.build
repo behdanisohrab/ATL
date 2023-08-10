@@ -173,6 +173,7 @@ hax_jar = jar('hax', [
               	'android/os/Process.java',
               	'android/os/RemoteException.java',
               	'android/os/ResultReceiver.java',
+              	'android/os/StatFs.java',
               	'android/os/SystemClock.java',
               	'android/os/Trace.java',
               	'android/os/UserHandle.java',
