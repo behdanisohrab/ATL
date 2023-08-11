@@ -51,6 +51,8 @@ void set_up_handle_cache(JNIEnv *env)
 	handle_cache.apk_main_activity.onWindowFocusChanged = _METHOD(handle_cache.apk_main_activity.class, "onWindowFocusChanged", "(Z)V");
 	handle_cache.apk_main_activity.onResume = _METHOD(handle_cache.apk_main_activity.class, "onResume", "()V");
 	handle_cache.apk_main_activity.onDestroy = _METHOD(handle_cache.apk_main_activity.class, "onDestroy", "()V");
+	handle_cache.apk_main_activity.onStop = _METHOD(handle_cache.apk_main_activity.class, "onStop", "()V");
+	handle_cache.apk_main_activity.onPause = _METHOD(handle_cache.apk_main_activity.class, "onPause", "()V");
 
 	handle_cache.attribute_set.class = _REF((*env)->FindClass(env, "android/util/AttributeSet"));
 	if((*env)->ExceptionCheck(env))

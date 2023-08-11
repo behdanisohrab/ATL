@@ -83,6 +83,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/android_app_NativeActivity.c',
                                                                   	'src/api-impl-jni/android_opengl_GLES20.c',
                                                                   	'src/api-impl-jni/location/android_location_LocationManager.c',
+                                                                  	'src/api-impl-jni/app/android_app_Activity.c',
                                                                   ] + marshal_files,
                                                                   install: true,
                                                                   install_dir : get_option('libdir') / 'java/dex/android_translation_layer/natives',

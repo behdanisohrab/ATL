@@ -8,12 +8,13 @@
 struct handle_cache {
 	struct {
 		jclass class;
-		jobject object;
 		jmethodID onCreate;
 		jmethodID onStart;
 		jmethodID onResume;
 		jmethodID onWindowFocusChanged;
 		jmethodID onDestroy;
+		jmethodID onStop;
+		jmethodID onPause;
 	} apk_main_activity;
 	struct {
 		jclass class;
@@ -77,6 +78,8 @@ struct handle_cache {
 };
 
 extern struct handle_cache handle_cache;
+
+JNIEnv * get_jni_env(void);
 
 const char * attribute_set_get_string(JNIEnv *env, jobject attrs, char *attribute, char *schema);
 int attribute_set_get_int(JNIEnv *env, jobject attrs, char *attribute, char *schema, int default_value);
