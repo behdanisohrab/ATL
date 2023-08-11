@@ -5,6 +5,7 @@
 
 #include "../api-impl-jni/defines.h"
 #include "../api-impl-jni/util.h"
+#include "../api-impl-jni/app/android_app_Activity.h"
 
 #include <dlfcn.h>
 #include <errno.h>
@@ -34,17 +35,7 @@ GtkWidget *window;
 
 gboolean app_exit(GtkWindow* self, JNIEnv *env) // TODO: do more cleanup?
 {
-	// in case some exception was left unhandled in native code, print it here so we don't confuse it with an exception thrown by onDestroy
-	if((*env)->ExceptionCheck(env)) {
-		fprintf(stderr, "app_exit: seems there was a pending exception... :");
-		(*env)->ExceptionDescribe(env);
-	}
-
-	/* -- run the main activity's onDestroy -- */
-	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onDestroy, NULL);
-	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);
-
+	activity_close_all();
 	return false;
 }
 
@@ -128,10 +119,7 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 gboolean hacky_on_window_focus_changed_callback(JNIEnv *env)
 {
 	if(gtk_widget_get_width(window) != 0) {
-		(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onWindowFocusChanged, true);
-		if((*env)->ExceptionCheck(env))
-			(*env)->ExceptionDescribe(env);
-
+		activity_window_ready();
 		return G_SOURCE_REMOVE;
 	}
 
@@ -170,6 +158,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	int errno_libdir;
 	int errno_localdir;
 	int ret;
+	jobject activity_object;
 
 	char *apk_classpath =  g_file_get_path(files[0]);
 	char *apk_name = g_file_get_basename(files[0]);
@@ -364,26 +353,13 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	prepare_main_looper(env);
 
 	// construct main Activity
-	handle_cache.apk_main_activity.object = _REF((*env)->CallStaticObjectMethod(env, handle_cache.apk_main_activity.class,
+	activity_object = (*env)->CallStaticObjectMethod(env, handle_cache.apk_main_activity.class,
 		_STATIC_METHOD(handle_cache.apk_main_activity.class, "createMainActivity", "(Ljava/lang/String;J)Landroid/app/Activity;"),
-		_JSTRING(d->apk_main_activity_class), _INTPTR(window)));
+		_JSTRING(d->apk_main_activity_class), _INTPTR(window));
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
-	/* -- run the main activity's onCreate -- */
-
-	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onCreate, NULL);
-	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);
-
-//	TODO: some apps wait for this to actually do stuff
-	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onStart);
-	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);
-
-	(*env)->CallVoidMethod(env, handle_cache.apk_main_activity.object, handle_cache.apk_main_activity.onResume);
-	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);
+	activity_start(env, activity_object);
 
 	g_timeout_add(10, G_SOURCE_FUNC(hacky_on_window_focus_changed_callback), env);
 

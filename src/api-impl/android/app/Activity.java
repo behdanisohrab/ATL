@@ -29,6 +29,7 @@ public class Activity extends Context {
 	LayoutInflater layout_inflater;
 	Window window = new Window();
 	int requested_orientation = -1 /*ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED*/; // dummy
+	private Intent intent;
 
 	/**
 	 * Helper function to be called from native code to construct main activity
@@ -56,6 +57,7 @@ public class Activity extends Context {
 
 	public Activity() {
 		layout_inflater = new LayoutInflater();
+		intent = new Intent();
 	}
 
 	public View root_view;
@@ -77,8 +79,7 @@ public class Activity extends Context {
 	}
 
 	public Intent getIntent() {
-//		return null; // this is the main activity, and it wasn't opened as a result of someone calling "open with"
-		return new Intent(); // seems some apps don't consider this nullable...
+		return intent;
 	}
 
 	public int getRequestedOrientation() {
@@ -223,10 +224,45 @@ public class Activity extends Context {
 
 	public void startActivityForResult(Intent intent, int requestCode) {
 		System.out.println("startActivityForResult(" + intent + ", " + requestCode + ") called, but we don't currently support multiple activities");
-		onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent()); // RESULT_CANCELED is the only pre-defined return value, so hopefully it works out for us
+		if (intent.getComponent() != null) {
+			try {
+				Class<? extends Activity> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Activity.class);
+				Constructor<? extends Activity> constructor = cls.getConstructor();
+				Activity activity = constructor.newInstance();
+				activity.intent = intent;
+				activity.window = getWindow();
+				nativeStartActivity(activity);
+			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent()); // RESULT_CANCELED is the only pre-defined return value, so hopefully it works out for us
+			}
+		}
+		else {
+			onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent()); // RESULT_CANCELED is the only pre-defined return value, so hopefully it works out for us
+		}
+	}
+
+	public void startActivity(Intent intent) {
+		System.out.println("startActivity(" + intent + ") called");
+		try {
+			Class<? extends Activity> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Activity.class);
+			Constructor<? extends Activity> constructor = cls.getConstructor();
+			Activity activity = constructor.newInstance();
+			activity.intent = intent;
+			activity.window = getWindow();
+			nativeStartActivity(activity);
+		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public final void showDialog(int id) {
 		System.out.println("Activity.showDialog(" + id + ") called");
 	}
+
+	public void finish() {
+		nativeFinish(getWindow().native_window);
+	}
+
+	private native void nativeFinish(long native_window);
+	private static native void nativeStartActivity(Activity activity);
 }
