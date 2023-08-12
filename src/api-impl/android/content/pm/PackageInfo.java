@@ -16,11 +16,17 @@
 
 package android.content.pm;
 
+import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
+import java.io.InputStream;
+import java.io.IOException;
+
 /**
  * Overall information about the contents of a package.  This corresponds
  * to all of the information collected from AndroidManifest.xml.
  */
 public class PackageInfo {
+	private static AndroidManifestBlock manifest = null; // TODO: only ever load this once, in one place
+
 	/**
 	 * The name of this package.  From the &lt;manifest&gt; tag's "name"
 	 * attribute.
@@ -230,7 +236,20 @@ public class PackageInfo {
 	 */
 	public String requiredAccountType;
 
+	static {
+		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
+		try {
+			manifest = AndroidManifestBlock.load(inStream);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public PackageInfo() {
+		packageName = manifest.getPackageName();
+		versionCode = manifest.getVersionCode();
+		versionName = manifest.getVersionName();
+		System.out.println("PackageInfo(): packageName: >"+packageName+"<, versionCode: >"+versionCode+"<, versionName: >"+versionName+"<");
 	}
 
 	public String toString() {
