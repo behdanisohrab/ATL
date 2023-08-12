@@ -74,5 +74,9 @@ public class AudioTrack {
 		System.out.println("calling release(), how did this not get reported before DIDREEEEEEEEEEEEEEEEEEEEEEEEE\n");
 	}
 
+	public int getState() {
+		return 0; // TODO: fix up the native part and make this work properly
+	}
+
 	public native int write(byte[] audioData, int offsetInBytes, int sizeInBytes);
 }
