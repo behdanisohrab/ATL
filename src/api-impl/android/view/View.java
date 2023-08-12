@@ -501,6 +501,58 @@ public class View extends Object {
 	 */
 	static final int PFLAG2_LAYOUT_DIRECTION_RESOLVED_MASK = 0x0000000C << PFLAG2_LAYOUT_DIRECTION_MASK_SHIFT;
 
+	// --- apparently there's more...
+
+	@Deprecated public static final int STATUS_BAR_HIDDEN = 1; // 0x1
+
+	@Deprecated public static final int STATUS_BAR_VISIBLE = 0; // 0x0
+
+	public static final int SYSTEM_UI_FLAG_FULLSCREEN = 4; // 0x4
+
+	public static final int SYSTEM_UI_FLAG_HIDE_NAVIGATION = 2; // 0x2
+
+	public static final int SYSTEM_UI_FLAG_IMMERSIVE = 2048; // 0x800
+
+	public static final int SYSTEM_UI_FLAG_IMMERSIVE_STICKY = 4096; // 0x1000
+
+	public static final int SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN = 1024; // 0x400
+
+	public static final int SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION = 512; // 0x200
+
+	public static final int SYSTEM_UI_FLAG_LAYOUT_STABLE = 256; // 0x100
+
+	public static final int SYSTEM_UI_FLAG_LOW_PROFILE = 1; // 0x1
+
+	public static final int SYSTEM_UI_FLAG_VISIBLE = 0; // 0x0
+
+	public static final int SYSTEM_UI_LAYOUT_FLAGS = 1536; // 0x600
+
+	public static final int TEXT_ALIGNMENT_CENTER = 4; // 0x4
+
+	public static final int TEXT_ALIGNMENT_GRAVITY = 1; // 0x1
+
+	public static final int TEXT_ALIGNMENT_INHERIT = 0; // 0x0
+
+	public static final int TEXT_ALIGNMENT_TEXT_END = 3; // 0x3
+
+	public static final int TEXT_ALIGNMENT_TEXT_START = 2; // 0x2
+
+	public static final int TEXT_ALIGNMENT_VIEW_END = 6; // 0x6
+
+	public static final int TEXT_ALIGNMENT_VIEW_START = 5; // 0x5
+
+	public static final int TEXT_DIRECTION_ANY_RTL = 2; // 0x2
+
+	public static final int TEXT_DIRECTION_FIRST_STRONG = 1; // 0x1
+
+	public static final int TEXT_DIRECTION_INHERIT = 0; // 0x0
+
+	public static final int TEXT_DIRECTION_LOCALE = 5; // 0x5
+
+	public static final int TEXT_DIRECTION_LTR = 3; // 0x3
+
+	public static final int TEXT_DIRECTION_RTL = 4; // 0x4
+
 	// --- end of constants from android source
 
 	// --- interfaces from android source
@@ -538,6 +590,19 @@ public class View extends Object {
 		//		boolean onKey(View v, int keyCode, KeyEvent event);
 	}
 
+	public interface OnCreateContextMenuListener {
+		/**
+		 * Called when the context menu for this view is being built. It is not
+		 * safe to hold onto the menu after this method returns.
+		 *
+		 * @param menu The context menu that is being built
+		 * @param v The view for which the context menu is being built
+		 * @param menuInfo Extra information about the item for which the
+		 *            context menu should be shown. This information will vary
+		 *            depending on the class of v.
+		 */
+//		void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo);
+	}
 	// --- end of interfaces
 
 	// --- subclasses
@@ -677,6 +742,7 @@ public class View extends Object {
 	// --- end of subclasses
 
 	public int id;
+	private int system_ui_visibility = 0;
 	public ViewGroup parent;
 	public AttributeSet attrs;
 	protected ViewGroup.LayoutParams layout_params;
@@ -787,7 +853,12 @@ public class View extends Object {
 		return true;
 	}
 
-	public void setSystemUiVisibility(int visibility) {}
+	public void setSystemUiVisibility(int visibility) {
+		system_ui_visibility = visibility;
+	}
+	public int getSystemUiVisibility() {
+		return system_ui_visibility;
+	};
 
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {}
 

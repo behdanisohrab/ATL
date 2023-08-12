@@ -29,6 +29,7 @@
 #define _SET_INT_FIELD(object, field, value) ((*env)->SetIntField(env, object, _FIELD_ID(_CLASS(object), field, "I"), value))
 #define _SET_STATIC_INT_FIELD(class, field, value) ((*env)->SetStaticIntField(env, class, _STATIC_FIELD_ID(class, field, "I"), value))
 #define _SET_STATIC_OBJ_FIELD(class, field, type, value) ((*env)->SetStaticObjectField(env, class, _STATIC_FIELD_ID(class, field, type), value))
+#define _GET_STATIC_OBJ_FIELD(class, field, type) ((*env)->GetStaticObjectField(env, class, _STATIC_FIELD_ID(class, field, type)))
 #define _GET_INT_FIELD(object, field) ((*env)->GetIntField(env, object, _FIELD_ID(_CLASS(object), field, "I")))
 #define _GET_BYTE_ARRAY_ELEMENTS(b_array) ((*env)->GetByteArrayElements(env, b_array, NULL))
 #define _RELEASE_BYTE_ARRAY_ELEMENTS(b_array, buffer_ptr) ((*env)->ReleaseByteArrayElements(env, b_array, buffer_ptr, 0))

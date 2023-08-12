@@ -35,14 +35,6 @@ extern "C" {
 #define android_content_res_AssetManager_STYLE_DENSITY 5L
 /*
  * Class:     android_content_res_AssetManager
- * Method:    list
- * Signature: (Ljava/lang/String;)[Ljava/lang/String;
- */
-JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_list
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     android_content_res_AssetManager
  * Method:    addAssetPathNative
  * Signature: (Ljava/lang/String;)I
  */
@@ -291,14 +283,6 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_newTheme
 
 /*
  * Class:     android_content_res_AssetManager
- * Method:    deleteTheme
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_android_content_res_AssetManager_deleteTheme
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     android_content_res_AssetManager
  * Method:    applyThemeStyle
  * Signature: (IIZ)V
  */
@@ -344,14 +328,6 @@ JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getArrayStr
  */
 JNIEXPORT jintArray JNICALL Java_android_content_res_AssetManager_getArrayStringInfo
   (JNIEnv *, jobject, jint);
-
-/*
- * Class:     android_content_res_AssetManager
- * Method:    destroy
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_android_content_res_AssetManager_destroy
-  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

@@ -20,6 +20,10 @@ public class Intent {
 	}
 	public Intent(String action, Uri uri, Context packageContext, Class<?> cls) {}
 
+	public Intent addFlags(int flags) {
+		return this; //??
+	}
+
 	public Intent setFlags(int flags) {
 		return this; //??
 	}
