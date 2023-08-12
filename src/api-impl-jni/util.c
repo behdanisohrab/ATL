@@ -106,6 +106,18 @@ void set_up_handle_cache(JNIEnv *env)
 
 	handle_cache.asset_manager.class = _REF((*env)->FindClass(env, "android/content/res/AssetManager"));
 	handle_cache.asset_manager.extractFromAPK = _STATIC_METHOD(handle_cache.asset_manager.class, "extractFromAPK", "(Ljava/lang/String;Ljava/lang/String;)V");
+
+	handle_cache.context.class = _REF((*env)->FindClass(env, "android/content/Context"));
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+	handle_cache.context.get_package_name = _METHOD(handle_cache.context.class, "getPackageName", "()Ljava/lang/String;");
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
+	handle_cache.application.class = _REF((*env)->FindClass(env, "android/app/Application"));
+	handle_cache.application.object = _REF(_GET_STATIC_OBJ_FIELD(handle_cache.context.class, "this_application", "Landroid/app/Application;"));
+	handle_cache.application.get_app_icon_path = _METHOD(handle_cache.application.class, "get_app_icon_path", "()Ljava/lang/String;");
+
 }
 
 void extract_from_apk(const char *path, const char *target) {

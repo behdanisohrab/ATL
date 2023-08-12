@@ -739,6 +739,10 @@ public final class Bundle implements Cloneable {
 	public boolean getBoolean(String key, boolean defaultValue) {
 		Object o = mMap.get(key);
 		System.out.println("bundle.getBoolean(" + key + ", " + defaultValue + ") called");
+		/* the default for this is very scummy */
+		if(key.equals("com.facebook.sdk.AutoLogAppEventsEnabled")) {
+			return false;
+		}
 		if (o == null) {
 			return defaultValue;
 		}

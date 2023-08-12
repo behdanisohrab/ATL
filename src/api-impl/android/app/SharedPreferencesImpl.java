@@ -250,6 +250,7 @@ public final class SharedPreferencesImpl implements SharedPreferences {
 	}
 	public boolean getBoolean(String key, boolean defValue) {
 		synchronized (this) {
+			System.out.println("android.app.SharedPreferencesImpl.getBoolean("+key+", "+defValue+")");
 			awaitLoadedLocked();
 			Boolean v = (Boolean)mMap.get(key);
 			return v != null ? v : defValue;

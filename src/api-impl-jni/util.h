@@ -75,6 +75,15 @@ struct handle_cache {
 		jclass class;
 		jmethodID extractFromAPK;
 	} asset_manager;
+	struct {
+		jclass class;
+		jmethodID get_package_name;
+	} context;
+	struct {
+		jclass class;
+		jobject object;
+		jmethodID get_app_icon_path;
+	} application;
 };
 
 extern struct handle_cache handle_cache;
