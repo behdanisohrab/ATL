@@ -33,10 +33,13 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
+import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
 
 public class Context extends Object {
 	private final static String TAG = "Context";
@@ -46,6 +49,8 @@ public class Context extends Object {
 	public static final String AUDIO_SERVICE = "audio";
 	public static final String DISPLAY_SERVICE = "display";
 	public static final String MEDIA_ROUTER_SERVICE = "media_router";
+	public static final String WINDOW_SERVICE = "window";
+	private static AndroidManifestBlock manifest = null;
 
 	static AssetManager assets;
 	static DisplayMetrics dm;
@@ -70,6 +75,13 @@ public class Context extends Object {
 		r = new Resources(assets, dm, config);
 		this_application = new Application(); // TODO: the application context is presumably not identical to the Activity context, what is the difference for us though?
 		application_info = new ApplicationInfo();
+
+		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
+		try {
+			manifest = AndroidManifestBlock.load(inStream);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public Context() {
@@ -156,7 +168,7 @@ public class Context extends Object {
 	}
 
 	public String getPackageName() {
-		return "com.example.demo_app";
+		return manifest.getPackageName();
 	}
 
 	public String getPackageCodePath() {
@@ -254,7 +266,7 @@ public class Context extends Object {
 	}
 
 	public SharedPreferences getSharedPreferences(String name, int mode) {
-		System.out.println("\n\n...> getSharedPreferences(" + name + ",)\n\n");
+		System.out.println("\n\n...> getSharedPreferences(" + name + ")\n\n");
 		File prefsFile = getSharedPrefsFile(name);
 		return new SharedPreferencesImpl(prefsFile, mode);
 	}
@@ -288,6 +300,18 @@ public class Context extends Object {
 	}
 
 	public void registerComponentCallbacks(ComponentCallbacks callbacks) {}
+
+	public boolean bindService(Intent dummy, ServiceConnection dummy2, int dummy3) {
+		System.out.println("bindService("+dummy+", "+dummy2+", "+dummy3+")");
+		return false; // maybe?
+	}
+
+	public void startActivity(Intent intent) {
+		System.out.println("------------------");
+		System.out.println("app wants to startActivity("+intent+"), but we don't support that... :/");
+		try { throw new java.lang.Exception(); } catch (java.lang.Exception e) { e.printStackTrace(); }
+		System.out.println("------------------");
+	}
 
 	// these may not look like typical stubs, but they definitely are stubs
 	public final TypedArray obtainStyledAttributes(AttributeSet set, int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }

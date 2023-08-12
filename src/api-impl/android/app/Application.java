@@ -1,10 +1,23 @@
 package android.app;
+
 import android.os.Bundle;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import com.reandroid.apk.AndroidFrameworks;
+import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
+import java.io.InputStream;
+import java.io.IOException;
 
 import android.content.Context;
 
 public class Application extends Context {
+	private String app_icon_path = null;
+
+	private String get_app_icon_path() {
+		return app_icon_path;
+	}
+
 	public interface ActivityLifecycleCallbacks {
 		void onActivityCreated(Activity activity, Bundle savedInstanceState);
 		void onActivityStarted(Activity activity);
@@ -28,7 +41,17 @@ public class Application extends Context {
 		 */
 		public void onProvideAssistData(Activity activity, Bundle data);
 	}
+
 	public Application() {
+		/* TODO: is this the right place to put this? */
+		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
+		try {
+			AndroidManifestBlock manifest = AndroidManifestBlock.load(inStream);
+			int app_icon_resid = manifest.getIconResourceId();
+			app_icon_path = this.getResources().getString(app_icon_resid);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	/**
 	 * Called when the application is starting, before any activity, service,
