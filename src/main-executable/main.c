@@ -9,6 +9,7 @@
 
 #include <dlfcn.h>
 #include <errno.h>
+#include <libgen.h>
 #include <locale.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -155,6 +156,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	char *api_impl_jar;
 	char *microg_apk = NULL;
 	char *framework_res_apk = NULL;
+	const char *package_name;
 	int errno_libdir;
 	int errno_localdir;
 	int ret;
@@ -306,6 +308,23 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	set_up_handle_cache(env);
 
+	/* -- register our JNI library under the appropriate classloader -- */
+
+	/* 'android/view/View' is part of the "hax.dex" package, any other function from that package would serve just as well */
+	jmethodID getClassLoader = _METHOD((*env)->FindClass(env, "java/lang/Class"), "getClassLoader", "()Ljava/lang/ClassLoader;");
+	jobject class_loader = (*env)->CallObjectMethod(env, (*env)->FindClass(env, "android/view/View"), getClassLoader);
+
+	jclass java_runtime_class = (*env)->FindClass(env, "java/lang/Runtime");
+
+	jmethodID getRuntime = _STATIC_METHOD(java_runtime_class, "getRuntime", "()Ljava/lang/Runtime;");
+	jobject java_runtime = (*env)->CallStaticObjectMethod(env, java_runtime_class, getRuntime);
+
+	/* this method is private, but it seems we get away with calling it from C */
+	jmethodID loadLibrary_with_classloader = _METHOD(java_runtime_class, "loadLibrary", "(Ljava/lang/String;Ljava/lang/ClassLoader;)V");
+	(*env)->CallVoidMethod(env, java_runtime, loadLibrary_with_classloader, _JSTRING("translation_layer_main"), class_loader);
+
+	/* -- misc -- */
+
 	jclass display_class = (*env)->FindClass(env, "android/view/Display");
 	_SET_STATIC_INT_FIELD(display_class, "window_width", d->window_width);
 	_SET_STATIC_INT_FIELD(display_class, "window_height", d->window_height);
@@ -319,32 +338,10 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	window = gtk_application_window_new(app);
 
-	gtk_window_set_title(GTK_WINDOW(window), "com.example.demo_application");
-	gtk_window_set_default_size(GTK_WINDOW(window), d->window_width, d->window_height);
-	g_signal_connect(window, "close-request", G_CALLBACK (app_exit), env);
-
-//	TODO: set icon according to how android gets it for the purposes of displaying it in the launcher
-//	gtk_window_set_icon_name(window, "weather-clear");
-
 	if(getenv("ATL_DISABLE_WINDOW_DECORATIONS"))
 		gtk_window_set_decorated(GTK_WINDOW(window), 0);
 
-	gtk_widget_show(window);
-
-	/* -- register our JNI library under the appropriate classloader -- */
-
-	/* 'android/view/View' is part of the "hax.dex" package, any other function from that package would serve just as well */
-	jmethodID getClassLoader = _METHOD((*env)->FindClass(env, "java/lang/Class"), "getClassLoader", "()Ljava/lang/ClassLoader;");
-	jobject class_loader = (*env)->CallObjectMethod(env, handle_cache.view.class, getClassLoader);
-
-	jclass java_runtime_class = (*env)->FindClass(env, "java/lang/Runtime");
-
-	jmethodID getRuntime = _STATIC_METHOD(java_runtime_class, "getRuntime", "()Ljava/lang/Runtime;");
-	jobject java_runtime = (*env)->CallStaticObjectMethod(env, java_runtime_class, getRuntime);
-
-	/* this method is private, but it seems we get away with calling it from C */
-	jmethodID loadLibrary_with_classloader = _METHOD(java_runtime_class, "loadLibrary", "(Ljava/lang/String;Ljava/lang/ClassLoader;)V");
-	(*env)->CallVoidMethod(env, java_runtime, loadLibrary_with_classloader, _JSTRING("translation_layer_main"), class_loader);
+	gtk_window_present(GTK_WINDOW(window));
 
 	extract_from_apk("assets/", "assets/");
 	/* extract native libraries from apk*/
@@ -358,6 +355,45 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 		_JSTRING(d->apk_main_activity_class), _INTPTR(window));
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
+
+
+	/* -- set the window title and (FIXME) app icon -- */
+
+	package_name = _CSTRING((*env)->CallObjectMethod(env, activity_object, handle_cache.context.get_package_name));
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
+/*	const char *app_icon_path = _CSTRING((*env)->CallObjectMethod(env, handle_cache.application.object, handle_cache.application.get_app_icon_path));
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
+	char *tmp = strdup(app_icon_path);
+	const char *app_icon_dirname = dirname(tmp);
+	char *app_icon_basename = basename(app_icon_path);
+	*strrchr(app_icon_basename, '.') = '\0';
+	extract_from_apk(app_icon_path, app_icon_path);
+	char *app_icon_basedir_fullpath = malloc(strlen(app_data_dir) + strlen(app_icon_dirname) + strlen("/hicolor") + 1);
+	strcpy(app_icon_basedir_fullpath, app_data_dir);
+	strcat(app_icon_basedir_fullpath, app_icon_dirname);
+	strcat(app_icon_basedir_fullpath, "/hicolor");
+*/
+	gtk_window_set_title(GTK_WINDOW(window), package_name);
+	gtk_window_set_default_size(GTK_WINDOW(window), d->window_width, d->window_height);
+	g_signal_connect(window, "close-request", G_CALLBACK (app_exit), env);
+/*
+	GtkIconTheme *theme = gtk_icon_theme_get_for_display(gdk_display_get_default());
+	printf(">>%s<<\n", app_icon_basedir_fullpath);
+	printf(">%s<\n", app_icon_basename);
+	gtk_icon_theme_set_search_path(theme, (const char *const[]){app_icon_basedir_fullpath, NULL});
+
+	printf(">>>%d<<<\n", gtk_icon_theme_has_icon(theme, app_icon_basename));
+
+	gtk_window_set_icon_name(GTK_WINDOW(window), app_icon_basename);
+
+	exit(69);
+*/
+//	free(tmp);
+//	free(app_icon_basedir_fullpath);
 
 	activity_start(env, activity_object);
 
@@ -421,8 +457,8 @@ void init__r_debug();
 
 int main(int argc, char **argv/*, JNIEnv *env*/)
 {
- 	GtkApplication *app;
- 	int status;
+	GtkApplication *app;
+	int status;
 
 	/* this has to be done in the main executable, so might as well do it here*/
 	init__r_debug();
@@ -436,19 +472,19 @@ int main(int argc, char **argv/*, JNIEnv *env*/)
 	callback_data->window_width = 960;
 	callback_data->window_height = 540;
 
- 	app = gtk_application_new("com.example.demo_application", G_APPLICATION_NON_UNIQUE | G_APPLICATION_HANDLES_OPEN);
+	app = gtk_application_new("com.example.demo_application", G_APPLICATION_NON_UNIQUE | G_APPLICATION_HANDLES_OPEN);
 
 	// cmdline related setup
 	init_cmd_parameters(G_APPLICATION(app), callback_data);
 	g_application_set_option_context_summary(G_APPLICATION(app), "a translation layer for running android applications natively on Linux");
 
- 	g_signal_connect(app, "activate", G_CALLBACK (activate), callback_data);
- 	g_signal_connect(app, "open", G_CALLBACK (open), callback_data);
- 	status = g_application_run(G_APPLICATION(app), argc, argv);
- 	g_object_unref(app);
+	g_signal_connect(app, "activate", G_CALLBACK (activate), callback_data);
+	g_signal_connect(app, "open", G_CALLBACK (open), callback_data);
+	status = g_application_run(G_APPLICATION(app), argc, argv);
+	g_object_unref(app);
 
- 	return status;
+	return status;
 }
 
-const char dl_loader[] __attribute__((section(".interp"))) =
-    "/lib/ld-linux.so.2";
+/* TODO: recall what this is doing here */
+const char dl_loader[] __attribute__((section(".interp"))) = "/lib/ld-linux.so.2";
