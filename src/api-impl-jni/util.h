@@ -81,7 +81,6 @@ struct handle_cache {
 	} context;
 	struct {
 		jclass class;
-		jobject object;
 		jmethodID get_app_icon_path;
 	} application;
 };

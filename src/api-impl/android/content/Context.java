@@ -34,11 +34,15 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
 import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
+import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.io.IOException;
 
 public class Context extends Object {
@@ -74,7 +78,6 @@ public class Context extends Object {
 		dm = new DisplayMetrics();
 		config = new Configuration();
 		r = new Resources(assets, dm, config);
-		this_application = new Application(); // TODO: the application context is presumably not identical to the Activity context, what is the difference for us though?
 		theme = r.newTheme();
 		application_info = new ApplicationInfo();
 
@@ -84,6 +87,20 @@ public class Context extends Object {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	static Application createApplication() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+		Application application;
+		ResXmlAttribute application_name = manifest.getApplicationElement().searchAttributeByResourceId(AndroidManifestBlock.ID_name);
+		String className = (application_name != null) ? application_name.getValueAsString() : "android.app.Application";
+		if (className.startsWith(".")) {
+			className = manifest.getPackageName() + className;
+		}
+		Class<? extends Application> cls = Class.forName(className).asSubclass(Application.class);
+		Constructor<? extends Application> constructor = cls.getConstructor();
+		application = constructor.newInstance();
+		this_application = application;
+		return application;
 	}
 
 	public Context() {
