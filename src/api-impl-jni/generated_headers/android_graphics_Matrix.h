@@ -27,14 +27,6 @@ extern "C" {
 #define android_graphics_Matrix_MPERSP_2 8L
 /*
  * Class:     android_graphics_Matrix
- * Method:    native_create
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_android_graphics_Matrix_native_1create
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class:     android_graphics_Matrix
  * Method:    native_isIdentity
  * Signature: (I)Z
  */

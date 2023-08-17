@@ -88,4 +88,12 @@ public class TextUtils {
         }
         return false;
     }
+
+	public enum TruncateAt {
+		START,
+		MIDDLE,
+		END,
+		MARQUEE,
+		END_SMALL
+	}
 }

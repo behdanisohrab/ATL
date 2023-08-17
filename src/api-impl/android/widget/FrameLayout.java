@@ -20,6 +20,12 @@ public class FrameLayout extends ViewGroup {
 		native_constructor(context);
 	}
 
+	public FrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
+
+		native_constructor(attrs);
+	}
+
 	public native void native_constructor(AttributeSet attrs);
 	public native void native_constructor(Context context);
 
@@ -30,7 +36,16 @@ public class FrameLayout extends ViewGroup {
 		addView(child, index, null);
 	}
 
+	@Override
+	public LayoutParams generateLayoutParams(AttributeSet attrs) {
+		return new LayoutParams(getContext(), attrs);
+	}
+
 	public static class LayoutParams extends ViewGroup.MarginLayoutParams {
+		public LayoutParams (Context c, AttributeSet attrs) {
+			super(c, attrs);
+		}
+
 		public LayoutParams(int width, int height) {
 			super(width, height);
 		}

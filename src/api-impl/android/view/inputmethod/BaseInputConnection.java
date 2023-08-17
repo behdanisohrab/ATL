@@ -26,7 +26,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
-class InputMethodManager {}
 class Editable {}
 
 class ComposingText {

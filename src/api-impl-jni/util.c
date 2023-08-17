@@ -4,6 +4,9 @@ struct handle_cache handle_cache = {0};
 
 const char * attribute_set_get_string(JNIEnv *env, jobject attrs, char *attribute, char *schema)
 {
+	if (!attrs)
+		return NULL;
+
 	if(!schema)
 		schema = "http://schemas.android.com/apk/res/android";
 

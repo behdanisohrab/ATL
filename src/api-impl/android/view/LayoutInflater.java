@@ -18,14 +18,14 @@ public class LayoutInflater {
 	public interface Factory2 {
 	}
 
-	private Factory2 factory2;
+	private Factory2 mFactory2;
 
 	public final LayoutInflater.Factory getFactory() {
 		return null;
 	}
 
 	public void setFactory2(Factory2 factory) {
-		this.factory2 = factory;
+		this.mFactory2 = factory;
 	}
 
 	public static LayoutInflater from(Context context) {
@@ -215,13 +215,51 @@ public class LayoutInflater {
 	}
 
 	private void parseInclude(XmlPullParser parser, View parent, AttributeSet attrs) throws Exception {
-		int layout = attrs.getAttributeResourceValue(null, "layout", 0);
-		View view = inflate(layout, (ViewGroup)parent, true);
-		if (view == null)
-			return;
+		int type;
 
-		int id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
-		if (id != 0)
-			view.setId(id);
+		int layout = attrs.getAttributeResourceValue(null, "layout", 0);
+
+		final XmlResourceParser childParser = Context.this_application.getResources().getLayout(layout);
+		final AttributeSet childAttrs = Xml.asAttributeSet(childParser);
+
+		while ((type = childParser.next()) != XmlPullParser.START_TAG &&
+			type != XmlPullParser.END_DOCUMENT) {
+			// Empty.
+		}
+		if (type != XmlPullParser.START_TAG) {
+			throw new Exception(childParser.getPositionDescription() + ": No start tag found!");
+		}
+
+		final String childName = childParser.getName();
+		if ("merge".equals(childName)) {
+			// The <merge> tag doesn't support android:theme, so
+			// nothing special to do here.
+			rInflate(childParser, parent, childAttrs, false);
+		} else {
+			final View view = createViewFromTag(parent, childName, childAttrs);
+			final ViewGroup group = (ViewGroup)parent;
+			ViewGroup.LayoutParams params = null;
+			try {
+				params = group.generateLayoutParams(attrs);
+			} catch (RuntimeException e) {
+				// Ignore, just fail over to child attrs.
+			}
+			if (params == null) {
+				params = group.generateLayoutParams(childAttrs);
+			}
+			view.setLayoutParams(params);
+			// Inflate all children.
+			rInflate(childParser, view, childAttrs, true);
+
+			int id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
+			if (id != 0)
+				view.setId(id);
+
+			group.addView(view);
+		}
+	}
+
+	public LayoutInflater cloneInContext(Context context) {
+		return this;
 	}
 }

@@ -662,7 +662,7 @@ mDetectSimplePaths = HardwareRenderer.isAvailable();
 	}
 	protected void finalize() throws Throwable {
 		try {
-			finalizer(mNativePath);
+			// finalizer(mNativePath);
 		} finally {
 			super.finalize();
 		}

@@ -1,8 +1,22 @@
 package android.view;
 
 public class Window {
-	public static interface Callback {}
-	public static class fixme_callback implements Callback {}
+	public static interface Callback {
+		public void onContentChanged();
+
+		public abstract boolean onCreatePanelMenu(int featureId, Menu menu);
+	}
+	public static class fixme_callback implements Callback {
+
+		@Override
+		public void onContentChanged() {
+		}
+
+		@Override
+		public boolean onCreatePanelMenu(int featureId, Menu menu) {
+			return false;
+		}
+	}
 
 	// FIXME private
 	public long native_window;
@@ -42,5 +56,13 @@ public class Window {
 
 	public boolean requestFeature(int featureId) {
 		return false;
+	}
+
+	public View findViewById(int id) {
+		return View.view_by_id.get(id);
+	}
+
+	public View peekDecorView() {
+		return null;
 	}
 }

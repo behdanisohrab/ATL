@@ -23,7 +23,6 @@ import android.os.Bundle;
 import java.io.Closeable;
 
 class CharArrayBuffer {}
-class DataSetObserver {}
 
 /**
  * This interface provides random read-write access to the result set returned

@@ -309,7 +309,7 @@ public class Region {
 	}
 	protected void finalize() throws Throwable {
 		try {
-			nativeDestructor(mNativeRegion);
+			// nativeDestructor(mNativeRegion);
 		} finally {
 			super.finalize();
 		}
@@ -330,7 +330,7 @@ public class Region {
 		return mNativeRegion;
 	}
 	private static native boolean nativeEquals(int native_r1, int native_r2);
-	private static native int nativeConstructor();
+	private static int nativeConstructor() {return -1;}
 	private static native void nativeDestructor(int native_region);
 	private static native void nativeSetRegion(int native_dst, int native_src);
 	private static native boolean nativeSetRect(int native_dst, int left,

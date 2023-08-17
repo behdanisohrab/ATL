@@ -1,5 +1,6 @@
 package android.app;
 
+import android.R;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -102,6 +103,7 @@ public class Activity extends Context {
 
 	protected void onCreate(Bundle savedInstanceState) {
 		System.out.println("- onCreate - yay!");
+		new ViewGroup(this).setId(R.id.content);
 
 		return;
 	}
@@ -261,6 +263,22 @@ public class Activity extends Context {
 
 	public void finish() {
 		nativeFinish(getWindow().native_window);
+	}
+
+	public Object getLastNonConfigurationInstance() {
+		return null;
+	}
+
+	public FragmentManager getFragmentManager() {
+		return new FragmentManager();
+	}
+
+	public LayoutInflater getLayoutInflater() {
+		return layout_inflater;
+	}
+
+	public CharSequence getTitle() {
+		return "Title";
 	}
 
 	private native void nativeFinish(long native_window);

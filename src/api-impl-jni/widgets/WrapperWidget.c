@@ -137,6 +137,8 @@ void wrapper_widget_set_child(WrapperWidget *parent, GtkWidget *child) // TODO: 
 	gtk_widget_insert_before(child, GTK_WIDGET(parent), NULL);
 }
 
+#define MEASURE_SPEC_EXACTLY (1 << 30)
+
 static void on_mapped(GtkWidget* self, gpointer data)
 {
 	WrapperWidget *wrapper = WRAPPER_WIDGET(self);
@@ -144,7 +146,7 @@ static void on_mapped(GtkWidget* self, gpointer data)
 		JNIEnv *env;
 		(*wrapper->jvm)->GetEnv(wrapper->jvm, (void**)&env, JNI_VERSION_1_6);
 
-		(*env)->CallVoidMethod(env, wrapper->jobj, wrapper->measure_method, gtk_widget_get_width(self), gtk_widget_get_height(self));
+		(*env)->CallVoidMethod(env, wrapper->jobj, wrapper->measure_method, MEASURE_SPEC_EXACTLY, MEASURE_SPEC_EXACTLY);
 	}
 }
 
