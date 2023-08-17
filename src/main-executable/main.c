@@ -161,6 +161,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	int errno_localdir;
 	int ret;
 	jobject activity_object;
+	jobject application_object;
 
 	char *apk_classpath =  g_file_get_path(files[0]);
 	char *apk_name = g_file_get_basename(files[0]);
@@ -343,11 +344,21 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	gtk_window_present(GTK_WINDOW(window));
 
+	// construct Application
+	application_object = (*env)->CallStaticObjectMethod(env, handle_cache.context.class,
+		_STATIC_METHOD(handle_cache.context.class, "createApplication", "()Landroid/app/Application;"));
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
 	extract_from_apk("assets/", "assets/");
 	/* extract native libraries from apk*/
 	extract_from_apk("lib/" NATIVE_ARCH "/", "lib/");
 
 	prepare_main_looper(env);
+
+	(*env)->CallVoidMethod(env, application_object, _METHOD(handle_cache.application.class, "onCreate", "()V"));
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
 
 	// construct main Activity
 	activity_object = (*env)->CallStaticObjectMethod(env, handle_cache.apk_main_activity.class,
@@ -363,7 +374,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
-/*	const char *app_icon_path = _CSTRING((*env)->CallObjectMethod(env, handle_cache.application.object, handle_cache.application.get_app_icon_path));
+/*	const char *app_icon_path = _CSTRING((*env)->CallObjectMethod(env, application_object, handle_cache.application.get_app_icon_path));
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 

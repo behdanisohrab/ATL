@@ -115,7 +115,6 @@ void set_up_handle_cache(JNIEnv *env)
 		(*env)->ExceptionDescribe(env);
 
 	handle_cache.application.class = _REF((*env)->FindClass(env, "android/app/Application"));
-	handle_cache.application.object = _REF(_GET_STATIC_OBJ_FIELD(handle_cache.context.class, "this_application", "Landroid/app/Application;"));
 	handle_cache.application.get_app_icon_path = _METHOD(handle_cache.application.class, "get_app_icon_path", "()Ljava/lang/String;");
 
 }
