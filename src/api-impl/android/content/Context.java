@@ -57,6 +57,7 @@ public class Context extends Object {
 	static Configuration config;
 	static Resources r;
 	static ApplicationInfo application_info;
+	static Resources.Theme theme;
 
 	static String apk_path = "/tmp/APK_PATH_SHOULD_HAVE_BEEN_FILLED_IN_BY_CODE_IN_main.c/";
 
@@ -74,6 +75,7 @@ public class Context extends Object {
 		config = new Configuration();
 		r = new Resources(assets, dm, config);
 		this_application = new Application(); // TODO: the application context is presumably not identical to the Activity context, what is the difference for us though?
+		theme = r.newTheme();
 		application_info = new ApplicationInfo();
 
 		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
@@ -93,7 +95,7 @@ public class Context extends Object {
 	}
 
 	public Resources.Theme getTheme() {
-		return r.newTheme();
+		return theme;
 	}
 
 	public ApplicationInfo getApplicationInfo() {
@@ -313,9 +315,20 @@ public class Context extends Object {
 		System.out.println("------------------");
 	}
 
-	// these may not look like typical stubs, but they definitely are stubs
-	public final TypedArray obtainStyledAttributes(AttributeSet set, int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
-	public final TypedArray obtainStyledAttributes(AttributeSet set, int[] attrs, int defStyleAttr, int defStyleRes) { return new TypedArray(r, new int[1000], new int[1000], 0); }
-	public final TypedArray obtainStyledAttributes(int resid, int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
-	public final TypedArray obtainStyledAttributes(int[] attrs) { return new TypedArray(r, new int[1000], new int[1000], 0); }
+	public final TypedArray obtainStyledAttributes(AttributeSet set, int[] attrs) {
+		return getTheme().obtainStyledAttributes(set, attrs, 0, 0);
+	}
+	public final TypedArray obtainStyledAttributes(AttributeSet set, int[] attrs, int defStyleAttr, int defStyleRes) {
+		return getTheme().obtainStyledAttributes(set, attrs, defStyleAttr, defStyleRes);
+	}
+	public final TypedArray obtainStyledAttributes(int resid, int[] attrs) {
+		return getTheme().obtainStyledAttributes(resid, attrs);
+	}
+	public final TypedArray obtainStyledAttributes(int[] attrs) {
+		return getTheme().obtainStyledAttributes(attrs);
+	}
+
+	public void setTheme(int resId) {
+		theme.applyStyle(resId, true);
+	}
 }
