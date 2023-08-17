@@ -35,6 +35,14 @@ extern "C" {
 #define android_content_res_AssetManager_STYLE_DENSITY 5L
 /*
  * Class:     android_content_res_AssetManager
+ * Method:    list
+ * Signature: (Ljava/lang/String;)[Ljava/lang/String;
+ */
+JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_list
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     android_content_res_AssetManager
  * Method:    addAssetPathNative
  * Signature: (Ljava/lang/String;)I
  */
@@ -67,34 +75,10 @@ JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getLocales
 
 /*
  * Class:     android_content_res_AssetManager
- * Method:    setConfiguration
- * Signature: (IILjava/lang/String;IIIIIIIIIIIIII)V
- */
-JNIEXPORT void JNICALL Java_android_content_res_AssetManager_setConfiguration
-  (JNIEnv *, jobject, jint, jint, jstring, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint);
-
-/*
- * Class:     android_content_res_AssetManager
- * Method:    getResourceName
- * Signature: (I)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourceName
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     android_content_res_AssetManager
  * Method:    getResourcePackageName
  * Signature: (I)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourcePackageName
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     android_content_res_AssetManager
- * Method:    getResourceTypeName
- * Signature: (I)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourceTypeName
   (JNIEnv *, jobject, jint);
 
 /*
@@ -195,14 +179,6 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadResourceBagValu
 
 /*
  * Class:     android_content_res_AssetManager
- * Method:    applyStyle
- * Signature: (IIII[I[I[I)Z
- */
-JNIEXPORT jboolean JNICALL Java_android_content_res_AssetManager_applyStyle
-  (JNIEnv *, jclass, jint, jint, jint, jint, jintArray, jintArray, jintArray);
-
-/*
- * Class:     android_content_res_AssetManager
  * Method:    retrieveAttributes
  * Signature: (I[I[I[I)Z
  */
@@ -283,6 +259,14 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_newTheme
 
 /*
  * Class:     android_content_res_AssetManager
+ * Method:    deleteTheme
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_android_content_res_AssetManager_deleteTheme
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     android_content_res_AssetManager
  * Method:    applyThemeStyle
  * Signature: (IIZ)V
  */
@@ -328,6 +312,14 @@ JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getArrayStr
  */
 JNIEXPORT jintArray JNICALL Java_android_content_res_AssetManager_getArrayStringInfo
   (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     android_content_res_AssetManager
+ * Method:    destroy
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_android_content_res_AssetManager_destroy
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

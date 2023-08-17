@@ -33,11 +33,16 @@ import android.util.LongSparseArray;
 import android.util.Slog;
 import android.util.TypedValue;
 import com.android.internal.util.XmlUtils;
+import com.reandroid.arsc.chunk.xml.ResXmlPullParser;
+import com.reandroid.arsc.value.ValueItem;
 // import android.view.DisplayAdjustments;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -1187,6 +1192,7 @@ public class Resources {
 	 * retrieve XML attributes with style and theme information applied.
 	 */
 	public final class Theme {
+		private Map<Integer,ValueItem> themeMap = new HashMap<>();
 		/**
 		 * Place new attribute values into the theme.  The style resource
 		 * specified by <var>resid</var> will be retrieved from this Theme's
@@ -1205,7 +1211,7 @@ public class Resources {
 		 *              if not already defined in the theme.
 		 */
 		public void applyStyle(int resid, boolean force) {
-			AssetManager.applyThemeStyle(mTheme, resid, force);
+			themeMap = mAssets.loadStyle(resid);
 		}
 
 		/**
@@ -1218,7 +1224,7 @@ public class Resources {
 		 * @param other The existing Theme to copy from.
 		 */
 		public void setTo(Theme other) {
-			AssetManager.copyTheme(mTheme, other.mTheme);
+			themeMap = other.themeMap;
 		}
 
 		/**
@@ -1244,8 +1250,7 @@ public class Resources {
 			int len = attrs.length;
 			TypedArray array = getCachedStyledAttributes(len);
 			array.mRsrcs = attrs;
-			/*            AssetManager.applyStyle(mTheme, 0, 0, 0, attrs,
-					    array.mData, array.mIndices);*/
+			mAssets.applyStyle(themeMap, 0, 0, null, attrs, array.mData, array.mIndices);
 			return array;
 		}
 
@@ -1274,35 +1279,34 @@ public class Resources {
 			int len = attrs.length;
 			TypedArray array = getCachedStyledAttributes(len);
 			array.mRsrcs = attrs;
-			/*
-				    AssetManager.applyStyle(mTheme, 0, resid, 0, attrs,
-					    array.mData, array.mIndices);
-				    if (false) {
-					int[] data = array.mData;
+			mAssets.applyStyle(themeMap, 0, resid, null, attrs,
+				array.mData, array.mIndices);
+			if (false) {
+				int[] data = array.mData;
 
-					System.out.println("**********************************************************");
-					System.out.println("**********************************************************");
-					System.out.println("**********************************************************");
-					System.out.println("Attributes:");
-					String s = "  Attrs:";
-					int i;
-					for (i=0; i<attrs.length; i++) {
-					    s = s + " 0x" + Integer.toHexString(attrs[i]);
-					}
-					System.out.println(s);
-					s = "  Found:";
-					TypedValue value = new TypedValue();
-					for (i=0; i<attrs.length; i++) {
-					    int d = i*AssetManager.STYLE_NUM_ENTRIES;
-					    value.type = data[d+AssetManager.STYLE_TYPE];
-					    value.data = data[d+AssetManager.STYLE_DATA];
-					    value.assetCookie = data[d+AssetManager.STYLE_ASSET_COOKIE];
-					    value.resourceId = data[d+AssetManager.STYLE_RESOURCE_ID];
-					    s = s + " 0x" + Integer.toHexString(attrs[i])
-						+ "=" + value;
-					}
-					System.out.println(s);
-				    }*/
+				System.out.println("**********************************************************");
+				System.out.println("**********************************************************");
+				System.out.println("**********************************************************");
+				System.out.println("Attributes:");
+				String s = "  Attrs:";
+				int i;
+				for (i=0; i<attrs.length; i++) {
+					s = s + " 0x" + Integer.toHexString(attrs[i]);
+				}
+				System.out.println(s);
+				s = "  Found:";
+				TypedValue value = new TypedValue();
+				for (i=0; i<attrs.length; i++) {
+					int d = i*AssetManager.STYLE_NUM_ENTRIES;
+					value.type = data[d+AssetManager.STYLE_TYPE];
+					value.data = data[d+AssetManager.STYLE_DATA];
+					value.assetCookie = data[d+AssetManager.STYLE_ASSET_COOKIE];
+					value.resourceId = data[d+AssetManager.STYLE_RESOURCE_ID];
+					s = s + " 0x" + Integer.toHexString(attrs[i])
+					+ "=" + value;
+				}
+				System.out.println(s);
+			}
 			return array;
 		}
 
@@ -1358,49 +1362,44 @@ public class Resources {
 							 int[] attrs, int defStyleAttr, int defStyleRes) {
 			int len = attrs.length;
 			TypedArray array = getCachedStyledAttributes(len);
-			/*
-				    // XXX note that for now we only work with compiled XML files.
-				    // To support generic XML files we will need to manually parse
-				    // out the attributes from the XML file (applying type information
-				    // contained in the resources and such).
-				    XmlBlock.Parser parser = (XmlBlock.Parser)set;
-				    AssetManager.applyStyle(
-					mTheme, defStyleAttr, defStyleRes,
-					parser != null ? parser.mParseState : 0, attrs,
-						array.mData, array.mIndices);
 
-				    array.mRsrcs = attrs;
-				    array.mXml = parser;
-
-				    if (false) {
-					int[] data = array.mData;
-
-					System.out.println("Attributes:");
-					String s = "  Attrs:";
-					int i;
-					for (i=0; i<set.getAttributeCount(); i++) {
-					    s = s + " " + set.getAttributeName(i);
-					    int id = set.getAttributeNameResource(i);
-					    if (id != 0) {
+			// XXX note that for now we only work with compiled XML files.
+			// To support generic XML files we will need to manually parse
+			// out the attributes from the XML file (applying type information
+			// contained in the resources and such).
+			ResXmlPullParser parser = (ResXmlPullParser)set;
+			mAssets.applyStyle(themeMap, defStyleAttr, defStyleRes,
+				set, attrs, array.mData, array.mIndices);
+			array.mRsrcs = attrs;
+			array.mXml = parser;
+			if (false) {
+				int[] data = array.mData;
+				
+				System.out.println("Attributes:");
+				String s = "  Attrs:";
+				int i;
+				for (i=0; i<set.getAttributeCount(); i++) {
+					s = s + " " + set.getAttributeName(i);
+					int id = set.getAttributeNameResource(i);
+					if (id != 0) {
 						s = s + "(0x" + Integer.toHexString(id) + ")";
-					    }
-					    s = s + "=" + set.getAttributeValue(i);
 					}
-					System.out.println(s);
-					s = "  Found:";
-					TypedValue value = new TypedValue();
-					for (i=0; i<attrs.length; i++) {
-					    int d = i*AssetManager.STYLE_NUM_ENTRIES;
-					    value.type = data[d+AssetManager.STYLE_TYPE];
-					    value.data = data[d+AssetManager.STYLE_DATA];
-					    value.assetCookie = data[d+AssetManager.STYLE_ASSET_COOKIE];
-					    value.resourceId = data[d+AssetManager.STYLE_RESOURCE_ID];
-					    s = s + " 0x" + Integer.toHexString(attrs[i])
+					s = s + "=" + set.getAttributeValue(i);
+				}
+				System.out.println(s);
+				s = "  Found:";
+				TypedValue value = new TypedValue();
+				for (i=0; i<attrs.length; i++) {
+					int d = i*AssetManager.STYLE_NUM_ENTRIES;
+					value.type = data[d+AssetManager.STYLE_TYPE];
+					value.data = data[d+AssetManager.STYLE_DATA];
+					value.assetCookie = data[d+AssetManager.STYLE_ASSET_COOKIE];
+					value.resourceId = data[d+AssetManager.STYLE_RESOURCE_ID];
+					s = s + " 0x" + Integer.toHexString(attrs[i])
 						+ "=" + value;
-					}
-					System.out.println(s);
-				    }
-			*/
+				}
+				System.out.println(s);
+			}
 			return array;
 		}
 
@@ -1491,7 +1490,7 @@ public class Resources {
 					   array.mData, array.mIndices);
 
 		array.mRsrcs = attrs;
-		array.mXml = parser;
+		// array.mXml = parser;
 
 		return array;
 	}

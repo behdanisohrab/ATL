@@ -23,6 +23,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import com.android.internal.util.XmlUtils;
+import com.reandroid.arsc.chunk.xml.ResXmlPullParser;
+import com.reandroid.arsc.item.ResXmlString;
+
 import java.util.Arrays;
 
 /**
@@ -36,7 +39,7 @@ import java.util.Arrays;
  */
 public class TypedArray {
 	private final Resources mResources;
-	/*package*/ XmlBlock.Parser mXml;
+	/*package*/ ResXmlPullParser mXml;
 	/*package*/ int[] mRsrcs;
 	/*package*/ int[] mData;
 	/*package*/ int[] mIndices;
@@ -153,9 +156,7 @@ public class TypedArray {
 		if (type == TypedValue.TYPE_STRING) {
 			final int cookie = data[index + AssetManager.STYLE_ASSET_COOKIE];
 			if (cookie < 0) {
-				return mXml.getPooledString(
-					       data[index + AssetManager.STYLE_DATA])
-				    .toString();
+				return mXml.getResXmlDocument().getStringPool().get(data[index + AssetManager.STYLE_DATA]).get();
 			}
 		}
 		return null;
@@ -689,10 +690,13 @@ public class TypedArray {
 		final int cookie = data[index + AssetManager.STYLE_ASSET_COOKIE];
 		if (cookie < 0) {
 			if (mXml != null) {
-				return mXml.getPooledString(
-				    data[index + AssetManager.STYLE_DATA]);
+				ResXmlString xmlString = mXml.getResXmlDocument().getStringPool().get(data[index + AssetManager.STYLE_DATA]);
+				if (xmlString != null)
+					return xmlString.get();
 			}
-			return null;
+			if (data[index + AssetManager.STYLE_RESOURCE_ID] != 0) {
+				return mResources.mAssets.getResourceText(data[index + AssetManager.STYLE_RESOURCE_ID]);
+			}
 		}
 		// System.out.println("Getting pooled from: " + v);
 		return mResources.mAssets.getPooledString(

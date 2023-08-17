@@ -19,16 +19,22 @@ package android.content.res;
 import android.content.Context;
 import android.os.ParcelFileDescriptor;
 import android.os.Trace;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 
+import com.reandroid.arsc.array.ResValueMapArray;
 import com.reandroid.arsc.chunk.PackageBlock;
 import com.reandroid.arsc.chunk.TableBlock;
 import com.reandroid.arsc.chunk.xml.ResXmlDocument;
 import com.reandroid.arsc.chunk.xml.ResXmlPullParser;
 import com.reandroid.arsc.group.EntryGroup;
+import com.reandroid.arsc.item.StringItem;
+import com.reandroid.arsc.value.Entry;
+import com.reandroid.arsc.value.EntryHeaderMap;
 import com.reandroid.arsc.value.ResValue;
 import com.reandroid.arsc.value.ResValueMap;
+import com.reandroid.arsc.value.ValueItem;
 import com.reandroid.arsc.value.ValueType;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
@@ -42,6 +48,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import org.xmlpull.v1.XmlPullParser;
@@ -244,6 +251,7 @@ public final class AssetManager {
 		ResValue resValue = entryGroup.pickOne().getResValue();
 		if (resValue == null)
 			return false;  // not found
+		outValue.resourceId = ident;
 		outValue.type = resValue.getType();
 		outValue.data = resValue.getData();
 		if (outValue.type == TypedValue.TYPE_STRING)
@@ -257,36 +265,63 @@ public final class AssetManager {
 	 * @param id Resource id of the string array
 	 */
 	/*package*/ final CharSequence[] getResourceTextArray(final int id) {
-		int[] rawInfoArray = getArrayStringInfo(id);
-		int rawInfoArrayLen = rawInfoArray.length;
-		final int infoArrayLen = rawInfoArrayLen / 2;
-		int block;
-		int index;
-		CharSequence[] retArray = new CharSequence[infoArrayLen];
-		for (int i = 0, j = 0; i < rawInfoArrayLen; i = i + 2, j++) {
-			block = rawInfoArray[i];
-			index = rawInfoArray[i + 1];
-			retArray[j] = index >= 0 ? mStringBlocks[block].get(index) : null;
+		ResValueMap children[] = tableBlock.search(id).pickOne().getResValueMapArray().getChildes();
+		CharSequence values[] = new CharSequence[children.length];
+		for (int i = 0; i < children.length; i++) {
+			StringItem stringItem = children[i].getDataAsPoolString();
+			values[i] = (stringItem != null) ? stringItem.get() : "";
 		}
-		return retArray;
+		return values;
+	}
+
+	public Map<Integer,ValueItem> loadStyle(int resId) {
+		Map<Integer,ValueItem> map = new HashMap<>();
+		EntryGroup entryGroup = tableBlock.search(resId);
+		while (entryGroup != null) {
+			Entry entry = entryGroup.pickOne();
+			ResValueMapArray array = entry.getResValueMapArray();
+			for (int i = 0; i < array.childesCount(); i++) {
+				map.putIfAbsent(array.get(i).getName(), array.get(i));
+			}
+			int parent_id = ((EntryHeaderMap)entry.getHeader()).getParentId();
+			entryGroup = tableBlock.search(parent_id);
+		}
+		return map;
 	}
 
 	/*package*/ final boolean getThemeValue(int theme, int ident,
 						TypedValue outValue, boolean resolveRefs) {
-		int block = loadThemeAttributeValue(theme, ident, outValue, resolveRefs);
-		if (block >= 0) {
-			if (outValue.type != TypedValue.TYPE_STRING) {
-				return true;
+		Map<Integer,ValueItem> style = loadStyle(theme);
+		EntryGroup entryGroup = tableBlock.search(ident);
+		if (entryGroup == null)
+			return false;
+		Entry entry = entryGroup.pickOne();
+		ValueItem valueItem = null;
+		while ("attr".equals(entry.getTypeName())) {
+			valueItem = null;
+			if (style.containsKey(ident))
+				valueItem = style.get(ident);
+			if (valueItem != null && valueItem.getValueType() == ValueType.ATTRIBUTE) {
+				ident = valueItem.getData();
+				entryGroup = tableBlock.search(ident);
+				if (entryGroup == null) {
+					break;
+				}
+				entry = entryGroup.pickOne();
+			} else {
+				break;
 			}
-			StringBlock[] blocks = mStringBlocks;
-			if (blocks == null) {
-				ensureStringBlocks();
-				blocks = mStringBlocks;
-			}
-			outValue.string = blocks[block].get(outValue.data);
-			return true;
 		}
-		return false;
+		if (valueItem == null)
+			return false;
+		outValue.resourceId = 0;
+		outValue.type = valueItem.getType();
+		outValue.data = valueItem.getData();
+		outValue.assetCookie = -1;
+		if (outValue.type == TypedValue.TYPE_STRING) {
+			outValue.string = valueItem.getDataAsPoolString().get();
+		}
+		return true;
 	}
 
 	/*package*/ final void ensureStringBlocks() {
@@ -318,7 +353,7 @@ public final class AssetManager {
 		// System.out.println("Get pooled: block=" + block
 		//                    + ", id=#" + Integer.toHexString(id)
 		//                    + ", blocks=" + mStringBlocks);
-		return mStringBlocks[block - 1].get(id);
+		return tableBlock.getStringPool().get(id).get();
 	}
 
 	/**
@@ -584,7 +619,7 @@ public final class AssetManager {
 
 	/*package*/ final void releaseTheme(int theme) {
 		synchronized (this) {
-			deleteTheme(theme);
+			// deleteTheme(theme);
 			decRefsLocked(theme);
 		}
 	}
@@ -748,11 +783,11 @@ public final class AssetManager {
 	 * applications.
 	 * {@hide}
 	 */
-	public native final void setConfiguration(int mcc, int mnc, String locale,
+	public /*native*/ final void setConfiguration(int mcc, int mnc, String locale,
 						  int orientation, int touchscreen, int density, int keyboard,
 						  int keyboardHidden, int navigation, int screenWidth, int screenHeight,
 						  int smallestScreenWidthDp, int screenWidthDp, int screenHeightDp,
-						  int screenLayout, int uiMode, int majorVersion);
+						  int screenLayout, int uiMode, int majorVersion) {}
 
 	/**
 	 * Retrieve the resource identifier for the given resource name.
@@ -769,9 +804,13 @@ public final class AssetManager {
 		return -1;
 	}
 
-	/*package*/ native final String getResourceName(int resid);
+	/*package*/ /*native*/ final String getResourceName(int resid) {
+		return tableBlock.search(resid).pickOne().getName();
+	}
 	/*package*/ native final String getResourcePackageName(int resid);
-	/*package*/ native final String getResourceTypeName(int resid);
+	/*package*/ /*native*/ final String getResourceTypeName(int resid) {
+		return tableBlock.search(resid).pickOne().getTypeName();
+	}
 	/*package*/ native final String getResourceEntryName(int resid);
 
 	private native final int openAsset(String fileName, int accessMode);
@@ -808,9 +847,82 @@ public final class AssetManager {
 	/*package*/ static final int STYLE_RESOURCE_ID = 3;
 	/*package*/ static final int STYLE_CHANGING_CONFIGURATIONS = 4;
 	/*package*/ static final int STYLE_DENSITY = 5;
-	/*package*/ native static final boolean applyStyle(int theme,
-							   int defStyleAttr, int defStyleRes, int xmlParser,
-							   int[] inAttrs, int[] outValues, int[] outIndices);
+	/*package*/ /*native*/ final boolean applyStyle(Map<Integer,ValueItem> theme,
+							   int defStyleAttr, int defStyleRes, AttributeSet set,
+							   int[] inAttrs, int[] outValues, int[] outIndices) {
+		if (defStyleRes == 0 && theme.containsKey(defStyleAttr))
+			defStyleRes = theme.get(defStyleAttr).getData();
+		Map<Integer,ValueItem> defStyle = loadStyle(defStyleRes);
+
+		ResXmlPullParser parser = (ResXmlPullParser)set;
+
+		for (int i = 0; i < inAttrs.length; i++) {
+			int d = i*AssetManager.STYLE_NUM_ENTRIES;
+			// reset values in case of cached array
+			outValues[d+AssetManager.STYLE_RESOURCE_ID] = 0;
+			outValues[d+AssetManager.STYLE_TYPE] = 0;
+			outValues[d+AssetManager.STYLE_DATA] = 0;
+			outValues[d+AssetManager.STYLE_ASSET_COOKIE] = 0;
+			int resId = inAttrs[i];
+			EntryGroup entryGroup = tableBlock.search(resId);
+			if (entryGroup == null)
+				continue;
+			Entry entry = entryGroup.pickOne();
+			ValueItem valueItem = null;
+			while ("attr".equals(entry.getTypeName())) {
+				valueItem = null;
+				if (set != null) {
+					for (int j=0; j<set.getAttributeCount(); j++) {
+						if (set.getAttributeNameResource(j) == resId) {
+							valueItem = parser.getResXmlAttributeAt(j);
+							break;
+						}
+					}
+				}
+				if (valueItem == null) {
+					valueItem = defStyle.get(resId);
+					if (valueItem != null && valueItem.getValueType() == ValueType.ATTRIBUTE && valueItem.getData() == resId)
+						valueItem = null;
+				}
+				if (valueItem == null)
+					valueItem = theme.get(resId);
+				if (valueItem != null && valueItem.getValueType() == ValueType.ATTRIBUTE) {
+					resId = valueItem.getData();
+					entryGroup = tableBlock.search(resId);
+					if (entryGroup == null) {
+						break;
+					}
+					entry = entryGroup.pickOne();
+				} else {
+					break;
+				}
+			}
+			if (valueItem == null)
+				continue;
+			if (valueItem.getValueType() == ValueType.REFERENCE) {
+				resId = valueItem.getData();
+				if (resId == 0)
+					continue;
+				entry = tableBlock.search(resId).pickOne();
+
+				outValues[d + AssetManager.STYLE_RESOURCE_ID] = resId;
+				ResValue resValue = entry.getResValue();
+				if (resValue != null) {
+					outValues[d + AssetManager.STYLE_TYPE] = entry.getResValue().getType();
+					outValues[d + AssetManager.STYLE_DATA] = entry.getResValue().getData();
+				} else {
+					outValues[d + AssetManager.STYLE_TYPE] = -1;
+				}
+				outValues[d + AssetManager.STYLE_ASSET_COOKIE] = -1;
+			} else {
+				outValues[d+AssetManager.STYLE_RESOURCE_ID] = 0;
+				outValues[d+AssetManager.STYLE_TYPE] = valueItem.getType();
+				outValues[d+AssetManager.STYLE_DATA] = valueItem.getData();
+				outValues[d+AssetManager.STYLE_ASSET_COOKIE] = -1;
+			}
+		}
+		return true;
+	}
 	/*package*/ native final boolean retrieveAttributes(
 	    int xmlParser, int[] inAttrs, int[] outValues, int[] outIndices);
 	/*package*/ native final int getArraySize(int resource);
