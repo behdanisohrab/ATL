@@ -16,9 +16,11 @@ public class ImageView extends View {
 		super(context, attrs);
 
 		native_constructor(attrs);
-		int resource = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "src", 0);
-		if (resource != 0)
-			setImageResource(resource);
+		if (attrs != null) {
+			int resource = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "src", 0);
+			if (resource != 0)
+				setImageResource(resource);
+		}
 	}
 
 	public ImageView(Context context) {
@@ -50,6 +52,8 @@ public class ImageView extends View {
 	public Drawable getDrawable() {
 		return new BitmapDrawable(getContext().getResources(), bitmap);
 	}
+
+	public void setImageDrawable(Drawable drawable) {}
 
 	/**
 	 * Options for scaling the bounds of an image to the bounds of this view.

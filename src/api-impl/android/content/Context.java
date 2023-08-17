@@ -6,6 +6,7 @@ import android.app.Application;
 import android.app.KeyguardManager;
 import android.app.NotificationManager;
 import android.app.SharedPreferencesImpl;
+import android.app.UiModeManager;
 import android.content.BroadcastReceiver;
 import android.content.ClipboardManager;
 import android.content.Intent;
@@ -165,6 +166,8 @@ public class Context extends Object {
 				return new InputManager();
 			case "location":
 				return new LocationManager();
+			case "uimode":
+				return new UiModeManager();
 			default:
 				System.out.println("!!!!!!! getSystemService: case >" + name + "< is not implemented yet");
 				return null;
@@ -347,5 +350,9 @@ public class Context extends Object {
 
 	public void setTheme(int resId) {
 		theme.applyStyle(resId, true);
+	}
+
+	public final CharSequence getText(int resId) {
+		return getResources().getText(resId);
 	}
 }

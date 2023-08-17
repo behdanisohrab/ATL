@@ -220,7 +220,7 @@ public class Matrix {
 		if (src == null) {
 			reset();
 		} else {
-			native_set(native_instance, src.native_instance);
+			// native_set(native_instance, src.native_instance);
 		}
 	}
 	/**
@@ -739,7 +739,7 @@ public class Matrix {
 	@Override
 	protected void finalize() throws Throwable {
 		try {
-			finalizer(native_instance);
+			// finalizer(native_instance);
 		} finally {
 			super.finalize();
 		}
@@ -747,7 +747,9 @@ public class Matrix {
 	/*package*/ final int ni() {
 		return native_instance;
 	}
-	private static native int native_create(int native_src_or_zero);
+	private static /*native*/ int native_create(int native_src_or_zero) {
+		return 0;
+	}
 	private static native boolean native_isIdentity(int native_object);
 	private static native boolean native_rectStaysRect(int native_object);
 	private static native void native_reset(int native_object);

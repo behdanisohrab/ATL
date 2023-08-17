@@ -3,6 +3,18 @@ package android.graphics;
 public class Paint {
 	private int color = 0xFF000000;
 
+	public Paint() {
+	}
+
+	public Paint (int flags) {
+		this();
+		setFlags(flags);
+	}
+
+	public Paint(Paint paint) {
+		setColor(paint.getColor());
+	}
+
 	public void setColor(int color) {
 		this.color = color;
 	}

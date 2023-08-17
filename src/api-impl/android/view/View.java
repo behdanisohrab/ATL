@@ -4,10 +4,16 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.LayoutDirection;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class View extends Object {
 
@@ -590,6 +596,22 @@ public class View extends Object {
 		//		boolean onKey(View v, int keyCode, KeyEvent event);
 	}
 
+	public interface OnLongClickListener {
+		// TODO
+	}
+
+	public interface OnHoverListener {
+		// TODO
+	}
+
+	public interface OnApplyWindowInsetsListener {
+		// TODO
+	}
+
+	public interface OnLayoutChangeListener {
+		// TODO
+	}
+
 	public interface OnCreateContextMenuListener {
 		/**
 		 * Called when the context menu for this view is being built. It is not
@@ -747,6 +769,7 @@ public class View extends Object {
 	public AttributeSet attrs;
 	protected ViewGroup.LayoutParams layout_params;
 	private Context context;
+	private Map<Integer,Object> tags = new HashMap<>();
 
 	public long widget; // pointer
 
@@ -762,6 +785,10 @@ public class View extends Object {
 			if (id != 0)
 				setId(id);
 		}
+	}
+
+	public View(Context context, AttributeSet attrs, int defStyle) {
+		this(context, attrs);
 	}
 
 	public View findViewById(int id) {
@@ -836,6 +863,7 @@ public class View extends Object {
 	}
 
 	public void setId(int id) {
+		this.id = id;
 		view_by_id.put(id, this);
 	}
 
@@ -950,4 +978,90 @@ public class View extends Object {
 
 	public void refreshDrawableState() {
 	}
+
+	public void setDescendantFocusability(int value) {}
+
+	public void setAccessibilityDelegate(AccessibilityDelegate delegate) {}
+
+	public static class AccessibilityDelegate {}
+
+	public Drawable getBackground() {
+		return null;
+	}
+
+	public void setClickable(boolean clickable) {}
+
+	public void setEnabled(boolean enabled) {}
+
+	public CharSequence getContentDescription() {
+		return null;
+	}
+
+	public void setOnLongClickListener(OnLongClickListener listener) {}
+
+	public void setLongClickable(boolean longClickable) {}
+
+	public void setOnHoverListener(OnHoverListener listener) {}
+
+	public final void measure (int widthMeasureSpec, int heightMeasureSpec) {}
+
+	public final int getMeasuredWidth() {
+		return getWidth();
+	}
+
+	public final int getMeasuredHeight() {
+		return getHeight();
+	}
+
+	public void setBackgroundDrawable(Drawable backgroundDrawable) {}
+
+	public int getOverScrollMode() {return 0;}
+
+	public void setFitsSystemWindows(boolean fitsSystemWindows) {}
+
+	public void setWillNotDraw(boolean value) {}
+
+	public void setScrollContainer(boolean isScrollContainer) {}
+
+	public boolean removeCallbacks(Runnable action) {return false;}
+
+	public void requestLayout() {};
+
+	public void setOverScrollMode(int mode) {}
+
+	public int getId() {return id;}
+
+	public boolean postDelayed(Runnable action, long delayMillis) {
+		new Handler(Looper.getMainLooper()).postDelayed(action, delayMillis);
+        return true;
+    }
+
+	public boolean post(Runnable action) {
+		new Handler(Looper.getMainLooper()).post(action);
+        return true;
+	}
+
+	public void setSaveFromParentEnabled(boolean enabled) {}
+
+	public void setTag(int key, Object tag) {
+		tags.put(key, tag);
+	}
+	public Object getTag(int key) {
+		return tags.get(key);
+	}
+
+	public void addOnLayoutChangeListener(OnLayoutChangeListener listener) {}
+
+	public boolean isSelected() {return false;}
+
+	public void sendAccessibilityEvent(int eventType) {}
+
+	public void setMinimumHeight(int minHeight) {}
+	public void setMinimumWidth(int minWidth) {}
+
+	public void setActivated (boolean activated) {}
+
+	public int getVisibility() {return View.VISIBLE;}
+
+	public boolean isInEditMode() {return false;}
 }

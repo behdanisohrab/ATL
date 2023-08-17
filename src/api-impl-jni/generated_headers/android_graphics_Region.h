@@ -91,14 +91,6 @@ JNIEXPORT jboolean JNICALL Java_android_graphics_Region_nativeEquals
 
 /*
  * Class:     android_graphics_Region
- * Method:    nativeConstructor
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_android_graphics_Region_nativeConstructor
-  (JNIEnv *, jclass);
-
-/*
- * Class:     android_graphics_Region
  * Method:    nativeDestructor
  * Signature: (I)V
  */

@@ -6,7 +6,9 @@ import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.text.InputFilter;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -27,6 +29,10 @@ public class TextView extends View {
 		super(context);
 
 		native_constructor(context);
+	}
+
+	public TextView(Context context, AttributeSet attrs, int defStyleAttr) {
+		this(context, attrs);
 	}
 
 	native void native_constructor(AttributeSet attrs);
@@ -75,6 +81,24 @@ public class TextView extends View {
 
 	public void addTextChangedListener(TextWatcher watcher) {}
 	public void setOnEditorActionListener(TextView.OnEditorActionListener l) {}
+
+	public TransformationMethod getTransformationMethod() {
+		return null;
+	}
+
+	public void setHintTextColor(ColorStateList colorStateList) {}
+	public void setLinkTextColor(ColorStateList colorStateList) {}
+
+	public void setSingleLine() {}
+
+	public void setEllipsize(TextUtils.TruncateAt truncateAt) {}
+
+	public void setTextAppearance(Context context, int appearance) {}
+
+	public void setMaxLines(int maxLines) {}
+
+	public void setMinWidth(int minWidth) {}
+	public void setMaxWidth(int maxWidth) {}
 
 	public static interface OnEditorActionListener {
 	}

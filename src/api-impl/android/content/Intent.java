@@ -185,6 +185,14 @@ public class Intent {
 		return component;
 	}
 
+	public boolean hasExtra(String name) {
+		return extras.containsKey(name);
+	}
+
+	public Serializable getSerializableExtra(String name) {
+		return (Serializable)extras.get(name);
+	}
+
 	@Override
 	public String toString() {
 		return "Intent [component=" + component + ", extras=" + extras + "]";

@@ -1,6 +1,9 @@
 package android.view;
 
+import android.R;
+import android.animation.LayoutTransition;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import java.util.ArrayList;
 
@@ -89,6 +92,72 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		return true;
 	}
 
+	public LayoutTransition getLayoutTransition() {return null;}
+
+	public static int getChildMeasureSpec(int spec, int padding, int childDimension) {
+		int specMode = MeasureSpec.getMode(spec);
+		int specSize = MeasureSpec.getSize(spec);
+		int size = Math.max(0, specSize - padding);
+		int resultSize = 0;
+		int resultMode = 0;
+		switch (specMode) {
+		// Parent has imposed an exact size on us
+		case MeasureSpec.EXACTLY:
+			if (childDimension >= 0) {
+				resultSize = childDimension;
+				resultMode = MeasureSpec.EXACTLY;
+			} else if (childDimension == LayoutParams.MATCH_PARENT) {
+				// Child wants to be our size. So be it.
+				resultSize = size;
+				resultMode = MeasureSpec.EXACTLY;
+			} else if (childDimension == LayoutParams.WRAP_CONTENT) {
+				// Child wants to determine its own size. It can't be
+				// bigger than us.
+				resultSize = size;
+				resultMode = MeasureSpec.AT_MOST;
+			}
+			break;
+		// Parent has imposed a maximum size on us
+		case MeasureSpec.AT_MOST:
+			if (childDimension >= 0) {
+				// Child wants a specific size... so be it
+				resultSize = childDimension;
+				resultMode = MeasureSpec.EXACTLY;
+			} else if (childDimension == LayoutParams.MATCH_PARENT) {
+				// Child wants to be our size, but our size is not fixed.
+				// Constrain child to not be bigger than us.
+				resultSize = size;
+				resultMode = MeasureSpec.AT_MOST;
+			} else if (childDimension == LayoutParams.WRAP_CONTENT) {
+				// Child wants to determine its own size. It can't be
+				// bigger than us.
+				resultSize = size;
+				resultMode = MeasureSpec.AT_MOST;
+			}
+			break;
+		// Parent asked to see how big we want to be
+		case MeasureSpec.UNSPECIFIED:
+			if (childDimension >= 0) {
+				// Child wants a specific size... let them have it
+				resultSize = childDimension;
+				resultMode = MeasureSpec.EXACTLY;
+			} else if (childDimension == LayoutParams.MATCH_PARENT) {
+				// Child wants to be our size... find out how big it should
+				// be
+				resultSize = 0; //View.sUseZeroUnspecifiedMeasureSpec ? 0 : size;
+				resultMode = MeasureSpec.UNSPECIFIED;
+			} else if (childDimension == LayoutParams.WRAP_CONTENT) {
+				// Child wants to determine its own size.... find out how
+				// big it should be
+				resultSize = 0; //View.sUseZeroUnspecifiedMeasureSpec ? 0 : size;
+				resultMode = MeasureSpec.UNSPECIFIED;
+			}
+			break;
+		}
+		//noinspection ResourceType
+		return MeasureSpec.makeMeasureSpec(resultSize, resultMode);
+	}
+
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;
 		public static final int MATCH_PARENT = -1;
@@ -115,9 +184,11 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		}
 
 		public LayoutParams(Context context, AttributeSet attrs) {
-			this.width = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "layout_width", 0);
-			this.height = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "layout_height", 0);
+			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ViewGroup_Layout);
+			width = a.getLayoutDimension(R.styleable.ViewGroup_Layout_layout_width, "layout_width");
+			height = a.getLayoutDimension(R.styleable.ViewGroup_Layout_layout_height, "layout_height");
 			this.gravity = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "layout_gravity", -1);
+			a.recycle();
 		}
 
 		public void setMargins(int left, int top, int right, int bottom) {}
@@ -129,6 +200,10 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	public static class MarginLayoutParams extends ViewGroup.LayoutParams {
+		public int leftMargin;
+		public int topMargin;
+		public int rightMargin;
+		public int bottomMargin;
 
 		public MarginLayoutParams() {
 			super();
