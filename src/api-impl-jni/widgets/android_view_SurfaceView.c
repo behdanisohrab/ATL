@@ -83,7 +83,7 @@ static void on_resize(GtkWidget* self, gint width, gint height, struct jni_callb
 	                       width, height);
 }
 
-JNIEXPORT void JNICALL Java_android_view_SurfaceView_native_1constructor(JNIEnv *env, jobject this, jobject context)
+JNIEXPORT jlong JNICALL Java_android_view_SurfaceView_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
 	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *dummy = surface_view_widget_new();
@@ -103,5 +103,5 @@ JNIEXPORT void JNICALL Java_android_view_SurfaceView_native_1constructor(JNIEnv 
 
 	g_signal_connect(dummy, "resize", G_CALLBACK(on_resize), callback_data);
 
-	_SET_LONG_FIELD(this, "widget", _INTPTR(dummy));
+	return _INTPTR(dummy);
 }

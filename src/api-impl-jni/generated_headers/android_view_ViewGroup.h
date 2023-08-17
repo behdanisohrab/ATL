@@ -201,27 +201,27 @@ extern "C" {
 #define android_view_ViewGroup_TEXT_DIRECTION_RTL 4L
 /*
  * Class:     android_view_ViewGroup
- * Method:    addView
- * Signature: (Landroid/view/View;ILandroid/view/ViewGroup/LayoutParams;)V
+ * Method:    native_constructor
+ * Signature: (Landroid/content/Context;Landroid/util/AttributeSet;)J
  */
-JNIEXPORT void JNICALL Java_android_view_ViewGroup_addView
-  (JNIEnv *, jobject, jobject, jint, jobject);
+JNIEXPORT jlong JNICALL Java_android_view_ViewGroup_native_1constructor
+  (JNIEnv *, jobject, jobject, jobject);
 
 /*
  * Class:     android_view_ViewGroup
- * Method:    removeView
- * Signature: (Landroid/view/View;)V
+ * Method:    native_addView
+ * Signature: (JJILandroid/view/ViewGroup/LayoutParams;)V
  */
-JNIEXPORT void JNICALL Java_android_view_ViewGroup_removeView
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT void JNICALL Java_android_view_ViewGroup_native_1addView
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
 
 /*
  * Class:     android_view_ViewGroup
- * Method:    removeAllViews
- * Signature: ()V
+ * Method:    native_removeView
+ * Signature: (JJ)V
  */
-JNIEXPORT void JNICALL Java_android_view_ViewGroup_removeAllViews
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_android_view_ViewGroup_native_1removeView
+  (JNIEnv *, jobject, jlong, jlong);
 
 #ifdef __cplusplus
 }

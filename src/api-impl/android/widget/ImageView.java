@@ -15,7 +15,6 @@ public class ImageView extends View {
 	public ImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 
-		native_constructor(attrs);
 		if (attrs != null) {
 			int resource = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "src", 0);
 			if (resource != 0)
@@ -25,18 +24,14 @@ public class ImageView extends View {
 
 	public ImageView(Context context) {
 		super(context);
-
-		native_constructor(context);
 	}
 
-	public ImageView(Context context, AttributeSet attrs, int xxx) {
-		super(context);
-
-		native_constructor(context);
+	public ImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
 	}
 
-	private native void native_constructor(AttributeSet attrs);
-	private native void native_constructor(Context context);
+	@Override
+	protected native long native_constructor(Context context, AttributeSet attrs);
 	private native void native_setPixbuf(long pixbuf);
 
 	public /*native*/ void setImageResource(final int resid) {

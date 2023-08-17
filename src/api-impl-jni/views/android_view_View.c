@@ -174,7 +174,7 @@ gboolean tick_callback(GtkWidget* widget, GdkFrameClock* frame_clock, gpointer u
 	return G_SOURCE_CONTINUE;
 }
 
-JNIEXPORT void JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, jobject this, jobject Context)
+JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
 	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *area = gtk_drawing_area_new();
@@ -183,7 +183,7 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, j
 
 	gtk_widget_add_tick_callback(area, tick_callback, NULL, NULL);
 
-	_SET_LONG_FIELD(this, "widget", (long)area);
+	return _INTPTR(area);
 }
 
 JNIEXPORT void JNICALL Java_android_view_View_nativeInvalidate(JNIEnv *env, jclass, jlong widget_ptr) {

@@ -11,25 +11,18 @@ public class LinearLayout extends ViewGroup {
 
 	public LinearLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
-		native_constructor(attrs);
 	}
 
 	public LinearLayout(Context context) {
 		super(context);
-
-		native_constructor(context);
 	}
 
-	private native void native_constructor(AttributeSet attrs);
-	private native void native_constructor(Context context);
-
 	@Override
-	public native void addView(View child, int index, ViewGroup.LayoutParams params);
+	protected native long native_constructor(Context context, AttributeSet attrs);
 	@Override
-	public native void removeView(View view);
+	protected native void native_addView(long widget, long child, int index, ViewGroup.LayoutParams params);
 	@Override
-	public native void removeAllViews();
+	protected native void native_removeView(long widget, long child);
 
 	public native void setOrientation(int orientation);
 	public void setWeightSum(float weightSum) {}

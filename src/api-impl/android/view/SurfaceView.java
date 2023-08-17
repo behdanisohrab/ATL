@@ -3,6 +3,8 @@ package android.view;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.util.AttributeSet;
+
 import java.util.ArrayList;
 
 public class SurfaceView extends View {
@@ -11,8 +13,6 @@ public class SurfaceView extends View {
 
 	public SurfaceView(Context context) {
 		super(context);
-
-		native_constructor(context);
 
 		mSurface.widget = this.widget;
 	}
@@ -23,7 +23,8 @@ public class SurfaceView extends View {
 		}
 	}
 
-	private native void native_constructor(Context context);
+	@Override
+	protected native long native_constructor(Context context, AttributeSet attrs);
 
 	public SurfaceHolder getHolder() {
 		return mSurfaceHolder;

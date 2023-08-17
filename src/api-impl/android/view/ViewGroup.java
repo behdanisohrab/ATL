@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class ViewGroup extends View implements ViewParent, ViewManager {
 	public int id;
@@ -55,10 +56,34 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		addView(child, new LayoutParams(width, height));
 	}
 
-	public native void addView(View child, int index, LayoutParams params);
+	public void addView(View child, int index, LayoutParams params) {
+		if (params != null) {
+			child.setLayoutParams(params);
+		}
+		child.parent = this;
+		children.add(child);
+		native_addView(widget, child.widget, index, params);
+	}
 
-	public native void removeView(View view);
-	public native void removeAllViews();
+	public void removeView(View child) {
+		child.parent = null;
+		children.remove(child);
+		native_removeView(widget, child.widget);
+	}
+
+	public void removeAllViews() {
+		for (Iterator<View> it = children.iterator(); it.hasNext();) {
+			View child = it.next();
+			child.parent = null;
+			it.remove();
+			native_removeView(widget, child.widget);
+		}
+	}
+
+	@Override
+	protected native long native_constructor(Context context, AttributeSet attrs);
+	protected native void native_addView(long widget, long child, int index, LayoutParams params);
+	protected native void native_removeView(long widget, long child);
 
 	public View getChildAt(int index) {
 		return children.get(index);

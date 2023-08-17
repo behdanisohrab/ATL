@@ -12,21 +12,18 @@ public class RelativeLayout extends ViewGroup {
 
 	public RelativeLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
-		native_constructor(attrs);
 	}
 
 	public RelativeLayout(Context context) {
 		super(context);
-
-		native_constructor(context);
 	}
 
-	private native void native_constructor(AttributeSet attrs);
-	private native void native_constructor(Context context);
-
 	@Override
-	public native void addView(View child, int index, ViewGroup.LayoutParams params);
+	protected native long native_constructor(Context context, AttributeSet attrs);
+	@Override
+	protected native void native_addView(long widget, long child, int index, ViewGroup.LayoutParams params);
+	@Override
+	protected native void native_removeView(long widget, long child);
 
 	public static class LayoutParams extends ViewGroup.LayoutParams {
 		public LayoutParams(int width, int height) {

@@ -7,26 +7,16 @@
 
 #include "../generated_headers/android_widget_TextView.h"
 
-JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor__Landroid_util_AttributeSet_2(JNIEnv *env, jobject this, jobject attrs)
+JNIEXPORT jlong JNICALL Java_android_widget_TextView_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
-	const char *text = attribute_set_get_string(env, attrs, "text", NULL);
+	const char *text = attribute_set_get_string(env, attrs, "text", NULL) ?: "FIXME";
 
 //	_SET_OBJ_FIELD(this, "text", "Ljava/lang/String;", _JSTRING(text)); //TODO: sadly this might be needed, but it's not atm
 
 	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *label = gtk_label_new(text);
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), label);
-	_SET_LONG_FIELD(this, "widget", _INTPTR(label));
-}
-
-JNIEXPORT void JNICALL Java_android_widget_TextView_native_1constructor__Landroid_content_Context_2(JNIEnv *env, jobject this, jobject attrs)
-{
-//	_SET_OBJ_FIELD(this, "text", "Ljava/lang/String;", _JSTRING(text)); //TODO: sadly this might be needed, but it's not atm
-
-	GtkWidget *wrapper = wrapper_widget_new();
-	GtkWidget *label = gtk_label_new("FIXME");
-	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), label);
-	_SET_LONG_FIELD(this, "widget", _INTPTR(label));
+	return _INTPTR(label);
 }
 
 JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setText(JNIEnv *env, jobject this, jobject charseq)
