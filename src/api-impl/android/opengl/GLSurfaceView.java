@@ -18,8 +18,8 @@ import javax.microedition.khronos.opengles.GL10;
 public class GLSurfaceView extends View implements SurfaceHolder.Callback { // TODO: have this extend SurfaceView?
 	EGLContextFactory context_factory = new default_ContextFactory();
 	EGLConfigChooser config_chooser = new boolean_ConfigChooser(true);
-	EGL10 java_egl_wrapper;
-	GL10 java_gl_wrapper;
+	EGL10 java_egl_wrapper = (EGL10)EGLContext.getEGL();
+	GL10 java_gl_wrapper = (GL10)EGLContext.getGL();
 	int opengl_version = 1;
 
 	// from SurfaceHolder.Callback
@@ -29,22 +29,14 @@ public class GLSurfaceView extends View implements SurfaceHolder.Callback { // T
 
 	public GLSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
-		java_egl_wrapper = (EGL10)EGLContext.getEGL();
-		java_gl_wrapper = (GL10)EGLContext.getGL();
-		native_constructor(attrs);
 	}
 
 	public GLSurfaceView(Context context) {
 		super(context);
-
-		java_egl_wrapper = (EGL10)EGLContext.getEGL();
-		java_gl_wrapper = (GL10)EGLContext.getGL();
-		native_constructor(context);
 	}
 
-	private native void native_constructor(AttributeSet attrs);
-	private native void native_constructor(Context context);
+	@Override
+	protected native long native_constructor(Context context, AttributeSet attrs);
 
 	// Resumes the rendering thread, re-creating the OpenGL context if necessary. It is the counterpart to onPause(). This method should typically be called in Activity.onStart. Must not be called before a renderer has been set.
 	// TODO: make use of this

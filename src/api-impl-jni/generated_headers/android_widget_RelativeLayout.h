@@ -149,29 +149,79 @@ extern "C" {
 #define android_widget_RelativeLayout_PFLAG2_LAYOUT_DIRECTION_RESOLVED 32L
 #undef android_widget_RelativeLayout_PFLAG2_LAYOUT_DIRECTION_RESOLVED_MASK
 #define android_widget_RelativeLayout_PFLAG2_LAYOUT_DIRECTION_RESOLVED_MASK 48L
+#undef android_widget_RelativeLayout_STATUS_BAR_HIDDEN
+#define android_widget_RelativeLayout_STATUS_BAR_HIDDEN 1L
+#undef android_widget_RelativeLayout_STATUS_BAR_VISIBLE
+#define android_widget_RelativeLayout_STATUS_BAR_VISIBLE 0L
+#undef android_widget_RelativeLayout_SYSTEM_UI_FLAG_FULLSCREEN
+#define android_widget_RelativeLayout_SYSTEM_UI_FLAG_FULLSCREEN 4L
+#undef android_widget_RelativeLayout_SYSTEM_UI_FLAG_HIDE_NAVIGATION
+#define android_widget_RelativeLayout_SYSTEM_UI_FLAG_HIDE_NAVIGATION 2L
+#undef android_widget_RelativeLayout_SYSTEM_UI_FLAG_IMMERSIVE
+#define android_widget_RelativeLayout_SYSTEM_UI_FLAG_IMMERSIVE 2048L
+#undef android_widget_RelativeLayout_SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+#define android_widget_RelativeLayout_SYSTEM_UI_FLAG_IMMERSIVE_STICKY 4096L
+#undef android_widget_RelativeLayout_SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+#define android_widget_RelativeLayout_SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN 1024L
+#undef android_widget_RelativeLayout_SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+#define android_widget_RelativeLayout_SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION 512L
+#undef android_widget_RelativeLayout_SYSTEM_UI_FLAG_LAYOUT_STABLE
+#define android_widget_RelativeLayout_SYSTEM_UI_FLAG_LAYOUT_STABLE 256L
+#undef android_widget_RelativeLayout_SYSTEM_UI_FLAG_LOW_PROFILE
+#define android_widget_RelativeLayout_SYSTEM_UI_FLAG_LOW_PROFILE 1L
+#undef android_widget_RelativeLayout_SYSTEM_UI_FLAG_VISIBLE
+#define android_widget_RelativeLayout_SYSTEM_UI_FLAG_VISIBLE 0L
+#undef android_widget_RelativeLayout_SYSTEM_UI_LAYOUT_FLAGS
+#define android_widget_RelativeLayout_SYSTEM_UI_LAYOUT_FLAGS 1536L
+#undef android_widget_RelativeLayout_TEXT_ALIGNMENT_CENTER
+#define android_widget_RelativeLayout_TEXT_ALIGNMENT_CENTER 4L
+#undef android_widget_RelativeLayout_TEXT_ALIGNMENT_GRAVITY
+#define android_widget_RelativeLayout_TEXT_ALIGNMENT_GRAVITY 1L
+#undef android_widget_RelativeLayout_TEXT_ALIGNMENT_INHERIT
+#define android_widget_RelativeLayout_TEXT_ALIGNMENT_INHERIT 0L
+#undef android_widget_RelativeLayout_TEXT_ALIGNMENT_TEXT_END
+#define android_widget_RelativeLayout_TEXT_ALIGNMENT_TEXT_END 3L
+#undef android_widget_RelativeLayout_TEXT_ALIGNMENT_TEXT_START
+#define android_widget_RelativeLayout_TEXT_ALIGNMENT_TEXT_START 2L
+#undef android_widget_RelativeLayout_TEXT_ALIGNMENT_VIEW_END
+#define android_widget_RelativeLayout_TEXT_ALIGNMENT_VIEW_END 6L
+#undef android_widget_RelativeLayout_TEXT_ALIGNMENT_VIEW_START
+#define android_widget_RelativeLayout_TEXT_ALIGNMENT_VIEW_START 5L
+#undef android_widget_RelativeLayout_TEXT_DIRECTION_ANY_RTL
+#define android_widget_RelativeLayout_TEXT_DIRECTION_ANY_RTL 2L
+#undef android_widget_RelativeLayout_TEXT_DIRECTION_FIRST_STRONG
+#define android_widget_RelativeLayout_TEXT_DIRECTION_FIRST_STRONG 1L
+#undef android_widget_RelativeLayout_TEXT_DIRECTION_INHERIT
+#define android_widget_RelativeLayout_TEXT_DIRECTION_INHERIT 0L
+#undef android_widget_RelativeLayout_TEXT_DIRECTION_LOCALE
+#define android_widget_RelativeLayout_TEXT_DIRECTION_LOCALE 5L
+#undef android_widget_RelativeLayout_TEXT_DIRECTION_LTR
+#define android_widget_RelativeLayout_TEXT_DIRECTION_LTR 3L
+#undef android_widget_RelativeLayout_TEXT_DIRECTION_RTL
+#define android_widget_RelativeLayout_TEXT_DIRECTION_RTL 4L
 /*
  * Class:     android_widget_RelativeLayout
  * Method:    native_constructor
- * Signature: (Landroid/util/AttributeSet;)V
+ * Signature: (Landroid/content/Context;Landroid/util/AttributeSet;)J
  */
-JNIEXPORT void JNICALL Java_android_widget_RelativeLayout_native_1constructor__Landroid_util_AttributeSet_2
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT jlong JNICALL Java_android_widget_RelativeLayout_native_1constructor
+  (JNIEnv *, jobject, jobject, jobject);
 
 /*
  * Class:     android_widget_RelativeLayout
- * Method:    native_constructor
- * Signature: (Landroid/content/Context;)V
+ * Method:    native_addView
+ * Signature: (JJILandroid/view/ViewGroup/LayoutParams;)V
  */
-JNIEXPORT void JNICALL Java_android_widget_RelativeLayout_native_1constructor__Landroid_content_Context_2
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT void JNICALL Java_android_widget_RelativeLayout_native_1addView
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
 
 /*
  * Class:     android_widget_RelativeLayout
- * Method:    addView
- * Signature: (Landroid/view/View;ILandroid/view/ViewGroup/LayoutParams;)V
+ * Method:    native_removeView
+ * Signature: (JJ)V
  */
-JNIEXPORT void JNICALL Java_android_widget_RelativeLayout_addView
-  (JNIEnv *, jobject, jobject, jint, jobject);
+JNIEXPORT void JNICALL Java_android_widget_RelativeLayout_native_1removeView
+  (JNIEnv *, jobject, jlong, jlong);
 
 #ifdef __cplusplus
 }

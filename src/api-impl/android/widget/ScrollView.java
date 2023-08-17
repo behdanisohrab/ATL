@@ -9,25 +9,18 @@ import android.view.ViewGroup.LayoutParams;
 public class ScrollView extends ViewGroup {
 	public ScrollView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
-		native_constructor(attrs);
 	}
 
 	public ScrollView(Context context) {
 		super(context);
-
-		native_constructor(context);
 	}
 
-	private native void native_constructor(AttributeSet attrs);
-	private native void native_constructor(Context context);
-
 	@Override
-	public native void addView(View child, int index, LayoutParams params);
+	protected native long native_constructor(Context context, AttributeSet attrs);
 	@Override
-	public native void removeView(View view);
+	protected native void native_addView(long widget, long child, int index, ViewGroup.LayoutParams params);
 	@Override
-	public native void removeAllViews();
+	protected native void native_removeView(long widget, long child);
 
 	protected void onScrollChanged(int x, int y, int oldx, int oldy) {}
 	public void setFillViewport(boolean fillViewport) {}

@@ -242,10 +242,10 @@ JNIEXPORT jint JNICALL Java_android_view_View_getHeight
 /*
  * Class:     android_view_View
  * Method:    native_constructor
- * Signature: (Landroid/content/Context;)V
+ * Signature: (Landroid/content/Context;Landroid/util/AttributeSet;)J
  */
-JNIEXPORT void JNICALL Java_android_view_View_native_1constructor
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor
+  (JNIEnv *, jobject, jobject, jobject);
 
 /*
  * Class:     android_view_View

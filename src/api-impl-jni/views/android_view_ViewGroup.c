@@ -3,21 +3,32 @@
 #include "../defines.h"
 #include "../util.h"
 
+#include "../widgets/WrapperWidget.h"
+
 #include "../generated_headers/android_view_ViewGroup.h"
 #include "../generated_headers/android_view_View.h"
 
-JNIEXPORT void JNICALL Java_android_view_ViewGroup_addView(JNIEnv *env, jobject this, jobject child, jint index, jobject layout_params)
+/**
+ * Should be overwritten by ViewGroup subclasses.
+ * Fall back to vertical GtkBox if subclass is not implemented yet
+ */
+JNIEXPORT jlong JNICALL Java_android_view_ViewGroup_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
-	GtkWidget *_child = gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(child, "widget"))));
-	jint child_width = -1;
-	jint child_height = -1;
+	GtkWidget *wrapper = wrapper_widget_new();
+	GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1); // spacing of 1
+	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), box);
+	gtk_widget_set_name(GTK_WIDGET(box), "ViewGroup");
+	return _INTPTR(box);
+}
 
+JNIEXPORT void JNICALL Java_android_view_ViewGroup_native_1addView(JNIEnv *env, jobject this, jlong widget, jlong child, jint index, jobject layout_params)
+{
 	if(layout_params) {
-		(*env)->CallVoidMethod(env, child, handle_cache.view.setLayoutParams, layout_params);
-		if((*env)->ExceptionCheck(env))
-			(*env)->ExceptionDescribe(env);
-
 		/*
+		GtkWidget *_child = gtk_widget_get_parent(GTK_WIDGET(_PTR(child)));
+		jint child_width = -1;
+		jint child_height = -1;
+
 		jint child_width = _GET_INT_FIELD(layout_params, "width");
 		jint child_height = _GET_INT_FIELD(layout_params, "height");
 
@@ -33,34 +44,10 @@ JNIEXPORT void JNICALL Java_android_view_ViewGroup_addView(JNIEnv *env, jobject 
 			Java_android_view_View_setGravity(env, child, child_gravity);
 		}*/
 	}
-
-	_SET_OBJ_FIELD(child, "parent", "Landroid/view/ViewGroup;", this);
-
-	jobject children = _GET_OBJ_FIELD(this, "children", "Ljava/util/ArrayList;");
-
-	(*env)->CallVoidMethod(env, children, handle_cache.array_list.add, child);
+	gtk_box_append(GTK_BOX(_PTR(widget)), gtk_widget_get_parent(GTK_WIDGET(_PTR(child)))); // FIXME - ignores index argument
 }
 
-
-JNIEXPORT void JNICALL Java_android_view_ViewGroup_removeView(JNIEnv *env, jobject this, jobject child)
+JNIEXPORT void JNICALL Java_android_view_ViewGroup_native_1removeView(JNIEnv *env, jobject this, jlong widget, jlong child)
 {
-	_SET_OBJ_FIELD(child, "parent", "Landroid/view/ViewGroup;", NULL);
-
-	jobject children = _GET_OBJ_FIELD(this, "children", "Ljava/util/ArrayList;");
-
-	(*env)->CallVoidMethod(env, children, handle_cache.array_list.remove, child);
-}
-
-
-JNIEXPORT void JNICALL Java_android_view_ViewGroup_removeAllViews(JNIEnv *env, jobject this)
-{
-	jobject children = _GET_OBJ_FIELD(this, "children", "Ljava/util/ArrayList;");
-	jint size = (*env)->CallIntMethod(env, children, handle_cache.array_list.size);
-
-	for(int i = 0; i < size; i++) {
-		jobject child = (*env)->CallObjectMethod(env, children, handle_cache.array_list.get, i);
-		_SET_OBJ_FIELD(child, "parent", "Landroid/view/ViewGroup;", NULL);
-	}
-
-	(*env)->CallVoidMethod(env, children, handle_cache.array_list.clear);
+	gtk_box_remove(GTK_BOX(_PTR(widget)), gtk_widget_get_parent(GTK_WIDGET(_PTR(child))));
 }

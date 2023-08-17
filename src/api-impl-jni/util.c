@@ -15,6 +15,9 @@ const char * attribute_set_get_string(JNIEnv *env, jobject attrs, char *attribut
 
 int attribute_set_get_int(JNIEnv *env, jobject attrs, char *attribute, char *schema, int default_value)
 {
+	if (!attrs)
+		return default_value;
+
 	if(!schema)
 		schema = "http://schemas.android.com/apk/res/android";
 

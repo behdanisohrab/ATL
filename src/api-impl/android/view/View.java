@@ -778,7 +778,7 @@ public class View extends Object {
 	public View() {} // FIXME
 
 	public View(Context context, AttributeSet attrs) {
-		this(context);
+		this(context, attrs, 0);
 
 		if (attrs != null) {
 			id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
@@ -788,7 +788,9 @@ public class View extends Object {
 	}
 
 	public View(Context context, AttributeSet attrs, int defStyle) {
-		this(context, attrs);
+		this.context = context;
+
+		widget = native_constructor(context, attrs);
 	}
 
 	public View findViewById(int id) {
@@ -799,21 +801,7 @@ public class View extends Object {
 	public void onDraw(Canvas canvas) {}
 
 	public View(Context context) {
-		boolean custom_drawing;
-
-		this.context = context;
-
-		try {
-			Class[] cArg = new Class[1];
-			cArg[0] = Canvas.class;
-			custom_drawing = !(this.getClass().getMethod("onDraw", cArg).getDeclaringClass() == View.class);
-		} catch (NoSuchMethodException e) {
-			custom_drawing = false;
-		}
-
-		if (custom_drawing) {
-			native_constructor(context);
-		}
+		this(context, null);
 	}
 
 	public final ViewParent getParent() {
@@ -853,7 +841,7 @@ public class View extends Object {
 	public native final int getWidth();
 	public native final int getHeight();
 
-	private native void native_constructor(Context context); // will create a custom GtkWidget with a custom drawing function
+	protected native long native_constructor(Context context, AttributeSet attrs); // will create a custom GtkWidget with a custom drawing function
 	private native void native_set_size_request(int width, int height);
 
 	// --- stubs

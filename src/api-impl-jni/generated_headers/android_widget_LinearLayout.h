@@ -202,42 +202,26 @@ extern "C" {
 /*
  * Class:     android_widget_LinearLayout
  * Method:    native_constructor
- * Signature: (Landroid/util/AttributeSet;)V
+ * Signature: (Landroid/content/Context;Landroid/util/AttributeSet;)J
  */
-JNIEXPORT void JNICALL Java_android_widget_LinearLayout_native_1constructor__Landroid_util_AttributeSet_2
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT jlong JNICALL Java_android_widget_LinearLayout_native_1constructor
+  (JNIEnv *, jobject, jobject, jobject);
 
 /*
  * Class:     android_widget_LinearLayout
- * Method:    native_constructor
- * Signature: (Landroid/content/Context;)V
+ * Method:    native_addView
+ * Signature: (JJILandroid/view/ViewGroup/LayoutParams;)V
  */
-JNIEXPORT void JNICALL Java_android_widget_LinearLayout_native_1constructor__Landroid_content_Context_2
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT void JNICALL Java_android_widget_LinearLayout_native_1addView
+  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
 
 /*
  * Class:     android_widget_LinearLayout
- * Method:    addView
- * Signature: (Landroid/view/View;ILandroid/view/ViewGroup/LayoutParams;)V
+ * Method:    native_removeView
+ * Signature: (JJ)V
  */
-JNIEXPORT void JNICALL Java_android_widget_LinearLayout_addView
-  (JNIEnv *, jobject, jobject, jint, jobject);
-
-/*
- * Class:     android_widget_LinearLayout
- * Method:    removeView
- * Signature: (Landroid/view/View;)V
- */
-JNIEXPORT void JNICALL Java_android_widget_LinearLayout_removeView
-  (JNIEnv *, jobject, jobject);
-
-/*
- * Class:     android_widget_LinearLayout
- * Method:    removeAllViews
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_android_widget_LinearLayout_removeAllViews
-  (JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_android_widget_LinearLayout_native_1removeView
+  (JNIEnv *, jobject, jlong, jlong);
 
 /*
  * Class:     android_widget_LinearLayout

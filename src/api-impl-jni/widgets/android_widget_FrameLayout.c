@@ -75,29 +75,19 @@ void frame_layout_widget_insert_child_at_index(FrameLayoutWidget *parent, GtkWid
 
 // ---
 
-JNIEXPORT void JNICALL Java_android_widget_FrameLayout_native_1constructor__Landroid_util_AttributeSet_2(JNIEnv *env, jobject this, jobject attrs)
+JNIEXPORT jlong JNICALL Java_android_widget_FrameLayout_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
 	GtkWidget *wrapper = wrapper_widget_new();
 	GtkWidget *frame_layout = frame_layout_widget_new();
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), frame_layout);
 	gtk_widget_set_name(GTK_WIDGET(frame_layout), "FrameLayout");
-	_SET_LONG_FIELD(this, "widget", _INTPTR(frame_layout));
+	return _INTPTR(frame_layout);
 }
 
-JNIEXPORT void JNICALL Java_android_widget_FrameLayout_native_1constructor__Landroid_content_Context_2(JNIEnv *env, jobject this, jobject context) {
-	GtkWidget *wrapper = wrapper_widget_new();
-	GtkWidget *frame_layout = frame_layout_widget_new();
-	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), frame_layout);
-	gtk_widget_set_name(GTK_WIDGET(frame_layout), "FrameLayout");
-	_SET_LONG_FIELD(this, "widget", _INTPTR(frame_layout));
-}
-
-JNIEXPORT void JNICALL Java_android_widget_FrameLayout_addView(JNIEnv *env, jobject this, jobject child, jint index, jobject layout_params)
+JNIEXPORT void JNICALL Java_android_widget_FrameLayout_native_1addView(JNIEnv *env, jobject this, jlong widget, jlong child, jint index, jobject layout_params)
 {
-	Java_android_view_ViewGroup_addView(env, this, child, index, layout_params);
-
 	if(index >= 0)
-		frame_layout_widget_insert_child_at_index(FRAME_LAYOUT_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget"))), gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(child, "widget")))), index);
+		frame_layout_widget_insert_child_at_index(FRAME_LAYOUT_WIDGET(_PTR(widget)), gtk_widget_get_parent(GTK_WIDGET(_PTR(child))), index);
 	else
-		frame_layout_widget_insert_child(FRAME_LAYOUT_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget"))), gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(child, "widget")))));
+		frame_layout_widget_insert_child(FRAME_LAYOUT_WIDGET(_PTR(widget)), gtk_widget_get_parent(GTK_WIDGET(_PTR(child))));
 }

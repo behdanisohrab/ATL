@@ -21,22 +21,18 @@ public class TextView extends View {
 
 	public TextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
-		native_constructor(attrs);
 	}
 
 	public TextView(Context context) {
 		super(context);
-
-		native_constructor(context);
 	}
 
 	public TextView(Context context, AttributeSet attrs, int defStyleAttr) {
 		this(context, attrs);
 	}
 
-	native void native_constructor(AttributeSet attrs);
-	native void native_constructor(Context context);
+	@Override
+	protected native long native_constructor(Context context, AttributeSet attrs);
 
 	public final void setText(CharSequence text) {
 		if (text == null) {

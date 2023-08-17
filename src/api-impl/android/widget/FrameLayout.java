@@ -10,27 +10,22 @@ public class FrameLayout extends ViewGroup {
 
 	public FrameLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
-		native_constructor(attrs);
 	}
 
 	public FrameLayout(Context context) {
 		super(context);
-
-		native_constructor(context);
 	}
 
 	public FrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-
-		native_constructor(attrs);
 	}
 
-	public native void native_constructor(AttributeSet attrs);
-	public native void native_constructor(Context context);
-
 	@Override
-	public native void addView(View child, int index, ViewGroup.LayoutParams params);
+	protected native long native_constructor(Context context, AttributeSet attrs);
+	@Override
+	protected native void native_addView(long widget, long child, int index, ViewGroup.LayoutParams params);
+	@Override
+	protected native void native_removeView(long widget, long child);
 
 	public void addView(View child, int index) {
 		addView(child, index, null);
