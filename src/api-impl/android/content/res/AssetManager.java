@@ -277,7 +277,7 @@ public final class AssetManager {
 	 * @param id Resource id of the string array
 	 */
 	/*package*/ final CharSequence[] getResourceTextArray(final int id) {
-		ResValueMap children[] = tableBlock.search(id).pickOne().getResValueMapArray().getChildes();
+		ResValueMap children[] = tableBlockSearch(id).pickOne().getResValueMapArray().getChildes();
 		CharSequence values[] = new CharSequence[children.length];
 		for (int i = 0; i < children.length; i++) {
 			StringItem stringItem = children[i].getDataAsPoolString();
@@ -288,7 +288,7 @@ public final class AssetManager {
 
 	public Map<Integer,ValueItem> loadStyle(int resId) {
 		Map<Integer,ValueItem> map = new HashMap<>();
-		EntryGroup entryGroup = tableBlock.search(resId);
+		EntryGroup entryGroup = tableBlockSearch(resId);
 		while (entryGroup != null) {
 			Entry entry = entryGroup.pickOne();
 			ResValueMapArray array = entry.getResValueMapArray();
@@ -296,7 +296,7 @@ public final class AssetManager {
 				map.putIfAbsent(array.get(i).getName(), array.get(i));
 			}
 			int parent_id = ((EntryHeaderMap)entry.getHeader()).getParentId();
-			entryGroup = tableBlock.search(parent_id);
+			entryGroup = tableBlockSearch(parent_id);
 		}
 		return map;
 	}
@@ -304,7 +304,7 @@ public final class AssetManager {
 	/*package*/ final boolean getThemeValue(int theme, int ident,
 						TypedValue outValue, boolean resolveRefs) {
 		Map<Integer,ValueItem> style = loadStyle(theme);
-		EntryGroup entryGroup = tableBlock.search(ident);
+		EntryGroup entryGroup = tableBlockSearch(ident);
 		if (entryGroup == null)
 			return false;
 		Entry entry = entryGroup.pickOne();
@@ -315,7 +315,7 @@ public final class AssetManager {
 				valueItem = style.get(ident);
 			if (valueItem != null && valueItem.getValueType() == ValueType.ATTRIBUTE) {
 				ident = valueItem.getData();
-				entryGroup = tableBlock.search(ident);
+				entryGroup = tableBlockSearch(ident);
 				if (entryGroup == null) {
 					break;
 				}
@@ -365,7 +365,8 @@ public final class AssetManager {
 		// System.out.println("Get pooled: block=" + block
 		//                    + ", id=#" + Integer.toHexString(id)
 		//                    + ", blocks=" + mStringBlocks);
-		return tableBlock.getStringPool().get(id).get();
+		TableString string = tableBlocks.get(block).getStringPool().get(id);
+		return string != null ? string.get() : null;
 	}
 
 	/**
@@ -819,11 +820,11 @@ public final class AssetManager {
 	}
 
 	/*package*/ /*native*/ final String getResourceName(int resid) {
-		return tableBlock.search(resid).pickOne().getName();
+		return tableBlockSearch(resid).pickOne().getName();
 	}
 	/*package*/ native final String getResourcePackageName(int resid);
 	/*package*/ /*native*/ final String getResourceTypeName(int resid) {
-		return tableBlock.search(resid).pickOne().getTypeName();
+		return tableBlockSearch(resid).pickOne().getTypeName();
 	}
 	/*package*/ native final String getResourceEntryName(int resid);
 
@@ -848,6 +849,14 @@ public final class AssetManager {
 	 */
 	private native final int loadResourceValue(int ident, short density, TypedValue outValue,
 						   boolean resolve);
+
+	private int getCookie(ValueItem valueItem) {
+		for (int i=0; i<tableBlocks.size(); i++) {
+			if (valueItem.getStringPool() == tableBlocks.get(i).getStringPool())
+				return i;
+		}
+		return -1;
+	}
 	/**
 	 * Returns true if the resource was found, filling in mRetStringBlock and
 	 *  mRetData.
@@ -878,7 +887,7 @@ public final class AssetManager {
 			outValues[d+AssetManager.STYLE_DATA] = 0;
 			outValues[d+AssetManager.STYLE_ASSET_COOKIE] = 0;
 			int resId = inAttrs[i];
-			EntryGroup entryGroup = tableBlock.search(resId);
+			EntryGroup entryGroup = tableBlockSearch(resId);
 			if (entryGroup == null)
 				continue;
 			Entry entry = entryGroup.pickOne();
@@ -902,7 +911,7 @@ public final class AssetManager {
 					valueItem = theme.get(resId);
 				if (valueItem != null && valueItem.getValueType() == ValueType.ATTRIBUTE) {
 					resId = valueItem.getData();
-					entryGroup = tableBlock.search(resId);
+					entryGroup = tableBlockSearch(resId);
 					if (entryGroup == null) {
 						break;
 					}
@@ -917,22 +926,23 @@ public final class AssetManager {
 				resId = valueItem.getData();
 				if (resId == 0)
 					continue;
-				entry = tableBlock.search(resId).pickOne();
+				entry = tableBlockSearch(resId).pickOne();
 
 				outValues[d + AssetManager.STYLE_RESOURCE_ID] = resId;
 				ResValue resValue = entry.getResValue();
 				if (resValue != null) {
 					outValues[d + AssetManager.STYLE_TYPE] = entry.getResValue().getType();
 					outValues[d + AssetManager.STYLE_DATA] = entry.getResValue().getData();
+					outValues[d + AssetManager.STYLE_ASSET_COOKIE] = getCookie(valueItem);
 				} else {
 					outValues[d + AssetManager.STYLE_TYPE] = -1;
+					outValues[d + AssetManager.STYLE_ASSET_COOKIE] = -1;
 				}
-				outValues[d + AssetManager.STYLE_ASSET_COOKIE] = -1;
 			} else {
 				outValues[d+AssetManager.STYLE_RESOURCE_ID] = 0;
 				outValues[d+AssetManager.STYLE_TYPE] = valueItem.getType();
 				outValues[d+AssetManager.STYLE_DATA] = valueItem.getData();
-				outValues[d+AssetManager.STYLE_ASSET_COOKIE] = -1;
+				outValues[d+AssetManager.STYLE_ASSET_COOKIE] = getCookie(valueItem);
 			}
 		}
 		return true;
