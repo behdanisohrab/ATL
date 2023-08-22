@@ -77,7 +77,7 @@ void frame_layout_widget_insert_child_at_index(FrameLayoutWidget *parent, GtkWid
 
 JNIEXPORT jlong JNICALL Java_android_widget_FrameLayout_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
-	GtkWidget *wrapper = wrapper_widget_new();
+	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	GtkWidget *frame_layout = frame_layout_widget_new();
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), frame_layout);
 	gtk_widget_set_name(GTK_WIDGET(frame_layout), "FrameLayout");

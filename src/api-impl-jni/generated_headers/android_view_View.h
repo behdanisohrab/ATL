@@ -257,6 +257,14 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1set_1size_1request
 
 /*
  * Class:     android_view_View
+ * Method:    native_destructor
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_native_1destructor
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     android_view_View
  * Method:    nativeInvalidate
  * Signature: (J)V
  */

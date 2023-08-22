@@ -56,7 +56,7 @@ extern int FIXME__HEIGHT;
 
 JNIEXPORT jlong JNICALL Java_android_opengl_GLSurfaceView_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
-	GtkWidget *wrapper = wrapper_widget_new();
+	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	gtk_widget_set_vexpand(wrapper, TRUE);
 	GtkWidget *gl_area = gtk_gl_area_new();
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), gl_area);

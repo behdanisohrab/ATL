@@ -775,7 +775,9 @@ public class View extends Object {
 
 	public static HashMap<Integer, View> view_by_id = new HashMap<Integer, View>();
 
-	public View() {} // FIXME
+	public View() {
+		this(Context.this_application);
+	} // FIXME
 
 	public View(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -843,6 +845,7 @@ public class View extends Object {
 
 	protected native long native_constructor(Context context, AttributeSet attrs); // will create a custom GtkWidget with a custom drawing function
 	private native void native_set_size_request(int width, int height);
+	protected native void native_destructor(long widget);
 
 	// --- stubs
 
@@ -1052,4 +1055,13 @@ public class View extends Object {
 	public int getVisibility() {return View.VISIBLE;}
 
 	public boolean isInEditMode() {return false;}
+
+	@Override
+	protected void finalize() throws Throwable {
+		try {
+			native_destructor(widget);
+		} finally {
+			super.finalize();
+		}
+	}
 }
