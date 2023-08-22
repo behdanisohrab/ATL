@@ -31,6 +31,11 @@ public class Activity extends Context {
 	Window window = new Window();
 	int requested_orientation = -1 /*ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED*/; // dummy
 	private Intent intent;
+	private Activity resultActivity;
+	private int resultRequestCode;
+	private int pendingRequestCode;
+	private int pendingResultCode;
+	private Intent pendingData;
 
 	/**
 	 * Helper function to be called from native code to construct main activity
@@ -124,6 +129,10 @@ public class Activity extends Context {
 
 	protected void onResume() {
 		System.out.println("- onResume - yay!");
+		if (pendingData != null) {
+			onActivityResult(pendingRequestCode, pendingResultCode, pendingData);
+			pendingData = null;
+		}
 
 		return;
 	}
@@ -235,6 +244,8 @@ public class Activity extends Context {
 				Activity activity = constructor.newInstance();
 				activity.intent = intent;
 				activity.getWindow().native_window = getWindow().native_window;
+				activity.resultRequestCode = requestCode;
+				activity.resultActivity = this;
 				nativeStartActivity(activity);
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent()); // RESULT_CANCELED is the only pre-defined return value, so hopefully it works out for us
@@ -242,6 +253,14 @@ public class Activity extends Context {
 		}
 		else {
 			onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent()); // RESULT_CANCELED is the only pre-defined return value, so hopefully it works out for us
+		}
+	}
+
+	public void setResult(int resultCode, Intent data) {
+		if (resultActivity != null) {
+			resultActivity.pendingRequestCode = resultRequestCode;
+			resultActivity.pendingResultCode = resultCode;
+			resultActivity.pendingData = data;
 		}
 	}
 
