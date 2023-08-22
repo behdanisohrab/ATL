@@ -70,6 +70,12 @@ struct handle_cache {
 		jmethodID setLayoutParams;
 		jmethodID onDraw;
 		jmethodID onMeasure;
+		jmethodID onLayout;
+		jmethodID getMeasuredWidth;
+		jmethodID getMeasuredHeight;
+		jmethodID getSuggestedMinimumWidth;
+		jmethodID getSuggestedMinimumHeight;
+		jmethodID setMeasuredDimension;
 	} view;
 	struct {
 		jclass class;

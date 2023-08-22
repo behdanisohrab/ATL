@@ -771,6 +771,14 @@ public class View extends Object {
 	private Context context;
 	private Map<Integer,Object> tags = new HashMap<>();
 
+	int measuredWidth = 0;
+	int measuredHeight = 0;
+
+	private int left;
+	private int top;
+	private int right;
+	private int bottom;
+
 	public long widget; // pointer
 
 	public static HashMap<Integer, View> view_by_id = new HashMap<Integer, View>();
@@ -829,7 +837,8 @@ public class View extends Object {
 	}
 
 	protected final void setMeasuredDimension(int measuredWidth, int measuredHeight) {
-		native_set_size_request(MeasureSpec.getSize(measuredWidth), MeasureSpec.getSize(measuredHeight));
+		this.measuredWidth = measuredWidth;
+		this.measuredHeight = measuredHeight;
 	}
 
 	public Resources getResources() {
@@ -846,6 +855,9 @@ public class View extends Object {
 	protected native long native_constructor(Context context, AttributeSet attrs); // will create a custom GtkWidget with a custom drawing function
 	private native void native_set_size_request(int width, int height);
 	protected native void native_destructor(long widget);
+	protected native void native_measure(long widget, int widthMeasureSpec, int heightMeasureSpec);
+	protected native void native_layout(long widget, int l, int t, int r, int b);
+	protected native void native_requestLayout(long widget);
 
 	// --- stubs
 
@@ -879,7 +891,9 @@ public class View extends Object {
 		return system_ui_visibility;
 	};
 
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {}
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		native_measure(widget, widthMeasureSpec, heightMeasureSpec);
+	}
 
 	public void setPressed(boolean pressed) {
 		System.out.println("calling setPressed on " + this + " with value: " + pressed);
@@ -994,14 +1008,93 @@ public class View extends Object {
 
 	public void setOnHoverListener(OnHoverListener listener) {}
 
-	public final void measure (int widthMeasureSpec, int heightMeasureSpec) {}
+	public final void measure(int widthMeasureSpec, int heightMeasureSpec) {
+		onMeasure(widthMeasureSpec, heightMeasureSpec);
+	}
+
+	public final int getMeasuredState() {
+		return 0;
+	}
+
+	public static int combineMeasuredStates(int curState, int newState) {
+		return curState | newState;
+	}
+
+	protected int getSuggestedMinimumHeight() {
+		return 50;
+	}
+	protected int getSuggestedMinimumWidth() {
+		return 100;
+	}
+
+	/**
+	 * Utility to reconcile a desired size and state, with constraints imposed
+	 * by a MeasureSpec.  Will take the desired size, unless a different size
+	 * is imposed by the constraints.  The returned value is a compound integer,
+	 * with the resolved size in the {@link #MEASURED_SIZE_MASK} bits and
+	 * optionally the bit {@link #MEASURED_STATE_TOO_SMALL} set if the resulting
+	 * size is smaller than the size the view wants to be.
+	 *
+	 * @param size How big the view wants to be
+	 * @param measureSpec Constraints imposed by the parent
+	 * @return Size information bit mask as defined by
+	 * {@link #MEASURED_SIZE_MASK} and {@link #MEASURED_STATE_TOO_SMALL}.
+	 */
+	public static int resolveSizeAndState(int size, int measureSpec, int childMeasuredState) {
+		int result = size;
+		int specMode = MeasureSpec.getMode(measureSpec);
+		int specSize =  MeasureSpec.getSize(measureSpec);
+		switch (specMode) {
+		case MeasureSpec.UNSPECIFIED:
+			result = size;
+			break;
+		case MeasureSpec.AT_MOST:
+			if (specSize < size) {
+				result = specSize | MEASURED_STATE_TOO_SMALL;
+			} else {
+				result = size;
+			}
+			break;
+		case MeasureSpec.EXACTLY:
+			result = specSize;
+			break;
+		}
+		return result | (childMeasuredState&MEASURED_STATE_MASK);
+	}
 
 	public final int getMeasuredWidth() {
-		return getWidth();
+		return this.measuredWidth & MEASURED_SIZE_MASK;
 	}
 
 	public final int getMeasuredHeight() {
-		return getHeight();
+		return this.measuredHeight & MEASURED_SIZE_MASK;
+	}
+
+	protected void onLayout(boolean changed, int l, int t, int r, int b) {}
+
+	public void layout(int l, int t, int r, int b) {
+		this.left = l;
+		this.top = t;
+		this.right = r;
+		this.bottom = b;
+		native_layout(widget, l, t, r, b);
+	}
+
+	public int getLeft() {
+		return left;
+	}
+	public int getTop() {
+		return top;
+	}
+	public int getRight() {
+		return right;
+	}
+	public int getBottom() {
+		return bottom;
+	}
+
+	public void offsetTopAndBottom(int offset) {
+		layout(left, top + offset, right, bottom + offset);
 	}
 
 	public void setBackgroundDrawable(Drawable backgroundDrawable) {}
@@ -1016,7 +1109,9 @@ public class View extends Object {
 
 	public boolean removeCallbacks(Runnable action) {return false;}
 
-	public void requestLayout() {};
+	public void requestLayout() {
+		native_requestLayout(widget);
+	};
 
 	public void setOverScrollMode(int mode) {}
 
@@ -1024,12 +1119,12 @@ public class View extends Object {
 
 	public boolean postDelayed(Runnable action, long delayMillis) {
 		new Handler(Looper.getMainLooper()).postDelayed(action, delayMillis);
-        return true;
-    }
+		return true;
+	}
 
 	public boolean post(Runnable action) {
 		new Handler(Looper.getMainLooper()).post(action);
-        return true;
+		return true;
 	}
 
 	public void setSaveFromParentEnabled(boolean enabled) {}

@@ -146,7 +146,13 @@ static void on_mapped(GtkWidget* self, gpointer data)
 		JNIEnv *env;
 		(*wrapper->jvm)->GetEnv(wrapper->jvm, (void**)&env, JNI_VERSION_1_6);
 
-		(*env)->CallVoidMethod(env, wrapper->jobj, wrapper->measure_method, MEASURE_SPEC_EXACTLY, MEASURE_SPEC_EXACTLY);
+		(*env)->CallVoidMethod(env, wrapper->jobj, wrapper->measure_method, MEASURE_SPEC_EXACTLY | gtk_widget_get_width(self), MEASURE_SPEC_EXACTLY | gtk_widget_get_height(self));
+		int width = (*env)->CallIntMethod(env, wrapper->jobj, handle_cache.view.getMeasuredWidth);
+		if (width > 0)
+			g_object_set(G_OBJECT(self), "width-request", width, NULL);
+		int height = (*env)->CallIntMethod(env, wrapper->jobj, handle_cache.view.getMeasuredHeight);
+		if (height > 0)
+			g_object_set(G_OBJECT(self), "height-request", height, NULL);
 	}
 }
 

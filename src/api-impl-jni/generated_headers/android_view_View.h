@@ -265,6 +265,30 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1destructor
 
 /*
  * Class:     android_view_View
+ * Method:    native_measure
+ * Signature: (JII)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_native_1measure
+  (JNIEnv *, jobject, jlong, jint, jint);
+
+/*
+ * Class:     android_view_View
+ * Method:    native_layout
+ * Signature: (JIIII)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_native_1layout
+  (JNIEnv *, jobject, jlong, jint, jint, jint, jint);
+
+/*
+ * Class:     android_view_View
+ * Method:    native_requestLayout
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_native_1requestLayout
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     android_view_View
  * Method:    nativeInvalidate
  * Signature: (J)V
  */
