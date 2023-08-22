@@ -878,6 +878,7 @@ public final class AssetManager {
 		Map<Integer,ValueItem> defStyle = loadStyle(defStyleRes);
 
 		ResXmlPullParser parser = (ResXmlPullParser)set;
+		outIndices[0] = 0;
 
 		for (int i = 0; i < inAttrs.length; i++) {
 			int d = i*AssetManager.STYLE_NUM_ENTRIES;
@@ -923,17 +924,22 @@ public final class AssetManager {
 			if (valueItem == null)
 				continue;
 			if (valueItem.getValueType() == ValueType.REFERENCE) {
-				resId = valueItem.getData();
-				if (resId == 0)
-					continue;
-				entry = tableBlockSearch(resId).pickOne();
+				while (valueItem.getValueType() == ValueType.REFERENCE) {
+					resId = valueItem.getData();
+					valueItem = null;
+					if (resId == 0)
+						break;
+					valueItem = tableBlockSearch(resId).pickOne().getResValue();
+					if (valueItem == null)
+						break;
+				}
 
 				outValues[d + AssetManager.STYLE_RESOURCE_ID] = resId;
-				ResValue resValue = entry.getResValue();
-				if (resValue != null) {
-					outValues[d + AssetManager.STYLE_TYPE] = entry.getResValue().getType();
-					outValues[d + AssetManager.STYLE_DATA] = entry.getResValue().getData();
+				if (valueItem != null) {
+					outValues[d + AssetManager.STYLE_TYPE] = valueItem.getType();
+					outValues[d + AssetManager.STYLE_DATA] = valueItem.getData();
 					outValues[d + AssetManager.STYLE_ASSET_COOKIE] = getCookie(valueItem);
+					outIndices[++outIndices[0]] = i;
 				} else {
 					outValues[d + AssetManager.STYLE_TYPE] = -1;
 					outValues[d + AssetManager.STYLE_ASSET_COOKIE] = -1;
@@ -943,6 +949,7 @@ public final class AssetManager {
 				outValues[d+AssetManager.STYLE_TYPE] = valueItem.getType();
 				outValues[d+AssetManager.STYLE_DATA] = valueItem.getData();
 				outValues[d+AssetManager.STYLE_ASSET_COOKIE] = getCookie(valueItem);
+				outIndices[++outIndices[0]] = i;
 			}
 		}
 		return true;
