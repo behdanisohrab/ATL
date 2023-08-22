@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
@@ -36,6 +38,7 @@ public class Activity extends Context {
 	private int pendingRequestCode;
 	private int pendingResultCode;
 	private Intent pendingData;
+	List<Fragment> fragments = new ArrayList<>();
 
 	/**
 	 * Helper function to be called from native code to construct main activity
@@ -110,6 +113,10 @@ public class Activity extends Context {
 		System.out.println("- onCreate - yay!");
 		new ViewGroup(this).setId(R.id.content);
 
+		for (Fragment fragment : fragments) {
+			fragment.onCreate(savedInstanceState);
+		}
+
 		return;
 	}
 
@@ -117,6 +124,10 @@ public class Activity extends Context {
 		System.out.println("- onStart - yay!");
 		if (window.contentView != null)
 			window.setContentView(window.contentView);
+
+		for (Fragment fragment : fragments) {
+			fragment.onStart();
+		}
 
 		return;
 	}
@@ -134,11 +145,19 @@ public class Activity extends Context {
 			pendingData = null;
 		}
 
+		for (Fragment fragment : fragments) {
+			fragment.onResume();
+		}
+
 		return;
 	}
 
 	protected void onPause() {
 		System.out.println("- onPause - yay!");
+
+		for (Fragment fragment : fragments) {
+			fragment.onPause();
+		}
 
 		return;
 	}
@@ -146,11 +165,19 @@ public class Activity extends Context {
 	protected void onStop() {
 		System.out.println("- onStop - yay!");
 
+		for (Fragment fragment : fragments) {
+			fragment.onStop();
+		}
+
 		return;
 	}
 
 	protected void onDestroy() {
 		System.out.println("- onDestroy - yay!");
+
+		for (Fragment fragment : fragments) {
+			fragment.onDestroy();
+		}
 
 		return;
 	}
@@ -291,7 +318,7 @@ public class Activity extends Context {
 	}
 
 	public FragmentManager getFragmentManager() {
-		return new FragmentManager();
+		return new FragmentManager(this);
 	}
 
 	public LayoutInflater getLayoutInflater() {
