@@ -32,6 +32,7 @@ import com.reandroid.arsc.group.EntryGroup;
 import com.reandroid.arsc.item.StringItem;
 import com.reandroid.arsc.value.Entry;
 import com.reandroid.arsc.value.EntryHeaderMap;
+import com.reandroid.arsc.item.TableString;
 import com.reandroid.arsc.value.ResValue;
 import com.reandroid.arsc.value.ResValueMap;
 import com.reandroid.arsc.value.ValueItem;
@@ -49,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import org.xmlpull.v1.XmlPullParser;
@@ -106,7 +108,7 @@ public final class AssetManager {
 	private boolean mOpen = true;
 	private HashMap<Integer, RuntimeException> mRefStacks;
 
-	private TableBlock tableBlock;
+	private List<TableBlock> tableBlocks;
 
 	/**
 	 * Create a new AssetManager containing only the basic system assets.
@@ -117,12 +119,12 @@ public final class AssetManager {
 	 */
 	public AssetManager() {
 		try {
-			tableBlock = new TableBlock();
+			tableBlocks = new ArrayList<>();
 			Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources("resources.arsc");
 			while (resources.hasMoreElements()) {
 				URL resource = resources.nextElement();
 				if (!resource.getFile().contains("com.google.android.gms")) { // ignore MicroG .apk
-					tableBlock.merge(TableBlock.load(resource.openStream()));
+					tableBlocks.add(TableBlock.load(resource.openStream()));
 				}
 			}
 		} catch (IOException e) {
@@ -140,6 +142,16 @@ public final class AssetManager {
 				Log.v(TAG, "New asset manager: " + this);
 			//            ensureSystemAssets()
 		}
+	}
+
+	private EntryGroup tableBlockSearch(int resId) {
+		EntryGroup ret = null;
+		for (TableBlock tableBlock : tableBlocks) {
+			ret = tableBlock.search(resId);
+			if (ret != null)
+				break;
+		}
+		return ret;
 	}
 
 	private static void ensureSystemAssets() {
@@ -195,7 +207,7 @@ public final class AssetManager {
 	/*package*/ final CharSequence getResourceText(int id) {
 		if (id == 0)
 			return "";
-		ResValue resValue = tableBlock.search(id).pickOne().getResValue();
+		ResValue resValue = tableBlockSearch(id).pickOne().getResValue();
 		if (resValue.getValueType() == ValueType.REFERENCE) {
 			return getResourceText(resValue.getData());
 		}
@@ -227,7 +239,7 @@ public final class AssetManager {
 	 */
 	/*package*/ final String[] getResourceStringArray(final int id) {
 		ArrayList<String> values = new ArrayList<String>();
-		for (ResValueMap map : tableBlock.search(id).pickOne().getResValueMapArray().getChildes()) {
+		for (ResValueMap map : tableBlockSearch(id).pickOne().getResValueMapArray().getChildes()) {
 			values.add(map.getValueAsString());
 		}
 		return values.toArray(new String[0]);
@@ -245,7 +257,7 @@ public final class AssetManager {
 		    outValue.string = mStringBlocks[block].get(outValue.data);
 		    return true;
 		}*/
-		EntryGroup entryGroup = tableBlock.search(ident);
+		EntryGroup entryGroup = tableBlockSearch(ident);
 		if (entryGroup == null)
 			return false;  // not found
 		ResValue resValue = entryGroup.pickOne().getResValue();
@@ -794,9 +806,11 @@ public final class AssetManager {
 	 */
 	/*package*/ /*native*/ final int getResourceIdentifier(String name, String type, String defPackage) {
 		System.out.println("getResourceIdentifier(" + name + "," + type + "," + defPackage + ") called");
-		for (PackageBlock packageBlock : tableBlock.listPackages()) {
-			if (packageBlock.getName().equals(defPackage)) {
-				return packageBlock.getEntry("", type, name).getResourceId();
+		for (TableBlock tableBlock : tableBlocks) {
+			for (PackageBlock packageBlock : tableBlock.listPackages()) {
+				if (packageBlock.getName().equals(defPackage)) {
+					return packageBlock.getEntry("", type, name).getResourceId();
+				}
 			}
 		}
 
@@ -966,7 +980,7 @@ public final class AssetManager {
 	private native final String[] getArrayStringResource(int arrayRes);
 	private native final int[] getArrayStringInfo(int arrayRes);
 	/*package*/ final int[] getArrayIntResource(int arrayRes) {
-		ResValueMap children[] = tableBlock.search(arrayRes).pickOne().getResValueMapArray().getChildes();
+		ResValueMap children[] = tableBlockSearch(arrayRes).pickOne().getResValueMapArray().getChildes();
 		int values[] = new int[children.length];
 		for (int i = 0; i < children.length; i++) {
 			values[i] = children[i].getData();
