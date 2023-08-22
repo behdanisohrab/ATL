@@ -110,6 +110,8 @@ public class Activity extends Context {
 
 	protected void onStart() {
 		System.out.println("- onStart - yay!");
+		if (window.contentView != null)
+			window.setContentView(window.contentView);
 
 		return;
 	}
@@ -232,7 +234,7 @@ public class Activity extends Context {
 				Constructor<? extends Activity> constructor = cls.getConstructor();
 				Activity activity = constructor.newInstance();
 				activity.intent = intent;
-				activity.window = getWindow();
+				activity.getWindow().native_window = getWindow().native_window;
 				nativeStartActivity(activity);
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent()); // RESULT_CANCELED is the only pre-defined return value, so hopefully it works out for us
@@ -250,7 +252,7 @@ public class Activity extends Context {
 			Constructor<? extends Activity> constructor = cls.getConstructor();
 			Activity activity = constructor.newInstance();
 			activity.intent = intent;
-			activity.window = getWindow();
+			activity.getWindow().native_window = getWindow().native_window;
 			nativeStartActivity(activity);
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();

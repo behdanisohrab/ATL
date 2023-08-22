@@ -20,6 +20,7 @@ public class Window {
 
 	// FIXME private
 	public long native_window;
+	public View contentView;
 
 	private Window.Callback callback;
 
@@ -39,6 +40,7 @@ public class Window {
 	}
 
 	public void setContentView(View view) {
+		contentView = view;
 		set_widget_as_root(native_window, view.widget);
 	}
 
