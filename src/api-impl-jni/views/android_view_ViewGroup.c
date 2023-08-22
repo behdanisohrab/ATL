@@ -14,7 +14,7 @@
  */
 JNIEXPORT jlong JNICALL Java_android_view_ViewGroup_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
-	GtkWidget *wrapper = wrapper_widget_new();
+	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1); // spacing of 1
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), box);
 	gtk_widget_set_name(GTK_WIDGET(box), "ViewGroup");

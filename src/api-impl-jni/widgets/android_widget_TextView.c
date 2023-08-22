@@ -13,7 +13,7 @@ JNIEXPORT jlong JNICALL Java_android_widget_TextView_native_1constructor(JNIEnv 
 
 //	_SET_OBJ_FIELD(this, "text", "Ljava/lang/String;", _JSTRING(text)); //TODO: sadly this might be needed, but it's not atm
 
-	GtkWidget *wrapper = wrapper_widget_new();
+	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	GtkWidget *label = gtk_label_new(text);
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), label);
 	return _INTPTR(label);

@@ -14,7 +14,7 @@ JNIEXPORT jlong JNICALL Java_android_widget_RelativeLayout_native_1constructor(J
 {
 	int orientation = attribute_set_get_int(env, attrs, "orientation", NULL, 1);
 
-	GtkWidget *wrapper = wrapper_widget_new();
+	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	GtkWidget *box = gtk_box_new(orientation ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, 1); // spacing of 1
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), box);
 	gtk_widget_set_name(GTK_WIDGET(box), "RelativeLayout");
