@@ -32,7 +32,7 @@ public class ImageView extends View {
 
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
-	private native void native_setPixbuf(long pixbuf);
+	protected native void native_setPixbuf(long pixbuf);
 
 	public /*native*/ void setImageResource(final int resid) {
 		if (Context.this_application.getResources().getString(resid).endsWith(".xml"))
