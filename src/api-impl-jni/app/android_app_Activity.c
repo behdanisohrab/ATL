@@ -86,10 +86,19 @@ void activity_start(JNIEnv *env, jobject activity_object) {
 }
 
 JNIEXPORT void JNICALL Java_android_app_Activity_nativeFinish(JNIEnv *env, jobject this, jlong window) {
-	activity_backlog = g_list_remove(activity_backlog, this);
+	GList *l;
+	jobject removed_activity = NULL;
+	for (l = activity_backlog; l != NULL; l = l->next) {
+		if ((*env)->IsSameObject(env, this, l->data)) {
+			removed_activity = l->data;
+			activity_backlog = g_list_delete_link(activity_backlog, l);
+			break;
+		}
+	}
 	activity_update_current(env);
 	activity_close(env, this);
-	_UNREF(this);
+	if (removed_activity)
+		_UNREF(removed_activity);
 	if (activity_backlog == NULL)
 		gtk_window_close(GTK_WINDOW(_PTR(window)));
 }
