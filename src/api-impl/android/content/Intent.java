@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Intent {
 	private ComponentName component;
-	private Map<String, Object> extras = new HashMap<>();
+	private Bundle extras = new Bundle();
 
 	public Intent() {}
 	public Intent(Intent o) {}
@@ -32,122 +32,122 @@ public class Intent {
 	}
 
 	public Intent putExtra(String name, Parcelable value) {
-		extras.put(name, value);
+		extras.putParcelable(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, long[] value) {
-		extras.put(name, value);
+		extras.putLongArray(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, byte value) {
-		extras.put(name, value);
+		extras.putByte(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, double[] value) {
-		extras.put(name, value);
+		extras.putDoubleArray(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, CharSequence value) {
-		extras.put(name, value);
+		extras.putCharSequence(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, boolean[] value) {
-		extras.put(name, value);
+		extras.putBooleanArray(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, int value) {
-		extras.put(name, value);
+		extras.putInt(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, char[] value) {
-		extras.put(name, value);
+		extras.putCharArray(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, byte[] value) {
-		extras.put(name, value);
+		extras.putByteArray(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, Parcelable[] value) {
-		extras.put(name, value);
+		extras.putParcelableArray(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, Bundle value) {
-		extras.put(name, value);
+		extras.putBundle(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, CharSequence[] value) {
-		extras.put(name, value);
+		extras.putCharSequenceArray(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, float[] value) {
-		extras.put(name, value);
+		extras.putFloatArray(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, double value) {
-		extras.put(name, value);
+		extras.putDouble(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, int[] value) {
-		extras.put(name, value);
+		extras.putIntArray(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, String[] value) {
-		extras.put(name, value);
+		extras.putStringArray(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, short[] value) {
-		extras.put(name, value);
+		extras.putShortArray(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, boolean value) {
-		extras.put(name, value);
+		extras.putBoolean(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, String value) {
-		extras.put(name, value);
+		extras.putString(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, long value) {
-		extras.put(name, value);
+		extras.putLong(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, char value) {
-		extras.put(name, value);
+		extras.putChar(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, Serializable value) {
-		extras.put(name, value);
+		extras.putSerializable(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, float value) {
-		extras.put(name, value);
+		extras.putFloat(name, value);
 		return this;
 	}
 
 	public Intent putExtra(String name, short value) {
-		extras.put(name, value);
+		extras.putShort(name, value);
 		return this;
 	}
 
@@ -191,6 +191,10 @@ public class Intent {
 
 	public Serializable getSerializableExtra(String name) {
 		return (Serializable)extras.get(name);
+	}
+
+	public Bundle getExtras() {
+		return extras;
 	}
 
 	@Override
