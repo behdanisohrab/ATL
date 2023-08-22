@@ -183,6 +183,19 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		return MeasureSpec.makeMeasureSpec(resultSize, resultMode);
 	}
 
+	protected void measureChildWithMargins(View child,
+			int parentWidthMeasureSpec, int widthUsed,
+			int parentHeightMeasureSpec, int heightUsed) {
+		final MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();
+		final int childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,
+				/*mPaddingLeft + mPaddingRight +*/ lp.leftMargin + lp.rightMargin
+						+ widthUsed, lp.width);
+		final int childHeightMeasureSpec = getChildMeasureSpec(parentHeightMeasureSpec,
+				/*mPaddingTop + mPaddingBottom +*/ lp.topMargin + lp.bottomMargin
+						+ heightUsed, lp.height);
+		child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+	}
+
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;
 		public static final int MATCH_PARENT = -1;

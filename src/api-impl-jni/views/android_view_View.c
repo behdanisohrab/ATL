@@ -196,3 +196,44 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1destructor(JNIEnv *env, jo
 {
 	g_object_unref(gtk_widget_get_parent(_PTR(widget_ptr)));
 }
+
+#define MEASURE_SPEC_UNSPECIFIED (0 << 30)
+#define MEASURE_SPEC_EXACTLY (1 << 30)
+#define MEASURE_SPEC_MASK (0x3 << 30)
+
+JNIEXPORT void JNICALL Java_android_view_View_native_1measure(JNIEnv *env, jobject this, jlong widget_ptr, jint width_spec, jint height_spec) {
+	int width;
+	int height;
+	int for_size;
+	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget_ptr)));
+
+	if (((height_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY) && ((width_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY)) {
+		width = width_spec & ~MEASURE_SPEC_MASK;
+		height = height_spec & ~MEASURE_SPEC_MASK;
+	} else {
+		for_size = ((height_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY) ? (height_spec & ~MEASURE_SPEC_MASK) : -1;
+		gtk_widget_measure(widget, GTK_ORIENTATION_HORIZONTAL, for_size, NULL, &width, NULL, NULL);
+
+		for_size = ((width_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY) ? (width_spec & ~MEASURE_SPEC_MASK) : -1;
+		gtk_widget_measure(widget, GTK_ORIENTATION_VERTICAL, for_size, NULL, &height, NULL, NULL);
+	}
+	(*env)->CallVoidMethod(env, this, handle_cache.view.setMeasuredDimension, width, height);
+}
+
+JNIEXPORT void JNICALL Java_android_view_View_native_1layout(JNIEnv *env, jobject this, jlong widget_ptr, jint l, jint t, jint r, jint b) {
+	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget_ptr)));
+
+	GtkAllocation allocation = {
+		.x=l,
+		.y=t,
+		.width=r-l,
+		.height=b-t,
+	};
+	gtk_widget_size_allocate(widget, &allocation, -1);
+}
+
+JNIEXPORT void JNICALL Java_android_view_View_native_1requestLayout(JNIEnv *env, jobject this, jlong widget_ptr) {
+	GtkWidget *widget = GTK_WIDGET(_PTR(widget_ptr));
+
+	gtk_widget_queue_resize(widget);
+}
