@@ -35,7 +35,15 @@ public class TextView extends View {
 		if (a.hasValue(com.android.internal.R.styleable.TextView_text)) {
 			setText(a.getText(com.android.internal.R.styleable.TextView_text));
 		}
+		int ap = a.getResourceId(com.android.internal.R.styleable.TextView_textAppearance, -1);
 		a.recycle();
+		if (ap != -1) {
+			a = context.obtainStyledAttributes(ap, com.android.internal.R.styleable.TextAppearance);
+			if (a.hasValue(com.android.internal.R.styleable.TextAppearance_textSize)) {
+				setTextSize(a.getDimensionPixelSize(com.android.internal.R.styleable.TextAppearance_textSize, 10));
+			}
+			a.recycle();
+		}
 	}
 
 	@Override
