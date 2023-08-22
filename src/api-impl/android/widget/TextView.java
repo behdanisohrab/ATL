@@ -34,7 +34,7 @@ public class TextView extends View {
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
 
-	public final void setText(CharSequence text) {
+	public void setText(CharSequence text) {
 		if (text == null) {
 			native_setText("NULL");
 			return;

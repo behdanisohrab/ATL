@@ -187,6 +187,7 @@ hax_jar = jar('hax', [
               	'android/telephony/PhoneStateListener.java',
               	'android/telephony/TelephonyManager.java',
               	'android/text/ClipboardManager.java',
+              	'android/text/Editable.java',
               	'android/text/GetChars.java',
               	'android/text/Html.java',
               	'android/text/InputFilter.java',
