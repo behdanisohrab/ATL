@@ -1211,7 +1211,7 @@ public class Resources {
 		 *              if not already defined in the theme.
 		 */
 		public void applyStyle(int resid, boolean force) {
-			themeMap = mAssets.loadStyle(resid);
+			themeMap.putAll(mAssets.loadStyle(resid));
 		}
 
 		/**

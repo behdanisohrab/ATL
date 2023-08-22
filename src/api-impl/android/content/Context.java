@@ -100,6 +100,9 @@ public class Context extends Object {
 		Class<? extends Application> cls = Class.forName(className).asSubclass(Application.class);
 		Constructor<? extends Application> constructor = cls.getConstructor();
 		application = constructor.newInstance();
+		ResXmlAttribute application_theme = manifest.getApplicationElement().searchAttributeByResourceId(AndroidManifestBlock.ID_theme);
+		if (application_theme != null)
+			application.setTheme(application_theme.getData());
 		this_application = application;
 		return application;
 	}
