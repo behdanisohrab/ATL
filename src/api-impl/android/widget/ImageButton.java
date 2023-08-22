@@ -17,4 +17,15 @@ public class ImageButton extends ImageView {
 		super(context, attributeSet, defStyleAttr);
 	}
 
+	@Override
+	protected native long native_constructor(Context context, AttributeSet attrs);
+	@Override
+	protected native void native_setPixbuf(long pixbuf);
+	protected native void native_setOnClickListener(long widget, OnClickListener l);
+
+	@Override
+	public void setOnClickListener(final OnClickListener l) {
+		native_setOnClickListener(widget, l);
+	}
+
 }
