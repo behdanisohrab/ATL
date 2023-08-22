@@ -36,4 +36,12 @@ public class Typeface {
 	public static Typeface createFromAsset(AssetManager mgr, String path) {
 		return null;
 	}
+
+	public static Typeface create(String familyName, int style) {
+		return null;
+	}
+
+	public static Typeface create(Typeface typeface, int style) {
+		return null;
+	}
 }

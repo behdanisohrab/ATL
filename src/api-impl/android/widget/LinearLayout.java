@@ -27,7 +27,16 @@ public class LinearLayout extends ViewGroup {
 	public native void setOrientation(int orientation);
 	public void setWeightSum(float weightSum) {}
 
-	public static class LayoutParams extends ViewGroup.LayoutParams {
+	@Override
+	public LayoutParams generateLayoutParams(AttributeSet attrs) {
+		return new LayoutParams(getContext(), attrs);
+	}
+
+	public static class LayoutParams extends ViewGroup.MarginLayoutParams {
+		public LayoutParams (Context c, AttributeSet attrs) {
+			super(c, attrs);
+		}
+
 		public LayoutParams(int width, int height) {
 			super(width, height);
 		}

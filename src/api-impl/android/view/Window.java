@@ -5,6 +5,8 @@ public class Window {
 		public void onContentChanged();
 
 		public abstract boolean onCreatePanelMenu(int featureId, Menu menu);
+
+		public View onCreatePanelView(int featureId);
 	}
 	public static class fixme_callback implements Callback {
 
@@ -15,6 +17,11 @@ public class Window {
 		@Override
 		public boolean onCreatePanelMenu(int featureId, Menu menu) {
 			return false;
+		}
+
+		@Override
+		public View onCreatePanelView(int featureId) {
+			return null;
 		}
 	}
 

@@ -1,6 +1,8 @@
 package android.animation;
 
-public class ValueAnimator {
+final class PropertyValuesHolder{}
+
+public class ValueAnimator extends Animator {
 
 	public static ValueAnimator ofFloat(float... values) {
 		return new ValueAnimator();
@@ -15,6 +17,19 @@ public class ValueAnimator {
 	public static long getFrameDelay() {
 		return 20; // 20ms frame interval
 	}
+
+	public PropertyValuesHolder[] getValues() {
+		return null;
+	}
+
+	public long getStartDelay() {return 0;}
+	public long getDuration() {return 0;}
+	public TimeInterpolator getInterpolator() {return null;}
+	public int getRepeatCount() {return 0;}
+	public int getRepeatMode() {return 0;}
+	public void setInterpolator(TimeInterpolator interpolator) {}
+	public void addListener(Animator.AnimatorListener listener) {}
+	public void setFloatValues(float[] values) {}
 
 	/**
 	 * Implementors of this interface can add themselves as update listeners

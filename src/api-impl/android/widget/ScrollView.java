@@ -22,6 +22,5 @@ public class ScrollView extends ViewGroup {
 	@Override
 	protected native void native_removeView(long widget, long child);
 
-	protected void onScrollChanged(int x, int y, int oldx, int oldy) {}
 	public void setFillViewport(boolean fillViewport) {}
 }

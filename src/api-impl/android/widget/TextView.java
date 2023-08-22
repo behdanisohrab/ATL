@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 
 public class TextView extends View {
@@ -20,15 +21,21 @@ public class TextView extends View {
 	}
 
 	public TextView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+		this(context, attrs, 0);
 	}
 
 	public TextView(Context context) {
-		super(context);
+		this(context, null);
 	}
 
 	public TextView(Context context, AttributeSet attrs, int defStyleAttr) {
-		this(context, attrs);
+		super(context, attrs, defStyleAttr);
+
+		TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.TextView, defStyleAttr, 0);
+		if (a.hasValue(com.android.internal.R.styleable.TextView_text)) {
+			setText(a.getText(com.android.internal.R.styleable.TextView_text));
+		}
+		a.recycle();
 	}
 
 	@Override
@@ -95,6 +102,17 @@ public class TextView extends View {
 
 	public void setMinWidth(int minWidth) {}
 	public void setMaxWidth(int maxWidth) {}
+
+	public Typeface getTypeface() {return null;}
+
+	public float getTextSize() {return 10;}
+
+	public int getGravity() {
+		return Gravity.CENTER;
+	}
+
+	public int getCompoundPaddingTop() {return 0;}
+	public int getCompoundPaddingBottom() {return 0;}
 
 	public static interface OnEditorActionListener {
 	}

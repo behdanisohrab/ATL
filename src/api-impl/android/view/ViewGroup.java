@@ -57,6 +57,8 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	public void addView(View child, int index, LayoutParams params) {
+		if (child.parent == this)
+			return;
 		if (params != null) {
 			child.setLayoutParams(params);
 		}
@@ -66,9 +68,15 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	public void removeView(View child) {
+		if (child.parent != this)
+			return;
 		child.parent = null;
 		children.remove(child);
 		native_removeView(widget, child.widget);
+	}
+
+	public void removeViewAt(int index) {
+		removeView(children.get(index));
 	}
 
 	public void removeAllViews() {
@@ -80,6 +88,16 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		}
 	}
 
+	public void detachViewFromParent(int index) {
+	}
+
+	public void attachViewToParent(View view, int index, LayoutParams params) {
+	}
+
+	protected void removeDetachedView(View child, boolean animate) {
+		removeView(child);
+	}
+
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	protected native void native_addView(long widget, long child, int index, LayoutParams params);
@@ -87,6 +105,10 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 	public View getChildAt(int index) {
 		return children.get(index);
+	}
+
+	public int indexOfChild(View child) {
+		return children.indexOf(child);
 	}
 
 	public void updateViewLayout(View view, ViewGroup.LayoutParams params) {}
@@ -195,6 +217,12 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 						+ heightUsed, lp.height);
 		child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 	}
+
+	public void setAddStatesFromChildren(boolean addsStates) {}
+
+	public View getFocusedChild() {return null;}
+
+	public int getDescendantFocusability() {return 0;}
 
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;

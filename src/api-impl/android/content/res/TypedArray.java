@@ -329,6 +329,8 @@ public class TypedArray {
 	public ColorStateList getColorStateList(int index) {
 		final TypedValue value = mValue;
 		if (getValueAt(index * AssetManager.STYLE_NUM_ENTRIES, value)) {
+			if (value.type == -1)
+				return null;
 			return mResources.loadColorStateList(value, value.resourceId);
 		}
 		return null;

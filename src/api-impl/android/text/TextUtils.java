@@ -96,4 +96,16 @@ public class TextUtils {
 		MARQUEE,
 		END_SMALL
 	}
+
+	/**
+	 * Returns the original text if it fits in the specified width
+	 * given the properties of the specified Paint,
+	 * or, if it does not fit, a truncated
+	 * copy with ellipsis character added at the specified edge or center.
+	 */
+	public static CharSequence ellipsize(CharSequence text,
+											TextPaint p,
+											float avail, TruncateAt where) {
+		return text;
+	}
 }
