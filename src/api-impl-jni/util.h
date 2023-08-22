@@ -76,6 +76,7 @@ struct handle_cache {
 		jmethodID getSuggestedMinimumWidth;
 		jmethodID getSuggestedMinimumHeight;
 		jmethodID setMeasuredDimension;
+		jmethodID onGenericMotionEvent;
 	} view;
 	struct {
 		jclass class;

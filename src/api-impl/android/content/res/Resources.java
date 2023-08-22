@@ -1422,7 +1422,7 @@ public class Resources {
 		 */
 		public boolean resolveAttribute(int resid, TypedValue outValue,
 						boolean resolveRefs) {
-			boolean got = mAssets.getThemeValue(mTheme, resid, outValue, resolveRefs);
+			boolean got = mAssets.getThemeValue(themeMap, resid, outValue, resolveRefs);
 			if (false) {
 				System.out.println(
 				    "resolveAttribute #" + Integer.toHexString(resid) + " got=" + got + ", type=0x" + Integer.toHexString(outValue.type) + ", data=0x" + Integer.toHexString(outValue.data));

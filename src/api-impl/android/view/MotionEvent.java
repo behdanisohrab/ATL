@@ -1363,6 +1363,7 @@ public final class MotionEvent extends InputEvent {
 	private static native void nativeScale(int nativePtr, float scale);
 	private static native void nativeTransform(int nativePtr, Matrix matrix);
 
+	int source;
 	int action;
 	float coord_x;
 	float coord_y;
@@ -1370,7 +1371,8 @@ public final class MotionEvent extends InputEvent {
 	private MotionEvent() {
 	}
 
-	public MotionEvent(int action, float coord_x, float coord_y) {
+	public MotionEvent(int source, int action, float coord_x, float coord_y) {
+		this.source = source;
 		this.action = action;
 		this.coord_x = coord_x;
 		this.coord_y = coord_y;
@@ -1694,7 +1696,7 @@ public final class MotionEvent extends InputEvent {
 	 */
 	@Override
 	public final int getSource() {
-		return 4098 /*SOURCE_TOUCHSCREEN*/; // TODO: reflect reality
+		return source;
 						    //		return nativeGetSource(mNativePtr);
 	}
 
@@ -1931,6 +1933,10 @@ public final class MotionEvent extends InputEvent {
 	 * @see #AXIS_Y
 	 */
 	public final float getAxisValue(int axis) {
+		if (axis == AXIS_HSCROLL)
+			return coord_x;
+		else if (axis == AXIS_VSCROLL)
+			return coord_y;
 		return nativeGetAxisValue(mNativePtr, axis, 0, HISTORY_CURRENT);
 	}
 

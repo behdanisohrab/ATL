@@ -3,6 +3,7 @@ package android.view;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -1195,4 +1196,9 @@ public class View extends Object {
 	public void setTranslationY(float translationY) {}
 
 	public void setAlpha(float alpha) {}
+
+	public boolean onGenericMotionEvent(MotionEvent event) {return false;}
+
+	protected boolean awakenScrollBars() {return false;}
+	public Matrix getMatrix() {return new Matrix();}
 }

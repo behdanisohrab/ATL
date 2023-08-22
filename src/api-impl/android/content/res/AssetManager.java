@@ -301,9 +301,8 @@ public final class AssetManager {
 		return map;
 	}
 
-	/*package*/ final boolean getThemeValue(int theme, int ident,
+	/*package*/ final boolean getThemeValue(Map<Integer,ValueItem> style, int ident,
 						TypedValue outValue, boolean resolveRefs) {
-		Map<Integer,ValueItem> style = loadStyle(theme);
 		EntryGroup entryGroup = tableBlockSearch(ident);
 		if (entryGroup == null)
 			return false;

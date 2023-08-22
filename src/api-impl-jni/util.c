@@ -77,7 +77,7 @@ void set_up_handle_cache(JNIEnv *env)
 	handle_cache.paint.getColor = _METHOD(handle_cache.paint.class, "getColor", "()I");
 
 	handle_cache.motion_event.class = _REF((*env)->FindClass(env, "android/view/MotionEvent"));
-	handle_cache.motion_event.constructor = _METHOD(handle_cache.motion_event.class, "<init>", "(IFF)V");
+	handle_cache.motion_event.constructor = _METHOD(handle_cache.motion_event.class, "<init>", "(IIFF)V");
 
 	handle_cache.canvas.class = _REF((*env)->FindClass(env, "android/graphics/Canvas"));
 	handle_cache.canvas.constructor = _METHOD(handle_cache.canvas.class, "<init>", "(JJ)V");
@@ -115,6 +115,7 @@ void set_up_handle_cache(JNIEnv *env)
 	handle_cache.view.getSuggestedMinimumWidth = _METHOD(handle_cache.view.class, "getSuggestedMinimumWidth", "()I");
 	handle_cache.view.getSuggestedMinimumHeight = _METHOD(handle_cache.view.class, "getSuggestedMinimumHeight", "()I");
 	handle_cache.view.setMeasuredDimension = _METHOD(handle_cache.view.class, "setMeasuredDimension", "(II)V");
+	handle_cache.view.onGenericMotionEvent = _METHOD(handle_cache.view.class, "onGenericMotionEvent", "(Landroid/view/MotionEvent;)Z");
 
 	handle_cache.asset_manager.class = _REF((*env)->FindClass(env, "android/content/res/AssetManager"));
 	handle_cache.asset_manager.extractFromAPK = _STATIC_METHOD(handle_cache.asset_manager.class, "extractFromAPK", "(Ljava/lang/String;Ljava/lang/String;)V");
