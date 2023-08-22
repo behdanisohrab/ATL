@@ -20,7 +20,7 @@ package android.graphics;
  * A color filter that can be used to tint the source pixels using a single
  * color and a specific {@link PorterDuff Porter-Duff composite mode}.
  */
-public class PorterDuffColorFilter {
+public class PorterDuffColorFilter extends ColorFilter {
 	private int mColor;
 	private PorterDuff.Mode mMode;
 

@@ -2,6 +2,7 @@ package android.graphics.drawable;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 
@@ -65,8 +66,12 @@ public abstract class Drawable {
 	public void setBounds(Rect bounds) {}
 
 	public void setColorFilter(int color, PorterDuff.Mode mode) {}
+	public void setColorFilter(ColorFilter filter) {}
 
 	public Drawable mutate() {
 		return this;
 	}
+
+	public int getIntrinsicWidth() {return 0;}
+	public int getIntrinsicHeight() {return 0;}
 }

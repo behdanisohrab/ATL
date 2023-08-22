@@ -358,4 +358,6 @@ public class Context extends Object {
 	public final CharSequence getText(int resId) {
 		return getResources().getText(resId);
 	}
+
+	public boolean isRestricted() {return false;}
 }

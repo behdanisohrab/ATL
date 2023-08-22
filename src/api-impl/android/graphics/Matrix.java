@@ -245,7 +245,7 @@ public class Matrix {
 	 * Set the matrix to identity
 	 */
 	public void reset() {
-		native_reset(native_instance);
+		// native_reset(native_instance);
 	}
 	/**
 	 * Set the matrix to translate by (dx, dy).
@@ -386,7 +386,8 @@ public class Matrix {
 	 * M' = S(sx, sy, px, py) * M
 	 */
 	public boolean postScale(float sx, float sy, float px, float py) {
-		return native_postScale(native_instance, sx, sy, px, py);
+		// return native_postScale(native_instance, sx, sy, px, py);
+		return true;
 	}
 	/**
 	 * Postconcats the matrix with the specified scale.
@@ -480,7 +481,8 @@ public class Matrix {
 		if (dst == null || src == null) {
 			throw new NullPointerException();
 		}
-		return native_setRectToRect(native_instance, src, dst, stf.nativeInt);
+		// return native_setRectToRect(native_instance, src, dst, stf.nativeInt);
+		return true;
 	}
 	// private helper to perform range checks on arrays of "points"
 	private static void checkPointArrays(float[] src, int srcIndex,

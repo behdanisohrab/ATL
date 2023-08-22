@@ -54,5 +54,10 @@ public class FrameLayout extends ViewGroup {
 			this.height = height;
 			this.gravity = gravity;
 		}
+
+		public LayoutParams (ViewGroup.LayoutParams params) {
+			this.width = params.width;
+			this.height = params.height;
+		}
 	}
 }

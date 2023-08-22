@@ -612,6 +612,14 @@ public class View extends Object {
 		// TODO
 	}
 
+	public interface OnUnhandledKeyEventListener {
+		// TODO
+	}
+
+	public interface OnFocusChangeListener {
+		// TODO
+	}
+
 	public interface OnCreateContextMenuListener {
 		/**
 		 * Called when the context menu for this view is being built. It is not
@@ -789,18 +797,18 @@ public class View extends Object {
 
 	public View(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
-
-		if (attrs != null) {
-			id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
-			if (id != 0)
-				setId(id);
-		}
 	}
 
 	public View(Context context, AttributeSet attrs, int defStyle) {
 		this.context = context;
 
 		widget = native_constructor(context, attrs);
+
+		if (attrs != null) {
+			id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
+			if (id != 0)
+				setId(id);
+		}
 	}
 
 	public View findViewById(int id) {
@@ -926,10 +934,12 @@ public class View extends Object {
 	public void getHitRect(Rect outRect) {}
 	public final boolean getLocalVisibleRect(Rect r) { return false; }
 
-	public final int getTop() { return 0; }
+	public final int getScrollX() { return 0; }
 	public final int getScrollY() { return 0; }
 
 	public void scrollTo(int x, int y) {}
+
+	protected void onScrollChanged(int l, int t, int oldl, int oldt) {}
 
 	public void getLocationOnScreen(int[] location) { // FIXME: actually return the widget's location (and also have the onclick callback convert to window coordinates, because is seems that's what android deals in..)
 		location[0] = 0;
@@ -1159,4 +1169,30 @@ public class View extends Object {
 			super.finalize();
 		}
 	}
+
+	public final int[] getDrawableState() {return new int[0];}
+
+	public float getRotation() {return 0.f;}
+
+	public void bringToFront() {}
+
+	public boolean isEnabled() {return true;}
+	public boolean hasFocus() {return false;}
+	public boolean isLayoutRequested() {return true;}
+	public int getBaseline() {return -1;}
+	public boolean hasFocusable() {return false;}
+	public boolean isFocused() {return false;}
+
+	public void clearAnimation() {}
+
+	public ViewPropertyAnimator animate() {
+		return new ViewPropertyAnimator();
+	}
+
+	public float getTranslationX() {return 0.f;}
+	public float getTranslationY() {return 0.f;}
+	public void setTranslationX(float translationX) {}
+	public void setTranslationY(float translationY) {}
+
+	public void setAlpha(float alpha) {}
 }

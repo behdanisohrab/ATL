@@ -3,6 +3,7 @@ package android.widget;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -49,6 +50,8 @@ public class ImageView extends View {
 	}
 
 	public void setImageDrawable(Drawable drawable) {}
+
+	public void setImageMatrix(Matrix matrix) {}
 
 	/**
 	 * Options for scaling the bounds of an image to the bounds of this view.

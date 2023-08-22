@@ -329,6 +329,8 @@ public class Activity extends Context {
 		return "Title";
 	}
 
+	public boolean isChangingConfigurations() {return false;}
+
 	private native void nativeFinish(long native_window);
 	private static native void nativeStartActivity(Activity activity);
 }

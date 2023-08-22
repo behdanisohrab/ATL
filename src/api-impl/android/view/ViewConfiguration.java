@@ -31,4 +31,8 @@ public class ViewConfiguration {
 	public int getScaledPagingTouchSlop(){
 		return 0;
 	}
+
+	public boolean hasPermanentMenuKey() {
+		return false;
+	}
 }
