@@ -7,6 +7,8 @@
 
 #include "../generated_headers/android_view_View.h"
 
+#define SOURCE_TOUCHSCREEN 4098
+
 struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; };
 
 static void call_ontouch_callback(int action, float x, float y, struct touch_callback_data *d)
@@ -14,7 +16,7 @@ static void call_ontouch_callback(int action, float x, float y, struct touch_cal
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, action, x, y);
+	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_TOUCHSCREEN, action, x, y);
 
 	(*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onTouch", "(Landroid/view/View;Landroid/view/MotionEvent;)Z"), d->this, motion_event);
 

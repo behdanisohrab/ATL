@@ -202,7 +202,8 @@ public class Matrix {
 	 * This maybe faster than testing if (getType() == 0)
 	 */
 	public boolean isIdentity() {
-		return native_isIdentity(native_instance);
+		return true;
+		// return native_isIdentity(native_instance);
 	}
 	/**
 	 * Returns true if will map a rectangle to another rectangle. This can be

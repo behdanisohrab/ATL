@@ -10,6 +10,8 @@
 
 #define MEASURE_SPEC_EXACTLY (1 << 30)
 
+#define SOURCE_CLASS_POINTER 0x2
+
 struct _AndroidLayout {
 	GtkLayoutManager parent_instance;
 	jobject view;
@@ -64,6 +66,18 @@ static GtkLayoutManager *android_layout_new(jobject view) {
 	return &layout->parent_instance;
 }
 
+static gboolean scroll_cb(GtkEventControllerScroll* self, gdouble dx, gdouble dy, jobject this)
+{
+	JNIEnv *env = get_jni_env();
+	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_CLASS_POINTER, MOTION_EVENT_ACTION_SCROLL, dx, -dy);
+
+	gboolean ret = (*env)->CallBooleanMethod(env, this, handle_cache.view.onGenericMotionEvent, motion_event);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
+	return ret;
+}
+
 /**
  * Should be overwritten by ViewGroup subclasses.
  * Fall back to vertical GtkBox if subclass is not implemented yet
@@ -82,6 +96,12 @@ JNIEXPORT jlong JNICALL Java_android_view_ViewGroup_native_1constructor(JNIEnv *
 	jmethodID layout_method = _METHOD(_CLASS(this), "onLayout", "(ZIIII)V");
 	if (measure_method != handle_cache.view.onMeasure || layout_method != handle_cache.view.onLayout) {
 		gtk_widget_set_layout_manager(box, android_layout_new(_REF(this)));
+	}
+	if (_METHOD(_CLASS(this), "onGenericMotionEvent", "(Landroid/view/MotionEvent;)Z") != handle_cache.view.onGenericMotionEvent) {
+		GtkEventController *controller = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
+
+		g_signal_connect(controller, "scroll", G_CALLBACK(scroll_cb), _REF(this));
+		gtk_widget_add_controller(box, controller);
 	}
 
 	return _INTPTR(box);

@@ -19,6 +19,8 @@
 
 #include "../generated_headers/android_opengl_GLSurfaceView.h"
 
+#define SOURCE_TOUCHSCREEN 4098
+
 // for whatever reason, some Mesa builds don't export the OES function (which we use in order to have GLESv1 support)
 GL_APICALL void GL_APIENTRY _glEGLImageTargetTexture2DOES_load(GLenum target, GLeglImageOES image);
 static PFNGLEGLIMAGETARGETTEXTURE2DOESPROC _glEGLImageTargetTexture2DOES = &_glEGLImageTargetTexture2DOES_load;
@@ -469,7 +471,7 @@ static void call_ontouch_callback(GtkEventControllerLegacy* event_controller, in
 
 	// execute the Java callback function
 
-	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, action, (float)x, (float)y);
+	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_TOUCHSCREEN, action, (float)x, (float)y);
 
 	(*env)->CallBooleanMethod(env, d->this, handle_cache.gl_surface_view.onTouchEvent, motion_event);
 
