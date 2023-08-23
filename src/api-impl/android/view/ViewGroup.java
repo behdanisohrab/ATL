@@ -56,7 +56,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		addView(child, new LayoutParams(width, height));
 	}
 
-	public void addView(View child, int index, LayoutParams params) {
+	private void addViewInternal(View child, int index, LayoutParams params) {
 		if (child.parent == this)
 			return;
 		if (params != null) {
@@ -65,6 +65,15 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		child.parent = this;
 		children.add(child);
 		native_addView(widget, child.widget, index, params);
+	}
+
+	public void addView(View child, int index, LayoutParams params) {
+		addViewInternal(child, index, params);
+	}
+
+	protected boolean addViewInLayout(View child, int index, LayoutParams params) {
+		addViewInternal(child, index, params);
+		return true;
 	}
 
 	public void removeView(View child) {

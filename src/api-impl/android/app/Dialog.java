@@ -1,8 +1,36 @@
 package android.app;
 
 import android.content.Context;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
+import android.view.View;
 
 public class Dialog {
+
+	private Context context;
+
+	public Dialog(Context context, int themeResId) {
+		this.context = context;
+	}
+
+	public final boolean requestWindowFeature(int featureId) {
+		return false;
+	}
+
+	public Context getContext() {
+		return context;
+	}
+
+	public void setContentView(View view) {}
+
+	public void setOwnerActivity(Activity activity) {}
+
+	public void setCancelable(boolean cancelable) {}
+
+	public void setOnCancelListener(OnCancelListener onCancelListener) {}
+
+	public void setOnDismissListener(OnDismissListener onDismissListener) {}
+
 	public void show() {
 		System.out.println("totally showing the Dialog " + this + " right now, most definitely doing that");
 	}

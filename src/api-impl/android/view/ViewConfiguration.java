@@ -35,4 +35,12 @@ public class ViewConfiguration {
 	public boolean hasPermanentMenuKey() {
 		return false;
 	}
+
+	public static int getDoubleTapTimeout() {
+		return 0;
+	}
+
+	public int getScaledDoubleTapSlop() {
+		return 0;
+	}
 }

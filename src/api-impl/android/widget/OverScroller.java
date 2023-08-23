@@ -11,4 +11,6 @@ public class OverScroller extends ViewGroup {
 	}
 
 	public void abortAnimation () {}
+
+	public void startScroll(int startX, int startY, int dx, int dy, int duration) {}
 }

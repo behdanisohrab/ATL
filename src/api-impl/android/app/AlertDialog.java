@@ -18,16 +18,13 @@ public class AlertDialog extends Dialog implements DialogInterface {
 	private native void nativeShow(long ptr);
 
 	public AlertDialog(Context context) {
+		super(context, 0);
 		nativePtr = nativeInit();
 	}
 
 	public void setTitle(CharSequence title) {
 		nativeSetTitle(nativePtr, String.valueOf(title));
 	}
-
-	public void setOnCancelListener(OnCancelListener onCancelListener) {}
-
-	public void setCancelable(boolean cancelable) {}
 
 	public void setMessage(CharSequence message) {
 		System.out.println("AlertDialog setMessage called with: '" + message + "'");
@@ -54,17 +51,15 @@ public class AlertDialog extends Dialog implements DialogInterface {
 	}
 
 	public static class Builder {
-		private Context context;
 		private AlertDialog dialog;
 
 		public Builder(Context context) {
 			System.out.println("making an AlertDialog$Builder as we speak, my word!");
-			this.context = context;
 			dialog = new AlertDialog(context);
 		}
 
 		public AlertDialog.Builder setPositiveButton(int textId, DialogInterface.OnClickListener listener) {
-			return setPositiveButton(context.getResources().getText(textId), listener);
+			return setPositiveButton(dialog.getContext().getText(textId), listener);
 		}
 
 		public AlertDialog.Builder setPositiveButton(CharSequence text, DialogInterface.OnClickListener listener) {
@@ -88,7 +83,7 @@ public class AlertDialog extends Dialog implements DialogInterface {
 		}
 
 		public AlertDialog.Builder setTitle(int title) {
-			return setTitle(context.getResources().getText(title));
+			return setTitle(dialog.getContext().getText(title));
 		}
 
 		public AlertDialog.Builder setMessage(CharSequence message) {

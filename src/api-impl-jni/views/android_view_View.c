@@ -70,6 +70,8 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener(JNIEnv *env, jo
 JNIEXPORT void JNICALL Java_android_view_View_setOnClickListener(JNIEnv *env, jobject this, jobject on_click_listener)
 {
 	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
+	if (!on_click_listener)
+		return;
 
 	JavaVM *jvm;
 	(*env)->GetJavaVM(env, &jvm);
