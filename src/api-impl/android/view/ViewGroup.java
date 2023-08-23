@@ -63,7 +63,9 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 			child.setLayoutParams(params);
 		}
 		child.parent = this;
-		children.add(child);
+		if (index < 0)
+			index = children.size();
+		children.add(index, child);
 		native_addView(widget, child.widget, index, params);
 	}
 
