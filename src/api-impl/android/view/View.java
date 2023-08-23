@@ -1201,4 +1201,31 @@ public class View extends Object {
 
 	protected boolean awakenScrollBars() {return false;}
 	public Matrix getMatrix() {return new Matrix();}
+
+	protected static final int[] EMPTY_STATE_SET = new int[0];
+
+	/**
+	 * Utility to return a default size. Uses the supplied size if the
+	 * MeasureSpec imposed no constraints. Will get larger if allowed
+	 * by the MeasureSpec.
+	 *
+	 * @param size Default size for this view
+	 * @param measureSpec Constraints imposed by the parent
+	 * @return The size this view should be.
+	 */
+	public static int getDefaultSize(int size, int measureSpec) {
+		int result = size;
+		int specMode = MeasureSpec.getMode(measureSpec);
+		int specSize = MeasureSpec.getSize(measureSpec);
+		switch (specMode) {
+		case MeasureSpec.UNSPECIFIED:
+			result = size;
+			break;
+		case MeasureSpec.AT_MOST:
+		case MeasureSpec.EXACTLY:
+			result = specSize;
+			break;
+		}
+		return result;
+	}
 }

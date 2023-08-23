@@ -323,9 +323,22 @@ public final class AssetManager {
 				break;
 			}
 		}
+
+		ident = 0;
+		if (valueItem != null && valueItem.getValueType() == ValueType.REFERENCE) {
+			while (valueItem.getValueType() == ValueType.REFERENCE) {
+				ident = valueItem.getData();
+				valueItem = null;
+				if (ident == 0)
+					break;
+				valueItem = tableBlockSearch(ident).pickOne().getResValue();
+				if (valueItem == null)
+					break;
+			}
+		}
 		if (valueItem == null)
 			return false;
-		outValue.resourceId = 0;
+		outValue.resourceId = ident;
 		outValue.type = valueItem.getType();
 		outValue.data = valueItem.getData();
 		outValue.assetCookie = -1;
@@ -925,31 +938,20 @@ public final class AssetManager {
 			if (valueItem.getValueType() == ValueType.REFERENCE) {
 				while (valueItem.getValueType() == ValueType.REFERENCE) {
 					resId = valueItem.getData();
-					valueItem = null;
 					if (resId == 0)
 						break;
-					valueItem = tableBlockSearch(resId).pickOne().getResValue();
-					if (valueItem == null)
+					entry = tableBlockSearch(resId).pickOne();
+					if (entry == null || entry.getResValue() == null)
 						break;
+					valueItem = entry.getResValue();
 				}
 
 				outValues[d + AssetManager.STYLE_RESOURCE_ID] = resId;
-				if (valueItem != null) {
-					outValues[d + AssetManager.STYLE_TYPE] = valueItem.getType();
-					outValues[d + AssetManager.STYLE_DATA] = valueItem.getData();
-					outValues[d + AssetManager.STYLE_ASSET_COOKIE] = getCookie(valueItem);
-					outIndices[++outIndices[0]] = i;
-				} else {
-					outValues[d + AssetManager.STYLE_TYPE] = -1;
-					outValues[d + AssetManager.STYLE_ASSET_COOKIE] = -1;
-				}
-			} else {
-				outValues[d+AssetManager.STYLE_RESOURCE_ID] = 0;
-				outValues[d+AssetManager.STYLE_TYPE] = valueItem.getType();
-				outValues[d+AssetManager.STYLE_DATA] = valueItem.getData();
-				outValues[d+AssetManager.STYLE_ASSET_COOKIE] = getCookie(valueItem);
-				outIndices[++outIndices[0]] = i;
 			}
+			outValues[d + AssetManager.STYLE_TYPE] = valueItem.getType();
+			outValues[d + AssetManager.STYLE_DATA] = valueItem.getData();
+			outValues[d + AssetManager.STYLE_ASSET_COOKIE] = getCookie(valueItem);
+			outIndices[++outIndices[0]] = i;
 		}
 		return true;
 	}

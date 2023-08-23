@@ -314,7 +314,8 @@ public class TypedArray {
 			return defValue;
 		}
 
-		throw new UnsupportedOperationException("Can't convert to color: type=0x" + Integer.toHexString(type));
+		Log.e(Resources.TAG, "Can't convert to color: type=0x" + Integer.toHexString(type));
+		return defValue;
 	}
 
 	/**
@@ -330,6 +331,8 @@ public class TypedArray {
 		final TypedValue value = mValue;
 		if (getValueAt(index * AssetManager.STYLE_NUM_ENTRIES, value)) {
 			if (value.type == -1)
+				return null;
+			if (value.type == TypedValue.TYPE_REFERENCE && value.data == 0)
 				return null;
 			return mResources.loadColorStateList(value, value.resourceId);
 		}
