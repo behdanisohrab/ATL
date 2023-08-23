@@ -62,12 +62,10 @@ void frame_layout_widget_insert_child_at_index(FrameLayoutWidget *parent, GtkWid
 {
 	printf("::::::::::: FrameLayoutWidget: inserting something at index %d\n", index);
 	GtkWidget *iter = gtk_widget_get_first_child(GTK_WIDGET(parent));
-	GtkWidget *next = NULL;
 	for(int i = 0; i < index; i++) {
-		next = gtk_widget_get_next_sibling(iter);
-		if(next == NULL)
+		iter = gtk_widget_get_next_sibling(iter);
+		if(iter == NULL)
 			break;
-		iter = next;
 	}
 
 	gtk_widget_insert_before(child, GTK_WIDGET(parent), iter);
