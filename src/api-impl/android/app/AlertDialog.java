@@ -2,28 +2,16 @@ package android.app;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 
 public class AlertDialog extends Dialog implements DialogInterface {
 
-	private long nativePtr;
-
-	private native long nativeInit();
-	private native void nativeSetTitle(long ptr, String title);
 	private native void nativeSetMessage(long ptr, String message);
 	private native void nativeSetButton(long ptr, int whichButton, String text);
 	private native void nativeSetItems(long ptr, String[] items, DialogInterface.OnClickListener listener);
-	private native void nativeShow(long ptr);
 
 	public AlertDialog(Context context) {
 		super(context, 0);
-		nativePtr = nativeInit();
-	}
-
-	public void setTitle(CharSequence title) {
-		nativeSetTitle(nativePtr, String.valueOf(title));
 	}
 
 	public void setMessage(CharSequence message) {
@@ -33,21 +21,6 @@ public class AlertDialog extends Dialog implements DialogInterface {
 
 	public void setButton(int whichButton, CharSequence text, OnClickListener listener) {
 		nativeSetButton(nativePtr, whichButton, String.valueOf(text));
-	}
-
-	public boolean isShowing() {
-		return false;
-	}
-
-	@Override
-	public void show() {
-		super.show();
-		new Handler(Looper.getMainLooper()).post(new Runnable() {
-			@Override
-			public void run() {
-				nativeShow(nativePtr);
-			}
-		});
 	}
 
 	public static class Builder {
