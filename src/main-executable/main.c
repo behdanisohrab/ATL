@@ -307,6 +307,10 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	free(app_lib_dir);
 
+	jclass display_class = (*env)->FindClass(env, "android/view/Display");
+	_SET_STATIC_INT_FIELD(display_class, "window_width", d->window_width);
+	_SET_STATIC_INT_FIELD(display_class, "window_height", d->window_height);
+
 	set_up_handle_cache(env);
 
 	/* -- register our JNI library under the appropriate classloader -- */
@@ -325,10 +329,6 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	(*env)->CallVoidMethod(env, java_runtime, loadLibrary_with_classloader, _JSTRING("translation_layer_main"), class_loader);
 
 	/* -- misc -- */
-
-	jclass display_class = (*env)->FindClass(env, "android/view/Display");
-	_SET_STATIC_INT_FIELD(display_class, "window_width", d->window_width);
-	_SET_STATIC_INT_FIELD(display_class, "window_height", d->window_height);
 
 	// some apps need the apk path since they directly read their apk
 	jclass context_class = (*env)->FindClass(env, "android/content/Context");
