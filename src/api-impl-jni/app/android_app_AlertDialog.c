@@ -4,21 +4,6 @@
 #include "../defines.h"
 #include "../generated_headers/android_app_AlertDialog.h"
 
-JNIEXPORT jlong JNICALL Java_android_app_AlertDialog_nativeInit(JNIEnv *env, jobject this)
-{
-	GtkWidget *dialog = gtk_dialog_new();
-	g_signal_connect_swapped(dialog, "response", G_CALLBACK(gtk_window_destroy), dialog);
-	return _INTPTR(dialog);
-}
-
-JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeSetTitle(JNIEnv *env, jobject this, jlong ptr, jstring title)
-{
-	GtkWindow *dialog = GTK_WINDOW(_PTR(ptr));
-	const char* nativeTitle = (*env)->GetStringUTFChars(env, title, NULL);
-	gtk_window_set_title(dialog, nativeTitle);
-	(*env)->ReleaseStringUTFChars(env, title, nativeTitle);
-}
-
 JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeSetMessage(JNIEnv *env, jobject this, jlong ptr, jstring message)
 {
 	GtkDialog *dialog = GTK_DIALOG(_PTR(ptr));
@@ -106,10 +91,4 @@ JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeSetItems(JNIEnv *env, 
 	callback_data->on_click_method = _METHOD(_CLASS(on_click), "onClick", "(Landroid/content/DialogInterface;I)V");
 
 	g_signal_connect(list, "activate", G_CALLBACK(activate_cb), callback_data);
-}
-
-JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeShow(JNIEnv *env, jobject this, jlong ptr)
-{
-	GtkWindow *dialog = GTK_WINDOW(_PTR(ptr));
-	gtk_window_present(dialog);
 }

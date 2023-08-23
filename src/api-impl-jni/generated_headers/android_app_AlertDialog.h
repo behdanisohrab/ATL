@@ -9,22 +9,6 @@ extern "C" {
 #endif
 /*
  * Class:     android_app_AlertDialog
- * Method:    nativeInit
- * Signature: ()J
- */
-JNIEXPORT jlong JNICALL Java_android_app_AlertDialog_nativeInit
-  (JNIEnv *, jobject);
-
-/*
- * Class:     android_app_AlertDialog
- * Method:    nativeSetTitle
- * Signature: (JLjava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeSetTitle
-  (JNIEnv *, jobject, jlong, jstring);
-
-/*
- * Class:     android_app_AlertDialog
  * Method:    nativeSetMessage
  * Signature: (JLjava/lang/String;)V
  */
@@ -46,14 +30,6 @@ JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeSetButton
  */
 JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeSetItems
   (JNIEnv *, jobject, jlong, jobjectArray, jobject);
-
-/*
- * Class:     android_app_AlertDialog
- * Method:    nativeShow
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeShow
-  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }
