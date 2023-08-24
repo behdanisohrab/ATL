@@ -17,12 +17,9 @@
 package android.database;
 
 import android.content.ContentResolver;
-import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Bundle;
 import java.io.Closeable;
-
-class CharArrayBuffer {}
 
 /**
  * This interface provides random read-write access to the result set returned
@@ -80,7 +77,7 @@ public interface Cursor extends Closeable {
 	 *
 	 * @return the current cursor position.
 	 */
-	//    int getPosition();
+	int getPosition();
 
 	/**
 	 * Move the cursor by a relative amount, forward or backward, from the
@@ -97,7 +94,7 @@ public interface Cursor extends Closeable {
 	 * @param offset the offset to be applied from the current position.
 	 * @return whether the requested move fully succeeded.
 	 */
-	//    boolean move(int offset);
+	boolean move(int offset);
 
 	/**
 	 * Move the cursor to an absolute position. The valid
@@ -109,7 +106,7 @@ public interface Cursor extends Closeable {
 	 * @param position the zero-based position to move to.
 	 * @return whether the requested move fully succeeded.
 	 */
-	//    boolean moveToPosition(int position);
+	boolean moveToPosition(int position);
 
 	/**
 	 * Move the cursor to the first row.
@@ -127,7 +124,7 @@ public interface Cursor extends Closeable {
 	 *
 	 * @return whether the move succeeded.
 	 */
-	//    boolean moveToLast();
+	boolean moveToLast();
 
 	/**
 	 * Move the cursor to the next row.
@@ -147,21 +144,21 @@ public interface Cursor extends Closeable {
 	 *
 	 * @return whether the move succeeded.
 	 */
-	//    boolean moveToPrevious();
+	boolean moveToPrevious();
 
 	/**
 	 * Returns whether the cursor is pointing to the first row.
 	 *
 	 * @return whether the cursor is pointing at the first entry.
 	 */
-	//    boolean isFirst();
+	boolean isFirst();
 
 	/**
 	 * Returns whether the cursor is pointing to the last row.
 	 *
 	 * @return whether the cursor is pointing at the last entry.
 	 */
-	//    boolean isLast();
+	boolean isLast();
 
 	/**
 	 * Returns whether the cursor is pointing to the position before the first
@@ -169,7 +166,7 @@ public interface Cursor extends Closeable {
 	 *
 	 * @return whether the cursor is before the first result.
 	 */
-	//    boolean isBeforeFirst();
+	boolean isBeforeFirst();
 
 	/**
 	 * Returns whether the cursor is pointing to the position after the last
@@ -202,7 +199,7 @@ public interface Cursor extends Closeable {
 	 * @see #getColumnIndex(String)
 	 * @throws IllegalArgumentException if the column does not exist
 	 */
-	//    int getColumnIndexOrThrow(String columnName) throws IllegalArgumentException;
+	int getColumnIndexOrThrow(String columnName) throws IllegalArgumentException;
 
 	/**
 	 * Returns the column name at the given zero-based column index.
@@ -210,7 +207,7 @@ public interface Cursor extends Closeable {
 	 * @param columnIndex the zero-based index of the target column.
 	 * @return the column name for the given column index.
 	 */
-	//    String getColumnName(int columnIndex);
+	String getColumnName(int columnIndex);
 
 	/**
 	 * Returns a string array holding the names of all of the columns in the
@@ -218,13 +215,13 @@ public interface Cursor extends Closeable {
 	 *
 	 * @return the names of the columns returned in this query.
 	 */
-	//    String[] getColumnNames();
+	String[] getColumnNames();
 
 	/**
 	 * Return total number of columns
 	 * @return number of columns
 	 */
-	//    int getColumnCount();
+	int getColumnCount();
 
 	/**
 	 * Returns the value of the requested column as a byte array.
@@ -236,7 +233,7 @@ public interface Cursor extends Closeable {
 	 * @param columnIndex the zero-based index of the target column.
 	 * @return the value of that column as a byte array.
 	 */
-	//    byte[] getBlob(int columnIndex);
+	byte[] getBlob(int columnIndex);
 
 	/**
 	 * Returns the value of the requested column as a String.
@@ -258,7 +255,7 @@ public interface Cursor extends Closeable {
 	 *        if the target column is null, return buffer
 	 * @param buffer the buffer to copy the text into.
 	 */
-	//    void copyStringToBuffer(int columnIndex, CharArrayBuffer buffer);
+	void copyStringToBuffer(int columnIndex, CharArrayBuffer buffer);
 
 	/**
 	 * Returns the value of the requested column as a short.
@@ -271,7 +268,7 @@ public interface Cursor extends Closeable {
 	 * @param columnIndex the zero-based index of the target column.
 	 * @return the value of that column as a short.
 	 */
-	//    short getShort(int columnIndex);
+	short getShort(int columnIndex);
 
 	/**
 	 * Returns the value of the requested column as an int.
@@ -310,7 +307,7 @@ public interface Cursor extends Closeable {
 	 * @param columnIndex the zero-based index of the target column.
 	 * @return the value of that column as a float.
 	 */
-	//    float getFloat(int columnIndex);
+	float getFloat(int columnIndex);
 
 	/**
 	 * Returns the value of the requested column as a double.
@@ -323,7 +320,7 @@ public interface Cursor extends Closeable {
 	 * @param columnIndex the zero-based index of the target column.
 	 * @return the value of that column as a double.
 	 */
-	//    double getDouble(int columnIndex);
+	double getDouble(int columnIndex);
 
 	/**
 	 * Returns data type of the given column's value.
@@ -344,7 +341,7 @@ public interface Cursor extends Closeable {
 	 * @param columnIndex the zero-based index of the target column.
 	 * @return column value type
 	 */
-	//    int getType(int columnIndex);
+	int getType(int columnIndex);
 
 	/**
 	 * Returns <code>true</code> if the value in the indicated column is null.
@@ -352,7 +349,7 @@ public interface Cursor extends Closeable {
 	 * @param columnIndex the zero-based index of the target column.
 	 * @return whether the column value is null.
 	 */
-	//    boolean isNull(int columnIndex);
+	boolean isNull(int columnIndex);
 
 	/**
 	 * Deactivates the Cursor, making all calls on it fail until {@link #requery} is called.
@@ -390,7 +387,7 @@ public interface Cursor extends Closeable {
 	 * return true if the cursor is closed
 	 * @return true if the cursor is closed.
 	 */
-	//    boolean isClosed();
+	boolean isClosed();
 
 	/**
 	 * Register an observer that is called when changes happen to the content backing this cursor.
@@ -399,7 +396,7 @@ public interface Cursor extends Closeable {
 	 * @param observer the object that gets notified when the content backing the cursor changes.
 	 * @see #unregisterContentObserver(ContentObserver)
 	 */
-	//    void registerContentObserver(ContentObserver observer);
+	void registerContentObserver(ContentObserver observer);
 
 	/**
 	 * Unregister an observer that has previously been registered with this
@@ -408,7 +405,7 @@ public interface Cursor extends Closeable {
 	 * @param observer the object to unregister.
 	 * @see #registerContentObserver(ContentObserver)
 	 */
-	//    void unregisterContentObserver(ContentObserver observer);
+	void unregisterContentObserver(ContentObserver observer);
 
 	/**
 	 * Register an observer that is called when changes happen to the contents
@@ -418,7 +415,7 @@ public interface Cursor extends Closeable {
 	 * @param observer the object that gets notified when the cursors data set changes.
 	 * @see #unregisterDataSetObserver(DataSetObserver)
 	 */
-	//    void registerDataSetObserver(DataSetObserver observer);
+	void registerDataSetObserver(DataSetObserver observer);
 
 	/**
 	 * Unregister an observer that has previously been registered with this
@@ -427,7 +424,7 @@ public interface Cursor extends Closeable {
 	 * @param observer the object to unregister.
 	 * @see #registerDataSetObserver(DataSetObserver)
 	 */
-	//    void unregisterDataSetObserver(DataSetObserver observer);
+	void unregisterDataSetObserver(DataSetObserver observer);
 
 	/**
 	 * Register to watch a content URI for changes. This can be the URI of a specific data row (for
@@ -437,7 +434,7 @@ public interface Cursor extends Closeable {
 	 * this resolver will be notified.
 	 * @param uri The content URI to watch.
 	 */
-	//    void setNotificationUri(ContentResolver cr, Uri uri);
+	void setNotificationUri(ContentResolver cr, Uri uri);
 
 	/**
 	 * Return the URI at which notifications of changes in this Cursor's data
@@ -447,13 +444,13 @@ public interface Cursor extends Closeable {
 	 * ContentResolver.registerContentObserver} to find out about changes to this Cursor's
 	 * data.  May be null if no notification URI has been set.
 	 */
-	//    Uri getNotificationUri();
+	Uri getNotificationUri();
 
 	/**
 	 * onMove() will only be called across processes if this method returns true.
 	 * @return whether all cursor movement should result in a call to onMove().
 	 */
-	//    boolean getWantsAllOnMoveCalls();
+	boolean getWantsAllOnMoveCalls();
 
 	/**
 	 * Returns a bundle of extra values. This is an optional way for cursors to provide out-of-band
@@ -464,7 +461,7 @@ public interface Cursor extends Closeable {
 	 * @return cursor-defined values, or {@link android.os.Bundle#EMPTY Bundle.EMPTY} if there
 	 *         are no values. Never <code>null</code>.
 	 */
-	//    Bundle getExtras();
+	Bundle getExtras();
 
 	/**
 	 * This is an out-of-band way for the the user of a cursor to communicate with the cursor. The
@@ -477,5 +474,5 @@ public interface Cursor extends Closeable {
 	 * @return extra values, or {@link android.os.Bundle#EMPTY Bundle.EMPTY}.
 	 *         Never <code>null</code>.
 	 */
-	//    Bundle respond(Bundle extras);
+	Bundle respond(Bundle extras);
 }

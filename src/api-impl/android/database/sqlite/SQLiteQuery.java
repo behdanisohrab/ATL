@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+** Modified to support SQLite extensions by the SQLite developers: 
+** sqlite-dev@sqlite.org.
+*/
 
 package android.database.sqlite;
 
-// import android.database.CursorWindow;
+import android.database.CursorWindow;
 import android.os.CancellationSignal;
-// import android.os.OperationCanceledException;
+import android.os.OperationCanceledException;
 import android.util.Log;
-
-class CursorWindow {}
 
 /**
  * Represents a query that reads the resulting rows into a {@link SQLiteQuery}.
@@ -56,33 +58,31 @@ public final class SQLiteQuery extends SQLiteProgram {
 	 * @throws SQLiteException if an error occurs.
 	 * @throws OperationCanceledException if the operation was canceled.
 	 */
-	int fillWindow(CursorWindow window, int startPos, int requiredPos, boolean countAllRows) { /*
-	     acquireReference();
-	     try {
-		 window.acquireReference();
-		 try {
-		     int numRows = getSession().executeForCursorWindow(getSql(), getBindArgs(),
-			     window, startPos, requiredPos, countAllRows, getConnectionFlags(),
-			     mCancellationSignal);
-		     return numRows;
-		 } catch (SQLiteDatabaseCorruptException ex) {
-		     onCorruption();
-		     throw ex;
-		 } catch (SQLiteException ex) {
-		     Log.e(TAG, "exception: " + ex.getMessage() + "; query: " + getSql());
-		     throw ex;
-		 } finally {
-		     window.releaseReference();
-		 }
-	     } finally {
-		 releaseReference();
-	     }
-	 */
-		return -1;
+	int fillWindow(CursorWindow window, int startPos, int requiredPos, boolean countAllRows) {
+		acquireReference();
+		try {
+			window.acquireReference();
+			try {
+				int numRows = getSession().executeForCursorWindow(getSql(), getBindArgs(),
+						window, startPos, requiredPos, countAllRows, getConnectionFlags(),
+						mCancellationSignal);
+				return numRows;
+			} catch (SQLiteDatabaseCorruptException ex) {
+				onCorruption();
+				throw ex;
+			} catch (SQLiteException ex) {
+				Log.e(TAG, "exception: " + ex.getMessage() + "; query: " + getSql());
+				throw ex;
+			} finally {
+				window.releaseReference();
+			}
+		} finally {
+			releaseReference();
+		}
 	}
 
 	@Override
 	public String toString() {
-		return "SQLiteQuery: " /* + getSql()*/;
+		return "SQLiteQuery: " + getSql();
 	}
 }

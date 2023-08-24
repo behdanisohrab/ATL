@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,10 @@
 
 package android.database.sqlite;
 
-import android.database.SQLException;
+public class SQLiteOutOfMemoryException extends SQLiteException {
+	public SQLiteOutOfMemoryException() {}
 
-/**
- * A SQLite exception that indicates there was an error with SQL parsing or execution.
- */
-public class SQLiteException extends SQLException {
-	public SQLiteException() {
-	}
-
-	public SQLiteException(String error) {
+	public SQLiteOutOfMemoryException(String error) {
 		super(error);
-	}
-
-	public SQLiteException(String error, Throwable cause) {
-		super(error, cause);
 	}
 }

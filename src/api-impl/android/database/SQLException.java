@@ -18,22 +18,20 @@
 ** sqlite-dev@sqlite.org.
 */
 
-package android.database.sqlite;
-
-import android.database.SQLException;
+package android.database;
 
 /**
- * A SQLite exception that indicates there was an error with SQL parsing or execution.
+ * An exception that indicates there was an error with SQL parsing or execution.
  */
-public class SQLiteException extends SQLException {
-	public SQLiteException() {
+public class SQLException extends RuntimeException {
+	public SQLException() {
 	}
 
-	public SQLiteException(String error) {
+	public SQLException(String error) {
 		super(error);
 	}
 
-	public SQLiteException(String error, Throwable cause) {
+	public SQLException(String error, Throwable cause) {
 		super(error, cause);
 	}
 }

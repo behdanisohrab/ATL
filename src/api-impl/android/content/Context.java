@@ -360,4 +360,11 @@ public class Context extends Object {
 	}
 
 	public boolean isRestricted() {return false;}
+
+	public File getDatabasePath(String dbName) {
+		File databaseDir = new File(getDataDirFile(), "databases");
+		if (!databaseDir.exists())
+			databaseDir.mkdirs();
+		return new File(databaseDir, dbName);
+	}
 }

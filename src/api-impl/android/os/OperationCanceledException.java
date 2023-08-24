@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2012 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
-** Modified to support SQLite extensions by the SQLite developers: 
-** sqlite-dev@sqlite.org.
-*/
 
-package android.database.sqlite;
-
-import android.database.SQLException;
+package android.os;
 
 /**
- * A SQLite exception that indicates there was an error with SQL parsing or execution.
+ * An exception type that is thrown when an operation in progress is canceled.
+ *
+ * @see CancellationSignal
  */
-public class SQLiteException extends SQLException {
-	public SQLiteException() {
+public class OperationCanceledException extends RuntimeException {
+ 
+	public OperationCanceledException() {
+		this(null);
 	}
 
-	public SQLiteException(String error) {
-		super(error);
-	}
-
-	public SQLiteException(String error, Throwable cause) {
-		super(error, cause);
+	public OperationCanceledException(String message) {
+		super(message != null ? message : "The operation has been canceled.");
 	}
 }
