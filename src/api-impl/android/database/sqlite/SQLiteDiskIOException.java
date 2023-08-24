@@ -20,20 +20,14 @@
 
 package android.database.sqlite;
 
-import android.database.SQLException;
-
 /**
- * A SQLite exception that indicates there was an error with SQL parsing or execution.
+ * An exception that indicates that an IO error occured while accessing the 
+ * SQLite database file.
  */
-public class SQLiteException extends SQLException {
-	public SQLiteException() {
-	}
+public class SQLiteDiskIOException extends SQLiteException {
+	public SQLiteDiskIOException() {}
 
-	public SQLiteException(String error) {
+	public SQLiteDiskIOException(String error) {
 		super(error);
-	}
-
-	public SQLiteException(String error, Throwable cause) {
-		super(error, cause);
 	}
 }

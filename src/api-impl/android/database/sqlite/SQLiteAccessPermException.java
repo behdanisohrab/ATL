@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,14 @@
 
 package android.database.sqlite;
 
-import android.database.SQLException;
-
 /**
- * A SQLite exception that indicates there was an error with SQL parsing or execution.
+ * This exception class is used when sqlite can't access the database file
+ * due to lack of permissions on the file.
  */
-public class SQLiteException extends SQLException {
-	public SQLiteException() {
-	}
+public class SQLiteAccessPermException extends SQLiteException {
+	public SQLiteAccessPermException() {}
 
-	public SQLiteException(String error) {
+	public SQLiteAccessPermException(String error) {
 		super(error);
-	}
-
-	public SQLiteException(String error, Throwable cause) {
-		super(error, cause);
 	}
 }

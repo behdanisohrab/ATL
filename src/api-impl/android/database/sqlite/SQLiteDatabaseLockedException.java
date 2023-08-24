@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,18 @@
 
 package android.database.sqlite;
 
-import android.database.SQLException;
-
 /**
- * A SQLite exception that indicates there was an error with SQL parsing or execution.
+ * Thrown if  the database engine was unable to acquire the
+ * database locks it needs to do its job.  If the statement is a [COMMIT]
+ * or occurs outside of an explicit transaction, then you can retry the
+ * statement.  If the statement is not a [COMMIT] and occurs within a
+ * explicit transaction then you should rollback the transaction before
+ * continuing.
  */
-public class SQLiteException extends SQLException {
-	public SQLiteException() {
-	}
+public class SQLiteDatabaseLockedException extends SQLiteException {
+	public SQLiteDatabaseLockedException() {}
 
-	public SQLiteException(String error) {
+	public SQLiteDatabaseLockedException(String error) {
 		super(error);
-	}
-
-	public SQLiteException(String error, Throwable cause) {
-		super(error, cause);
 	}
 }

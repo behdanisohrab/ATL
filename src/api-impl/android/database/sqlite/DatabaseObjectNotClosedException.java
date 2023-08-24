@@ -20,20 +20,16 @@
 
 package android.database.sqlite;
 
-import android.database.SQLException;
-
 /**
- * A SQLite exception that indicates there was an error with SQL parsing or execution.
+ * An exception that indicates that garbage-collector is finalizing a database object
+ * that is not explicitly closed
+ * @hide
  */
-public class SQLiteException extends SQLException {
-	public SQLiteException() {
-	}
+public class DatabaseObjectNotClosedException extends RuntimeException {
+	private static final String s = "Application did not close the cursor or database object " +
+			"that was opened here";
 
-	public SQLiteException(String error) {
-		super(error);
-	}
-
-	public SQLiteException(String error, Throwable cause) {
-		super(error, cause);
+	public DatabaseObjectNotClosedException() {
+		super(s);
 	}
 }

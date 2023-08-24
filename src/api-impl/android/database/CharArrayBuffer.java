@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2008 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
-** Modified to support SQLite extensions by the SQLite developers: 
-** sqlite-dev@sqlite.org.
-*/
 
-package android.database.sqlite;
-
-import android.database.SQLException;
+package android.database;
 
 /**
- * A SQLite exception that indicates there was an error with SQL parsing or execution.
+ * This is used for {@link Cursor#copyStringToBuffer}
  */
-public class SQLiteException extends SQLException {
-	public SQLiteException() {
+public final class CharArrayBuffer {
+	public CharArrayBuffer(int size) {
+		data = new char[size];
 	}
-
-	public SQLiteException(String error) {
-		super(error);
+	
+	public CharArrayBuffer(char[] buf) {
+		data = buf;
 	}
-
-	public SQLiteException(String error, Throwable cause) {
-		super(error, cause);
-	}
+	
+	public char[] data; // In and out parameter
+	public int sizeCopied; // Out parameter
 }

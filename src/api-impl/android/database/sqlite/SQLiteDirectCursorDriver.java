@@ -52,7 +52,7 @@ public final class SQLiteDirectCursorDriver implements SQLiteCursorDriver {
 				cursor = factory.newCursor(mDatabase, this, mEditTable, query);
 			}
 		} catch (RuntimeException ex) {
-			//            query.close();
+			query.close();
 			throw ex;
 		}
 

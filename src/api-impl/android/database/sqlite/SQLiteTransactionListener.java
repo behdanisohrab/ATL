@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2009 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,22 @@
 
 package android.database.sqlite;
 
-import android.database.SQLException;
-
 /**
- * A SQLite exception that indicates there was an error with SQL parsing or execution.
+ * A listener for transaction events.
  */
-public class SQLiteException extends SQLException {
-	public SQLiteException() {
-	}
+public interface SQLiteTransactionListener {
+	/**
+	 * Called immediately after the transaction begins.
+	 */
+	void onBegin();
 
-	public SQLiteException(String error) {
-		super(error);
-	}
+	/**
+	 * Called immediately before commiting the transaction.
+	 */
+	void onCommit();
 
-	public SQLiteException(String error, Throwable cause) {
-		super(error, cause);
-	}
+	/**
+	 * Called if the transaction is about to be rolled back.
+	 */
+	void onRollback();
 }

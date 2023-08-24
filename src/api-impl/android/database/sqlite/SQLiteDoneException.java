@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2008 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,16 @@
 
 package android.database.sqlite;
 
-import android.database.SQLException;
-
 /**
- * A SQLite exception that indicates there was an error with SQL parsing or execution.
+ * An exception that indicates that the SQLite program is done.
+ * Thrown when an operation that expects a row (such as {@link
+ * SQLiteStatement#simpleQueryForString} or {@link
+ * SQLiteStatement#simpleQueryForLong}) does not get one.
  */
-public class SQLiteException extends SQLException {
-	public SQLiteException() {
-	}
+public class SQLiteDoneException extends SQLiteException {
+	public SQLiteDoneException() {}
 
-	public SQLiteException(String error) {
+	public SQLiteDoneException(String error) {
 		super(error);
-	}
-
-	public SQLiteException(String error, Throwable cause) {
-		super(error, cause);
 	}
 }

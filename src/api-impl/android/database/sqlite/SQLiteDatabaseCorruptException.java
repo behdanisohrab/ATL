@@ -20,20 +20,13 @@
 
 package android.database.sqlite;
 
-import android.database.SQLException;
-
 /**
- * A SQLite exception that indicates there was an error with SQL parsing or execution.
+ * An exception that indicates that the SQLite database file is corrupt.
  */
-public class SQLiteException extends SQLException {
-	public SQLiteException() {
-	}
+public class SQLiteDatabaseCorruptException extends SQLiteException {
+	public SQLiteDatabaseCorruptException() {}
 
-	public SQLiteException(String error) {
+	public SQLiteDatabaseCorruptException(String error) {
 		super(error);
-	}
-
-	public SQLiteException(String error, Throwable cause) {
-		super(error, cause);
 	}
 }

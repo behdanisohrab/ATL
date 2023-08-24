@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,24 @@
 
 package android.database.sqlite;
 
-import android.database.SQLException;
-
 /**
- * A SQLite exception that indicates there was an error with SQL parsing or execution.
+ * Describes a SQLite statement.
+ *
+ * @hide
  */
-public class SQLiteException extends SQLException {
-	public SQLiteException() {
-	}
+public final class SQLiteStatementInfo {
+	/**
+	 * The number of parameters that the statement has.
+	 */
+	public int numParameters;
 
-	public SQLiteException(String error) {
-		super(error);
-	}
+	/**
+	 * The names of all columns in the result set of the statement.
+	 */
+	public String[] columnNames;
 
-	public SQLiteException(String error, Throwable cause) {
-		super(error, cause);
-	}
+	/**
+	 * True if the statement is read-only.
+	 */
+	public boolean readOnly;
 }
