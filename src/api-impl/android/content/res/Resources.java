@@ -16,6 +16,7 @@
 
 package android.content.res;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.icu.text.PluralRules;
 // import android.graphics.Movie;
@@ -217,15 +218,16 @@ public class Resources {
 	 * on orientation, etc).
 	 */
 	public static Resources getSystem() {
-		synchronized (sSync) {
-			Resources ret = mSystem;
-			if (ret == null) {
-				ret = new Resources();
-				mSystem = ret;
-			}
-
-			return ret;
-		}
+		return Context.this_application.getResources();
+//		synchronized (sSync) {
+//			Resources ret = mSystem;
+//			if (ret == null) {
+//				ret = new Resources();
+//				mSystem = ret;
+//			}
+//
+//			return ret;
+//		}
 	}
 
 	/**
