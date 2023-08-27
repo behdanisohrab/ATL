@@ -3,7 +3,7 @@
 ---
 
 dependencies on debian:
-`sudo apt install libglib2.0-dev libgtk-4-dev libasound2-dev libopenxr-dev`
+`sudo apt install libglib2.0-dev libgtk-4-dev libasound2-dev libopenxr-dev libportal-dev libsqlite3-dev`
 
 build instructions:  
 1. compile and install https://gitlab.com/Mis012/dalvik_standalone (art branch) (you can run it from builddir, but it requires some additional env variables)

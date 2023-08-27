@@ -64,6 +64,8 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/android_view_Window.c',
                                                                   	'src/api-impl-jni/util.c',
                                                                   	'src/api-impl-jni/android_graphics_Canvas.c',
+                                                                  	'src/api-impl-jni/database/android_database_SQLiteCommon.c',
+                                                                  	'src/api-impl-jni/database/android_database_SQLiteConnection.c',
                                                                   	'src/api-impl-jni/drawables/ninepatch.c',
                                                                   	'src/api-impl-jni/android_content_res_AssetManager.c',
                                                                   	'src/api-impl-jni/audio/android_media_AudioTrack.c',
@@ -93,7 +95,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   install: true,
                                                                   install_dir : get_option('libdir') / 'java/dex/android_translation_layer/natives',
                                                                   dependencies: [
-                                                                  	dependency('gtk4'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni'), dependency('libportal')
+                                                                  	dependency('gtk4'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni'), dependency('libportal'), dependency('sqlite3')
                                                                   ],
                                                                   link_with: [ libandroid_so ],
                                                                   link_args: [
