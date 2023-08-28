@@ -3,67 +3,68 @@
 #include "defines.h"
 #include "util.h"
 
+#include "../sk_area/include/c/sk_canvas.h"
+#include "../sk_area/include/c/sk_image.h"
 #include "generated_headers/android_graphics_Canvas.h"
 
-JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1save(JNIEnv *env, jclass this, jlong cairo_context, jlong widget)
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1save(JNIEnv *env, jclass this, jlong skia_canvas, jlong widget)
 {
-	cairo_t *cr = (cairo_t *)_PTR(cairo_context);
+	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
 
-	cairo_save(cr);
+	sk_canvas_save(canvas);
 }
 
-JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1restore(JNIEnv *env, jclass this, jlong cairo_context, jlong widget)
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1restore(JNIEnv *env, jclass this, jlong skia_canvas, jlong widget)
 {
-	cairo_t *cr = (cairo_t *)_PTR(cairo_context);
+	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
 
-	cairo_restore(cr);
+	sk_canvas_restore(canvas);
 }
 
-JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawLine(JNIEnv *env, jclass this_class, jlong cairo_context, jlong widget, jfloat start_x, jfloat start_y, jfloat stop_x, jfloat stop_y, jint paint_color)
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawLine(JNIEnv *env, jclass this_class, jlong skia_canvas, jlong widget, jfloat start_x, jfloat start_y, jfloat stop_x, jfloat stop_y, jlong skia_paint)
 {
-	cairo_t *cr = (cairo_t *)_PTR(cairo_context);
+	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
+	sk_paint_t *paint = (sk_paint_t *)_PTR(skia_paint);
 
-	// TODO: cairo is not stateless, so we should probably check that the state is not already what we want it to be before we tell cairo to change it
-	// NOTE: we should make sure that cairo doesn't do this microoptimization internally before we implement it here
-
-	char buf[10]; //#rrggbbaa\0
-	snprintf(buf, 10, "#%06x%02x", paint_color & 0x00FFFFFF, paint_color>>24);
-	GdkRGBA color;
-	gdk_rgba_parse(&color, buf);
-
-	gdk_cairo_set_source_rgba(cr, &color);
-
-	cairo_move_to(cr, start_x, start_y);
-	cairo_line_to(cr, stop_x, stop_y);
-	cairo_stroke(cr);
+	sk_canvas_draw_line(canvas, start_x, start_y, stop_x, stop_y, paint);
 }
 
-JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawBitmap(JNIEnv *env , jclass this_class, jlong cairo_context, jlong widget, jlong _pixbuf, jfloat src_x, jfloat src_y, jfloat dest_x , jfloat dest_y, jfloat dest_w , jfloat dest_h, jobject paint)
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawBitmap(JNIEnv *env , jclass this_class, jlong skia_canvas, jlong widget, jlong _pixbuf, jfloat src_x, jfloat src_y, jfloat dest_x , jfloat dest_y, jfloat dest_w , jfloat dest_h, jlong skia_paint)
 {
-	cairo_t *cr = (cairo_t *)_PTR(cairo_context);
+	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
 	GdkPixbuf *pixbuf = (GdkPixbuf *)_PTR(_pixbuf);
+	sk_paint_t *paint = (sk_paint_t *)_PTR(skia_paint);
 
-	cairo_translate(cr, dest_x, dest_y);
-	cairo_scale(cr, dest_w / gdk_pixbuf_get_width(pixbuf), dest_h / gdk_pixbuf_get_height(pixbuf));
-	gdk_cairo_set_source_pixbuf(cr, pixbuf, src_x, src_y);
-	cairo_paint(cr);
-	cairo_translate(cr, -dest_x, -dest_y);
+	sk_image_t *image = g_object_get_data(G_OBJECT(pixbuf), "sk_image");
+	if(!image) {
+		fprintf(stderr, "pixbuf doesn't have a skia image associated: %p\n", pixbuf);
+		return;
+	}
+	sk_canvas_draw_image(canvas, image, dest_x, dest_y, paint);
 }
 
-// TODO: if we switched to using the snapshot mechanic directly instead of having a DrawingArea, these two could possibly (maybe it clips or something?) be replaced with hw-accelerated Gsk functions
-// NOTE: it's unclear whether using the snapshot mechanic would still give us the same cairo context each time, and getting the same cairo context each time sure is convenient
-JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate(JNIEnv *env, jclass this, jlong cairo_context, jlong widget, jfloat angle)
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawRect(JNIEnv *env, jclass this, jlong skia_canvas, jfloat left, jfloat top, jfloat right, jfloat bottom, jlong skia_paint)
 {
-	cairo_t *cr = (cairo_t *)_PTR(cairo_context);
+	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
+	sk_paint_t *paint = (sk_paint_t *)_PTR(skia_paint);
 
-	cairo_rotate(cr, DEG2RAD(angle));
+	// FIXME: this doesn't work great with dark mode, since the text stays light even if the game draws white background
+//	sk_canvas_draw_rect(canvas, &(sk_rect_t){left, top, right, bottom}, paint);
 }
 
-JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate_1and_1translate(JNIEnv *env, jclass this, jlong cairo_context, jlong widget, jfloat angle, jfloat tx, jfloat ty)
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate(JNIEnv *env, jclass this, jlong skia_canvas, jlong widget, jfloat angle)
 {
-	cairo_t *cr = (cairo_t *)_PTR(cairo_context);
+	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
 
-	cairo_translate(cr, tx, ty);
-	cairo_rotate(cr, DEG2RAD(angle));
-	cairo_translate(cr, -tx, -ty);
+	sk_canvas_rotate_degrees(canvas, angle);
+}
+
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate_1and_1translate(JNIEnv *env, jclass this, jlong skia_canvas, jlong widget, jfloat angle, jfloat tx, jfloat ty)
+{
+	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
+
+	sk_canvas_translate(canvas, tx, ty);
+	sk_canvas_rotate_degrees(canvas, angle);
+	sk_canvas_translate(canvas, -tx, -ty);
+
 }

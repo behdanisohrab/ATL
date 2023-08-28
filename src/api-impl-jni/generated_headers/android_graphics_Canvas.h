@@ -25,19 +25,27 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1restore
 
 /*
  * Class:     android_graphics_Canvas
+ * Method:    native_drawRect
+ * Signature: (JFFFFJ)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawRect
+  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat, jlong);
+
+/*
+ * Class:     android_graphics_Canvas
  * Method:    native_drawLine
- * Signature: (JJFFFFI)V
+ * Signature: (JJFFFFJ)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawLine
-  (JNIEnv *, jclass, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jint);
+  (JNIEnv *, jclass, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jlong);
 
 /*
  * Class:     android_graphics_Canvas
  * Method:    native_drawBitmap
- * Signature: (JJJFFFFFFLandroid/graphics/Paint;)V
+ * Signature: (JJJFFFFFFJ)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawBitmap
-  (JNIEnv *, jclass, jlong, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jobject);
+  (JNIEnv *, jclass, jlong, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jlong);
 
 /*
  * Class:     android_graphics_Canvas
