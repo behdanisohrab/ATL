@@ -1,30 +1,30 @@
 package android.graphics;
 
 public class Canvas {
-	public long cairo_context;
+	public long skia_canvas;
 	public long widget;
 
 	public Canvas() {}
 
 	public Canvas(Bitmap bmp) {}
 
-	public Canvas(long cairo_context, long widget) {
-		this.cairo_context = cairo_context;
+	public Canvas(long skia_canvas, long widget) {
+		this.skia_canvas = skia_canvas;
 		this.widget = widget;
 	}
 
 	// FIXME: are these _needed_ ?
 
 	public int save() {
-		native_save(cairo_context, widget);
+		native_save(skia_canvas, widget);
 		return -1; // FIXME: wtf should we return
 	}
 	public void restore() {
-		native_restore(cairo_context, widget);
+		native_restore(skia_canvas, widget);
 	}
 
-	private static native void native_save(long cairo_context, long widget);
-	private static native void native_restore(long cairo_context, long widget);
+	private static native void native_save(long skia_canvas, long widget);
+	private static native void native_restore(long skia_canvas, long widget);
 
 	// ---
 
@@ -35,8 +35,8 @@ public class Canvas {
 	 * @param rect  The rect to be drawn
 	 * @param paint The paint used to draw the rect
 	 */
-	public void drawRect(RectF rect, Paint paint) {
-		//        native_drawRect(mNativeCanvas, rect, paint.mNativePaint);
+	public void drawRect(RectF r, Paint paint) {
+		drawRect(r.left, r.top, r.right, r.bottom, paint);
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class Canvas {
 	 * @param paint  The paint used to draw the rect
 	 */
 	public void drawRect(float left, float top, float right, float bottom, Paint paint) {
-		//        native_drawRect(mNativeCanvas, left, top, right, bottom, paint.mNativePaint);
+		native_drawRect(skia_canvas, left, top, right, bottom, paint.skia_paint);
 	}
 
 	// ---
@@ -71,7 +71,7 @@ public class Canvas {
 	 * @param degrees The amount to rotate, in degrees
 	 */
 	public void rotate(float degrees) {
-		native_rotate(cairo_context, widget, degrees);
+		native_rotate(skia_canvas, widget, degrees);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class Canvas {
 	 * @param py The y-coord for the pivot point (unchanged by the rotation)
 	 */
 	public final void rotate(float degrees, float px, float py) {
-		native_rotate_and_translate(cairo_context, widget, degrees, px, py);
+		native_rotate_and_translate(skia_canvas, widget, degrees, px, py);
 	}
 	// ---
 	/**
@@ -186,7 +186,7 @@ public class Canvas {
 	 * @param sx The amount to scale in X
 	 * @param sy The amount to scale in Y
 	 */
-	public /*native*/ void scale(float sx, float sy) {}
+	public /*native*/ void scale(float sx, float sy) {/*used by gd*/}
 
 	/**
 	 * Preconcat the current matrix with the specified scale.
@@ -197,6 +197,7 @@ public class Canvas {
 	 * @param py The y-coord for the pivot point (unchanged by the scale)
 	 */
 	public final void scale(float sx, float sy, float px, float py) {
+		System.out.println("XXXXXXX scale(sx, sy, px, py)");
 		/*translate(px, py);
 		scale(sx, sy);
 		translate(-px, -py);*/
@@ -221,7 +222,9 @@ public class Canvas {
 	 * @param top    The position of the top side of the bitmap being drawn
 	 * @param paint  The paint used to draw the bitmap (may be null)
 	 */
-	public void drawBitmap(Bitmap bitmap, float left, float top, Paint paint) { /*
+	public void drawBitmap(Bitmap bitmap, float left, float top, Paint paint) {
+		System.out.println("XXXXXXX bitmap(bitmap, left, top, paint)");
+	/*
 		 native_drawBitmap(mNativeCanvas, bitmap.ni(), left, top, paint != null ? paint.mNativePaint : 0, mDensity, mScreenDensity, bitmap.mDensity);
 	 */
 	}
@@ -252,7 +255,7 @@ public class Canvas {
 		if (dst == null) {
 			throw new NullPointerException();
 		}
-		native_drawBitmap(cairo_context, widget, bitmap.pixbuf, src.left, src.top, dst.left, dst.top, dst.width(), dst.height(), paint); // FIXME - ignores width/height of source
+		native_drawBitmap(skia_canvas, widget, bitmap.pixbuf, src.left, src.top, dst.left, dst.top, dst.width(), dst.height(), (paint != null) ? paint.skia_paint : 0); // FIXME - ignores width/height of source
 	}
 
 	/**
@@ -277,7 +280,9 @@ public class Canvas {
 	 *               to fit into
 	 * @param paint  May be null. The paint used to draw the bitmap
 	 */
-	public void drawBitmap(Bitmap bitmap, Rect src, Rect dst, Paint paint) { /*
+	public void drawBitmap(Bitmap bitmap, Rect src, Rect dst, Paint paint) {
+		System.out.println("XXXXXXX bitmap(bitmap, src, dst, paint)");
+	 /*
 		     if (dst == null) {
 			     throw new NullPointerException();
 		     }
@@ -306,6 +311,7 @@ public class Canvas {
 	 */
 	public void drawBitmap(int[] colors, int offset, int stride, float x, float y,
 			       int width, int height, boolean hasAlpha, Paint paint) {
+			System.out.println("XXXXXXX bitmap(colors, offset, ...)");
 		/*        // check for valid input
 			if (width < 0) {
 			    throw new IllegalArgumentException("width must be >= 0");
@@ -349,6 +355,7 @@ public class Canvas {
 	 * @param paint  May be null. The paint used to draw the bitmap
 	 */
 	public void drawBitmap(Bitmap bitmap, Matrix matrix, Paint paint) {
+			System.out.println("XXXXXXX bitmap(bitmap, matrix, paint)");
 		/*       nativeDrawBitmapMatrix(mNativeCanvas, bitmap.ni(), matrix.ni(),
 			       paint != null ? paint.mNativePaint : 0);*/
 	}
@@ -366,13 +373,14 @@ public class Canvas {
 	 * @param paint  The paint used to draw the line
 	 */
 	public void drawLine(float startX, float startY, float stopX, float stopY, Paint paint) {
-		native_drawLine(cairo_context, widget, startX, startY, stopX, stopY, paint.getColor());
+		native_drawLine(skia_canvas, widget, startX, startY, stopX, stopY, paint.skia_paint);
 	}
 
 	public void setBitmap(Bitmap bitmap) {}
 
-	private static native void native_drawLine(long cairo_context, long widget, float startX, float startY, float stopX, float stopY, int paint_color);	       // TODO: pass all the other relevant parameters extracted from paint
-	private static native void native_drawBitmap(long cairo_context, long widget, long pixbuf, float src_x, float src_y, float dest_x, float dest_y, float dest_w, float dest_h, Paint paint); // TODO: make use of "paint"?
-	private static native void native_rotate(long cairo_context, long widget, float angle);
-	private static native void native_rotate_and_translate(long cairo_context, long widget, float angle, float tx, float ty);
+	private static native void native_drawRect(long skia_canvas, float left, float top, float right, float bottom, long skia_paint);
+	private static native void native_drawLine(long skia_canvas, long widget, float startX, float startY, float stopX, float stopY, long skia_paint);
+	private static native void native_drawBitmap(long skia_canvas, long widget, long pixbuf, float src_x, float src_y, float dest_x, float dest_y, float dest_w, float dest_h, long skia_paint);
+	private static native void native_rotate(long skia_canvas, long widget, float angle);
+	private static native void native_rotate_and_translate(long skia_canvas, long widget, float angle, float tx, float ty);
 }

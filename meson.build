@@ -22,6 +22,9 @@ libart_dep = [
 libdl_bio_dep = [
 	cc.find_library('dl_bio')
 ]
+libskia_dep = [
+	cc.find_library('SkiaSharp')
+]
 if fs.is_file('/usr' / get_option('libdir') / 'java/core-all_classes.jar')
   bootclasspath = '/usr' / get_option('libdir') / 'java/core-all_classes.jar'
 elif fs.is_file('/usr/local' / get_option('libdir') / 'java/core-all_classes.jar')
@@ -64,6 +67,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/android_view_Window.c',
                                                                   	'src/api-impl-jni/util.c',
                                                                   	'src/api-impl-jni/android_graphics_Canvas.c',
+                                                                  	'src/api-impl-jni/android_graphics_Paint.c',
                                                                   	'src/api-impl-jni/database/android_database_SQLiteCommon.c',
                                                                   	'src/api-impl-jni/database/android_database_SQLiteConnection.c',
                                                                   	'src/api-impl-jni/drawables/ninepatch.c',
@@ -91,11 +95,13 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/app/android_app_Activity.c',
                                                                   	'src/api-impl-jni/app/android_app_AlertDialog.c',
                                                                   	'src/api-impl-jni/app/android_app_Dialog.c',
+                                                                  	'src/sk_area/sk_area.c',
                                                                   ] + marshal_files,
+                                                                  include_directories: ['src/sk_area/'],
                                                                   install: true,
                                                                   install_dir : get_option('libdir') / 'java/dex/android_translation_layer/natives',
                                                                   dependencies: [
-                                                                  	dependency('gtk4'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni'), dependency('libportal'), dependency('sqlite3')
+                                                                  	dependency('gtk4'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni'), dependency('libportal'), dependency('sqlite3'), libskia_dep
                                                                   ],
                                                                   link_with: [ libandroid_so ],
                                                                   link_args: [

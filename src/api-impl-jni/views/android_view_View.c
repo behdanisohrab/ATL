@@ -195,22 +195,12 @@ JNIEXPORT void JNICALL Java_android_view_View_setVisibility(JNIEnv *env, jobject
 	}
 }
 
-// FIXME: this is used in one other place as well, should probably go in util.c or gtk_util.c?
-gboolean tick_callback(GtkWidget* widget, GdkFrameClock* frame_clock, gpointer user_data)
-{
-	gtk_widget_queue_draw(widget);
-	gtk_widget_queue_draw(gtk_widget_get_parent(widget));
-	return G_SOURCE_CONTINUE;
-}
-
 JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
 	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	GtkWidget *area = gtk_drawing_area_new();
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), area);
 	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
-
-	gtk_widget_add_tick_callback(area, tick_callback, NULL, NULL);
 
 	return _INTPTR(area);
 }

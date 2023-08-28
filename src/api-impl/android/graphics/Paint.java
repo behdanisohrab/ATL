@@ -1,9 +1,14 @@
 package android.graphics;
 
 public class Paint {
-	private int color = 0xFF000000;
+	public long skia_paint = 0; // should probably be private, but then we'd need to get it from C
+
+	private native long native_constructor();
+	private native void native_set_color(long skia_paint, int color);
+	private native int native_get_color(long skia_paint);
 
 	public Paint() {
+		skia_paint = native_constructor();
 	}
 
 	public Paint (int flags) {
@@ -12,15 +17,17 @@ public class Paint {
 	}
 
 	public Paint(Paint paint) {
+		/* TODO: use sk_paint_clone */
+		this();
 		setColor(paint.getColor());
 	}
 
 	public void setColor(int color) {
-		this.color = color;
+		native_set_color(skia_paint, color);
 	}
 
 	public int getColor() {
-		return color;
+		return native_get_color(skia_paint);
 	}
 
 	public void setAntiAlias(boolean aa) {}
