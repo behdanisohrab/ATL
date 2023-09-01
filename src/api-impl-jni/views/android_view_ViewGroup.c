@@ -45,7 +45,13 @@ static void android_layout_allocate(GtkLayoutManager *layout_manager, GtkWidget 
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
-	(*env)->CallVoidMethod(env, layout->view, handle_cache.view.onLayout, TRUE, 0, 0, width, height);
+	(*env)->CallVoidMethod(env, layout->view, handle_cache.view.computeScroll);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+	int scroll_x = (*env)->CallIntMethod(env, layout->view, handle_cache.view.getScrollX);
+	int scroll_y = (*env)->CallIntMethod(env, layout->view, handle_cache.view.getScrollY);
+
+	(*env)->CallVoidMethod(env, layout->view, handle_cache.view.onLayout, TRUE, scroll_x, scroll_y, width, height);
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 }

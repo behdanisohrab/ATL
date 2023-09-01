@@ -788,6 +788,9 @@ public class View extends Object {
 	private int right;
 	private int bottom;
 
+	private int scrollX = 0;
+	private int scrollY = 0;
+
 	public long widget; // pointer
 
 	public static HashMap<Integer, View> view_by_id = new HashMap<Integer, View>();
@@ -935,10 +938,17 @@ public class View extends Object {
 	public void getHitRect(Rect outRect) {}
 	public final boolean getLocalVisibleRect(Rect r) { return false; }
 
-	public final int getScrollX() { return 0; }
-	public final int getScrollY() { return 0; }
+	public final int getScrollX() {
+		return scrollX;
+	}
+	public final int getScrollY() {
+		return scrollY;
+	}
 
-	public void scrollTo(int x, int y) {}
+	public void scrollTo(int x, int y) {
+		scrollX = x;
+		scrollY = y;
+	}
 
 	protected void onScrollChanged(int l, int t, int oldl, int oldt) {}
 
@@ -972,7 +982,14 @@ public class View extends Object {
 		return 0;
 	}
 
-	public void postInvalidate() {}
+	public void postInvalidate() {
+		new Handler(Looper.getMainLooper()).post(new Runnable() {
+			@Override
+			public void run() {
+				requestLayout();
+			}
+		});
+	}
 
 	public void postInvalidate(int left, int top, int right, int bottom) {
 		System.out.println("postInvalidate(" + left + "," + top + "," + right + "," + bottom + ") called");
@@ -1108,6 +1125,10 @@ public class View extends Object {
 		layout(left, top + offset, right, bottom + offset);
 	}
 
+	public void offsetLeftAndRight(int offset) {
+		layout(left + offset, top, right + offset, bottom);
+	}
+
 	public void setBackgroundDrawable(Drawable backgroundDrawable) {}
 
 	public int getOverScrollMode() {return 0;}
@@ -1228,4 +1249,6 @@ public class View extends Object {
 		}
 		return result;
 	}
+
+	public void computeScroll() {}
 }
