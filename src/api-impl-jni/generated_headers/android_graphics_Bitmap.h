@@ -21,6 +21,14 @@ JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1bitmap_1from_1path
 
 /*
  * Class:     android_graphics_Bitmap
+ * Method:    native_copy
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1copy
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     android_graphics_Bitmap
  * Method:    getWidth
  * Signature: ()I
  */
@@ -86,10 +94,10 @@ JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeErase
 /*
  * Class:     android_graphics_Bitmap
  * Method:    nativeRowBytes
- * Signature: (I)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_nativeRowBytes
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_graphics_Bitmap

@@ -12,9 +12,9 @@ extern "C" {
 /*
  * Class:     android_graphics_BitmapFactory
  * Method:    nativeDecodeStream
- * Signature: (Ljava/io/InputStream;[BLandroid/graphics/Rect;Landroid/graphics/BitmapFactory/Options;)Landroid/graphics/Bitmap;
+ * Signature: (Ljava/io/InputStream;[BLandroid/graphics/Rect;Landroid/graphics/BitmapFactory/Options;)J
  */
-JNIEXPORT jobject JNICALL Java_android_graphics_BitmapFactory_nativeDecodeStream
+JNIEXPORT jlong JNICALL Java_android_graphics_BitmapFactory_nativeDecodeStream
   (JNIEnv *, jclass, jobject, jbyteArray, jobject, jobject);
 
 /*
