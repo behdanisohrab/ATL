@@ -1,6 +1,7 @@
 package android.app;
 
 import android.R;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -10,27 +11,25 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
-import android.widget.TextView;
 import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
 
-public class Activity extends Context {
+public class Activity extends Context implements Window.Callback {
 	LayoutInflater layout_inflater;
-	Window window = new Window();
+	Window window = new Window(this);
 	int requested_orientation = -1 /*ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED*/; // dummy
 	private Intent intent;
 	private Activity resultActivity;
@@ -333,4 +332,64 @@ public class Activity extends Context {
 
 	private native void nativeFinish(long native_window);
 	private static native void nativeStartActivity(Activity activity);
+
+	@Override
+	public void onContentChanged() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'onContentChanged'");
+	}
+
+	public boolean onCreateOptionsMenu(Menu menu) {
+		return true;
+	}
+
+	@Override
+	public boolean onCreatePanelMenu(int featureId, Menu menu) {
+		if (featureId == Window.FEATURE_OPTIONS_PANEL) {
+			return onCreateOptionsMenu(menu);
+		}
+		return false;
+	}
+
+	@Override
+	public View onCreatePanelView(int featureId) {
+		return null;
+	}
+
+	public MenuInflater getMenuInflater() {
+		return new MenuInflater(this);
+	}
+
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		return true;
+	}
+
+	@Override
+	public boolean onPreparePanel(int featureId, View view, Menu menu) {
+		if (featureId == Window.FEATURE_OPTIONS_PANEL && menu != null) {
+			return onPrepareOptionsMenu(menu);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		if (featureId == Window.FEATURE_OPTIONS_PANEL) {
+			return onOptionsItemSelected(item);
+		}
+		return false;
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		return false;
+	}
+
+	public void onOptionsMenuClosed(Menu menu) {}
+
+	@Override
+	public void onPanelClosed(int featureId, Menu menu) {
+		if (featureId == Window.FEATURE_OPTIONS_PANEL) {
+			onOptionsMenuClosed(menu);
+		}
+	}
 }

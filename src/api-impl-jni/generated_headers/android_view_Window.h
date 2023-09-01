@@ -7,6 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef android_view_Window_FEATURE_OPTIONS_PANEL
+#define android_view_Window_FEATURE_OPTIONS_PANEL 0L
 /*
  * Class:     android_view_Window
  * Method:    set_widget_as_root
