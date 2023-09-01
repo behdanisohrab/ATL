@@ -81,15 +81,3 @@ JNIEXPORT jlong JNICALL Java_android_widget_FrameLayout_native_1constructor(JNIE
 	gtk_widget_set_name(GTK_WIDGET(frame_layout), "FrameLayout");
 	return _INTPTR(frame_layout);
 }
-
-JNIEXPORT void JNICALL Java_android_widget_FrameLayout_native_1addView(JNIEnv *env, jobject this, jlong widget, jlong child, jint index, jobject layout_params)
-{
-	if(index >= 0)
-		frame_layout_widget_insert_child_at_index(FRAME_LAYOUT_WIDGET(_PTR(widget)), gtk_widget_get_parent(GTK_WIDGET(_PTR(child))), index);
-	else
-		frame_layout_widget_insert_child(FRAME_LAYOUT_WIDGET(_PTR(widget)), gtk_widget_get_parent(GTK_WIDGET(_PTR(child))));
-}
-
-JNIEXPORT void JNICALL Java_android_widget_FrameLayout_native_1removeView(JNIEnv *env, jobject this, jlong widget, jlong child) {
-	gtk_widget_unparent(gtk_widget_get_parent(GTK_WIDGET(_PTR(child))));
-}

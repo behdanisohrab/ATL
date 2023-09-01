@@ -136,10 +136,18 @@ JNIEXPORT void JNICALL Java_android_view_ViewGroup_native_1addView(JNIEnv *env, 
 			Java_android_view_View_setGravity(env, child, child_gravity);
 		}*/
 	}
-	gtk_box_append(GTK_BOX(_PTR(widget)), gtk_widget_get_parent(GTK_WIDGET(_PTR(child)))); // FIXME - ignores index argument
+	GtkWidget *parent = _PTR(widget);
+	GtkWidget *iter = gtk_widget_get_first_child(parent);
+	for(int i = 0; i < index; i++) {
+		iter = gtk_widget_get_next_sibling(iter);
+		if(iter == NULL)
+			break;
+	}
+
+	gtk_widget_insert_before(gtk_widget_get_parent(GTK_WIDGET(_PTR(child))), parent, iter);
 }
 
 JNIEXPORT void JNICALL Java_android_view_ViewGroup_native_1removeView(JNIEnv *env, jobject this, jlong widget, jlong child)
 {
-	gtk_box_remove(GTK_BOX(_PTR(widget)), gtk_widget_get_parent(GTK_WIDGET(_PTR(child))));
+	gtk_widget_unparent(gtk_widget_get_parent(GTK_WIDGET(_PTR(child))));
 }

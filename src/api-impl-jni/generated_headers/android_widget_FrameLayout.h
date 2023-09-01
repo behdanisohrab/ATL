@@ -207,22 +207,6 @@ extern "C" {
 JNIEXPORT jlong JNICALL Java_android_widget_FrameLayout_native_1constructor
   (JNIEnv *, jobject, jobject, jobject);
 
-/*
- * Class:     android_widget_FrameLayout
- * Method:    native_addView
- * Signature: (JJILandroid/view/ViewGroup/LayoutParams;)V
- */
-JNIEXPORT void JNICALL Java_android_widget_FrameLayout_native_1addView
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
-
-/*
- * Class:     android_widget_FrameLayout
- * Method:    native_removeView
- * Signature: (JJ)V
- */
-JNIEXPORT void JNICALL Java_android_widget_FrameLayout_native_1removeView
-  (JNIEnv *, jobject, jlong, jlong);
-
 #ifdef __cplusplus
 }
 #endif

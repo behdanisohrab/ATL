@@ -2,9 +2,7 @@ package android.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 
 public class FrameLayout extends ViewGroup {
 
@@ -22,10 +20,6 @@ public class FrameLayout extends ViewGroup {
 
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
-	@Override
-	protected native void native_addView(long widget, long child, int index, ViewGroup.LayoutParams params);
-	@Override
-	protected native void native_removeView(long widget, long child);
 
 	@Override
 	public LayoutParams generateLayoutParams(AttributeSet attrs) {
