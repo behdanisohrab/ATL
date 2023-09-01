@@ -5,7 +5,7 @@
 
 #include "WrapperWidget.h"
 
-#include "../generated_headers/android_widget_LinearLayout.h"
+#include "../generated_headers/android_widget_FrameLayout.h"
 #include "../generated_headers/android_view_ViewGroup.h"
 
 G_DECLARE_FINAL_TYPE (FrameLayoutWidget, frame_layout_widget, FRAME_LAYOUT, WIDGET, GtkWidget)
@@ -88,4 +88,8 @@ JNIEXPORT void JNICALL Java_android_widget_FrameLayout_native_1addView(JNIEnv *e
 		frame_layout_widget_insert_child_at_index(FRAME_LAYOUT_WIDGET(_PTR(widget)), gtk_widget_get_parent(GTK_WIDGET(_PTR(child))), index);
 	else
 		frame_layout_widget_insert_child(FRAME_LAYOUT_WIDGET(_PTR(widget)), gtk_widget_get_parent(GTK_WIDGET(_PTR(child))));
+}
+
+JNIEXPORT void JNICALL Java_android_widget_FrameLayout_native_1removeView(JNIEnv *env, jobject this, jlong widget, jlong child) {
+	gtk_widget_unparent(gtk_widget_get_parent(GTK_WIDGET(_PTR(child))));
 }
