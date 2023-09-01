@@ -19,4 +19,8 @@ public class BitmapDrawable extends Drawable {
 		canvas.drawBitmap(bitmap, new Rect(0, 0, bitmap.getWidth(), bitmap.getWidth()), new RectF(getBounds()), null);
 	}
 
+	public Bitmap getBitmap() {
+		return bitmap;
+	}
+
 }

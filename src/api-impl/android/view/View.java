@@ -9,8 +9,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.LayoutDirection;
+import android.util.SparseArray;
+import android.view.animation.Animation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -779,6 +782,7 @@ public class View extends Object {
 	protected ViewGroup.LayoutParams layout_params;
 	private Context context;
 	private Map<Integer,Object> tags = new HashMap<>();
+	private Object tag;
 
 	int measuredWidth = 0;
 	int measuredHeight = 0;
@@ -1019,7 +1023,10 @@ public class View extends Object {
 	public static class AccessibilityDelegate {}
 
 	public Drawable getBackground() {
-		return null;
+		return new Drawable() {
+			@Override
+			public void draw(Canvas canvas) {}
+		};
 	}
 
 	public void setClickable(boolean clickable) {}
@@ -1089,6 +1096,10 @@ public class View extends Object {
 		}
 		return result | (childMeasuredState&MEASURED_STATE_MASK);
 	}
+
+	public static int resolveSize(int size, int measureSpec) {
+        return resolveSizeAndState(size, measureSpec, 0) & MEASURED_SIZE_MASK;
+    }
 
 	public final int getMeasuredWidth() {
 		return this.measuredWidth & MEASURED_SIZE_MASK;
@@ -1166,6 +1177,13 @@ public class View extends Object {
 	}
 	public Object getTag(int key) {
 		return tags.get(key);
+	}
+
+	public void setTag(Object tag) {
+		this.tag = tag;
+	}
+	public Object getTag() {
+		return tag;
 	}
 
 	public void addOnLayoutChangeListener(OnLayoutChangeListener listener) {}
@@ -1250,5 +1268,44 @@ public class View extends Object {
 		return result;
 	}
 
+	public static class BaseSavedState extends AbsSavedState {
+	}
+
+	public void clearFocus() {}
+
+	public void setRotation(float rotation) {}
+
+	public void setScaleX(float scaleX) {}
+	public void setScaleY(float scaleY) {}
+
+	public static View inflate(Context context, int resource, ViewGroup root) {
+		LayoutInflater factory = LayoutInflater.from(context);
+		return factory.inflate(resource, root);
+	}
+
+	public void saveHierarchyState(SparseArray<Parcelable> array) {}
+
+	public void setDuplicateParentStateEnabled(boolean enabled) {}
+
+	public boolean performClick() {
+		return false;
+	}
+
+	public void playSoundEffect(int soundConstant) {}
+
 	public void computeScroll() {}
+
+	public void jumpDrawablesToCurrentState() {}
+
+	public void setOnFocusChangeListener (View.OnFocusChangeListener l) {}
+
+	public boolean hasWindowFocus() {return true;}
+
+	public void setSaveEnabled (boolean enabled) {}
+
+	public boolean willNotDraw() {return false;}
+
+	public void setOnCreateContextMenuListener (View.OnCreateContextMenuListener l) {}
+
+	public void startAnimation(Animation animation) {}
 }

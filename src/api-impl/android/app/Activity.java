@@ -290,6 +290,10 @@ public class Activity extends Context implements Window.Callback {
 		}
 	}
 
+	public void setResult(int resultCode) {
+		setResult(resultCode, null);
+	}
+
 	public void startActivity(Intent intent) {
 		System.out.println("startActivity(" + intent + ") called");
 		try {
@@ -392,4 +396,12 @@ public class Activity extends Context implements Window.Callback {
 			onOptionsMenuClosed(menu);
 		}
 	}
+
+	public void setTitle(CharSequence title) {}
+
+	public void onBackPressed() {
+		finish();
+	}
+
+	public void unregisterReceiver(BroadcastReceiver receiver) {}
 }

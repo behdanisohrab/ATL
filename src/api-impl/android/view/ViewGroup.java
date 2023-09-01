@@ -103,6 +103,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	public void attachViewToParent(View view, int index, LayoutParams params) {
+		addViewInternal(view, index, params);
 	}
 
 	protected void removeDetachedView(View child, boolean animate) {
@@ -131,6 +132,9 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	public LayoutParams generateLayoutParams(AttributeSet attrs) {
 		return new LayoutParams(getContext(), attrs);
 	}
+	protected LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
+		return p;
+	}
 
 	public void bringChildToFront(View child) {
 		// TODO: actually implement this (might make sense to implement it in the subclasses instead), when applicable
@@ -150,7 +154,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 	public void setOnHierarchyChangeListener(OnHierarchyChangeListener listener) {}
 
-	public boolean checkLayoutParams(LayoutParams params) {
+	protected boolean checkLayoutParams(LayoutParams params) {
 		return true;
 	}
 
@@ -233,12 +237,30 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 	}
 
+	protected void measureChild(View child, int parentWidthMeasureSpec,
+            int parentHeightMeasureSpec) {
+        final LayoutParams lp = child.getLayoutParams();
+        final int childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,
+                /*mPaddingLeft + mPaddingRight*/0, lp.width);
+        final int childHeightMeasureSpec = getChildMeasureSpec(parentHeightMeasureSpec,
+                /*mPaddingTop + mPaddingBottom*/0, lp.height);
+        child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+    }
+
 	public void setAddStatesFromChildren(boolean addsStates) {}
 
 	public View getFocusedChild() {return null;}
 
 	public int getDescendantFocusability() {return 0;}
 
+	public void startViewTransition(View view) {}
+	public void endViewTransition(View view) {}
+
+	protected LayoutParams generateDefaultLayoutParams() {
+        return new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    }
+
+	public void focusableViewAvailable(View v) {}
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;
 		public static final int MATCH_PARENT = -1;

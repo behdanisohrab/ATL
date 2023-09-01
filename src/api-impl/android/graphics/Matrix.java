@@ -260,13 +260,13 @@ public class Matrix {
 	 * specified transformation.
 	 */
 	public void setScale(float sx, float sy, float px, float py) {
-		native_setScale(native_instance, sx, sy, px, py);
+		// native_setScale(native_instance, sx, sy, px, py);
 	}
 	/**
 	 * Set the matrix to scale by sx and sy.
 	 */
 	public void setScale(float sx, float sy) {
-		native_setScale(native_instance, sx, sy);
+		// native_setScale(native_instance, sx, sy);
 	}
 	/**
 	 * Set the matrix to rotate by the specified number of degrees, with a pivot

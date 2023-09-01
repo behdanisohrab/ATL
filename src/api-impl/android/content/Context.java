@@ -7,10 +7,6 @@ import android.app.KeyguardManager;
 import android.app.NotificationManager;
 import android.app.SharedPreferencesImpl;
 import android.app.UiModeManager;
-import android.content.BroadcastReceiver;
-import android.content.ClipboardManager;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
@@ -32,8 +28,10 @@ import android.telephony.TelephonyManager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.WindowManager;
 import android.view.WindowManagerImpl;
+import android.view.accessibility.AccessibilityManager;
+import android.view.inputmethod.InputMethodManager;
+
 import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
 import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
 
@@ -171,6 +169,10 @@ public class Context extends Object {
 				return new LocationManager();
 			case "uimode":
 				return new UiModeManager();
+			case "input_method":
+				return new InputMethodManager();
+			case "accessibility":
+				return new AccessibilityManager();
 			default:
 				System.out.println("!!!!!!! getSystemService: case >" + name + "< is not implemented yet");
 				return null;
@@ -367,4 +369,10 @@ public class Context extends Object {
 			databaseDir.mkdirs();
 		return new File(databaseDir, dbName);
 	}
+
+	public void sendBroadcast(Intent intent) {}
+
+	public boolean stopService(Intent intent) {return false;}
+
+	public void unbindService(ServiceConnection serviceConnection) {}
 }
