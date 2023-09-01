@@ -209,22 +209,6 @@ JNIEXPORT jlong JNICALL Java_android_widget_LinearLayout_native_1constructor
 
 /*
  * Class:     android_widget_LinearLayout
- * Method:    native_addView
- * Signature: (JJILandroid/view/ViewGroup/LayoutParams;)V
- */
-JNIEXPORT void JNICALL Java_android_widget_LinearLayout_native_1addView
-  (JNIEnv *, jobject, jlong, jlong, jint, jobject);
-
-/*
- * Class:     android_widget_LinearLayout
- * Method:    native_removeView
- * Signature: (JJ)V
- */
-JNIEXPORT void JNICALL Java_android_widget_LinearLayout_native_1removeView
-  (JNIEnv *, jobject, jlong, jlong);
-
-/*
- * Class:     android_widget_LinearLayout
  * Method:    setOrientation
  * Signature: (I)V
  */

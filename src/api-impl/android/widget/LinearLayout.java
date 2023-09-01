@@ -2,7 +2,6 @@ package android.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.ViewGroup;
 
 public class LinearLayout extends ViewGroup {
@@ -19,10 +18,6 @@ public class LinearLayout extends ViewGroup {
 
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
-	@Override
-	protected native void native_addView(long widget, long child, int index, ViewGroup.LayoutParams params);
-	@Override
-	protected native void native_removeView(long widget, long child);
 
 	public native void setOrientation(int orientation);
 	public void setWeightSum(float weightSum) {}

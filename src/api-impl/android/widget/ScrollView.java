@@ -2,9 +2,7 @@ package android.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 
 public class ScrollView extends ViewGroup {
 	public ScrollView(Context context, AttributeSet attrs) {
@@ -17,10 +15,6 @@ public class ScrollView extends ViewGroup {
 
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
-	@Override
-	protected native void native_addView(long widget, long child, int index, ViewGroup.LayoutParams params);
-	@Override
-	protected native void native_removeView(long widget, long child);
 
 	public void setFillViewport(boolean fillViewport) {}
 }

@@ -43,16 +43,6 @@ JNIEXPORT jlong JNICALL Java_android_widget_LinearLayout_native_1constructor(JNI
 //	g_object_set_data(G_OBJECT(wrapper), "background_ninepatch", ninepatch);
 }
 
-JNIEXPORT void JNICALL Java_android_widget_LinearLayout_native_1addView(JNIEnv *env, jobject this, jlong widget, jlong child, jint index, jobject layout_params)
-{
-	gtk_box_append(GTK_BOX(_PTR(widget)), gtk_widget_get_parent(GTK_WIDGET(_PTR(child)))); // FIXME - ignores index argument
-}
-
-JNIEXPORT void JNICALL Java_android_widget_LinearLayout_native_1removeView(JNIEnv *env, jobject this, jlong widget, jlong child)
-{
-	gtk_box_remove(GTK_BOX(_PTR(widget)), gtk_widget_get_parent(GTK_WIDGET(_PTR(child))));
-}
-
 JNIEXPORT void JNICALL Java_android_widget_LinearLayout_setOrientation(JNIEnv *env, jobject this, jint orientation)
 {
 	gtk_orientable_set_orientation(GTK_ORIENTABLE(_PTR(_GET_LONG_FIELD(this, "widget"))), orientation ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL);
