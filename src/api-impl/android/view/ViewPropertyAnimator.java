@@ -12,6 +12,8 @@ public class ViewPropertyAnimator {
 	}
 
 	public ViewPropertyAnimator setListener(Animator.AnimatorListener listener) {
+		if (listener != null)
+			listener.onAnimationEnd(null);
 		return this;
 	}
 
@@ -24,6 +26,18 @@ public class ViewPropertyAnimator {
 	}
 
 	public ViewPropertyAnimator setStartDelay(long duration) {
+		return this;
+	}
+
+	public ViewPropertyAnimator rotation(float rotation) {
+		return this;
+	}
+
+	public ViewPropertyAnimator translationX(float translationX) {
+		return this;
+	}
+
+	public ViewPropertyAnimator translationY(float translationY) {
 		return this;
 	}
 
