@@ -14,4 +14,14 @@ public class Spinner extends View {
 		super(context, attributeSet);
 	}
 
+	public void setAdapter(SpinnerAdapter adapter) {
+	}
+
+	public void setSelection(int i) {
+	}
+
+	public void setOnItemSelectedListener(AdapterView.OnItemSelectedListener listener) {}
+
+	public void setSelection(int position, boolean animate) {}
+
 }
