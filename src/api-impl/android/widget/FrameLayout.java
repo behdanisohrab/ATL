@@ -27,10 +27,6 @@ public class FrameLayout extends ViewGroup {
 	@Override
 	protected native void native_removeView(long widget, long child);
 
-	public void addView(View child, int index) {
-		addView(child, index, null);
-	}
-
 	@Override
 	public LayoutParams generateLayoutParams(AttributeSet attrs) {
 		return new LayoutParams(getContext(), attrs);

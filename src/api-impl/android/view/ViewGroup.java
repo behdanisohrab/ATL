@@ -41,11 +41,15 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	public void addView(View child) {
-		addView(child, -1, null);
+		addView(child, -1);
 	}
 
 	public void addView(View child, int index) {
-		addView(child, index, null);
+		LayoutParams params = child.getLayoutParams();
+		if (params == null) {
+			params = generateDefaultLayoutParams();
+		}
+		addView(child, index, params);
 	}
 
 	public void addView(View child, LayoutParams params) {
@@ -53,20 +57,25 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	public void addView(View child, int width, int height) {
-		addView(child, new LayoutParams(width, height));
+		final LayoutParams params = generateDefaultLayoutParams();
+		params.width = width;
+		params.height = height;
+		addView(child, params);
 	}
 
 	private void addViewInternal(View child, int index, LayoutParams params) {
 		if (child.parent == this)
 			return;
-		if (params != null) {
-			child.setLayoutParams(params);
+		if (!checkLayoutParams(params)) {
+			params = generateLayoutParams(params);
 		}
+		child.setLayoutParams(params);
 		child.parent = this;
 		if (index < 0)
 			index = children.size();
 		children.add(index, child);
 		native_addView(widget, child.widget, index, params);
+		requestLayout();
 	}
 
 	public void addView(View child, int index, LayoutParams params) {
@@ -310,6 +319,12 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 		public MarginLayoutParams() {
 			super();
+		}
+
+		public MarginLayoutParams(LayoutParams params) {
+			super();
+			width = params.width;
+			height = params.height;
 		}
 
 		public MarginLayoutParams(int width, int height) {
