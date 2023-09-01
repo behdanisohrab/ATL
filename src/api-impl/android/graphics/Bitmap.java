@@ -136,7 +136,13 @@ public final class Bitmap {
 		mLayoutBounds = null;
 	}
 
+	Bitmap(long pixbuf) {
+		this();
+		this.pixbuf = pixbuf;
+	}
+
 	private native long native_bitmap_from_path(CharSequence path);
+	static native long native_copy(long src);
 
 	/**
 	 * Private constructor that must received an already allocated native bitmap
@@ -784,7 +790,7 @@ public final class Bitmap {
 
 				       return bitmap;
 				   */
-		return new Bitmap();
+		return new Bitmap(native_copy(source.pixbuf));
 	}
 
 	/**
@@ -1606,7 +1612,7 @@ public final class Bitmap {
 						     int quality, OutputStream stream,
 						     byte[] tempStorage);
 	private static native void nativeErase(int nativeBitmap, int color);
-	private static native int nativeRowBytes(int nativeBitmap);
+	private static native int nativeRowBytes(long nativeBitmap);
 	private static native int nativeConfig(int nativeBitmap);
 
 	private static native int nativeGetPixel(int nativeBitmap, int x, int y,

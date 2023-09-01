@@ -52,3 +52,15 @@ JNIEXPORT jboolean JNICALL Java_android_graphics_Bitmap_nativeRecycle(JNIEnv *en
 	g_object_unref(pixbuf);
 	return true;
 }
+
+JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1copy(JNIEnv *env, jclass, jlong src_ptr) {
+	GdkPixbuf *src = _PTR(src_ptr);
+	GdkPixbuf *copy = gdk_pixbuf_copy(src);
+	return _INTPTR(copy);
+}
+
+JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_nativeRowBytes(JNIEnv *env, jclass, jlong pixbuf_ptr) {
+	GdkPixbuf *pixbuf = _PTR(pixbuf_ptr);
+
+	return gdk_pixbuf_get_rowstride(pixbuf);
+}

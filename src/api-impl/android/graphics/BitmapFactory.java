@@ -596,7 +596,7 @@ public class BitmapFactory {
 			tempStorage = opts.inTempStorage;
 		if (tempStorage == null)
 			tempStorage = new byte[DECODE_BUFFER_SIZE];
-		return nativeDecodeStream(is, tempStorage, outPadding, opts);
+		return new Bitmap(nativeDecodeStream(is, tempStorage, outPadding, opts));
 	}
 
 	/**
@@ -669,7 +669,7 @@ public class BitmapFactory {
 		return decodeFileDescriptor(fd, null, null);
 	}
 
-	private static native Bitmap nativeDecodeStream(InputStream is, byte[] storage,
+	private static native long nativeDecodeStream(InputStream is, byte[] storage,
 							Rect padding, Options opts);
 	private static native Bitmap nativeDecodeFileDescriptor(FileDescriptor fd,
 								Rect padding, Options opts);
