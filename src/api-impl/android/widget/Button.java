@@ -3,9 +3,8 @@ package android.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.view.View;
 
-public class Button extends View {
+public class Button extends TextView {
 
 	public Button(Context context) {
 		super(context);
@@ -26,9 +25,13 @@ public class Button extends View {
 	public native final void native_setText(long widget, String text);
 	protected native void native_setOnClickListener(long widget, OnClickListener l);
 
+	@Override
 	public final void setText(CharSequence text) {
 		native_setText(widget, String.valueOf(text));
 	}
+
+	@Override
+	public void setTextSize(float size) {}
 
 	@Override
 	public void setOnClickListener(final OnClickListener l) {

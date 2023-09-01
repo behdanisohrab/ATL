@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -12,6 +13,7 @@ import android.view.View;
 public class ImageView extends View {
 
 	private Bitmap bitmap;
+	private ScaleType scaleType = ScaleType.FIT_CENTER;
 
 	public ImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -43,7 +45,13 @@ public class ImageView extends View {
 	}
 	public void setAdjustViewBounds(boolean adjustViewBounds) {}
 
-	public void setScaleType(ScaleType scaleType) {}
+	public void setScaleType(ScaleType scaleType) {
+		this.scaleType = scaleType;
+	}
+
+	public ScaleType getScaleType() {
+		return scaleType;
+	}
 
 	public Drawable getDrawable() {
 		return new BitmapDrawable(getContext().getResources(), bitmap);
@@ -52,6 +60,11 @@ public class ImageView extends View {
 	public void setImageDrawable(Drawable drawable) {}
 
 	public void setImageMatrix(Matrix matrix) {}
+
+	public void setImageBitmap(Bitmap bitmap) {
+		if (bitmap != null)
+			native_setPixbuf(bitmap.pixbuf);
+	}
 
 	/**
 	 * Options for scaling the bounds of an image to the bounds of this view.
@@ -111,4 +124,6 @@ public class ImageView extends View {
 		}
 		final int nativeInt;
 	}
+
+	public final void setColorFilter(int color, PorterDuff.Mode mode) {}
 }

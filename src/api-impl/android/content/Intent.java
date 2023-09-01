@@ -4,8 +4,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Intent {
 	private ComponentName component;
@@ -191,6 +189,18 @@ public class Intent {
 
 	public Serializable getSerializableExtra(String name) {
 		return (Serializable)extras.get(name);
+	}
+
+	public Parcelable getParcelableExtra(String name) {
+		return extras.getParcelable(name);
+	}
+
+	public String[] getStringArrayExtra(String name) {
+		return extras.getStringArray(name);
+	}
+
+	public int getIntExtra(String name, int def) {
+		return extras.getInt(name, def);
 	}
 
 	public Bundle getExtras() {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.InputFilter;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -91,6 +92,7 @@ public class TextView extends View {
 	}
 
 	public void addTextChangedListener(TextWatcher watcher) {}
+	public void removeTextChangedListener(TextWatcher watcher) {}
 	public void setOnEditorActionListener(TextView.OnEditorActionListener l) {}
 
 	public TransformationMethod getTransformationMethod() {
@@ -121,6 +123,20 @@ public class TextView extends View {
 
 	public int getCompoundPaddingTop() {return 0;}
 	public int getCompoundPaddingBottom() {return 0;}
+
+	public CharSequence getText() {
+		return "FIXME";
+	}
+
+	public void setCompoundDrawablePadding(int pad) {}
+
+	public void setCompoundDrawables(Drawable left, Drawable top, Drawable right, Drawable bottom) {}
+
+	public void setAllCaps(boolean allCaps) {}
+
+	public void setSaveEnabled(boolean enabled) {}
+
+	public final void setAutoLinkMask(int mask) {}
 
 	public static interface OnEditorActionListener {
 	}

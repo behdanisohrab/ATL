@@ -24,7 +24,9 @@ public abstract class Drawable {
 	
 	public abstract class ConstantState {
 
-	public abstract Drawable newDrawable(Resources res);
+		public abstract Drawable newDrawable(Resources res);
+
+		public abstract Drawable newDrawable();
 	}
 
 	public void setBounds(int left, int top, int right, int bottom) {

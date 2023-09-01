@@ -2,10 +2,7 @@ package android.graphics.drawable;
 
 import android.graphics.Canvas;
 
-public class ColorDrawable extends Drawable {
-
-	public ColorDrawable(int color) {
-	}
+public class DrawableContainer extends Drawable {
 
 	@Override
 	public void draw(Canvas canvas) {

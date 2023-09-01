@@ -307,7 +307,7 @@ public class KeyCharacterMap {
 			}
 		}
 		return inputDevice.getKeyCharacterMap();*/
-		return null;
+		return new KeyCharacterMap(0);
 	}
 
 	/**
@@ -609,7 +609,8 @@ public class KeyCharacterMap {
 	 * @return The keyboard type.
 	 */
 	public int getKeyboardType() {
-		return nativeGetKeyboardType(mPtr);
+		return FULL;
+		// return nativeGetKeyboardType(mPtr);
 	}
 
 	/**

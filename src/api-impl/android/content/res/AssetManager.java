@@ -37,6 +37,9 @@ import com.reandroid.arsc.value.ResValue;
 import com.reandroid.arsc.value.ResValueMap;
 import com.reandroid.arsc.value.ValueItem;
 import com.reandroid.arsc.value.ValueType;
+import com.reandroid.arsc.value.plurals.PluralsBag;
+import com.reandroid.arsc.value.plurals.PluralsQuantity;
+
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -219,17 +222,20 @@ public final class AssetManager {
 	 * identifier for the current configuration / skin.
 	 */
 	/*package*/ final CharSequence getResourceBagText(int ident, int bagEntryId) {
-		synchronized (this) {
-			TypedValue tmpValue = mValue;
-			int block = loadResourceBagValue(ident, bagEntryId, tmpValue, true);
-			if (block >= 0) {
-				if (tmpValue.type == TypedValue.TYPE_STRING) {
-					return mStringBlocks[block].get(tmpValue.data);
-				}
-				return tmpValue.coerceToString();
-			}
-		}
-		return null;
+		PluralsBag pluralsBag = PluralsBag.create(tableBlockSearch(ident).pickOne());
+		return pluralsBag.getQuantityString(PluralsQuantity.valueOf((short)bagEntryId));
+
+//		synchronized (this) {
+//			TypedValue tmpValue = mValue;
+//			int block = loadResourceBagValue(ident, bagEntryId, tmpValue, true);
+//			if (block >= 0) {
+//				if (tmpValue.type == TypedValue.TYPE_STRING) {
+//					return mStringBlocks[block].get(tmpValue.data);
+//				}
+//				return tmpValue.coerceToString();
+//			}
+//		}
+//		return null;
 	}
 
 	/**
@@ -240,7 +246,13 @@ public final class AssetManager {
 	/*package*/ final String[] getResourceStringArray(final int id) {
 		ArrayList<String> values = new ArrayList<String>();
 		for (ResValueMap map : tableBlockSearch(id).pickOne().getResValueMapArray().getChildes()) {
-			values.add(map.getValueAsString());
+			if (map.getType() == TypedValue.TYPE_REFERENCE) {
+				values.add(String.valueOf(getResourceText(map.getData())));
+			} else if (map.getType() == TypedValue.TYPE_STRING) {
+				values.add(map.getValueAsString());
+			} else {
+				values.add("value of unknown type " + map.getType());
+			}
 		}
 		return values.toArray(new String[0]);
 	}
