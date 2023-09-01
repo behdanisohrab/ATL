@@ -193,6 +193,7 @@ hax_jar = jar('hax', [
               	'android/nfc/NfcManager.java',
               	'android/opengl/EGLConfig.java',
               	'android/opengl/EGLObjectHandle.java',
+              	'android/opengl/GLES10.java',
               	'android/opengl/GLES20.java',
               	'android/opengl/GLSurfaceView.java',
               	'android/opengl/Matrix.java',
