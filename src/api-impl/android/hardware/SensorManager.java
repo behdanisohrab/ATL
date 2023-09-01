@@ -6,6 +6,9 @@ import android.location.LocationManager;
 import android.os.Handler;
 
 public class SensorManager {
+
+	public static float GRAVITY_EARTH = 9.81f;
+
 	public Sensor getDefaultSensor(int type) {
 		return new Sensor(type);
 	}
