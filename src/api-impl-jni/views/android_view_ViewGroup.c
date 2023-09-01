@@ -72,9 +72,17 @@ static GtkLayoutManager *android_layout_new(jobject view) {
 	return &layout->parent_instance;
 }
 
+#define MAGIC_SCROLL_FACTOR 32
+
 static gboolean scroll_cb(GtkEventControllerScroll* self, gdouble dx, gdouble dy, jobject this)
 {
 	JNIEnv *env = get_jni_env();
+	GdkScrollUnit scroll_unit = gtk_event_controller_scroll_get_unit (self);
+
+	if (scroll_unit == GDK_SCROLL_UNIT_SURFACE) {
+		dx /= MAGIC_SCROLL_FACTOR;
+		dy /= MAGIC_SCROLL_FACTOR;
+	}
 	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_CLASS_POINTER, MOTION_EVENT_ACTION_SCROLL, dx, -dy);
 
 	gboolean ret = (*env)->CallBooleanMethod(env, this, handle_cache.view.onGenericMotionEvent, motion_event);
