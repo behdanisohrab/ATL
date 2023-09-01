@@ -80,6 +80,7 @@ struct handle_cache {
 		jmethodID computeScroll;
 		jmethodID getScrollX;
 		jmethodID getScrollY;
+		jmethodID performClick;
 	} view;
 	struct {
 		jclass class;
