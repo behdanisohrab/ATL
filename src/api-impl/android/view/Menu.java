@@ -8,5 +8,9 @@ public interface Menu {
 
 	public MenuItem findItem(int id);
 
+	public MenuItem getItem(int id);
+
 	public void clear();
+
+	public void removeGroup(int groupId);
 }

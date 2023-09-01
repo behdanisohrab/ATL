@@ -1,28 +1,20 @@
 package android.view;
 
 public class Window {
+	public static final int FEATURE_OPTIONS_PANEL = 0;
+
 	public static interface Callback {
 		public void onContentChanged();
 
 		public abstract boolean onCreatePanelMenu(int featureId, Menu menu);
 
 		public View onCreatePanelView(int featureId);
-	}
-	public static class fixme_callback implements Callback {
 
-		@Override
-		public void onContentChanged() {
-		}
+		public boolean onPreparePanel(int featureId, View view, Menu menu);
 
-		@Override
-		public boolean onCreatePanelMenu(int featureId, Menu menu) {
-			return false;
-		}
+		public boolean onMenuItemSelected(int featureId, MenuItem item);
 
-		@Override
-		public View onCreatePanelView(int featureId) {
-			return null;
-		}
+		public void onPanelClosed(int featureId, Menu menu);
 	}
 
 	// FIXME private
@@ -31,8 +23,8 @@ public class Window {
 
 	private Window.Callback callback;
 
-	public Window() {
-		this.callback = new fixme_callback();
+	public Window(Window.Callback callback) {
+		this.callback = callback;
 	}
 
 	public void addFlags(int flags) {}
@@ -74,4 +66,10 @@ public class Window {
 	public View peekDecorView() {
 		return null;
 	}
+
+	public WindowManager.LayoutParams getAttributes() {
+		return new WindowManager.LayoutParams();
+	}
+
+	public void setAttributes(WindowManager.LayoutParams params) {}
 }

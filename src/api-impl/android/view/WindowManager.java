@@ -5,5 +5,7 @@ public interface WindowManager {
 
 	public class LayoutParams {
 		public static final int FLAG_KEEP_SCREEN_ON = 0;
+
+		public float screenBrightness;
 	}
 }
