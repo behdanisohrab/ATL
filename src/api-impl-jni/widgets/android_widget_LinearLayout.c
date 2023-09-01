@@ -21,7 +21,7 @@ static void on_click(GtkGestureClick *gesture, int n_press, double x, double y, 
 
 JNIEXPORT jlong JNICALL Java_android_widget_LinearLayout_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
-	int orientation = attribute_set_get_int(env, attrs, "orientation", NULL, 1);
+	int orientation = attribute_set_get_int(env, attrs, "orientation", NULL, 0);
 
 	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	GtkWidget *box = gtk_box_new(orientation ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, 1); // spacing of 1
