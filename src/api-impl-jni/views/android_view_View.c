@@ -145,9 +145,18 @@ JNIEXPORT void JNICALL Java_android_view_View_setGravity(JNIEnv *env, jobject th
 	}
 }
 
+#define MATCH_PARENT (-1)
+
 JNIEXPORT void JNICALL Java_android_view_View_native_1set_1size_1request(JNIEnv *env, jobject this, jint width, jint height)
 {
 	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget"))));
+
+	if (width == MATCH_PARENT) {
+		gtk_widget_set_hexpand(widget, true);
+	}
+	if (height == MATCH_PARENT) {
+		gtk_widget_set_vexpand(widget, true);
+	}
 
 	if(width > 0)
 		g_object_set(G_OBJECT(widget), "width-request", width, NULL);
@@ -211,16 +220,20 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1measure(JNIEnv *env, jobje
 	int for_size;
 	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget_ptr)));
 
-	if (((height_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY) && ((width_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY)) {
+	if ((width_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY) {
 		width = width_spec & ~MEASURE_SPEC_MASK;
-		height = height_spec & ~MEASURE_SPEC_MASK;
 	} else {
 		for_size = ((height_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY) ? (height_spec & ~MEASURE_SPEC_MASK) : -1;
 		gtk_widget_measure(widget, GTK_ORIENTATION_HORIZONTAL, for_size, NULL, &width, NULL, NULL);
+	}
 
+	if ((height_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY) {
+		height = height_spec & ~MEASURE_SPEC_MASK;
+	} else {
 		for_size = ((width_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY) ? (width_spec & ~MEASURE_SPEC_MASK) : -1;
 		gtk_widget_measure(widget, GTK_ORIENTATION_VERTICAL, for_size, NULL, &height, NULL, NULL);
 	}
+
 	(*env)->CallVoidMethod(env, this, handle_cache.view.setMeasuredDimension, width, height);
 }
 
