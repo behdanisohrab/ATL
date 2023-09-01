@@ -320,6 +320,7 @@ hax_jar = jar('hax', [
               	'android/view/WindowManagerImpl.java',
               	'android/view/WindowManager.java',
               	'android/view/animation/AccelerateDecelerateInterpolator.java',
+              	'android/view/animation/AlphaAnimation.java',
               	'android/view/animation/Animation.java',
               	'android/view/animation/AnimationUtils.java',
               	'android/view/animation/LinearInterpolator.java',

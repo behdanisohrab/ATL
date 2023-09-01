@@ -28,8 +28,9 @@ public class ValueAnimator extends Animator {
 	public int getRepeatCount() {return 0;}
 	public int getRepeatMode() {return 0;}
 	public void setInterpolator(TimeInterpolator interpolator) {}
-	public void addListener(Animator.AnimatorListener listener) {}
 	public void setFloatValues(float[] values) {}
+	public boolean isRunning() {return false;}
+	public void setIntValues(int[] values) {}
 
 	/**
 	 * Implementors of this interface can add themselves as update listeners
