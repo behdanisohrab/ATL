@@ -2132,7 +2132,7 @@ public class PackageManager {
 	 * @see #GET_RESOLVED_FILTER
 	 */
 	public ResolveInfo resolveActivity(Intent intent, int flags) {
-		return null;
+		return new ResolveInfo();
 	}
 
 	/**

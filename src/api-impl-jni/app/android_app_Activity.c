@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <libportal/portal.h>
 
 #include <jni.h>
 
@@ -105,4 +106,15 @@ JNIEXPORT void JNICALL Java_android_app_Activity_nativeFinish(JNIEnv *env, jobje
 
 JNIEXPORT void JNICALL Java_android_app_Activity_nativeStartActivity(JNIEnv *env, jclass class, jobject activity) {
 	activity_start(env, activity);
+}
+
+static XdpPortal *portal = NULL;
+
+JNIEXPORT void JNICALL Java_android_app_Activity_nativeOpenURI(JNIEnv *env, jclass class, jstring uriString) {
+	if (!portal) {
+		portal = xdp_portal_new();
+	}
+	const char* uri = (*env)->GetStringUTFChars(env, uriString, NULL);
+	xdp_portal_open_uri(portal, NULL, uri, XDP_OPEN_URI_FLAG_NONE, NULL, NULL, NULL);
+	(*env)->ReleaseStringUTFChars(env, uriString, uri);
 }

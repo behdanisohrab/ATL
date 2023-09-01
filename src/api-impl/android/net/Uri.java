@@ -1,8 +1,17 @@
 package android.net;
 
+import java.net.URI;
+
 public class Uri {
+	private URI uri;
+
 	public static Uri parse(String s) {
-		return new Uri();
+		Uri ret = new Uri();
+		try {
+			ret.uri = URI.create(s);
+		} catch (IllegalArgumentException e) {
+		}
+		return ret;
 	}
 
 	public Builder buildUpon() {
@@ -13,5 +22,10 @@ public class Uri {
 		public Builder appendQueryParameter(String key, String value) {
 			return this;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(uri);
 	}
 }
