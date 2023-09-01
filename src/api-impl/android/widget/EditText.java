@@ -2,6 +2,7 @@ package android.widget;
 
 import android.content.Context;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 
 public class EditText extends TextView {
@@ -16,6 +17,7 @@ public class EditText extends TextView {
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	protected native String native_getText(long widget);
+	protected native void native_addTextChangedListener(long widget, TextWatcher watcher);
 
 	public Editable getText() {
 		return new FIXME_Editable(native_getText(widget));
@@ -57,5 +59,10 @@ public class EditText extends TextView {
 			return string;
 		}
 
+	}
+
+	@Override
+	public void addTextChangedListener(TextWatcher watcher) {
+		native_addTextChangedListener(widget, watcher);
 	}
 }

@@ -21,3 +21,31 @@ JNIEXPORT jstring JNICALL Java_android_widget_EditText_native_1getText(JNIEnv *e
 	const char *text = gtk_entry_buffer_get_text(gtk_entry_get_buffer(entry));
 	return _JSTRING(text);
 }
+
+struct changed_callback_data {
+	jobject this;
+	jobject listener;
+	jmethodID listener_method;
+	jmethodID getText;
+};
+
+static void changed_cb(GtkEditable* self, struct changed_callback_data *d) {
+	JNIEnv *env = get_jni_env();
+
+	jobject text = (*env)->CallObjectMethod(env, d->this, d->getText);
+	(*env)->CallVoidMethod(env, d->listener, d->listener_method, text);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+}
+
+JNIEXPORT void JNICALL Java_android_widget_EditText_native_1addTextChangedListener(JNIEnv *env, jobject this, jlong widget_ptr, jobject listener) {
+	GtkEntry *entry = GTK_ENTRY(_PTR(widget_ptr));
+
+	struct changed_callback_data *callback_data = malloc(sizeof(struct changed_callback_data));
+	callback_data->this = _REF(this);
+	callback_data->listener = _REF(listener);
+	callback_data->listener_method = _METHOD(_CLASS(listener), "afterTextChanged", "(Landroid/text/Editable;)V");
+	callback_data->getText = _METHOD(_CLASS(this), "getText", "()Landroid/text/Editable;");
+
+	g_signal_connect(GTK_EDITABLE(entry), "changed", G_CALLBACK(changed_cb), callback_data);
+}
