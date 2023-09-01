@@ -10,6 +10,15 @@
 #include "../generated_headers/android_widget_LinearLayout.h"
 #include "../generated_headers/android_view_ViewGroup.h"
 
+static void on_click(GtkGestureClick *gesture, int n_press, double x, double y, jobject this)
+{
+	JNIEnv *env = get_jni_env();
+
+	(*env)->CallBooleanMethod(env, this, handle_cache.view.performClick);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+}
+
 JNIEXPORT jlong JNICALL Java_android_widget_LinearLayout_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
 	int orientation = attribute_set_get_int(env, attrs, "orientation", NULL, 1);
@@ -21,6 +30,12 @@ JNIEXPORT jlong JNICALL Java_android_widget_LinearLayout_native_1constructor(JNI
 	if (!attrs) {
 		gtk_widget_set_hexpand_set(box, true); // FIXME: to counteract expand on drawing areas
 		gtk_widget_set_vexpand_set(box, true); // XXX
+	}
+	if (_METHOD(_CLASS(this), "performClick", "()Z") != handle_cache.view.performClick) {
+		GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_click_new());
+
+		g_signal_connect(controller, "released", G_CALLBACK(on_click), _REF(this));
+		gtk_widget_add_controller(box, controller);
 	}
 	return _INTPTR(box);
 
