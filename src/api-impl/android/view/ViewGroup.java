@@ -115,7 +115,11 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	protected native void native_removeView(long widget, long child);
 
 	public View getChildAt(int index) {
-		return children.get(index);
+		try {
+			return children.get(index);
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 
 	public int indexOfChild(View child) {

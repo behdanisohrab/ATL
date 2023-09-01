@@ -82,15 +82,19 @@ public class LayoutInflater {
 		return view;
 	}
 
-	public View inflate(int resource, ViewGroup root) throws Exception {
+	public View inflate(int resource, ViewGroup root) {
 		return inflate(resource, root, root != null);
 	}
 
-	public View inflate(int layoutResID, ViewGroup root, boolean attachToRoot) throws Exception {
+	public View inflate(int layoutResID, ViewGroup root, boolean attachToRoot) {
 
 		XmlResourceParser xpp = Context.this_application.getResources().getLayout(layoutResID);
 
-		return inflate(xpp, root, attachToRoot);
+		try {
+			return inflate(xpp, root, attachToRoot);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public View inflate(XmlPullParser parser, ViewGroup root, boolean attachToRoot) throws Exception {

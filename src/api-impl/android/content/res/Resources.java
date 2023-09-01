@@ -940,7 +940,7 @@ public class Resources {
 	 *
 	 * @see #getXml
 	 */
-	public XmlResourceParser getLayout(int id) throws /*NotFound*/ Exception {
+	public XmlResourceParser getLayout(int id) throws NotFoundException {
 		return loadXmlResourceParser(id, "layout");
 	}
 
@@ -2280,7 +2280,7 @@ public class Resources {
 	}
 
 	/*package*/ XmlResourceParser loadXmlResourceParser(int id, String type)
-	    throws /*NotFound*/ Exception {
+	    throws NotFoundException {
 		synchronized (mAccessLock) {
 			TypedValue value = mTmpValue;
 			if (value == null) {
@@ -2297,8 +2297,12 @@ public class Resources {
 	}
 
 	/*package*/ XmlResourceParser loadXmlResourceParser(String file, int id,
-							    int assetCookie, String type) throws /*NotFound*/ Exception {
-		return mAssets.openXmlResourceParser(assetCookie, file);
+							    int assetCookie, String type) throws NotFoundException {
+		try {
+			return mAssets.openXmlResourceParser(assetCookie, file);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 /*        if (id != 0) {
             try {
                 // These may be compiled...

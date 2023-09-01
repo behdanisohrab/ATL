@@ -572,7 +572,7 @@ public final class AssetManager {
 	 * @param fileName The name of the file to retrieve.
 	 */
 	public final XmlResourceParser openXmlResourceParser(int cookie,
-							     String fileName) throws /*IO*/ Exception {
+							     String fileName) throws IOException {
 		/*        XmlBlock block = openXmlBlockAsset(cookie, fileName);
 			XmlResourceParser rp = block.newParser();
 			block.close();
