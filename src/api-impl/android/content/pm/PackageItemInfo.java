@@ -80,6 +80,7 @@ public class PackageItemInfo {
 
 	public PackageItemInfo() {
 		metaData = new Bundle();
+		packageName = "android";
 	}
 
 	public PackageItemInfo(PackageItemInfo orig) {

@@ -8,15 +8,30 @@ import java.io.Serializable;
 public class Intent {
 	private ComponentName component;
 	private Bundle extras = new Bundle();
+	private String action;
+	private Uri data;
 
 	public Intent() {}
-	public Intent(Intent o) {}
-	public Intent(String action) {}
-	public Intent(String action, Uri uri) {}
+	public Intent(Intent o) {
+		this.action = o.action;
+		this.data = o.data;
+		this.extras = o.extras;
+		this.component = o.component;
+	}
+	public Intent(String action) {
+		this.action = action;
+	}
+	public Intent(String action, Uri uri) {
+		this.action = action;
+		this.data = uri;
+	}
 	public Intent(Context packageContext, Class<?> cls) {
 		setClass(packageContext, cls);
 	}
-	public Intent(String action, Uri uri, Context packageContext, Class<?> cls) {}
+	public Intent(String action, Uri uri, Context packageContext, Class<?> cls) {
+		this(action, uri);
+		setClass(packageContext, cls);
+	}
 
 	public Intent addFlags(int flags) {
 		return this; //??
@@ -159,7 +174,7 @@ public class Intent {
 	}
 
 	public Uri getData() {
-		return null;
+		return data;
 	}
 
 	public boolean getBooleanExtra(String name, boolean defaultValue) {
@@ -209,7 +224,11 @@ public class Intent {
 
 	@Override
 	public String toString() {
-		return "Intent [component=" + component + ", extras=" + extras + "]";
+		return "Intent [component=" + component + ", extras=" + extras + ", action=" + action + ", uri=" + data + "]";
+	}
+
+	public static Intent createChooser(Intent target, CharSequence title) {
+		return target;
 	}
 
 }

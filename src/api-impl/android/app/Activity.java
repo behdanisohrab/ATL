@@ -296,6 +296,11 @@ public class Activity extends Context implements Window.Callback {
 
 	public void startActivity(Intent intent) {
 		System.out.println("startActivity(" + intent + ") called");
+		if (intent.getComponent() == null) {
+			System.out.println("starting extern activity with intent: " + intent);
+			nativeOpenURI(String.valueOf(intent.getData()));
+			return;
+		}
 		try {
 			Class<? extends Activity> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Activity.class);
 			Constructor<? extends Activity> constructor = cls.getConstructor();
@@ -336,6 +341,7 @@ public class Activity extends Context implements Window.Callback {
 
 	private native void nativeFinish(long native_window);
 	private static native void nativeStartActivity(Activity activity);
+	private static native void nativeOpenURI(String uri);
 
 	@Override
 	public void onContentChanged() {
