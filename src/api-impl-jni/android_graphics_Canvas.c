@@ -48,8 +48,7 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawRect(JNIEnv *env
 	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
 	sk_paint_t *paint = (sk_paint_t *)_PTR(skia_paint);
 
-	// FIXME: this doesn't work great with dark mode, since the text stays light even if the game draws white background
-//	sk_canvas_draw_rect(canvas, &(sk_rect_t){left, top, right, bottom}, paint);
+	sk_canvas_draw_rect(canvas, &(sk_rect_t){left, top, right, bottom}, paint);
 }
 
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate(JNIEnv *env, jclass this, jlong skia_canvas, jlong widget, jfloat angle)
