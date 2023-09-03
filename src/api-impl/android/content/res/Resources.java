@@ -845,7 +845,7 @@ public class Resources {
 	 * @return Returns a ColorStateList object containing either a single
 	 * solid color or multiple colors that can be selected based on a state.
 	 */
-	public ColorStateList getColorStateList(int id) throws NotFoundException { /*
+	public ColorStateList getColorStateList(int id) throws NotFoundException {
 	     TypedValue value;
 	     synchronized (mAccessLock) {
 		 value = mTmpValue;
@@ -862,8 +862,7 @@ public class Resources {
 		     mTmpValue = value;
 		 }
 	     }
-	     return res;*/
-		return new ColorStateList(new int[][] {new int[0]}, new int[1]);
+	     return res;
 	}
 
 	/**
