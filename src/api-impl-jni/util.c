@@ -1,3 +1,6 @@
+#include <dlfcn.h>
+#include <pthread.h>
+
 #include "util.h"
 
 struct handle_cache handle_cache = {0};
@@ -139,4 +142,51 @@ void set_up_handle_cache(JNIEnv *env)
 void extract_from_apk(const char *path, const char *target) {
 	JNIEnv *env = get_jni_env();
 	(*env)->CallStaticObjectMethod(env, handle_cache.asset_manager.class, handle_cache.asset_manager.extractFromAPK, _JSTRING(path), _JSTRING(target));
+}
+
+/* logging with fallback to stderr */
+
+typedef int __android_log_vprint_type(int prio, const char *tag, const char *fmt, va_list ap);
+
+static int fallback_verbose_log(int prio, const char *tag, const char *fmt, va_list ap)
+{
+	int ret;
+
+	static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_lock(&mutex);
+	static char buf[1024];
+	ret = vsnprintf(buf, sizeof(buf), fmt, ap);
+	fprintf(stderr, "%lu: %s\n", pthread_self(), buf);
+	pthread_mutex_unlock(&mutex);
+
+	return ret;
+}
+
+static int android_log_vprintf(int prio, const char *tag, const char *fmt, va_list ap)
+{
+
+	static __android_log_vprint_type *_android_log_vprintf = NULL;
+	if(!_android_log_vprintf) {
+		_android_log_vprintf = dlsym(RTLD_DEFAULT, "__android_log_vprint");
+
+		if(!_android_log_vprintf) {
+			_android_log_vprintf = &fallback_verbose_log;
+		}
+	}
+
+	return _android_log_vprintf(prio, tag, fmt, ap);
+}
+
+int android_log_printf(android_LogPriority prio, const char *tag, const char *fmt, ...)
+{
+	int ret;
+
+	va_list ap;
+	va_start(ap, fmt);
+
+	ret = android_log_vprintf(prio, tag, fmt, ap);
+
+	va_end(ap);
+
+	return ret;
 }

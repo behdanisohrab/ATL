@@ -107,4 +107,32 @@ void extract_from_apk(const char *path, const char *target);
 
 void prepare_main_looper(JNIEnv* env);
 
+/* we don't (currently?) install the headers for liblog */
+typedef enum {
+	LOG_ID_MAIN = 0,
+	LOG_ID_RADIO = 1,
+	LOG_ID_EVENTS = 2,
+	LOG_ID_SYSTEM = 3,
+
+	LOG_ID_MAX
+} log_id_t;
+
+typedef enum android_LogPriority {
+    ANDROID_LOG_UNKNOWN = 0,
+    ANDROID_LOG_DEFAULT,    /* only for SetMinPriority() */
+    ANDROID_LOG_VERBOSE,
+    ANDROID_LOG_DEBUG,
+    ANDROID_LOG_INFO,
+    ANDROID_LOG_WARN,
+    ANDROID_LOG_ERROR,
+    ANDROID_LOG_FATAL,
+    ANDROID_LOG_SILENT,     /* only for SetMinPriority(); must be last */
+} android_LogPriority;
+
+/* TODO: do we really need the bufID, or can we use our function below which has a stderr fallback */
+int __android_log_buf_write(int bufID, int prio, const char *tag, const char *text);
+
+/* defined in util.c */
+int android_log_printf(android_LogPriority prio, const char *tag, const char *fmt, ...);
+
 #endif

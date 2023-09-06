@@ -22,7 +22,7 @@ import android.system.ErrnoException;
 // import android.os.Looper;
 import android.system.Os;
 import android.system.StructStat;
-import android.util.Log;
+import android.util.Slog;
 // import com.google.android.collect.Maps;
 import com.android.internal.util.XmlUtils;
 import dalvik.system.BlockGuard;
@@ -99,7 +99,7 @@ public final class SharedPreferencesImpl implements SharedPreferences {
 		}
 		// Debugging
 		if (mFile.exists() && !mFile.canRead()) {
-			Log.w(TAG, "Attempt to read preferences file " + mFile + " without permission");
+			Slog.w(TAG, "Attempt to read preferences file " + mFile + " without permission");
 		}
 		Map map = null;
 		StructStat stat = null;
@@ -112,11 +112,11 @@ public final class SharedPreferencesImpl implements SharedPreferences {
 					    new FileInputStream(mFile), 16 * 1024);
 					map = XmlUtils.readMapXml(str);
 				} catch (XmlPullParserException e) {
-					Log.w(TAG, "getSharedPreferences", e);
+					Slog.w(TAG, "getSharedPreferences", e);
 				} catch (FileNotFoundException e) {
-					Log.w(TAG, "getSharedPreferences", e);
+					Slog.w(TAG, "getSharedPreferences", e);
 				} catch (IOException e) {
-					Log.w(TAG, "getSharedPreferences", e);
+					Slog.w(TAG, "getSharedPreferences", e);
 				} finally {
 					IoUtils.closeQuietly(str);
 				}
@@ -155,7 +155,7 @@ public final class SharedPreferencesImpl implements SharedPreferences {
 			if (mDiskWritesInFlight > 0) {
 				// If we know we caused it, it's not unexpected.
 				if (DEBUG)
-					Log.d(TAG, "disk write in flight, not unexpected.");
+					Slog.d(TAG, "disk write in flight, not unexpected.");
 				return false;
 			}
 		}
@@ -203,7 +203,7 @@ public final class SharedPreferencesImpl implements SharedPreferences {
 	}
 
 	public Map<String, ?> getAll() {
-		System.out.println("\n\n...> getAll()\n\n");
+		Slog.v(TAG, "\n\n...> getAll()\n\n");
 		synchronized (this) {
 			awaitLoadedLocked();
 			// noinspection unchecked
@@ -250,7 +250,7 @@ public final class SharedPreferencesImpl implements SharedPreferences {
 	}
 	public boolean getBoolean(String key, boolean defValue) {
 		synchronized (this) {
-			System.out.println("android.app.SharedPreferencesImpl.getBoolean("+key+", "+defValue+")");
+			Slog.v(TAG, "android.app.SharedPreferencesImpl.getBoolean("+key+", "+defValue+")");
 			awaitLoadedLocked();
 			Boolean v = (Boolean)mMap.get(key);
 			return v != null ? v : defValue;
@@ -542,7 +542,7 @@ public final class SharedPreferencesImpl implements SharedPreferences {
 		} catch (FileNotFoundException e) {
 			File parent = file.getParentFile();
 			if (!parent.mkdir()) {
-				Log.e(TAG, "Couldn't create directory for SharedPreferences file " + file);
+				Slog.e(TAG, "Couldn't create directory for SharedPreferences file " + file);
 				return null;
 			}
 			/*            FileUtils.setPermissions(
@@ -552,7 +552,7 @@ public final class SharedPreferencesImpl implements SharedPreferences {
 			try {
 				str = new FileOutputStream(file);
 			} catch (FileNotFoundException e2) {
-				Log.e(TAG, "Couldn't create SharedPreferences file " + file, e2);
+				Slog.e(TAG, "Couldn't create SharedPreferences file " + file, e2);
 			}
 		}
 		return str;
@@ -572,7 +572,7 @@ public final class SharedPreferencesImpl implements SharedPreferences {
 			}
 			if (!mBackupFile.exists()) {
 				if (!mFile.renameTo(mBackupFile)) {
-					Log.e(TAG, "Couldn't rename file " + mFile + " to backup file " + mBackupFile);
+					Slog.e(TAG, "Couldn't rename file " + mFile + " to backup file " + mBackupFile);
 					mcr.setDiskWriteResult(false);
 					return;
 				}
@@ -607,14 +607,14 @@ public final class SharedPreferencesImpl implements SharedPreferences {
 			mcr.setDiskWriteResult(true);
 			return;
 		} catch (XmlPullParserException e) {
-			Log.w(TAG, "writeToFile: Got exception:", e);
+			Slog.w(TAG, "writeToFile: Got exception:", e);
 		} catch (IOException e) {
-			Log.w(TAG, "writeToFile: Got exception:", e);
+			Slog.w(TAG, "writeToFile: Got exception:", e);
 		}
 		// Clean up an unsuccessfully written file
 		if (mFile.exists()) {
 			if (!mFile.delete()) {
-				Log.e(TAG, "Couldn't clean up partially-written file " + mFile);
+				Slog.e(TAG, "Couldn't clean up partially-written file " + mFile);
 			}
 		}
 		mcr.setDiskWriteResult(false);

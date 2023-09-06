@@ -364,11 +364,5 @@ public final class Log {
 	/**
 	 * @hide
 	 */
-	public static /*native*/ int
-	println_native(int bufID,
-		       int priority, String tag, String msg) {
-		String out = String.format("`¯´[%d][%d] [%s] : %s", bufID, priority, tag, msg);
-		System.out.println(out);
-		return out.getBytes().length;
-	}
+	public static native int println_native(int bufID, int priority, String tag, String msg);
 }

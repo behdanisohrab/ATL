@@ -16,7 +16,7 @@
 JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1bitmap_1from_1path(JNIEnv *env, jobject this, jobject path)
 {
 	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(_CSTRING(path), NULL);
-	printf(">>> made pixbuf from path: >%s<, >%p<\n", _CSTRING(path), pixbuf);
+	android_log_printf(ANDROID_LOG_VERBOSE, "["__FILE__"]", ">>> made pixbuf from path: >%s<, >%p<\n", _CSTRING(path), pixbuf);
 
 	sk_imageinfo_t info = {
 		.width = gdk_pixbuf_get_width(pixbuf),
