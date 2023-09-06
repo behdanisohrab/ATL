@@ -29,11 +29,11 @@ extern "C" {
 #define android_util_Log_LOG_ID_SYSTEM 3L
 /*
  * Class:     android_util_Log
- * Method:    isLoggable
- * Signature: (Ljava/lang/String;I)Z
+ * Method:    println_native
+ * Signature: (IILjava/lang/String;Ljava/lang/String;)I
  */
-JNIEXPORT jboolean JNICALL Java_android_util_Log_isLoggable
-  (JNIEnv *, jclass, jstring, jint);
+JNIEXPORT jint JNICALL Java_android_util_Log_println_1native
+  (JNIEnv *, jclass, jint, jint, jstring, jstring);
 
 #ifdef __cplusplus
 }

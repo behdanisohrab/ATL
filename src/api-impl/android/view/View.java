@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.LayoutDirection;
+import android.util.Slog;
 import android.util.SparseArray;
 import android.view.animation.Animation;
 
@@ -26,7 +27,7 @@ public class View extends Object {
 	/**
 	 * The logging tag used by this class with android.util.Log.
 	 */
-	protected static final String VIEW_LOG_TAG = "View";
+	protected static final String TAG = "View";
 
 	/**
 	 * When set to true, apps will draw debugging information about their layouts.
@@ -882,7 +883,7 @@ public class View extends Object {
 	// --- stubs
 
 	public void setContentDescription(CharSequence contentDescription) {
-		System.out.println("setContentDescription called with: >" + contentDescription + "<");
+		Slog.w(TAG, "setContentDescription called with: >" + contentDescription + "<");
 	}
 
 	public void setId(int id) {
@@ -916,11 +917,11 @@ public class View extends Object {
 	}
 
 	public void setPressed(boolean pressed) {
-		System.out.println("calling setPressed on " + this + " with value: " + pressed);
+		Slog.w(TAG, "calling setPressed on " + this + " with value: " + pressed);
 	}
 
 	public void setSelected(boolean selected) {
-		System.out.println("calling setSelected on " + this + " with value: " + selected);
+		Slog.w(TAG, "calling setSelected on " + this + " with value: " + selected);
 	}
 
 	public ViewTreeObserver getViewTreeObserver() {
@@ -940,7 +941,7 @@ public class View extends Object {
 	public native void setVisibility(int visibility);
 	public void setPadding(int left, int top, int right, int bottom) {}
 	public void setBackgroundResource(int resid) {
-		//		System.out.println("*** setBackgroundResource: " + getString(resid));
+//		Slog.w(TAG, "*** setBackgroundResource: " + getString(resid));
 	}
 
 	public void getHitRect(Rect outRect) {}
@@ -970,7 +971,7 @@ public class View extends Object {
 	}
 
 	public boolean performHapticFeedback(int feedbackConstant, int flags) {
-		System.out.println("vibration motor go burrrr");
+		Slog.v(TAG, "vibration motor go burrrr");
 		return true; // FIXME why is it not void
 	}
 
@@ -1000,7 +1001,7 @@ public class View extends Object {
 	}
 
 	public void postInvalidate(int left, int top, int right, int bottom) {
-		System.out.println("postInvalidate(" + left + "," + top + "," + right + "," + bottom + ") called");
+		Slog.w(TAG, "postInvalidate(" + left + "," + top + "," + right + "," + bottom + ") called");
 	}
 
 	public void setOnGenericMotionListener(View.OnGenericMotionListener l) {}

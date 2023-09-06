@@ -27,7 +27,7 @@ import android.os.Vibrator;
 import android.telephony.TelephonyManager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
+import android.util.Slog;
 import android.view.WindowManagerImpl;
 import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.InputMethodManager;
@@ -106,7 +106,7 @@ public class Context extends Object {
 	}
 
 	public Context() {
-		System.out.println("new Context! this one is: " + this);
+		Slog.v(TAG, "new Context! this one is: " + this);
 	}
 
 	public int checkPermission(String permission, int pid, int uid) {
@@ -174,7 +174,7 @@ public class Context extends Object {
 			case "accessibility":
 				return new AccessibilityManager();
 			default:
-				System.out.println("!!!!!!! getSystemService: case >" + name + "< is not implemented yet");
+				Slog.e(TAG, "!!!!!!! getSystemService: case >" + name + "< is not implemented yet");
 				return null;
 		}
 	}
@@ -247,7 +247,7 @@ public class Context extends Object {
 					// spurious failure; probably racing with another process for this app
 					return files_dir;
 				}
-				Log.w(TAG, "Unable to create files directory " + files_dir.getPath());
+				Slog.w(TAG, "Unable to create files directory " + files_dir.getPath());
 				return null;
 			}
 		}
@@ -293,7 +293,7 @@ public class Context extends Object {
 	}
 
 	public SharedPreferences getSharedPreferences(String name, int mode) {
-		System.out.println("\n\n...> getSharedPreferences(" + name + ")\n\n");
+		Slog.v(TAG, "\n\n...> getSharedPreferences(" + name + ")\n\n");
 		File prefsFile = getSharedPrefsFile(name);
 		return new SharedPreferencesImpl(prefsFile, mode);
 	}
@@ -309,19 +309,19 @@ public class Context extends Object {
 
 	// TODO: do these both work? make them look more alike
 	public FileInputStream openFileInput(String name) throws FileNotFoundException {
-		System.out.println("openFileInput called for: '" + name + "'");
+		Slog.v(TAG, "openFileInput called for: '" + name + "'");
 		File file = new File(getFilesDir(), name);
 
 		return new FileInputStream(file);
 	}
 
 	public FileOutputStream openFileOutput(String name, int mode) throws java.io.FileNotFoundException {
-		System.out.println("openFileOutput called for: '" + name + "'");
+		Slog.v(TAG, "openFileOutput called for: '" + name + "'");
 		return new FileOutputStream(android.os.Environment.getExternalStorageDirectory().getPath() + "/files/" + name);
 	}
 
 	public int checkCallingOrSelfPermission(String permission) {
-		System.out.println("!!! app wants to know if it has a permission: >" + permission + "<");
+		Slog.w(TAG, "!!! app wants to know if it has a permission: >" + permission + "< (returning PREMISSION_DENIED)");
 
 		return -1; // PackageManager.PERMISSION_DENIED
 	}
@@ -329,15 +329,15 @@ public class Context extends Object {
 	public void registerComponentCallbacks(ComponentCallbacks callbacks) {}
 
 	public boolean bindService(Intent dummy, ServiceConnection dummy2, int dummy3) {
-		System.out.println("bindService("+dummy+", "+dummy2+", "+dummy3+")");
+		Slog.w(TAG, "bindService("+dummy+", "+dummy2+", "+dummy3+")");
 		return false; // maybe?
 	}
 
 	public void startActivity(Intent intent) {
-		System.out.println("------------------");
-		System.out.println("app wants to startActivity("+intent+"), but we don't support that... :/");
+		Slog.w(TAG, "------------------");
+		Slog.w(TAG, "app wants to startActivity("+intent+"), but we don't support that... :/");
 		try { throw new java.lang.Exception(); } catch (java.lang.Exception e) { e.printStackTrace(); }
-		System.out.println("------------------");
+		Slog.w(TAG, "------------------");
 	}
 
 	public final TypedArray obtainStyledAttributes(AttributeSet set, int[] attrs) {
