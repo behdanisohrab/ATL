@@ -1312,4 +1312,11 @@ public class View extends Object {
 	public void setOnCreateContextMenuListener (View.OnCreateContextMenuListener l) {}
 
 	public void startAnimation(Animation animation) {}
+
+	public void getDrawingRect(Rect rect) {
+		rect.left = getScrollX();
+		rect.top = getScrollY();
+		rect.right = getScrollX() + getWidth();
+		rect.bottom = getScrollY() + getHeight();
+	}
 }
