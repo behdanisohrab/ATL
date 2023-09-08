@@ -783,6 +783,7 @@ public class View extends Object {
 	private Context context;
 	private Map<Integer,Object> tags = new HashMap<>();
 	private Object tag;
+	int gravity = -1;  // fallback gravity for layout childs
 
 	int measuredWidth = 0;
 	int measuredHeight = 0;
@@ -839,11 +840,11 @@ public class View extends Object {
 			throw new NullPointerException("Layout parameters cannot be null");
 		}
 
-		native_set_size_request(params.width, params.height);
+		int gravity = params.gravity;
+		if (gravity == -1 && parent != null)
+			gravity = parent.gravity;
 
-		if (params.gravity != -1) {
-			setGravity(params.gravity);
-		}
+		native_setLayoutParams(widget, params.width, params.height, gravity, params.weight);
 
 		layout_params = params;
 	}
@@ -861,7 +862,10 @@ public class View extends Object {
 		return Context.this_application.getResources();
 	}
 
-	public native void setGravity(int gravity);
+	public void setGravity(int gravity) {
+		this.gravity = gravity;
+	}
+
 	public native void setOnTouchListener(OnTouchListener l);
 	public native void setOnClickListener(OnClickListener l);
 	public /*native*/ void setOnSystemUiVisibilityChangeListener(OnSystemUiVisibilityChangeListener l) {}
@@ -869,7 +873,7 @@ public class View extends Object {
 	public native final int getHeight();
 
 	protected native long native_constructor(Context context, AttributeSet attrs); // will create a custom GtkWidget with a custom drawing function
-	private native void native_set_size_request(int width, int height);
+	public native void native_setLayoutParams(long widget, int width, int height, int gravity, float weight);
 	protected native void native_destructor(long widget);
 	protected native void native_measure(long widget, int widthMeasureSpec, int heightMeasureSpec);
 	protected native void native_layout(long widget, int l, int t, int r, int b);
