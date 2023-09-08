@@ -201,14 +201,6 @@ extern "C" {
 #define android_view_View_TEXT_DIRECTION_RTL 4L
 /*
  * Class:     android_view_View
- * Method:    setGravity
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_android_view_View_setGravity
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     android_view_View
  * Method:    setOnTouchListener
  * Signature: (Landroid/view/View/OnTouchListener;)V
  */
@@ -249,11 +241,11 @@ JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor
 
 /*
  * Class:     android_view_View
- * Method:    native_set_size_request
- * Signature: (II)V
+ * Method:    native_setLayoutParams
+ * Signature: (JIIIF)V
  */
-JNIEXPORT void JNICALL Java_android_view_View_native_1set_1size_1request
-  (JNIEnv *, jobject, jint, jint);
+JNIEXPORT void JNICALL Java_android_view_View_native_1setLayoutParams
+  (JNIEnv *, jobject, jlong, jint, jint, jint, jfloat);
 
 /*
  * Class:     android_view_View

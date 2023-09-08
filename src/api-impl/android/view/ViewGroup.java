@@ -270,6 +270,18 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
     }
 
 	public void focusableViewAvailable(View v) {}
+
+	@Override
+	public void setGravity(int gravity) {
+		super.setGravity(gravity);
+		// update children as necessary
+		for (View child: children) {
+			LayoutParams params = child.getLayoutParams();
+			if (params.gravity == -1)
+				child.setLayoutParams(params);
+		}
+	}
+
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;
 		public static final int MATCH_PARENT = -1;
@@ -277,7 +289,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 		public int width = 0;
 		public int height = 0;
-		public float weight = 1;
+		public float weight = 0;
 		public int gravity = -1;
 
 		public LayoutParams() {

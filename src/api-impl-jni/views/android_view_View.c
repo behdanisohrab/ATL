@@ -117,46 +117,62 @@ JNIEXPORT jint JNICALL Java_android_view_View_getHeight(JNIEnv *env, jobject thi
 
 #define GRAVITY_CENTER (GRAVITY_CENTER_VERTICAL | GRAVITY_CENTER_HORIZONTAL)
 
-JNIEXPORT void JNICALL Java_android_view_View_setGravity(JNIEnv *env, jobject this, jint gravity)
-{
-	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget"))));
-
-	printf(":::-: setting gravity: %d\n", gravity);
-
-	if(gravity & GRAVITY_BOTTOM)
-		gtk_widget_set_valign(widget, GTK_ALIGN_END);
-	else if(gravity & GRAVITY_TOP)
-		gtk_widget_set_valign(widget, GTK_ALIGN_START);
-	else
-		gtk_widget_set_valign(widget, GTK_ALIGN_FILL);
-
-	if(gravity & GRAVITY_RIGHT)
-		gtk_widget_set_halign(widget, GTK_ALIGN_END);
-	else if(gravity & GRAVITY_LEFT)
-		gtk_widget_set_halign(widget, GTK_ALIGN_START);
-	else
-		gtk_widget_set_halign(widget, GTK_ALIGN_FILL);
-
-	if(gravity == GRAVITY_CENTER) {
-		gtk_widget_set_valign(widget, GTK_ALIGN_CENTER); // GTK_ALIGN_CENTER doesn't seem to be the right one?
-		gtk_widget_set_halign(widget, GTK_ALIGN_CENTER); // ditto (GTK_ALIGN_CENTER)
-		gtk_widget_set_hexpand(widget, true); // haxx or not?
-		gtk_widget_set_vexpand(widget, true); // seems to be the deciding factor for whether to expand, guess I should try on android
-	}
-}
-
 #define MATCH_PARENT (-1)
 
-JNIEXPORT void JNICALL Java_android_view_View_native_1set_1size_1request(JNIEnv *env, jobject this, jint width, jint height)
+JNIEXPORT void JNICALL Java_android_view_View_native_1setLayoutParams(JNIEnv *env, jobject this, jlong widget_ptr, jint width, jint height, jint gravity, jfloat weight)
 {
-	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget"))));
+	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget_ptr)));
+
+	GtkAlign halign = GTK_ALIGN_FILL;
+	GtkAlign valign = GTK_ALIGN_FILL;
+	gboolean hexpand = FALSE;
+	gboolean vexpand = FALSE;
+
+	if (gravity != -1) {
+		printf(":::-: setting gravity: %d\n", gravity);
+
+		if(gravity & GRAVITY_BOTTOM)
+			valign = GTK_ALIGN_END;
+		else if(gravity & GRAVITY_TOP)
+			valign = GTK_ALIGN_START;
+		else
+			valign = GTK_ALIGN_FILL;
+
+		if(gravity & GRAVITY_RIGHT)
+			halign = GTK_ALIGN_END;
+		else if(gravity & GRAVITY_LEFT)
+			halign = GTK_ALIGN_START;
+		else
+			halign = GTK_ALIGN_FILL;
+
+		if(gravity == GRAVITY_CENTER) {
+			valign = GTK_ALIGN_CENTER; // GTK_ALIGN_CENTER doesn't seem to be the right one?
+			halign = GTK_ALIGN_CENTER; // ditto (GTK_ALIGN_CENTER)
+			hexpand = TRUE; // haxx or not?
+			vexpand = TRUE; // seems to be the deciding factor for whether to expand, guess I should try on android
+		}
+	}
+
+	if (weight > 0.f) {
+		printf(":::-: setting weight: %f\n", weight);
+
+		hexpand = TRUE;
+		vexpand = TRUE;
+	}
 
 	if (width == MATCH_PARENT) {
-		gtk_widget_set_hexpand(widget, true);
+		hexpand = true;
+		halign = GTK_ALIGN_FILL;
 	}
 	if (height == MATCH_PARENT) {
-		gtk_widget_set_vexpand(widget, true);
+		vexpand = true;
+		valign = GTK_ALIGN_FILL;
 	}
+
+	gtk_widget_set_hexpand(widget, hexpand);
+	gtk_widget_set_vexpand(widget, vexpand);
+	gtk_widget_set_halign(widget, halign);
+	gtk_widget_set_valign(widget, valign);
 
 	if(width > 0)
 		g_object_set(G_OBJECT(widget), "width-request", width, NULL);

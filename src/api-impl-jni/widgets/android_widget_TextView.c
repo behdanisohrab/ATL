@@ -16,6 +16,8 @@ JNIEXPORT jlong JNICALL Java_android_widget_TextView_native_1constructor(JNIEnv 
 	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	GtkWidget *label = gtk_label_new(text);
 	gtk_label_set_wrap(GTK_LABEL(label), TRUE);
+	gtk_label_set_xalign(GTK_LABEL(label), 0.f);
+	gtk_label_set_yalign(GTK_LABEL(label), 0.f);
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), label);
 	return _INTPTR(label);
 }
