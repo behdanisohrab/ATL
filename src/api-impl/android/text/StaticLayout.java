@@ -1,8 +1,6 @@
 package android.text;
 
-import android.text.Layout.Alignment;
-
-public class StaticLayout {
+public class StaticLayout extends Layout {
 
 	private CharSequence text;
 

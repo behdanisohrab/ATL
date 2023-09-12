@@ -1,5 +1,6 @@
 package android.view;
 
+import android.graphics.Point;
 import android.util.DisplayMetrics;
 
 public final class Display {
@@ -53,5 +54,9 @@ public final class Display {
 
 	public long getPresentationDeadlineNanos() {
 		return 0; // what else...
+	}
+
+	public void getSize(Point size) {
+		size.set(getWidth(), getHeight());
 	}
 }

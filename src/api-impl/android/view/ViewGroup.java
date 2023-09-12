@@ -287,6 +287,8 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		}
 	}
 
+	protected void setChildrenDrawingOrderEnabled(boolean enabled) {}
+
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;
 		public static final int MATCH_PARENT = -1;
@@ -355,6 +357,17 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		public MarginLayoutParams(Context context, AttributeSet attributeSet) {
 			super(context, attributeSet);
 		}
+
+		public int getMarginStart() {
+			return leftMargin;
+		}
+
+		public int getMarginEnd() {
+			return rightMargin;
+		}
+
+		public void setMarginStart(int marginStart) {}
+		public void setMarginEnd(int marginEnd) {}
 	}
 
 	public interface OnHierarchyChangeListener {

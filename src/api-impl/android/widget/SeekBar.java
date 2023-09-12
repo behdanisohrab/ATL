@@ -2,9 +2,8 @@ package android.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 
-public class SeekBar extends View {
+public class SeekBar extends ProgressBar {
 
 	public SeekBar(Context context) {
 		super(context);

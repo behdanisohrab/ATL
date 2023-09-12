@@ -13,4 +13,12 @@ public interface Menu {
 	public void clear();
 
 	public void removeGroup(int groupId);
+
+	public SubMenu addSubMenu(int id);
+
+	public MenuItem add(int id);
+
+	public MenuItem add(CharSequence text);
+
+	public void setGroupCheckable(int group, boolean checkable, boolean exclusive);
 }

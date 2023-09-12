@@ -2,6 +2,7 @@ package android.widget;
 
 import android.content.Context;
 import android.text.Editable;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 
@@ -20,46 +21,17 @@ public class EditText extends TextView {
 	protected native void native_addTextChangedListener(long widget, TextWatcher watcher);
 
 	public Editable getText() {
-		return new FIXME_Editable(native_getText(widget));
+		return new SpannableStringBuilder(native_getText(widget));
 	}
 
 	public Editable getEditableText() {
-		return new FIXME_Editable(native_getText(widget));
+		return new SpannableStringBuilder(native_getText(widget));
 	}
 
 	@Override
 	public void setText(CharSequence text) {}
 	@Override
 	public void setTextSize(float size) {}
-
-	private class FIXME_Editable implements Editable {
-		private String string;
-
-		public FIXME_Editable(String string) {
-			this.string = string;
-		}
-
-		@Override
-		public int length() {
-			return string.length();
-		}
-
-		@Override
-		public char charAt(int index) {
-			return string.charAt(index);
-		}
-
-		@Override
-		public CharSequence subSequence(int start, int end) {
-			return string.subSequence(start, end);
-		}
-
-		@Override
-		public String toString() {
-			return string;
-		}
-
-	}
 
 	@Override
 	public void addTextChangedListener(TextWatcher watcher) {

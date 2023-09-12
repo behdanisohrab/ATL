@@ -31,6 +31,8 @@ public class ValueAnimator extends Animator {
 	public void setFloatValues(float[] values) {}
 	public boolean isRunning() {return false;}
 	public void setIntValues(int[] values) {}
+	public void setRepeatCount(int value) {}
+	public void setRepeatMode(int value) {}
 
 	/**
 	 * Implementors of this interface can add themselves as update listeners

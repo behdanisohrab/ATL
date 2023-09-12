@@ -201,7 +201,8 @@ public class Intent {
 	}
 
 	public Intent setAction(String action) {
-		return this; // FIXME
+		this.action = action;
+		return this;
 	}
 
 	public String getAction() {

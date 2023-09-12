@@ -17,4 +17,6 @@ public interface DialogInterface {
 	}
 	public interface OnCancelListener {
 	}
+	public interface OnMultiChoiceClickListener {
+	}
 }

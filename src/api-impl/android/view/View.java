@@ -1,5 +1,6 @@
 package android.view;
 
+import android.animation.StateListAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -19,6 +20,7 @@ import android.view.animation.Animation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class View extends Object {
 
@@ -776,7 +778,7 @@ public class View extends Object {
 
 	// --- end of subclasses
 
-	public int id;
+	public int id = NO_ID;
 	private int system_ui_visibility = 0;
 	public ViewGroup parent;
 	public AttributeSet attrs;
@@ -815,9 +817,11 @@ public class View extends Object {
 		widget = native_constructor(context, attrs);
 
 		if (attrs != null) {
-			id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
-			if (id != 0)
-				setId(id);
+			int id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
+			if (id != 0) {
+				this.id = id;
+				view_by_id.put(id, this);
+			}
 		}
 	}
 
@@ -992,6 +996,14 @@ public class View extends Object {
 	}
 
 	public int getPaddingBottom() {
+		return 0;
+	}
+
+	public int getPaddingStart() {
+		return 0;
+	}
+
+	public int getPaddingEnd() {
 		return 0;
 	}
 
@@ -1328,4 +1340,107 @@ public class View extends Object {
 	public Display getDisplay() {
 		return new Display();
 	}
+
+	private int importantForAccessibility;
+	public void setImportantForAccessibility(int importantForAccessibility) {
+		this.importantForAccessibility = importantForAccessibility;
+	}
+	public int getImportantForAccessibility() {
+		return importantForAccessibility;
+	}
+
+	public boolean getFitsSystemWindows() {return true;}
+
+	public void setOnApplyWindowInsetsListener(View.OnApplyWindowInsetsListener l) {}
+
+	public final boolean isFocusable() {return true;}
+	public boolean isClickable() {return true;}
+	public boolean isLongClickable() {return true;}
+
+	public int getLayoutDirection() {return LAYOUT_DIRECTION_LTR;}
+
+	public void setBackground(Drawable background) {}
+
+	private float elevation;
+	public void setElevation(float elevation) {
+		this.elevation = elevation;
+	}
+	public float getElevation() {
+		return elevation;
+	}
+
+	public boolean isLaidOut() {return true;}
+
+	public void postOnAnimation(Runnable action) {
+		post(action);
+	}
+
+	public void setHorizontalScrollBarEnabled(boolean enabled) {}
+
+	public void postInvalidateOnAnimation() {
+		postInvalidate();
+	}
+
+	public void setPaddingRelative(int start, int top, int end, int bottom) {}
+
+	public boolean isAttachedToWindow() {return true;}
+
+	public void requestApplyInsets() {}
+
+	public View getRootView() {
+		View view = this;
+		while (view.parent != null) {
+			view = view.parent;
+		}
+		return view;
+	}
+
+	public boolean isShown() {return true;}
+
+	public int getWindowVisibility() {return VISIBLE;}
+
+	public float getAlpha() {return 1.f;}
+
+	public View findFocus() {return this;}
+
+	public int getMinimumHeight() {return getSuggestedMinimumHeight();}
+	public int getMinimumWidth() {return getSuggestedMinimumWidth();}
+
+	public boolean isNestedScrollingEnabled() {return true;}
+
+	public void setClipToOutline(boolean clipToOutline) {}
+
+	public boolean hasTransientState() {return false;}
+
+	public final void cancelPendingInputEvents() {}
+
+	public ViewOutlineProvider getOutlineProvider() {return new ViewOutlineProvider();}
+	public void setOutlineProvider(ViewOutlineProvider provider) {}
+
+	public void setStateListAnimator(StateListAnimator stateListAnimator) {}
+
+	private static final AtomicInteger nextGeneratedId = new AtomicInteger(1);
+	/**
+     * Generate a value suitable for use in {@link #setId(int)}.
+     * This value will not collide with ID values generated at build time by aapt for R.id.
+     *
+     * @return a generated ID value
+     */
+    public static int generateViewId() {
+        for (;;) {
+            final int result = nextGeneratedId.get();
+            // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
+            int newValue = result + 1;
+            if (newValue > 0x00FFFFFF) newValue = 1; // Roll over to 1, not 0.
+            if (nextGeneratedId.compareAndSet(result, newValue)) {
+                return result;
+            }
+        }
+    }
+
+	public boolean isLayoutDirectionResolved() {return true;}
+
+	public boolean isPaddingRelative() {return false;}
+
+	public void setForeground(Drawable foreground) {}
 }

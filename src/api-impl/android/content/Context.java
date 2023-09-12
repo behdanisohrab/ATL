@@ -13,6 +13,7 @@ import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.hardware.input.InputManager;
 import android.hardware.SensorManager;
 import android.hardware.display.DisplayManager;
@@ -372,6 +373,10 @@ public class Context extends Object {
 
 	public final CharSequence getText(int resId) {
 		return getResources().getText(resId);
+	}
+
+	public final Drawable getDrawable(int resId) {
+		return getResources().getDrawable(resId);
 	}
 
 	public boolean isRestricted() {return false;}

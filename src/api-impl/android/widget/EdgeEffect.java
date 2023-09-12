@@ -16,6 +16,7 @@ public class EdgeEffect extends View {
 
 	public void setSize(int width, int height) {}
 	public void onPull(float deltaDistance) {}
+	public void onPull(float deltaDistance, float displacement) {}
 	public boolean isFinished() {return true;}
 
 }

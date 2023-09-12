@@ -145,6 +145,10 @@ public class Uri {
 		}
 	}
 
+	public String getScheme() {
+		return uri.getScheme();
+	}
+
 	@Override
 	public String toString() {
 		return String.valueOf(uri);
