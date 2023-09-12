@@ -1,5 +1,6 @@
 package android.graphics.drawable;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -76,4 +77,6 @@ public abstract class Drawable {
 
 	public int getIntrinsicWidth() {return 0;}
 	public int getIntrinsicHeight() {return 0;}
+
+	public void setTintList (ColorStateList tint) {}
 }

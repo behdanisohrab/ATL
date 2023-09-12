@@ -45,6 +45,10 @@ public class InputDevice {
 		return new ArrayList<InputDevice.MotionRange>();
 	}
 
+	public boolean supportsSource(int source) {
+		return true;
+	}
+
 	public class MotionRange {
 		int axis;
 

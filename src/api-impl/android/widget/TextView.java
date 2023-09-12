@@ -5,10 +5,12 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.KeyListener;
 import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -148,6 +150,20 @@ public class TextView extends View {
 	public void setSaveEnabled(boolean enabled) {}
 
 	public final void setAutoLinkMask(int mask) {}
+
+	public void setEditableFactory(Editable.Factory factory) {}
+
+	public KeyListener getKeyListener() {return null;}
+
+	public int getInputType() {return 0;}
+
+	public final void setTransformationMethod(TransformationMethod method) {}
+
+	public InputFilter[] getFilters() {return new InputFilter[0];}
+
+	public int getMaxLines() {return -1;}
+
+	public void setCompoundDrawablesRelative(Drawable start, Drawable top, Drawable end, Drawable bottom) {}
 
 	public static interface OnEditorActionListener {
 	}

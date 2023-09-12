@@ -26,4 +26,6 @@ public interface MenuItem {
 
 	public int getGroupId();
 
+	public MenuItem setOnMenuItemClickListener(OnMenuItemClickListener listener);
+
 }

@@ -28,6 +28,8 @@ public class Settings {
 	public static final class System {
 		public static final Uri CONTENT_URI = null; // Uri.parse("content://settings/system");
 
+		public static final Uri DEFAULT_NOTIFICATION_URI = getUriFor("notification_sound");
+
 		public static int getInt(ContentResolver cr, String key, int def) {
 			int ret = getInt(cr, key);
 			if (ret != -1) {
@@ -51,6 +53,17 @@ public class Settings {
 
 		public static Uri getUriFor(String name) {
 			return null;
+		}
+	}
+
+	public static final class Global {
+
+		public static int getInt(ContentResolver cr, String key, int def) {
+			switch (key) {
+				default:
+					java.lang.System.out.println("!!!! Settings$Global.getInt: unknown key: >" + key + "<");
+					return def;
+			}
 		}
 	}
 

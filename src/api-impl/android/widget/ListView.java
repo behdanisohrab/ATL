@@ -2,9 +2,8 @@ package android.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 
-public class ListView extends View {
+public class ListView extends AbsListView {
 
 	public ListView(Context context) {
 		super(context);

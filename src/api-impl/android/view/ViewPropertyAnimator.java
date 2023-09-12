@@ -13,7 +13,7 @@ public class ViewPropertyAnimator {
 
 	public ViewPropertyAnimator setListener(Animator.AnimatorListener listener) {
 		if (listener != null)
-			listener.onAnimationEnd(null);
+			listener.onAnimationEnd(new Animator());
 		return this;
 	}
 

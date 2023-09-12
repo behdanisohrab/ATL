@@ -9,9 +9,9 @@ import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
 import java.io.InputStream;
 import java.io.IOException;
 
-import android.content.Context;
+import android.content.ContextWrapper;
 
-public class Application extends Context {
+public class Application extends ContextWrapper {
 	private String app_icon_path = null;
 
 	private String get_app_icon_path() {
@@ -43,6 +43,7 @@ public class Application extends Context {
 	}
 
 	public Application() {
+		super(null);
 		/* TODO: is this the right place to put this? */
 		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
 		try {
