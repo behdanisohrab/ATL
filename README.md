@@ -5,6 +5,13 @@
 dependencies on debian:
 `sudo apt install libglib2.0-dev libgtk-4-dev libasound2-dev libopenxr-dev libportal-dev libsqlite3-dev`
 
+dependencies you might have to build from source:
+- https://github.com/Mis012/skia/tree/with-patches-applied  
+(can also use the prebuilt in https://www.nuget.org/api/v2/package/SkiaSharp.NativeAssets.Linux/2.88.5 if it's compatible with your distro)
+
+some apps depend on the following (though the translation layer itself currently does not):
+- https://gitlab.com/Mis012/libopensles-standalone/
+
 build instructions:  
 1. compile and install https://gitlab.com/Mis012/dalvik_standalone (art branch) (you can run it from builddir, but it requires some additional env variables)
 2. `mkdir builddir`
@@ -30,12 +37,11 @@ or just
 to use the default data dir of `~/.local/share/android_translation_layer/`
 
 NOTE: some apps don't like runtime changes to resolution, and currently GLSurfaceView will stretch instead of changing resolution  
-to sidestep this, we allow for specifying the initial resolution, which will currently always get passed as the screen resolution to the app and to GLSurfaceView even when you resize the window.
+to sidestep this, we allow for specifying the initial resolution, which will currently always get passed as the screen resolution to GLSurfaceView even when you resize the window.
 example with custom width/height: `android-translation-layer path/to/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity -w 540 -h 960`
 
 NOTE: on X11, Gtk might decide to use GLX, which completely messes up our EGL-dependent code.
 If you have a debug build of Gtk, you can use GDK_DEBUG=gl-egl to force the use of EGL  
-NOTE: we don't currently handle signed apks; simply remove the META-INF folder from an apk to skip signature verification
 
 when it doesn't work:  
 if you are trying to launch a random app, chances are that we are missing implementations for some  
@@ -45,11 +51,8 @@ the workflow is basically to see where it fails (usually a Class or Method was n
 stubs which sufficiently satisfy the app so that it continues trying to launch.  
 once the app launches, you may find that some functionality (UI elements, ...) is missing; to enable  
 such functionality, you need to convert the relevant stubs to actual implementation.  
-you can look at simple widgets (e.g. TextView, or ImageView which is extremely simple since it's  
-currently displaying an image-not-found icon instead of the actual image) to see how to implement a  
-widget such that it shows up as a Gtk Widget. for layout widgets, you can cheat by duplicating  
-LinearLayout or RelativeLayout, which are currently implemented in an extremely simplistic manner  
-(it might not look correctly, but it should *work*)
+you can look at simple widgets (e.g. TextView, or ImageView) to see how to implement a widget such that  
+it shows up as a Gtk Widget.  
 
 for more specific instructions, see `doc/QuickHelp.md`
 for general description of the architecure, see `doc/Architecture.md`
@@ -60,11 +63,10 @@ screenshot:
 
 ##### Roadmap:
 
-- fix issues mention above
+- fix issues mentioned above
 
 - fix ugly hacks
-	- don't assume apps only have one (relevant) activity
-	- figure out a way to dynamically change the resolution of a GLSurfaceView
+	- figure out a way to dynamically change the resolution of a GLSurfaceView (probably just implement it in terms of SurfaceView, though that one currently doesn't work on X11)
 
 - implement more stuff (there is a lot of it, and it won't get done if nobody helps... ideally pick a simple-ish application and stub/implement stuff until it works)
 
@@ -72,4 +74,5 @@ screenshot:
 
 ##### Tips:
 
-- the correct format for changing verbosity of messages going through android's logging library is `ANDROID_LOG_TAGS=*:v` (where `*` is "all tags" and `v` is "verbosity `verbose` or lesser"
+- the correct format for changing verbosity of messages going through android's logging library is `ANDROID_LOG_TAGS=*:v` (where `*` is "all tags" and `v` is "verbosity `verbose` or lesser"  
+(note that specifying anything other than `*` as the tag will not work with the host version of liblog)
