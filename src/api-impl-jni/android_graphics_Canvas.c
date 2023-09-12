@@ -4,7 +4,10 @@
 #include "util.h"
 
 #include "../sk_area/include/c/sk_canvas.h"
+#include "../sk_area/include/c/sk_font.h"
 #include "../sk_area/include/c/sk_image.h"
+#include "../sk_area/include/c/sk_typeface.h"
+
 #include "generated_headers/android_graphics_Canvas.h"
 
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1save(JNIEnv *env, jclass this, jlong skia_canvas, jlong widget)
@@ -49,6 +52,18 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawRect(JNIEnv *env
 	sk_paint_t *paint = (sk_paint_t *)_PTR(skia_paint);
 
 	sk_canvas_draw_rect(canvas, &(sk_rect_t){left, top, right, bottom}, paint);
+}
+
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawText(JNIEnv *env, jclass this, jlong skia_canvas, jobject _text, jint start, jint end, jfloat x, jfloat y, jlong skia_font, jlong skia_paint)
+{
+	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
+	sk_paint_t *paint = (sk_paint_t *)_PTR(skia_paint);
+	sk_font_t *font = _PTR(skia_font);
+
+	const char *text = _CSTRING(_text);
+
+	/* TODO: handle start/end (here or in java) */
+	sk_canvas_draw_simple_text(canvas, text + start, end - start, UTF8_SK_TEXT_ENCODING, x, y, font, paint);
 }
 
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate(JNIEnv *env, jclass this, jlong skia_canvas, jlong widget, jfloat angle)

@@ -25,6 +25,14 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1restore
 
 /*
  * Class:     android_graphics_Canvas
+ * Method:    native_drawText
+ * Signature: (JLjava/lang/CharSequence;IIFFJJ)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawText
+  (JNIEnv *, jclass, jlong, jobject, jint, jint, jfloat, jfloat, jlong, jlong);
+
+/*
+ * Class:     android_graphics_Canvas
  * Method:    native_drawRect
  * Signature: (JFFFFJ)V
  */

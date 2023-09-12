@@ -1,11 +1,9 @@
 package android.graphics;
 
 public class Paint {
-	public long skia_paint = 0; // should probably be private, but then we'd need to get it from C
-
-	private native long native_constructor();
-	private native void native_set_color(long skia_paint, int color);
-	private native int native_get_color(long skia_paint);
+	public long skia_paint = 0;
+	private Typeface typeface = null;
+	public long skia_font = 0;
 
 	public Paint() {
 		skia_paint = native_constructor();
@@ -32,21 +30,37 @@ public class Paint {
 
 	public void setAntiAlias(boolean aa) {}
 	public void setStrokeWidth(float width) {}
-	public void setTextSize(float textSize) {}
+	public void setTextSize(float size) {
+		if(skia_font == 0)
+			skia_font = native_create_font();
+
+		native_set_text_size(skia_font, size);
+	}
 
 	public Typeface setTypeface(Typeface typeface) {
-		return new Typeface();
+		this.typeface = typeface;
+		if(skia_font == 0)
+			skia_font = native_create_font();
+
+		native_set_typeface(skia_font, typeface.skia_typeface);
+		return this.typeface;
 	}
 	public void getTextBounds(String text, int start, int end, Rect bounds) {}
 	public void getTextBounds(char[] text, int index, int count, Rect bounds) {}
 	public void setFlags(int flags) {}
 	public void setFilterBitmap(boolean filter) {}
 	public void setStyle(Style style) {}
-	public float ascent() { return 0; }
+	public float ascent() {
+		if(skia_font == 0)
+			return 0;
+		return native_ascent(skia_font);
+	}
 
 	public float measureText(char[] text, int index, int count) { return 10; }
 	public float measureText(String text, int start, int end) { return 10; }
-	public float measureText(String text) { return 10; }
+	public float measureText(String text) {
+		return native_measure_text(skia_font, text, 0, text.length(), skia_paint);
+	}
 	public float measureText(CharSequence text, int start, int end) { return 10; }
 
 	public enum Style {
@@ -187,4 +201,13 @@ public class Paint {
 	public void setStrokeCap(Cap cap) {}
 
 	public void setStrokeJoin(Join join) {}
+
+	private native long native_constructor();
+	private native void native_set_color(long skia_paint, int color);
+	private native int native_get_color(long skia_paint);
+	private static native long native_create_font();
+	private static native float native_ascent(long skia_font);
+	private static native void native_set_typeface(long skia_font, long skia_typeface);
+	private static native void native_set_text_size(long skia_font, float size);
+	private static native float native_measure_text(long skia_font, CharSequence text, int start, int end, long skia_paint);
 }
