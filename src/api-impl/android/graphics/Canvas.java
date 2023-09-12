@@ -95,8 +95,7 @@ public class Canvas {
 	 * @param paint The paint used for the text (e.g. color, size, style)
 	 */
 	public void drawText(String text, float x, float y, Paint paint) {
-		/*        native_drawText(mNativeCanvas, text, 0, text.length(), x, y, paint.mBidiFlags,
-				paint.mNativePaint);*/
+		native_drawText(skia_canvas, text, 0, text.length(), x, y, paint.skia_font, paint.skia_paint);
 	}
 
 	/**
@@ -377,7 +376,7 @@ public class Canvas {
 	}
 
 	public void setBitmap(Bitmap bitmap) {}
-
+	private static native void native_drawText(long skia_canvas, CharSequence text, int start, int end, float x, float y, long skia_font, long skia_paint);
 	private static native void native_drawRect(long skia_canvas, float left, float top, float right, float bottom, long skia_paint);
 	private static native void native_drawLine(long skia_canvas, long widget, float startX, float startY, float stopX, float stopY, long skia_paint);
 	private static native void native_drawBitmap(long skia_canvas, long widget, long pixbuf, float src_x, float src_y, float dest_x, float dest_y, float dest_w, float dest_h, long skia_paint);

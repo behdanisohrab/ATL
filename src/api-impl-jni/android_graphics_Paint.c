@@ -3,7 +3,9 @@
 #include "defines.h"
 #include "util.h"
 
+#include "../sk_area/include/c/sk_font.h"
 #include "../sk_area/include/c/sk_paint.h"
+#include "../sk_area/include/c/sk_typeface.h"
 #include "generated_headers/android_graphics_Paint.h"
 
 JNIEXPORT jlong JNICALL Java_android_graphics_Paint_native_1constructor(JNIEnv *env, jobject this)
@@ -24,4 +26,44 @@ JNIEXPORT jint JNICALL Java_android_graphics_Paint_native_1get_1color(JNIEnv *en
 	sk_paint_t *paint = (sk_paint_t *)_PTR(skia_paint);
 
 	return sk_paint_get_color(paint);
+}
+
+JNIEXPORT jlong JNICALL Java_android_graphics_Paint_native_1create_1font(JNIEnv *env, jclass this)
+{
+	return _INTPTR(sk_font_new()); /* TODO: recycle this */
+}
+
+JNIEXPORT void JNICALL Java_android_graphics_Paint_native_1set_1typeface(JNIEnv *env, jclass this, jlong skia_font, jlong skia_typeface)
+{
+	sk_font_t *font = _PTR(skia_font);
+	sk_typeface_t *typeface = _PTR(skia_typeface);
+
+	sk_font_set_typeface(font, typeface);
+}
+
+JNIEXPORT void JNICALL Java_android_graphics_Paint_native_1set_1text_1size(JNIEnv *env, jclass this, jlong skia_font, jfloat size)
+{
+	sk_font_t *font = _PTR(skia_font);
+
+	sk_font_set_size(font, size);
+}
+
+JNIEXPORT jfloat JNICALL Java_android_graphics_Paint_native_1ascent(JNIEnv *env, jclass this, jlong skia_font)
+{
+	sk_font_t *font = _PTR(skia_font);
+
+	sk_fontmetrics_t metrics;
+	sk_font_get_metrics(font, &metrics);
+
+	return metrics.fAscent;
+}
+
+JNIEXPORT jfloat JNICALL Java_android_graphics_Paint_native_1measure_1text(JNIEnv *env, jclass this, jlong skia_font, jobject _text, jint start, jint end, jlong skia_paint)
+{
+	sk_font_t *font = _PTR(skia_font);
+	sk_paint_t *paint = (sk_paint_t *)_PTR(skia_paint);
+
+	const char *text = _CSTRING(_text);
+
+	return sk_font_measure_text(font, text + start, end - start, UTF8_SK_TEXT_ENCODING, NULL, paint);
 }

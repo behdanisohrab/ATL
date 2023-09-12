@@ -31,6 +31,46 @@ JNIEXPORT void JNICALL Java_android_graphics_Paint_native_1set_1color
 JNIEXPORT jint JNICALL Java_android_graphics_Paint_native_1get_1color
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     android_graphics_Paint
+ * Method:    native_create_font
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_android_graphics_Paint_native_1create_1font
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     android_graphics_Paint
+ * Method:    native_ascent
+ * Signature: (J)F
+ */
+JNIEXPORT jfloat JNICALL Java_android_graphics_Paint_native_1ascent
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     android_graphics_Paint
+ * Method:    native_set_typeface
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Paint_native_1set_1typeface
+  (JNIEnv *, jclass, jlong, jlong);
+
+/*
+ * Class:     android_graphics_Paint
+ * Method:    native_set_text_size
+ * Signature: (JF)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Paint_native_1set_1text_1size
+  (JNIEnv *, jclass, jlong, jfloat);
+
+/*
+ * Class:     android_graphics_Paint
+ * Method:    native_measure_text
+ * Signature: (JLjava/lang/CharSequence;IIJ)F
+ */
+JNIEXPORT jfloat JNICALL Java_android_graphics_Paint_native_1measure_1text
+  (JNIEnv *, jclass, jlong, jobject, jint, jint, jlong);
+
 #ifdef __cplusplus
 }
 #endif
