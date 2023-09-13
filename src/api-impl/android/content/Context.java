@@ -54,7 +54,7 @@ public class Context extends Object {
 	public static final String DISPLAY_SERVICE = "display";
 	public static final String MEDIA_ROUTER_SERVICE = "media_router";
 	public static final String WINDOW_SERVICE = "window";
-	private static AndroidManifestBlock manifest = null;
+	public static AndroidManifestBlock manifest = null;
 
 	static AssetManager assets;
 	static DisplayMetrics dm;

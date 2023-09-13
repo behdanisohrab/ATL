@@ -51,6 +51,7 @@ hax_jar = jar('hax', [
               	'android/content/ComponentCallbacks.java',
               	'android/content/ComponentCallbacks2.java',
               	'android/content/ComponentName.java',
+              	'android/content/ContentProvider.java',
               	'android/content/ContentResolver.java',
               	'android/content/ContentValues.java',
               	'android/content/Context.java',
