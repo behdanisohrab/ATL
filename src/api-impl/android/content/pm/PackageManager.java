@@ -27,6 +27,7 @@ import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 // import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.UserHandle;
 import android.util.AndroidException;
@@ -34,6 +35,9 @@ import android.util.DisplayMetrics;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
+import com.reandroid.arsc.chunk.xml.ResXmlElement;
 
 class IPackageInstallObserver {}
 class VerificationParams {}
@@ -1690,7 +1694,28 @@ public class PackageManager {
 	 */
 	public ProviderInfo getProviderInfo(ComponentName component,
 					    int flags) throws NameNotFoundException {
-		return null;
+		ProviderInfo providerInfo = new ProviderInfo();
+		if ((flags & GET_META_DATA) == GET_META_DATA) {
+			String cls = component.getClassName();
+			List<ResXmlElement> providers = Context.manifest.getApplicationElement().listElements(AndroidManifestBlock.TAG_provider);
+			for (ResXmlElement providerElement : providers) {
+				String providerName = providerElement.searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString();
+				if (providerName.startsWith(".")) {
+					providerName = Context.manifest.getPackageName() + providerName;
+				}
+				if (providerName.equals(cls)) {
+					List<ResXmlElement> metaDatas = providerElement.listElements(AndroidManifestBlock.TAG_meta_data);
+					Bundle bundle = new Bundle(metaDatas.size());
+					for (ResXmlElement metaData : metaDatas) {
+						bundle.putString(metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString(),
+										metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_value).getValueAsString());
+					}
+					providerInfo.metaData = bundle;
+					break;
+				}
+			}
+		}
+		return providerInfo;
 	}
 
 	/**

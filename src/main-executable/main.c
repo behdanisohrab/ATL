@@ -357,6 +357,11 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	prepare_main_looper(env);
 
+	jclass content_provider = (*env)->FindClass(env, "android/content/ContentProvider");
+	(*env)->CallStaticObjectMethod(env, content_provider, _STATIC_METHOD(content_provider, "createContentProviders", "()V"));
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
 	(*env)->CallVoidMethod(env, application_object, _METHOD(handle_cache.application.class, "onCreate", "()V"));
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
