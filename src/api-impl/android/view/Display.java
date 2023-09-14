@@ -14,12 +14,25 @@ public final class Display {
 		outMetrics.heightPixels = this.window_height;
 	}
 
+	public void getRealMetrics(DisplayMetrics outMetrics) {
+		getMetrics(outMetrics); // probably?
+	}
+
+
 	public int getWidth() {
 		return window_width;
 	}
 
 	public int getHeight() {
 		return window_height;
+	}
+
+	public int getRawWidth() {
+		return window_width; // what's the difference?
+	}
+
+	public int getRawHeight() {
+		return window_height; // what's the difference?
 	}
 
 	public int getRotation() {
