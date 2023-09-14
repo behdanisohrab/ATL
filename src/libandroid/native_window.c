@@ -37,12 +37,18 @@
 #include <wayland-client.h>
 #include <wayland-egl.h>
 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/extensions/shape.h>
+
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_android.h>
 #include <vulkan/vulkan_wayland.h>
+#include <vulkan/vulkan_xlib.h>
 
 #include <gtk/gtk.h>
 #include <gdk/wayland/gdkwayland.h>
+#include <gdk/x11/gdkx.h>
 
 // FIXME: move this together with the other stuff that doesn't belong in this file
 #include <openxr/openxr.h>
@@ -80,6 +86,7 @@ struct ANativeWindow {
 	GtkWidget *surface_view_widget;
 	struct wl_display *wayland_display;
 	struct wl_surface *wayland_surface;
+	Display *x11_display;
 	gulong resize_handler;
 	int refcount;
 };
@@ -130,9 +137,15 @@ void ANativeWindow_release(struct ANativeWindow *native_window)
 {
 	native_window->refcount--;
 	if(native_window->refcount == 0) {
+		GdkDisplay *display = gtk_widget_get_display(native_window->surface_view_widget);
+
 		g_clear_signal_handler(&native_window->resize_handler, native_window->surface_view_widget);
-		wl_egl_window_destroy((struct wl_egl_window *)native_window->egl_window);
-		wl_surface_destroy(native_window->wayland_surface);
+		if (GDK_IS_WAYLAND_DISPLAY (display)) {
+			wl_egl_window_destroy((struct wl_egl_window *)native_window->egl_window);
+			wl_surface_destroy(native_window->wayland_surface);
+		} else if (GDK_IS_X11_DISPLAY (display)) {
+			XDestroyWindow(native_window->x11_display, native_window->egl_window);
+		}
 		free(native_window);
 	}
 }
@@ -240,10 +253,15 @@ void wl_registry_global_remove_handler(void *data, struct wl_registry *registry,
 	printf("removed: %u\n", name);
 }
 
-// TODO: handle X11
-static void on_resize(GtkWidget* self, gint width, gint height, struct wl_egl_window *egl_window)
+static void on_resize(GtkWidget* self, gint width, gint height, EGLNativeWindowType *egl_window)
 {
-		wl_egl_window_resize(egl_window, width, height, 0, 0);
+	GdkDisplay *display = gtk_widget_get_display(self);
+	if (GDK_IS_WAYLAND_DISPLAY (display)) {
+		wl_egl_window_resize((struct wl_egl_window *)egl_window, width, height, 0, 0);
+	} else if (GDK_IS_X11_DISPLAY(display)) {
+		Display *x11_display = gdk_x11_display_get_xdisplay(display);
+		XResizeWindow(x11_display, (Window)egl_window, width, height);
+	}
 }
 
 ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
@@ -281,44 +299,81 @@ ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 	printf("XXXXX: SurfaceView widget: x: %lf, y: %lf\n", pos_x, pos_y);
 	printf("XXXXX: native offset: x: %lf, y: %lf\n", off_x, off_y);
 
-	struct ANativeWindow *native_window = malloc(sizeof(struct ANativeWindow));
+	struct ANativeWindow *native_window = calloc(1, sizeof(struct ANativeWindow));
 	native_window->refcount = 1; // probably, 0 doesn't work
 	native_window->surface_view_widget = surface_view_widget;
 
 	GdkDisplay *display = gtk_root_get_display(GTK_ROOT(window));
-	// FIXME: add a path for x11
-	// start of wayland-specific code
-	struct wl_display *wl_display = gdk_wayland_display_get_wl_display(display);
-	struct wl_compositor *wl_compositor = gdk_wayland_display_get_wl_compositor(display);
 
-	if(!wl_subcompositor) { // FIXME this assumes the wl_display doesn't change
-		struct wl_registry *wl_registry = wl_display_get_registry(wl_display);
-		wl_registry_add_listener(wl_registry, &wl_registry_listener, &wl_subcompositor);
-		wl_display_roundtrip(wl_display);
-		printf("XXX: wl_subcompositor: %p\n", wl_subcompositor);
+	if (GDK_IS_WAYLAND_DISPLAY (display)) {
+		struct wl_display *wl_display = gdk_wayland_display_get_wl_display(display);
+		struct wl_compositor *wl_compositor = gdk_wayland_display_get_wl_compositor(display);
+
+		if(!wl_subcompositor) { // FIXME this assumes the wl_display doesn't change
+			struct wl_registry *wl_registry = wl_display_get_registry(wl_display);
+			wl_registry_add_listener(wl_registry, &wl_registry_listener, &wl_subcompositor);
+			wl_display_roundtrip(wl_display);
+			printf("XXX: wl_subcompositor: %p\n", wl_subcompositor);
+		}
+
+		struct wl_surface *toplevel_surface = gdk_wayland_surface_get_wl_surface(gtk_native_get_surface(GTK_NATIVE(window)));
+
+		struct wl_surface *wayland_surface = wl_compositor_create_surface(wl_compositor);
+
+		struct wl_subsurface *subsurface = wl_subcompositor_get_subsurface(wl_subcompositor, wayland_surface, toplevel_surface);
+		wl_subsurface_set_desync(subsurface);
+		wl_subsurface_set_position(subsurface, pos_x, pos_y);
+
+		struct wl_region *empty_region = wl_compositor_create_region(wl_compositor);
+		wl_surface_set_input_region(wayland_surface, empty_region);
+		wl_region_destroy(empty_region);
+
+		struct wl_egl_window *egl_window = wl_egl_window_create(wayland_surface, width, height);
+		native_window->egl_window = (EGLNativeWindowType)egl_window;
+		native_window->wayland_display = wl_display;
+		native_window->wayland_surface = wayland_surface;
+		printf("EGL::: wayland_surface: %p\n", wayland_surface);
+	} else if (GDK_IS_X11_DISPLAY (display)) {
+		int major;
+		int minor;
+
+		/* Check if we support EGL */
+		if (gdk_x11_display_get_egl_version(display, &major, &minor)){
+			printf("XXX: EGL version: %d.%d\n", major, minor);
+		}
+		else {
+			fprintf(stderr, "ANativeWindow_fromSurface: crashing here;\n"
+					"The GTK X11 context was made using GLX, which isn't and won't be supported\n"
+					"Please use GDK_DEBUG='gl-egl' to use EGL\n");
+			exit(1);
+		}
+
+		/* Get the X11 display server */
+		Display *x11_display = gdk_x11_display_get_xdisplay(display);
+		native_window->x11_display = x11_display;
+
+		/* Get the top level window's X11 window ID */
+		Window toplevel_window = gdk_x11_surface_get_xid(gtk_native_get_surface(GTK_NATIVE(window)));
+
+		/* Make a new X11 window inheriting from the GTK top level window */
+		Window x11_window = XCreateSimpleWindow(x11_display, toplevel_window, 0, 0, width, height, 0, 0, 0xffffffff);
+		XMapWindow(x11_display, x11_window);
+
+		/* Make the X11 window able to be clicked through */
+		Region region = XCreateRegion();
+		XRectangle rectangle;
+		rectangle.x = 0;
+		rectangle.y = 0;
+		rectangle.width = 0;
+		rectangle.height = 0;
+		XUnionRectWithRegion(&rectangle, region, region);
+		XShapeCombineRegion(x11_display, x11_window, ShapeInput, 0, 0, region, ShapeSet);
+		XDestroyRegion(region);
+
+		native_window->egl_window = (EGLNativeWindowType)x11_window;
 	}
 
-	struct wl_surface *toplevel_surface = gdk_wayland_surface_get_wl_surface(gtk_native_get_surface(GTK_NATIVE(window)));
-
-	struct wl_surface *wayland_surface = wl_compositor_create_surface(wl_compositor);
-
-	struct wl_subsurface *subsurface = wl_subcompositor_get_subsurface(wl_subcompositor, wayland_surface, toplevel_surface);
-	wl_subsurface_set_desync(subsurface);
-	wl_subsurface_set_position(subsurface, pos_x, pos_y);
-
-	struct wl_region *empty_region = wl_compositor_create_region(wl_compositor);
-	wl_surface_set_input_region(wayland_surface, empty_region);
-	wl_region_destroy(empty_region);
-
-	struct wl_egl_window *egl_window = wl_egl_window_create(wayland_surface, width, height);
-	native_window->egl_window = (EGLNativeWindowType)egl_window;
-	native_window->wayland_display = wl_display;
-	native_window->wayland_surface = wayland_surface;
-	printf("EGL::: wayland_surface: %p\n", wayland_surface);
-	// end of wayland-specific code
-	printf("EGL::: native_window->egl_window: %ld\n", native_window->egl_window);
-
-	native_window->resize_handler = g_signal_connect(surface_view_widget, "resize", G_CALLBACK(on_resize), egl_window);
+	native_window->resize_handler = g_signal_connect(surface_view_widget, "resize", G_CALLBACK(on_resize), (void *)native_window->egl_window);
 
 	return native_window;
 }
@@ -420,9 +475,15 @@ EGLDisplay bionic_eglGetDisplay(NativeDisplayType native_display)
 		 * than the "default" display (especially on Wayland)
 		 */
 		GdkDisplay *display = gtk_root_get_display(GTK_ROOT(window));
-		struct wl_display *wl_display = gdk_wayland_display_get_wl_display(display);
-
-		return eglGetPlatformDisplay(EGL_PLATFORM_WAYLAND_KHR, wl_display, NULL);
+		if (GDK_IS_WAYLAND_DISPLAY (display)) {
+			struct wl_display *wl_display = gdk_wayland_display_get_wl_display(display);
+			return eglGetPlatformDisplay(EGL_PLATFORM_WAYLAND_KHR, wl_display, NULL);
+		} else if (GDK_IS_X11_DISPLAY (display)) {
+			Display *x11_display = gdk_x11_display_get_xdisplay(display);
+			return eglGetPlatformDisplay(EGL_PLATFORM_X11_KHR, x11_display, NULL);
+		} else {
+			return NULL;
+		}
 	}
 }
 
@@ -447,22 +508,35 @@ EGLSurface bionic_eglCreateWindowSurface(EGLDisplay display, EGLConfig config, s
 
 VkResult bionic_vkCreateAndroidSurfaceKHR(VkInstance instance, const VkAndroidSurfaceCreateInfoKHR *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkSurfaceKHR *pSurface)
 {
-	VkWaylandSurfaceCreateInfoKHR wayland_create_info = {
-		.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR,
-		.display = pCreateInfo->window->wayland_display,
-		.surface = pCreateInfo->window->wayland_surface,
-	};
+	GdkDisplay *display = gtk_widget_get_display(pCreateInfo->window->surface_view_widget);
 
-	return vkCreateWaylandSurfaceKHR(instance, &wayland_create_info, pAllocator, pSurface);
+	if (GDK_IS_WAYLAND_DISPLAY (display)) {
+		VkWaylandSurfaceCreateInfoKHR wayland_create_info = {
+			.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR,
+			.display = pCreateInfo->window->wayland_display,
+			.surface = pCreateInfo->window->wayland_surface,
+		};
+
+		return vkCreateWaylandSurfaceKHR(instance, &wayland_create_info, pAllocator, pSurface);
+	} else if (GDK_IS_X11_DISPLAY (display)) {
+		VkXlibSurfaceCreateInfoKHR x11_create_info = {
+			.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
+			.dpy = pCreateInfo->window->x11_display,
+			.window = pCreateInfo->window->egl_window,
+		};
+
+		return vkCreateXlibSurfaceKHR(instance, &x11_create_info, pAllocator, pSurface);
+	}
 }
 
 VkResult bionic_vkCreateInstance(VkInstanceCreateInfo *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkInstance *pInstance)
 {
 	int original_extension_count = pCreateInfo->enabledExtensionCount;
-	int new_extension_count = original_extension_count + 1;
+	int new_extension_count = original_extension_count + 2;
 	const char **enabled_exts = malloc(new_extension_count * sizeof(char *));
 	memcpy(enabled_exts, pCreateInfo->ppEnabledExtensionNames, original_extension_count * sizeof(char *));
 	enabled_exts[original_extension_count] = "VK_KHR_wayland_surface";
+	enabled_exts[original_extension_count + 1] = "VK_KHR_xlib_surface";
 
 	pCreateInfo->enabledExtensionCount = new_extension_count;
 	pCreateInfo->ppEnabledExtensionNames = enabled_exts;
