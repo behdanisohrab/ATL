@@ -1320,4 +1320,8 @@ public class View extends Object {
 		rect.right = getScrollX() + getWidth();
 		rect.bottom = getScrollY() + getHeight();
 	}
+
+	public Display getDisplay() {
+		return new Display();
+	}
 }
