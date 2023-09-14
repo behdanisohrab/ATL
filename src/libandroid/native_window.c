@@ -37,6 +37,10 @@
 #include <wayland-client.h>
 #include <wayland-egl.h>
 
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_android.h>
+#include <vulkan/vulkan_wayland.h>
+
 #include <gtk/gtk.h>
 #include <gdk/wayland/gdkwayland.h>
 
@@ -74,6 +78,10 @@ enum ANativeWindowTransform {
 struct ANativeWindow {
 	EGLNativeWindowType egl_window;
 	GtkWidget *surface_view_widget;
+	struct wl_display *wayland_display;
+	struct wl_surface *wayland_surface;
+	gulong resize_handler;
+	int refcount;
 };
 
 /**
@@ -115,12 +123,18 @@ typedef struct ANativeWindow_Buffer {
  */
 void ANativeWindow_acquire(struct ANativeWindow *native_window)
 {
-	// FIXME: refcount
+	native_window->refcount++;
 }
 
 void ANativeWindow_release(struct ANativeWindow *native_window)
 {
-	// FIXME: refcount
+	native_window->refcount--;
+	if(native_window->refcount == 0) {
+		g_clear_signal_handler(&native_window->resize_handler, native_window->surface_view_widget);
+		wl_egl_window_destroy((struct wl_egl_window *)native_window->egl_window);
+		wl_surface_destroy(native_window->wayland_surface);
+		free(native_window);
+	}
 }
 
 int32_t ANativeWindow_getWidth(struct ANativeWindow *native_window)
@@ -229,7 +243,7 @@ void wl_registry_global_remove_handler(void *data, struct wl_registry *registry,
 // TODO: handle X11
 static void on_resize(GtkWidget* self, gint width, gint height, struct wl_egl_window *egl_window)
 {
-	wl_egl_window_resize(egl_window, width, height, 0, 0);
+		wl_egl_window_resize(egl_window, width, height, 0, 0);
 }
 
 ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
@@ -241,6 +255,12 @@ ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 	double pos_y;
 	double off_x;
 	double off_y;
+
+	static struct wl_subcompositor *wl_subcompositor = NULL;
+	static struct wl_registry_listener wl_registry_listener = {
+		.global = wl_registry_global_handler,
+		.global_remove = wl_registry_global_remove_handler
+	};
 
 	GtkWidget *surface_view_widget = _PTR(_GET_LONG_FIELD(surface, "widget"));
 	GtkWidget *window = GTK_WIDGET(gtk_widget_get_native(surface_view_widget));
@@ -262,6 +282,7 @@ ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 	printf("XXXXX: native offset: x: %lf, y: %lf\n", off_x, off_y);
 
 	struct ANativeWindow *native_window = malloc(sizeof(struct ANativeWindow));
+	native_window->refcount = 1; // probably, 0 doesn't work
 	native_window->surface_view_widget = surface_view_widget;
 
 	GdkDisplay *display = gtk_root_get_display(GTK_ROOT(window));
@@ -270,15 +291,12 @@ ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 	struct wl_display *wl_display = gdk_wayland_display_get_wl_display(display);
 	struct wl_compositor *wl_compositor = gdk_wayland_display_get_wl_compositor(display);
 
-	struct wl_registry *wl_registry = wl_display_get_registry(wl_display);
-	struct wl_registry_listener wl_registry_listener = {
-		.global = wl_registry_global_handler,
-		.global_remove = wl_registry_global_remove_handler
-	};
-	struct wl_subcompositor *wl_subcompositor = NULL;
-	wl_registry_add_listener(wl_registry, &wl_registry_listener, &wl_subcompositor);
-	wl_display_roundtrip(wl_display);
-	printf("XXX: wl_subcompositor: %p\n", wl_subcompositor);
+	if(!wl_subcompositor) { // FIXME this assumes the wl_display doesn't change
+		struct wl_registry *wl_registry = wl_display_get_registry(wl_display);
+		wl_registry_add_listener(wl_registry, &wl_registry_listener, &wl_subcompositor);
+		wl_display_roundtrip(wl_display);
+		printf("XXX: wl_subcompositor: %p\n", wl_subcompositor);
+	}
 
 	struct wl_surface *toplevel_surface = gdk_wayland_surface_get_wl_surface(gtk_native_get_surface(GTK_NATIVE(window)));
 
@@ -294,11 +312,13 @@ ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 
 	struct wl_egl_window *egl_window = wl_egl_window_create(wayland_surface, width, height);
 	native_window->egl_window = (EGLNativeWindowType)egl_window;
+	native_window->wayland_display = wl_display;
+	native_window->wayland_surface = wayland_surface;
 	printf("EGL::: wayland_surface: %p\n", wayland_surface);
 	// end of wayland-specific code
 	printf("EGL::: native_window->egl_window: %ld\n", native_window->egl_window);
 
-	g_signal_connect(surface_view_widget, "resize", G_CALLBACK(on_resize), egl_window);
+	native_window->resize_handler = g_signal_connect(surface_view_widget, "resize", G_CALLBACK(on_resize), egl_window);
 
 	return native_window;
 }
@@ -380,7 +400,7 @@ EGLBoolean bionic_eglPresentationTimeANDROID(EGLDisplay dpy, EGLSurface surface,
 void (* bionic_eglGetProcAddress(char const *procname))(void)
 {
 	if(__unlikely__(!strcmp(procname, "eglPresentationTimeANDROID")))
-		return bionic_eglPresentationTimeANDROID;
+		return (void (*)(void))bionic_eglPresentationTimeANDROID;
 
 	return eglGetProcAddress(procname);
 }
@@ -421,6 +441,40 @@ EGLSurface bionic_eglCreateWindowSurface(EGLDisplay display, EGLConfig config, s
 	printf("EGL::: ret: %p\n", ret);
 
 	return ret;
+}
+
+// FIXME 1.5: this most likely belongs elsewhere
+
+VkResult bionic_vkCreateAndroidSurfaceKHR(VkInstance instance, const VkAndroidSurfaceCreateInfoKHR *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkSurfaceKHR *pSurface)
+{
+	VkWaylandSurfaceCreateInfoKHR wayland_create_info = {
+		.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR,
+		.display = pCreateInfo->window->wayland_display,
+		.surface = pCreateInfo->window->wayland_surface,
+	};
+
+	return vkCreateWaylandSurfaceKHR(instance, &wayland_create_info, pAllocator, pSurface);
+}
+
+VkResult bionic_vkCreateInstance(VkInstanceCreateInfo *pCreateInfo, const VkAllocationCallbacks *pAllocator, VkInstance *pInstance)
+{
+	int original_extension_count = pCreateInfo->enabledExtensionCount;
+	int new_extension_count = original_extension_count + 1;
+	const char **enabled_exts = malloc(new_extension_count * sizeof(char *));
+	memcpy(enabled_exts, pCreateInfo->ppEnabledExtensionNames, original_extension_count * sizeof(char *));
+	enabled_exts[original_extension_count] = "VK_KHR_wayland_surface";
+
+	pCreateInfo->enabledExtensionCount = new_extension_count;
+	pCreateInfo->ppEnabledExtensionNames = enabled_exts;
+	return vkCreateInstance(pCreateInfo, pAllocator, pInstance);
+}
+
+PFN_vkVoidFunction bionic_vkGetInstanceProcAddr(VkInstance instance, const char *pName)
+{
+	if(__unlikely__(!strcmp(pName, "vkCreateInstance")))
+		return (PFN_vkVoidFunction)bionic_vkCreateInstance;
+
+	return vkGetInstanceProcAddr(instance, pName);
 }
 
 // FIXME 2: this BLATANTLY belongs elsewhere
