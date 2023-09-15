@@ -141,7 +141,10 @@ void NativeCode_setSurface(struct NativeCode *this, jobject _surface) {
 	if (_surface != NULL) {
 		this->nativeWindow = ANativeWindow_fromSurface(this->native_activity.env, _surface);
 	} else {
-		this->nativeWindow = NULL;
+		if(this->nativeWindow) {
+			ANativeWindow_release(this->nativeWindow);
+			this->nativeWindow = NULL;
+		}
 	}
 }
 
@@ -492,8 +495,8 @@ Java_android_app_NativeActivity_onSurfaceChangedNative(JNIEnv* env, jobject claz
 		NativeCode_setSurface(code, surface);
 		if (oldNativeWindow != code->nativeWindow) {
 			if (oldNativeWindow != NULL && code->callbacks.onNativeWindowDestroyed != NULL) {
-				code->callbacks.onNativeWindowDestroyed(code,
-						oldNativeWindow);
+				code->callbacks.onNativeWindowDestroyed(code, oldNativeWindow);
+				ANativeWindow_release(oldNativeWindow); // TODO: can it happen that this will be done by the callback and we will have double free?
 			}
 			if (code->nativeWindow != NULL) {
 				if (code->callbacks.onNativeWindowCreated != NULL) {
