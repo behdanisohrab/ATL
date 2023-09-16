@@ -5,8 +5,6 @@
 
 #include "WrapperWidget.h"
 
-#include "../drawables/ninepatch.h"
-
 #include "../generated_headers/android_widget_LinearLayout.h"
 #include "../generated_headers/android_view_ViewGroup.h"
 

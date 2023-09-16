@@ -62,7 +62,6 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawText(JNIEnv *env
 
 	const char *text = _CSTRING(_text);
 
-	/* TODO: handle start/end (here or in java) */
 	sk_canvas_draw_simple_text(canvas, text + start, end - start, UTF8_SK_TEXT_ENCODING, x, y, font, paint);
 }
 

@@ -2,7 +2,6 @@
 
 #include "../defines.h"
 #include "../util.h"
-#include "../drawables/ninepatch.h"
 
 #include "../sk_area/sk_area.h"
 
