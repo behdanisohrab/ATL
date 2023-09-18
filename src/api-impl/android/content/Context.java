@@ -257,6 +257,10 @@ public class Context extends Object {
 		return getFilesDir();
 	}
 
+	public File[] getExternalFilesDirs(String type) {
+		return new File[] {getExternalFilesDir(type)};
+	}
+
 	public File getObbDir() {
 		if (obb_dir == null) {
 			obb_dir = new File(getDataDirFile(), "Android/obb/" + getPackageName());
