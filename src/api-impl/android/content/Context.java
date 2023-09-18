@@ -79,7 +79,6 @@ public class Context extends Object {
 		r = new Resources(assets, dm, config);
 		theme = r.newTheme();
 		application_info = new ApplicationInfo();
-
 		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
 		try {
 			manifest = AndroidManifestBlock.load(inStream);
@@ -260,7 +259,17 @@ public class Context extends Object {
 
 	public File getObbDir() {
 		if (obb_dir == null) {
-			obb_dir = new File(getDataDirFile(), "obb");
+			obb_dir = new File(getDataDirFile(), "Android/obb/" + getPackageName());
+		}
+		if (!obb_dir.exists()) {
+			if (!obb_dir.mkdirs()) {
+				if (obb_dir.exists()) {
+					// spurious failure; probably racing with another process for this app
+					return obb_dir;
+				}
+				Slog.w(TAG, "Unable to create obb directory >" + obb_dir.getPath() + "<");
+				return null;
+			}
 		}
 		return obb_dir;
 	}
