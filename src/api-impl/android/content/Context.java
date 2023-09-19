@@ -6,6 +6,7 @@ import android.app.AlarmManager;
 import android.app.Application;
 import android.app.KeyguardManager;
 import android.app.NotificationManager;
+import android.app.Service;
 import android.app.SharedPreferencesImpl;
 import android.app.UiModeManager;
 import android.content.pm.ApplicationInfo;
@@ -44,6 +45,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 import java.io.IOException;
 
 public class Context extends Object {
@@ -63,6 +66,7 @@ public class Context extends Object {
 	static Resources r;
 	static ApplicationInfo application_info;
 	static Resources.Theme theme;
+	private static Map<Class<? extends Service>,Service> runningServices = new HashMap<>();
 
 	static String apk_path = "/tmp/APK_PATH_SHOULD_HAVE_BEEN_FILLED_IN_BY_CODE_IN_main.c/";
 
@@ -319,8 +323,20 @@ public class Context extends Object {
 		return ClassLoader.getSystemClassLoader();
 	}
 
-	public ComponentName startService(Intent service) {
-		return new ComponentName("", "");
+	public ComponentName startService(Intent intent) {
+		ComponentName component = intent.getComponent();
+		try {
+			Class<? extends Service> cls = Class.forName(component.getClassName()).asSubclass(Service.class);
+			if (!runningServices.containsKey(cls)) {
+				Service service = cls.getConstructor().newInstance();
+				service.onCreate();
+				runningServices.put(cls, service);
+			}
+			runningServices.get(cls).onStartCommand(intent, 0, 0);
+		} catch (ReflectiveOperationException e) {
+			e.printStackTrace();
+		}
+		return component;
 	}
 
 	// TODO: do these both work? make them look more alike
@@ -344,8 +360,18 @@ public class Context extends Object {
 
 	public void registerComponentCallbacks(ComponentCallbacks callbacks) {}
 
-	public boolean bindService(Intent dummy, ServiceConnection dummy2, int dummy3) {
-		Slog.w(TAG, "bindService("+dummy+", "+dummy2+", "+dummy3+")");
+	public boolean bindService(Intent intent, ServiceConnection serviceConnection, int dummy3) {
+		try {
+			Class<? extends Service> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Service.class);
+			if (!runningServices.containsKey(cls)) {
+				Service service = cls.getConstructor().newInstance();
+				service.onCreate();
+				runningServices.put(cls, service);
+			}
+			serviceConnection.onServiceConnected(intent.getComponent(), runningServices.get(cls).onBind(intent));
+		} catch (ReflectiveOperationException e) {
+			e.printStackTrace();
+		}
 		return false; // maybe?
 	}
 
@@ -410,4 +436,6 @@ public class Context extends Object {
 	public boolean stopService(Intent intent) {return false;}
 
 	public void unbindService(ServiceConnection serviceConnection) {}
+
+	public void unregisterReceiver(BroadcastReceiver receiver) {}
 }
