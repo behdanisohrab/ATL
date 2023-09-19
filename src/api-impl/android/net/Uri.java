@@ -6,6 +6,9 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 public class Uri {
+
+	public static final Uri EMPTY = new Uri();
+
 	private URI uri;
 
 	public static Uri parse(String s) {

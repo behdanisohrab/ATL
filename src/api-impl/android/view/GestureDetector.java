@@ -7,6 +7,8 @@ public class GestureDetector {
 
 	public GestureDetector(Context context, OnGestureListener listener, Handler handler) {}
 
+	public GestureDetector(Context context, OnGestureListener listener) {}
+
 	public interface OnGestureListener {
 	}
 

@@ -1,6 +1,7 @@
 package android.widget;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -131,4 +132,6 @@ public class ImageView extends View {
 	}
 
 	public final void setColorFilter(int color, PorterDuff.Mode mode) {}
+
+	public void setImageTintList(ColorStateList tint) {}
 }

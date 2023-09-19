@@ -10,6 +10,7 @@ public class Intent {
 	private Bundle extras = new Bundle();
 	private String action;
 	private Uri data;
+	private int flags;
 
 	public Intent() {}
 	public Intent(Intent o) {
@@ -34,11 +35,13 @@ public class Intent {
 	}
 
 	public Intent addFlags(int flags) {
-		return this; //??
+		this.flags |= flags;
+		return this;
 	}
 
 	public Intent setFlags(int flags) {
-		return this; //??
+		this.flags = flags;
+		return this;
 	}
 	public Intent setPackage(String packageName) {
 		return this; //??
@@ -206,7 +209,7 @@ public class Intent {
 	}
 
 	public String getAction() {
-		return null;
+		return action;
 	}
 
 	public Bundle getBundleExtra(String name) {
@@ -257,6 +260,10 @@ public class Intent {
 
 	public static Intent createChooser(Intent target, CharSequence title) {
 		return target;
+	}
+
+	public int getFlags() {
+		return flags;
 	}
 
 }

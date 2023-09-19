@@ -28,4 +28,6 @@ public interface MenuItem {
 
 	public MenuItem setOnMenuItemClickListener(OnMenuItemClickListener listener);
 
+	public MenuItem setTitle(int resId);
+
 }

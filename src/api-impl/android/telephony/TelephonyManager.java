@@ -8,4 +8,6 @@ public class TelephonyManager {
 	public int getPhoneType() {
 		return 0; // PHONE_TYPE_NONE
 	}
+
+	public String getNetworkCountryIso() {return "";}
 }

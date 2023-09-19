@@ -21,4 +21,6 @@ public interface Menu {
 	public MenuItem add(CharSequence text);
 
 	public void setGroupCheckable(int group, boolean checkable, boolean exclusive);
+
+	public SubMenu addSubMenu(int groupId, int itemId, int order, CharSequence title);
 }

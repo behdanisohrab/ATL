@@ -11,7 +11,9 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.KeyListener;
+import android.text.method.MovementMethod;
 import android.text.method.TransformationMethod;
+import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -165,6 +167,20 @@ public class TextView extends View {
 
 	public void setCompoundDrawablesRelative(Drawable start, Drawable top, Drawable end, Drawable bottom) {}
 
+	public int getLineCount() {return 1;}
+
+	public URLSpan[] getUrls() {return new URLSpan[0];}
+
+	public void setMovementMethod(MovementMethod method) {}
+
+	public void setTextIsSelectable(boolean selectable) {}
+
 	public static interface OnEditorActionListener {
+	}
+
+	public static enum BufferType {
+		EDITABLE,
+		NORMAL,
+		SPANNABLE,
 	}
 }

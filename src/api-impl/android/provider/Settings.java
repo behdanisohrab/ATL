@@ -54,6 +54,10 @@ public class Settings {
 		public static Uri getUriFor(String name) {
 			return null;
 		}
+
+		public static float getFloat(ContentResolver cr, String key, float def) {
+			return 0.0f;
+		}
 	}
 
 	public static final class Global {
