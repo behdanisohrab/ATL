@@ -31,7 +31,7 @@ public class Activity extends Context implements Window.Callback {
 	LayoutInflater layout_inflater;
 	Window window = new Window(this);
 	int requested_orientation = -1 /*ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED*/; // dummy
-	private Intent intent;
+	public Intent intent;
 	private Activity resultActivity;
 	private int resultRequestCode;
 	private int pendingRequestCode;
@@ -294,25 +294,6 @@ public class Activity extends Context implements Window.Callback {
 		setResult(resultCode, null);
 	}
 
-	public void startActivity(Intent intent) {
-		System.out.println("startActivity(" + intent + ") called");
-		if (intent.getComponent() == null) {
-			System.out.println("starting extern activity with intent: " + intent);
-			nativeOpenURI(String.valueOf(intent.getData()));
-			return;
-		}
-		try {
-			Class<? extends Activity> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Activity.class);
-			Constructor<? extends Activity> constructor = cls.getConstructor();
-			Activity activity = constructor.newInstance();
-			activity.intent = intent;
-			activity.getWindow().native_window = getWindow().native_window;
-			nativeStartActivity(activity);
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public final void showDialog(int id) {
 		System.out.println("Activity.showDialog(" + id + ") called");
 	}
@@ -340,8 +321,8 @@ public class Activity extends Context implements Window.Callback {
 	public boolean isChangingConfigurations() {return false;}
 
 	private native void nativeFinish(long native_window);
-	private static native void nativeStartActivity(Activity activity);
-	private static native void nativeOpenURI(String uri);
+	public static native void nativeStartActivity(Activity activity);
+	public static native void nativeOpenURI(String uri);
 
 	@Override
 	public void onContentChanged() {

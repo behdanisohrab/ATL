@@ -347,7 +347,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	// construct Application
 	application_object = (*env)->CallStaticObjectMethod(env, handle_cache.context.class,
-		_STATIC_METHOD(handle_cache.context.class, "createApplication", "()Landroid/app/Application;"));
+		_STATIC_METHOD(handle_cache.context.class, "createApplication", "(J)Landroid/app/Application;"), window);
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
