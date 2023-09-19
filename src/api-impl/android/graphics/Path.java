@@ -80,7 +80,7 @@ mDetectSimplePaths = HardwareRenderer.isAvailable();
 		// We promised not to change this, so preserve it around the native
 		// call, which does now reset fill type.
 		final FillType fillType = getFillType();
-		native_reset(mNativePath);
+		// native_reset(mNativePath);
 		setFillType(fillType);
 	}
 	/**
@@ -213,7 +213,8 @@ mDetectSimplePaths = HardwareRenderer.isAvailable();
 	 * @return the path's fill type
 	 */
 	public FillType getFillType() {
-		return sFillTypeArray[native_getFillType(mNativePath)];
+		return FillType.WINDING;
+		// return sFillTypeArray[native_getFillType(mNativePath)];
 	}
 	/**
 	 * Set the path's fill type. This defines how "inside" is computed.
@@ -221,7 +222,7 @@ mDetectSimplePaths = HardwareRenderer.isAvailable();
 	 * @param ft The new fill type for this path
 	 */
 	public void setFillType(FillType ft) {
-		native_setFillType(mNativePath, ft.nativeInt);
+		// native_setFillType(mNativePath, ft.nativeInt);
 	}
 
 	/**
@@ -292,7 +293,7 @@ mDetectSimplePaths = HardwareRenderer.isAvailable();
 	 * @param y The y-coordinate of the start of a new contour
 	 */
 	public void moveTo(float x, float y) {
-		native_moveTo(mNativePath, x, y);
+		// native_moveTo(mNativePath, x, y);
 	}
 	/**
 	 * Set the beginning of the next contour relative to the last point on the
@@ -317,7 +318,7 @@ mDetectSimplePaths = HardwareRenderer.isAvailable();
 	 */
 	public void lineTo(float x, float y) {
 		isSimplePath = false;
-		native_lineTo(mNativePath, x, y);
+		// native_lineTo(mNativePath, x, y);
 	}
 	/**
 	 * Same as lineTo, but the coordinates are considered relative to the last
@@ -345,7 +346,7 @@ mDetectSimplePaths = HardwareRenderer.isAvailable();
 	 */
 	public void quadTo(float x1, float y1, float x2, float y2) {
 		isSimplePath = false;
-		native_quadTo(mNativePath, x1, y1, x2, y2);
+		// native_quadTo(mNativePath, x1, y1, x2, y2);
 	}
 	/**
 	 * Same as quadTo, but the coordinates are considered relative to the last
@@ -433,7 +434,7 @@ mDetectSimplePaths = HardwareRenderer.isAvailable();
 	 */
 	public void close() {
 		isSimplePath = false;
-		native_close(mNativePath);
+		// native_close(mNativePath);
 	}
 	/**
 	 * Specifies how closed shapes (e.g. rects, ovals) are oriented when they

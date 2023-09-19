@@ -19,6 +19,7 @@ package android.text.method;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.text.Editable;
 import android.text.GetChars;
 import android.text.NoCopySpan;
 import android.text.Spannable;
@@ -173,4 +174,10 @@ public class PasswordTransformationMethod implements TransformationMethod, TextW
 
 	private static PasswordTransformationMethod sInstance;
 	private static char DOT = '\u2022';
+
+	@Override
+	public void afterTextChanged(Editable s) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'afterTextChanged'");
+	}
 }

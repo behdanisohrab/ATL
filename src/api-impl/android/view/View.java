@@ -1255,7 +1255,9 @@ public class View extends Object {
 	public void setTranslationX(float translationX) {}
 	public void setTranslationY(float translationY) {}
 
-	public void setAlpha(float alpha) {}
+	public void setAlpha(float alpha) {
+		setVisibility((alpha == 0.f) ? INVISIBLE : VISIBLE);
+	}
 
 	public boolean onGenericMotionEvent(MotionEvent event) {return false;}
 
@@ -1443,4 +1445,14 @@ public class View extends Object {
 	public boolean isPaddingRelative() {return false;}
 
 	public void setForeground(Drawable foreground) {}
+
+	public boolean canScrollVertically(int value) {return true;}
+
+	public boolean isInTouchMode() {return false;}
+
+	public void stopNestedScroll() {}
+
+	public long getDrawingTime() {
+		return System.currentTimeMillis();
+	}
 }

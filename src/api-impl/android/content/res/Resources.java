@@ -714,6 +714,10 @@ public class Resources {
 		return res;
 	}
 
+	public Drawable getDrawable(int id, Theme theme) throws NotFoundException {
+		return getDrawable(id);
+	}
+
 	/**
 	 * Return a drawable object associated with a particular resource ID for the
 	 * given screen density in DPI. This will set the drawable's density to be

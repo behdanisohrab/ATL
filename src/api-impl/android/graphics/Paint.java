@@ -203,6 +203,10 @@ public class Paint {
 
 	public void setStrokeJoin(Join join) {}
 
+	public Typeface getTypeface() {
+		return new Typeface();
+	}
+
 	private native long native_constructor();
 	private native void native_set_color(long skia_paint, int color);
 	private native int native_get_color(long skia_paint);

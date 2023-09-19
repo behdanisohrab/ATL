@@ -3,7 +3,7 @@ package android.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 
-public class SeekBar extends ProgressBar {
+public class SeekBar extends AbsSeekBar {
 
 	public SeekBar(Context context) {
 		super(context);
@@ -13,7 +13,9 @@ public class SeekBar extends ProgressBar {
 		super(context, attributeSet);
 	}
 
-	public interface OnSeekBarChangeListener {
+	public void setOnSeekBarChangeListener(OnSeekBarChangeListener l) {}
+
+	public static interface OnSeekBarChangeListener {
 	}
 
 }

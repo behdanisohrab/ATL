@@ -289,6 +289,8 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 	protected void setChildrenDrawingOrderEnabled(boolean enabled) {}
 
+	public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
+
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;
 		public static final int MATCH_PARENT = -1;
