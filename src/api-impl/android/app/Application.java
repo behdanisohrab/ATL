@@ -13,6 +13,7 @@ import android.content.ContextWrapper;
 
 public class Application extends ContextWrapper {
 	private String app_icon_path = null;
+	public long native_window;
 
 	private String get_app_icon_path() {
 		return app_icon_path;

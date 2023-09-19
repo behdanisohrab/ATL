@@ -1,5 +1,6 @@
 package android.content;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Application;
@@ -88,7 +89,7 @@ public class Context extends Object {
 		}
 	}
 
-	static Application createApplication() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	static Application createApplication(long native_window) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		Application application;
 		ResXmlAttribute application_name = manifest.getApplicationElement().searchAttributeByResourceId(AndroidManifestBlock.ID_name);
 		String className = (application_name != null) ? application_name.getValueAsString() : "android.app.Application";
@@ -101,6 +102,7 @@ public class Context extends Object {
 		ResXmlAttribute application_theme = manifest.getApplicationElement().searchAttributeByResourceId(AndroidManifestBlock.ID_theme);
 		if (application_theme != null)
 			application.setTheme(application_theme.getData());
+		application.native_window = native_window;
 		this_application = application;
 		return application;
 	}
@@ -348,10 +350,25 @@ public class Context extends Object {
 	}
 
 	public void startActivity(Intent intent) {
-		Slog.w(TAG, "------------------");
-		Slog.w(TAG, "app wants to startActivity("+intent+"), but we don't support that... :/");
-		try { throw new java.lang.Exception(); } catch (java.lang.Exception e) { e.printStackTrace(); }
-		Slog.w(TAG, "------------------");
+		Slog.i(TAG, "startActivity(" + intent + ") called");
+		if ("android.intent.action.CHOOSER".equals(intent.getAction())) {
+			intent = (Intent) intent.getExtras().get("android.intent.extra.INTENT");
+		}
+		if (intent.getComponent() == null) {
+			Slog.i(TAG, "starting extern activity with intent: " + intent);
+			Activity.nativeOpenURI(String.valueOf(intent.getData()));
+			return;
+		}
+		try {
+			Class<? extends Activity> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Activity.class);
+			Constructor<? extends Activity> constructor = cls.getConstructor();
+			Activity activity = constructor.newInstance();
+			activity.intent = intent;
+			activity.getWindow().native_window = this_application.native_window;
+			Activity.nativeStartActivity(activity);
+		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public final TypedArray obtainStyledAttributes(AttributeSet set, int[] attrs) {
