@@ -14,6 +14,10 @@ public class AlertDialog extends Dialog implements DialogInterface {
 		super(context, 0);
 	}
 
+	public AlertDialog(Context context, int themeResId) {
+		super(context, themeResId);
+	}
+
 	public void setMessage(CharSequence message) {
 		System.out.println("AlertDialog setMessage called with: '" + message + "'");
 		nativeSetMessage(nativePtr, String.valueOf(message));
@@ -40,6 +44,12 @@ public class AlertDialog extends Dialog implements DialogInterface {
 			dialog.setButton(DialogInterface.BUTTON_POSITIVE, text, listener);
 			return this;
 		}
+
+		public AlertDialog.Builder setNegativeButton (CharSequence text, DialogInterface.OnClickListener listener) {
+			System.out.println("AlertDialog.Builder setNegativeButton called with text: '" + text + "'");
+			return this;
+		}
+
 
 		public AlertDialog.Builder setCancelable(boolean cancelable) {
 			return this;

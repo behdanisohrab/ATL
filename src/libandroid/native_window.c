@@ -538,3 +538,10 @@ XrResult bionic_xrCreateInstance(XrInstanceCreateInfo *createInfo, XrInstance *i
 	createInfo->enabledExtensionNames = enabled_exts;
 	return xr_lazy_call("xrCreateInstance", createInfo, instance);
 }
+
+typedef void* ANativeActivity;
+
+void ANativeActivity_setWindowFormat(ANativeActivity *activity, int32_t format)
+{
+	printf("STUB: %s called\n", __func__);
+}

@@ -38,6 +38,10 @@ public class Dialog {
 		nativeSetTitle(nativePtr, String.valueOf(title));
 	}
 
+	public void setTitle(int titleId) {
+		nativeSetTitle(nativePtr, context.getString(titleId));
+	}
+
 	public void setOwnerActivity(Activity activity) {}
 
 	public void setCancelable(boolean cancelable) {}
