@@ -1,5 +1,7 @@
 package android.view;
 
+import android.view.SurfaceHolder;
+
 public class Window {
 	public static final int FEATURE_OPTIONS_PANEL = 0;
 
@@ -72,4 +74,6 @@ public class Window {
 	}
 
 	public void setAttributes(WindowManager.LayoutParams params) {}
+
+	public void takeSurface(SurfaceHolder.Callback2 callback) {}
 }

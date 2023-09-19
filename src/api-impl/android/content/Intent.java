@@ -164,6 +164,18 @@ public class Intent {
 		return this;
 	}
 
+	public Intent putExtras (Intent src) {
+		// FIXME HACK
+		this.extras = src.getExtras();
+		return this;
+	}
+
+	public Intent putExtras (Bundle extras) {
+		// FIXME HACK
+		this.extras = extras;
+		return this;
+	}
+
 	public Intent setClass(Context packageContext, Class<?> cls) {
 		setComponent(new ComponentName(packageContext, cls));
 		return this;
@@ -175,6 +187,13 @@ public class Intent {
 
 	public Uri getData() {
 		return data;
+	}
+
+	public String getDataString () {
+		if (data == null)
+			return "";
+
+		return data.toString();
 	}
 
 	public boolean getBooleanExtra(String name, boolean defaultValue) {
