@@ -41,5 +41,13 @@ public class ViewPropertyAnimator {
 		return this;
 	}
 
+	public ViewPropertyAnimator scaleX(float scaleX) {
+		return this;
+	}
+
+	public ViewPropertyAnimator scaleY(float scaleY) {
+		return this;
+	}
+
 	public void start() {}
 }

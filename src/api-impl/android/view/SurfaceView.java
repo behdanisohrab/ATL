@@ -17,6 +17,12 @@ public class SurfaceView extends View {
 		mSurface.widget = this.widget;
 	}
 
+	public SurfaceView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+
+		mSurface.widget = this.widget;
+	}
+
 	private void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 		for (SurfaceHolder.Callback c : mCallbacks) {
 			c.surfaceChanged(mSurfaceHolder, format, width, height);
@@ -197,7 +203,7 @@ public class SurfaceView extends View {
 		@Override
 		public Rect getSurfaceFrame() {
 			//		return mSurfaceFrame;
-			return null;
+			return new Rect(0, 0, 400, 400);
 		}
 	};
 }

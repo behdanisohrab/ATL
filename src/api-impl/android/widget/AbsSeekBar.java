@@ -25,4 +25,6 @@ public abstract class AbsSeekBar extends ProgressBar {
 		};
 	}
 
+	public void setKeyProgressIncrement(int keyProgressIncrement) {}
+
 }

@@ -175,6 +175,14 @@ public class TextView extends View {
 
 	public void setTextIsSelectable(boolean selectable) {}
 
+	public void setText(CharSequence text, BufferType type) {
+		setText(text);
+	}
+
+	public MovementMethod getMovementMethod() {
+		return new MovementMethod();
+	}
+
 	public static interface OnEditorActionListener {
 	}
 

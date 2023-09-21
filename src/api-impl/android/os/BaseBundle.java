@@ -93,4 +93,46 @@ public class BaseBundle {
 		final String s = getString(key);
 		return (s == null) ? defaultValue : s;
 	}
+
+	/**
+	 * Inserts a long value into the mapping of this Bundle, replacing
+	 * any existing value for the given key.
+	 *
+	 * @param key a String, or null
+	 * @param value a long
+	 */
+	public void putLong(String key, long value) {
+		mMap.put(key, value);
+	}
+
+	/**
+	 * Inserts an int value into the mapping of this Bundle, replacing
+	 * any existing value for the given key.
+	 *
+	 * @param key a String, or null
+	 * @param value an int, or null
+	 */
+	public void putInt(String key, int value) {
+		mMap.put(key, value);
+	}
+
+	/**
+	 * Inserts a String value into the mapping of this Bundle, replacing
+	 * any existing value for the given key.  Either key or value may be null.
+	 *
+	 * @param key a String, or null
+	 * @param value a String, or null
+	 */
+	public void putString(String key, String value) {
+		mMap.put(key, value);
+	}
+
+	/**
+	 * Returns the number of mappings contained in this Bundle.
+	 *
+	 * @return the number of mappings as an int.
+	 */
+	public int size() {
+		return mMap.size();
+	}
 }

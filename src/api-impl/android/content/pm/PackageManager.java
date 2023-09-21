@@ -2298,7 +2298,7 @@ public class PackageManager {
 	 */
 	public List<ResolveInfo> queryBroadcastReceivers(Intent intent,
 							 int flags) {
-		return null;
+		return new ArrayList<ResolveInfo>();
 	}
 
 	/**
