@@ -15,6 +15,10 @@ public class PendingIntent {
 
 	public void send(Context context, int code, Intent intent) {}
 
+	public static PendingIntent getActivity(Context context, int requestCode, Intent intent, int flags) {
+		return new PendingIntent();
+	}
+
 	public class CanceledException extends Exception {
 	}
 }

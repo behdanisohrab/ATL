@@ -134,4 +134,6 @@ public class ImageView extends View {
 	public final void setColorFilter(int color, PorterDuff.Mode mode) {}
 
 	public void setImageTintList(ColorStateList tint) {}
+
+	public void setImageAlpha(int alpha) {}
 }

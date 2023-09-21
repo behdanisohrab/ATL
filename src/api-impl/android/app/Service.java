@@ -12,4 +12,8 @@ public abstract class Service extends Context {
 
 	public abstract int onStartCommand(Intent intent, int flags, int startId);
 
+	public void startForeground(int id, Notification notification) {
+		System.out.println("startForeground(" + id + ", " + notification + ") called");
+	}
+
 }

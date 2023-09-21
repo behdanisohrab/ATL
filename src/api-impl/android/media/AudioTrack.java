@@ -12,6 +12,7 @@ public class AudioTrack {
 	int audioFormat;
 	int bufferSizeInBytes;
 	int mode;
+	private int sessionId;
 
 	// for native code's use
 	long pcm_handle;
@@ -43,6 +44,11 @@ public class AudioTrack {
 		}
 
 		native_constructor(streamType, sampleRateInHz, num_channels, audioFormat, bufferSizeInBytes, mode);
+	}
+
+	public AudioTrack(int streamType, int sampleRateInHz, int channelConfig, int audioFormat, int bufferSizeInBytes, int mode, int sessionId)  {
+		this(streamType, sampleRateInHz, channelConfig, audioFormat, bufferSizeInBytes, mode);
+		this.sessionId = sessionId;
 	}
 
 	public static native int getMinBufferSize(int sampleRateInHz, int channelConfig, int audioFormat);
@@ -79,4 +85,8 @@ public class AudioTrack {
 	}
 
 	public native int write(byte[] audioData, int offsetInBytes, int sizeInBytes);
+
+	public int getAudioSessionId() {
+		return sessionId;
+	}
 }

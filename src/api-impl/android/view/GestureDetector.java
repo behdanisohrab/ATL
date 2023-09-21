@@ -9,6 +9,10 @@ public class GestureDetector {
 
 	public GestureDetector(Context context, OnGestureListener listener) {}
 
+	public boolean onTouchEvent(MotionEvent event) {
+		return false;
+	}
+
 	public interface OnGestureListener {
 	}
 

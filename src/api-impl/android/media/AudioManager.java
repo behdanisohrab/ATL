@@ -32,4 +32,12 @@ public class AudioManager {
 	public int getStreamVolume(int streamType) {
 		return 0; // arbitrary, shouldn't matter too much?
 	}
+
+	public int getStreamMaxVolume(int streamType) {
+		return 100;
+	}
+
+	public int requestAudioFocus(OnAudioFocusChangeListener listener, int streamType, int durationHint) {
+		return /*AUDIOFOCUS_REQUEST_GRANTED*/1;
+	}
 }

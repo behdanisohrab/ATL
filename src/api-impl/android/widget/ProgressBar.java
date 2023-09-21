@@ -36,4 +36,18 @@ public class ProgressBar extends View {
 			}
 		};
 	}
+
+	public void setMax(int max) {}
+
+	public int getMax() {
+		return 100;
+	}
+
+	public void setProgress(int progress) {}
+
+	public void setSecondaryProgress(int secondaryProgress) {}
+
+	public int getProgress() {
+		return 0;
+	}
 }

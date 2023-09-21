@@ -78,4 +78,8 @@ public class Window {
 	public void setAttributes(WindowManager.LayoutParams params) {}
 
 	public void takeSurface(SurfaceHolder.Callback2 callback) {}
+
+	public void setStatusBarColor(int color) {}
+
+	public void setNavigationBarColor(int color) {}
 }

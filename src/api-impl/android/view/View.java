@@ -1455,4 +1455,6 @@ public class View extends Object {
 	public long getDrawingTime() {
 		return System.currentTimeMillis();
 	}
+
+	public void setKeepScreenOn(boolean screenOn) {}
 }

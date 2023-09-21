@@ -379,6 +379,10 @@ public class Canvas {
 
 	public void drawPath(Path path, Paint paint) {}
 
+	public boolean clipPath(Path path) {
+		return false;
+	}
+
 	private static native void native_drawText(long skia_canvas, CharSequence text, int start, int end, float x, float y, long skia_font, long skia_paint);
 	private static native void native_drawRect(long skia_canvas, float left, float top, float right, float bottom, long skia_paint);
 	private static native void native_drawLine(long skia_canvas, long widget, float startX, float startY, float stopX, float stopY, long skia_paint);
