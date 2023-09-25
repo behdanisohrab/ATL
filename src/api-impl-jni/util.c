@@ -52,16 +52,16 @@ void set_up_handle_cache(JNIEnv *env)
 {
 	(*env)->GetJavaVM(env, &jvm);
 
-	handle_cache.apk_main_activity.class = _REF((*env)->FindClass(env, "android/app/Activity"));
+	handle_cache.activity.class = _REF((*env)->FindClass(env, "android/app/Activity"));
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
-	handle_cache.apk_main_activity.onCreate = _METHOD(handle_cache.apk_main_activity.class, "onCreate", "(Landroid/os/Bundle;)V");
-	handle_cache.apk_main_activity.onStart = _METHOD(handle_cache.apk_main_activity.class, "onStart", "()V");
-	handle_cache.apk_main_activity.onWindowFocusChanged = _METHOD(handle_cache.apk_main_activity.class, "onWindowFocusChanged", "(Z)V");
-	handle_cache.apk_main_activity.onResume = _METHOD(handle_cache.apk_main_activity.class, "onResume", "()V");
-	handle_cache.apk_main_activity.onDestroy = _METHOD(handle_cache.apk_main_activity.class, "onDestroy", "()V");
-	handle_cache.apk_main_activity.onStop = _METHOD(handle_cache.apk_main_activity.class, "onStop", "()V");
-	handle_cache.apk_main_activity.onPause = _METHOD(handle_cache.apk_main_activity.class, "onPause", "()V");
+	handle_cache.activity.onCreate = _METHOD(handle_cache.activity.class, "onCreate", "(Landroid/os/Bundle;)V");
+	handle_cache.activity.onStart = _METHOD(handle_cache.activity.class, "onStart", "()V");
+	handle_cache.activity.onWindowFocusChanged = _METHOD(handle_cache.activity.class, "onWindowFocusChanged", "(Z)V");
+	handle_cache.activity.onResume = _METHOD(handle_cache.activity.class, "onResume", "()V");
+	handle_cache.activity.onDestroy = _METHOD(handle_cache.activity.class, "onDestroy", "()V");
+	handle_cache.activity.onStop = _METHOD(handle_cache.activity.class, "onStop", "()V");
+	handle_cache.activity.onPause = _METHOD(handle_cache.activity.class, "onPause", "()V");
 
 	handle_cache.attribute_set.class = _REF((*env)->FindClass(env, "android/util/AttributeSet"));
 	if((*env)->ExceptionCheck(env))

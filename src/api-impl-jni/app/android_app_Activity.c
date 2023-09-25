@@ -19,7 +19,7 @@ static void activity_close(JNIEnv *env, jobject activity) {
 	}
 
 	/* -- run the main activity's onDestroy -- */
-	(*env)->CallVoidMethod(env, activity, handle_cache.apk_main_activity.onDestroy, NULL);
+	(*env)->CallVoidMethod(env, activity, handle_cache.activity.onDestroy, NULL);
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 }
@@ -29,20 +29,29 @@ static void activity_update_current(JNIEnv *env) {
 
 	if (activity_current != activity_new) {
 		if (activity_current) {
-			(*env)->CallVoidMethod(env, activity_current, handle_cache.apk_main_activity.onPause);
+			(*env)->CallVoidMethod(env, activity_current, handle_cache.activity.onPause);
 			if((*env)->ExceptionCheck(env))
 				(*env)->ExceptionDescribe(env);
 
-			(*env)->CallVoidMethod(env, activity_current, handle_cache.apk_main_activity.onStop);
+			(*env)->CallVoidMethod(env, activity_current, handle_cache.activity.onStop);
 			if((*env)->ExceptionCheck(env))
 				(*env)->ExceptionDescribe(env);
+
+			(*env)->CallVoidMethod(env, activity_new, handle_cache.activity.onWindowFocusChanged, false);
+			if((*env)->ExceptionCheck(env))
+				(*env)->ExceptionDescribe(env);
+
 		}
 		if (activity_new) {
-			(*env)->CallVoidMethod(env, activity_new, handle_cache.apk_main_activity.onStart);
+			(*env)->CallVoidMethod(env, activity_new, handle_cache.activity.onStart);
 			if((*env)->ExceptionCheck(env))
 				(*env)->ExceptionDescribe(env);
 
-			(*env)->CallVoidMethod(env, activity_new, handle_cache.apk_main_activity.onResume);
+			(*env)->CallVoidMethod(env, activity_new, handle_cache.activity.onResume);
+			if((*env)->ExceptionCheck(env))
+				(*env)->ExceptionDescribe(env);
+
+			(*env)->CallVoidMethod(env, activity_new, handle_cache.activity.onWindowFocusChanged, true);
 			if((*env)->ExceptionCheck(env))
 				(*env)->ExceptionDescribe(env);
 		}
@@ -54,7 +63,7 @@ void activity_window_ready(void) {
 	JNIEnv *env = get_jni_env();
 
 	for (GList *l = activity_backlog; l != NULL; l = l->next) {
-		(*env)->CallVoidMethod(env, l->data, handle_cache.apk_main_activity.onWindowFocusChanged, true);
+		(*env)->CallVoidMethod(env, l->data, handle_cache.activity.onWindowFocusChanged, true);
 		if((*env)->ExceptionCheck(env))
 			(*env)->ExceptionDescribe(env);
 	}
@@ -78,7 +87,7 @@ void activity_close_all(void) {
 
 void activity_start(JNIEnv *env, jobject activity_object) {
 	/* -- run the activity's onCreate -- */
-	(*env)->CallVoidMethod(env, activity_object, handle_cache.apk_main_activity.onCreate, NULL);
+	(*env)->CallVoidMethod(env, activity_object, handle_cache.activity.onCreate, NULL);
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
