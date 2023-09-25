@@ -1,10 +1,9 @@
 /*
+ * parts of this file originally from AOSP:
+ *
  * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
-{
-	return -1;
-}
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -15,16 +14,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
-
-/**
- * @addtogroup NativeActivity Native Activity
- * @{
- */
-
-/**
- * @file native_window.h
- * @brief API for accessing a native window.
  */
 
 
@@ -526,6 +515,9 @@ VkResult bionic_vkCreateAndroidSurfaceKHR(VkInstance instance, const VkAndroidSu
 		};
 
 		return vkCreateXlibSurfaceKHR(instance, &x11_create_info, pAllocator, pSurface);
+	} else {
+		fprintf(stderr, "bionic_vkCreateAndroidSurfaceKHR: the GDK backend is neither Wayland nor X11, no SurfaceView for you");
+		return VK_ERROR_UNKNOWN;
 	}
 }
 
