@@ -1,4 +1,5 @@
 /*
+ * parts of this file originally from AOSP:
  * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,13 +41,13 @@
 //#include "android_view_KeyEvent.h"
 
 
-static struct {
+/*static struct {
 	jmethodID finish;
 	jmethodID setWindowFlags;
 	jmethodID setWindowFormat;
 	jmethodID showIme;
 	jmethodID hideIme;
-} gNativeActivityClassInfo;
+} gNativeActivityClassInfo;*/
 
 typedef void ANativeActivity_createFunc(ANativeActivity* activity, void* savedState, size_t savedStateSize);
 
@@ -66,8 +67,9 @@ enum {
 	CMD_HIDE_SOFT_INPUT,
 };
 
-static void write_work(int fd, int32_t cmd, int32_t arg1, int32_t arg2) {
-/*	struct ActivityWork work;
+/*static void write_work(int fd, int32_t cmd, int32_t arg1, int32_t arg2)
+{
+	struct ActivityWork work;
 	work.cmd = cmd;
 	work.arg1 = arg1;
 	work.arg2 = arg2;
@@ -83,18 +85,19 @@ restart:
 	if (res == sizeof(work)) return;
 
 	if (res < 0) printf("Failed writing to work fd: %s", strerror(errno));
-	else printf("Truncated writing to work fd: %d", res);*/
-}
+	else printf("Truncated writing to work fd: %d", res);
+}*/
 
-static bool read_work(int fd, struct ActivityWork* outWork) {
-/* int res = read(fd, outWork, sizeof(struct ActivityWork));
+/*static bool read_work(int fd, struct ActivityWork* outWork)
+{
+	int res = read(fd, outWork, sizeof(struct ActivityWork));
 	// no need to worry about EINTR, poll loop will just come back again.
 	if (res == sizeof(struct ActivityWork)) return true;
 
 	if (res < 0) printf("Failed reading work fd: %s", strerror(errno));
 	else printf("Truncated reading work fd: %d", res);
-*/	return false;
-}
+	return false;
+}*/
 
 /*
  * Native state for interacting with the NativeActivity class.
@@ -118,26 +121,29 @@ struct NativeCode {
 	int32_t lastWindowHeight;
 
 	// These are used to wake up the main thread to process work.
-	int mainWorkRead;
-	int mainWorkWrite;
+//	int mainWorkRead;
+//	int mainWorkWrite;
 //	MessageQueue *messageQueue;
 };
 
-struct NativeCode * NativeCode_new(void* _dlhandle, ANativeActivity_createFunc* _createFunc) {
+struct NativeCode * NativeCode_new(void* _dlhandle, ANativeActivity_createFunc* _createFunc)
+{
 	struct NativeCode *this = malloc(sizeof(struct NativeCode));
 	memset(&this->callbacks, 0, sizeof(this->callbacks));
 	this->dlhandle = _dlhandle;
 	this->createActivityFunc = _createFunc;
 	this->nativeWindow = NULL;
-	this->mainWorkRead = this->mainWorkWrite = -1;
+//	this->mainWorkRead = this->mainWorkWrite = -1;
 
 	return this;
 }
 
 // FIXME: this is currently in libandroid.so, which is not necessarily requested by the app and therefore loaded
 ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface);
+void ANativeWindow_release(ANativeWindow *native_window);
 
-void NativeCode_setSurface(struct NativeCode *this, jobject _surface) {
+void NativeCode_setSurface(struct NativeCode *this, jobject _surface)
+{
 	if (_surface != NULL) {
 		this->nativeWindow = ANativeWindow_fromSurface(this->native_activity.env, _surface);
 	} else {
@@ -148,7 +154,8 @@ void NativeCode_setSurface(struct NativeCode *this, jobject _surface) {
 	}
 }
 
-void NativeCode_destroy(struct NativeCode *this) {
+void NativeCode_destroy(struct NativeCode *this)
+{
 	if (this->callbacks.onDestroy != NULL) {
 		this->callbacks.onDestroy((struct ANativeActivity *)this);
 	}
@@ -159,8 +166,8 @@ void NativeCode_destroy(struct NativeCode *this) {
 //		messageQueue->getLooper()->removeFd(mainWorkRead);
 //	}
 	NativeCode_setSurface(this, NULL);
-	if (this->mainWorkRead >= 0) close(this->mainWorkRead);
-	if (this->mainWorkWrite >= 0) close(this->mainWorkWrite);
+//	if (this->mainWorkRead >= 0) close(this->mainWorkRead);
+//	if (this->mainWorkWrite >= 0) close(this->mainWorkWrite);
 	if (this->dlhandle != NULL) {
 		// for now don't unload...  we probably should clean this
 		// up and only keep one open dlhandle per proc, since there
@@ -176,22 +183,23 @@ void NativeCode_destroy(struct NativeCode *this) {
 /*
  * Callback for handling native events on the application's main thread.
  */
-static int mainWorkCallback(int fd, int events, void* data) {
+/*static int mainWorkCallback(int fd, int events, void* data)
+{
 	struct NativeCode* code = (struct NativeCode*)data;
 	if ((events & POLLIN) == 0) {
 		printf("STUB - mainWorkCallback - returning -1\n");
 		return 1;
 	}
 
-/*	struct ActivityWork work;
+	struct ActivityWork work;
 	if (!read_work(code->mainWorkRead, &work)) {
 		return 1;
-	}*/
+	}
 
 	printf("STUB - mainWorkCallback\n");
 //	printf("mainWorkCallback: cmd=%d", work.cmd);
 
-/*	switch (work.cmd) {
+	switch (work.cmd) {
 		case CMD_FINISH: {
 			code->(*env)->CallVoidMethod(env, code->clazz, gNativeActivityClassInfo.finish);
 			code->messageQueue->raiseAndClearException(code->env, "finish");
@@ -219,10 +227,10 @@ static int mainWorkCallback(int fd, int events, void* data) {
 		default:
 			printf("Unknown work command: %d", work.cmd);
 			break;
-	}*/
+	}
 
 	return 1;
-}
+}*/
 
 // ------------------------------------------------------------------------
 
@@ -247,8 +255,7 @@ static void * looper_thread_worker(void *looper)
 	printf("!!!!! pollOnce returned\n");
 }*/
 
-jlong
-Java_android_app_NativeActivity_loadNativeCode(JNIEnv* env, jobject clazz, jstring path, jstring funcName,
+jlong Java_android_app_NativeActivity_loadNativeCode(JNIEnv* env, jobject clazz, jstring path, jstring funcName,
 		jobject messageQueue, jstring internalDataDir, jstring obbDir,
 		jstring externalDataDir, int sdkVersion,
 		jobject jAssetMgr, jbyteArray savedState)
@@ -285,19 +292,20 @@ Java_android_app_NativeActivity_loadNativeCode(JNIEnv* env, jobject clazz, jstri
 			NativeCode_destroy(code);
 			return 0;
 		}
+#if 0
 		code->mainWorkRead = msgpipe[0];
 		code->mainWorkWrite = msgpipe[1];
 		int result = fcntl(code->mainWorkRead, F_SETFL, O_NONBLOCK);
-//		SLOGW_IF(result != 0, "Could not make main work read pipe "
-//				"non-blocking: %s", strerror(errno));
+		SLOGW_IF(result != 0, "Could not make main work read pipe "
+				"non-blocking: %s", strerror(errno));
 		result = fcntl(code->mainWorkWrite, F_SETFL, O_NONBLOCK);
-//		SLOGW_IF(result != 0, "Could not make main work write pipe "
-//				"non-blocking: %s", strerror(errno));
-//		code->messageQueue->getLooper()->addFd(
-//				code->mainWorkRead, 0, ALOOPER_EVENT_INPUT, mainWorkCallback, code);
+		SLOGW_IF(result != 0, "Could not make main work write pipe "
+				"non-blocking: %s", strerror(errno));
+		code->messageQueue->getLooper()->addFd(
+				code->mainWorkRead, 0, ALOOPER_EVENT_INPUT, mainWorkCallback, code);
 
 		// new android::Looper()
-#if 0
+
 		void *a_looper = malloc(224/*sizeof(android::Looper)*/);
 		_ZN7android6LooperC2Eb(a_looper, true); // TODO: or false?
 		// android::Looper::addFd
@@ -314,11 +322,11 @@ Java_android_app_NativeActivity_loadNativeCode(JNIEnv* env, jobject clazz, jstri
 		code->native_activity.clazz = (*env)->NewGlobalRef(env, clazz);
 
 		char *tmp;
-		code->native_activity.internalDataPath = strdup(tmp = (*env)->GetStringUTFChars(env, internalDataDir, NULL));
+		code->native_activity.internalDataPath = strdup(tmp = (char *)((*env)->GetStringUTFChars(env, internalDataDir, NULL)));
 		(*env)->ReleaseStringUTFChars(env, internalDataDir, tmp);
 
 		if (externalDataDir != NULL) {
-			code->native_activity.externalDataPath = strdup(tmp = (*env)->GetStringUTFChars(env, externalDataDir, NULL));
+			code->native_activity.externalDataPath = strdup(tmp = (char *)((*env)->GetStringUTFChars(env, externalDataDir, NULL)));
 			(*env)->ReleaseStringUTFChars(env, externalDataDir, tmp);
 		} else {
 			code->native_activity.externalDataPath = NULL; // TODO: or ""?
@@ -349,11 +357,10 @@ Java_android_app_NativeActivity_loadNativeCode(JNIEnv* env, jobject clazz, jstri
 		}
 	}
 
-	return (jlong)code; // sus, surely this is broken on 64bit?
+	return _INTPTR(code);
 }
 
-void
-Java_android_app_NativeActivity_unloadNativeCode(JNIEnv* env, jobject clazz, jlong handle)
+void Java_android_app_NativeActivity_unloadNativeCode(JNIEnv* env, jobject clazz, jlong handle)
 {
 	printf("STUB - unloadNativeCode_native\n");
 	/*if (handle != 0) {
@@ -362,31 +369,28 @@ Java_android_app_NativeActivity_unloadNativeCode(JNIEnv* env, jobject clazz, jlo
 	}*/
 }
 
-void
-Java_android_app_NativeActivity_onStartNative(JNIEnv* env, jobject clazz, jlong handle)
+void Java_android_app_NativeActivity_onStartNative(JNIEnv* env, jobject clazz, jlong handle)
 {
 	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onStart != NULL) {
-			code->callbacks.onStart(code);
+			code->callbacks.onStart((ANativeActivity *)code);
 		}
 	}
 }
 
-void
-Java_android_app_NativeActivity_onResumeNative(JNIEnv* env, jobject clazz, jlong handle)
+void Java_android_app_NativeActivity_onResumeNative(JNIEnv* env, jobject clazz, jlong handle)
 {
 	printf("STUB - onResume_native\n");
 	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onResume != NULL) {
-			code->callbacks.onResume(code);
+			code->callbacks.onResume((ANativeActivity *)code);
 		}
 	}
 }
 
-jbyteArray
-Java_android_app_NativeActivity_onSaveInstanceStateNative(JNIEnv* env, jobject clazz, jlong handle)
+jbyteArray Java_android_app_NativeActivity_onSaveInstanceStateNative(JNIEnv* env, jobject clazz, jlong handle)
 {
 	printf("STUB - onSaveInstanceState_native\n");
 /*
@@ -396,7 +400,7 @@ Java_android_app_NativeActivity_onSaveInstanceStateNative(JNIEnv* env, jobject c
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onSaveInstanceState != NULL) {
 			size_t len = 0;
-			jbyte* state = (jbyte*)code->callbacks.onSaveInstanceState(code, &len);
+			jbyte* state = (jbyte*)code->callbacks.onSaveInstanceState((ANativeActivity *)code, &len);
 			if (len > 0) {
 				array = (*env)->NewByteArray(env, len);
 				if (array != NULL) {
@@ -412,81 +416,73 @@ Java_android_app_NativeActivity_onSaveInstanceStateNative(JNIEnv* env, jobject c
 	return array;*/return NULL;
 }
 
-void
-Java_android_app_NativeActivity_onPauseNative(JNIEnv* env, jobject clazz, jlong handle)
+void Java_android_app_NativeActivity_onPauseNative(JNIEnv* env, jobject clazz, jlong handle)
 {
 	printf("STUB - onPause_native\n");
 /*	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onPause != NULL) {
-			code->callbacks.onPause(code);
+			code->callbacks.onPause((ANativeActivity *)code);
 		}
 	}*/
 }
 
-void
-Java_android_app_NativeActivity_onStopNative(JNIEnv* env, jobject clazz, jlong handle)
+void Java_android_app_NativeActivity_onStopNative(JNIEnv* env, jobject clazz, jlong handle)
 {
 	printf("STUB - onStop_native\n");
 /*	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onStop != NULL) {
-			code->callbacks.onStop(code);
+			code->callbacks.onStop((ANativeActivity *)code);
 		}
 	}*/
 }
 
-void
-Java_android_app_NativeActivity_onConfigurationChangedNative(JNIEnv* env, jobject clazz, jlong handle)
+void Java_android_app_NativeActivity_onConfigurationChangedNative(JNIEnv* env, jobject clazz, jlong handle)
 {
 	printf("STUB - onConfigurationChanged_native\n");
 /*	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onConfigurationChanged != NULL) {
-			code->callbacks.onConfigurationChanged(code);
+			code->callbacks.onConfigurationChanged((ANativeActivity *)code);
 		}
 	}*/
 }
 
-void
-Java_android_app_NativeActivity_onLowMemoryNative(JNIEnv* env, jobject clazz, jlong handle)
+void Java_android_app_NativeActivity_onLowMemoryNative(JNIEnv* env, jobject clazz, jlong handle)
 {
 	printf("STUB - onLowMemory_native\n");
 /*	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onLowMemory != NULL) {
-			code->callbacks.onLowMemory(code);
+			code->callbacks.onLowMemory((ANativeActivity *)code);
 		}
 	}*/
 }
 
-void
-Java_android_app_NativeActivity_onWindowFocusChangedNative(JNIEnv* env, jobject clazz, jlong handle, jboolean focused)
+void Java_android_app_NativeActivity_onWindowFocusChangedNative(JNIEnv* env, jobject clazz, jlong handle, jboolean focused)
 {
 	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onWindowFocusChanged != NULL) {
-			code->callbacks.onWindowFocusChanged(code, focused ? 1 : 0);
+			code->callbacks.onWindowFocusChanged((ANativeActivity *)code, focused ? 1 : 0);
 		}
 	}
 }
 
-void
-Java_android_app_NativeActivity_onSurfaceCreatedNative(JNIEnv* env, jobject clazz, jlong handle, jobject surface)
+void Java_android_app_NativeActivity_onSurfaceCreatedNative(JNIEnv* env, jobject clazz, jlong handle, jobject surface)
 {
 	printf("STUB - onSurfaceCreated_native\n");
 /*	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		code->setSurface(surface);
 		if (code->nativeWindow != NULL && code->callbacks.onNativeWindowCreated != NULL) {
-			code->callbacks.onNativeWindowCreated(code,
-					code->nativeWindow.get());
+			code->callbacks.onNativeWindowCreated((ANativeActivity *)code, code->nativeWindow.get());
 		}
 	}*/
 }
 
-void
-Java_android_app_NativeActivity_onSurfaceChangedNative(JNIEnv* env, jobject clazz, jlong handle, jobject surface,
+void Java_android_app_NativeActivity_onSurfaceChangedNative(JNIEnv* env, jobject clazz, jlong handle, jobject surface,
 		jint format, jint width, jint height)
 {
 	if (handle != 0) {
@@ -495,13 +491,12 @@ Java_android_app_NativeActivity_onSurfaceChangedNative(JNIEnv* env, jobject claz
 		NativeCode_setSurface(code, surface);
 		if (oldNativeWindow != code->nativeWindow) {
 			if (oldNativeWindow != NULL && code->callbacks.onNativeWindowDestroyed != NULL) {
-				code->callbacks.onNativeWindowDestroyed(code, oldNativeWindow);
+				code->callbacks.onNativeWindowDestroyed((ANativeActivity *)code, oldNativeWindow);
 				ANativeWindow_release(oldNativeWindow); // TODO: can it happen that this will be done by the callback and we will have double free?
 			}
 			if (code->nativeWindow != NULL) {
 				if (code->callbacks.onNativeWindowCreated != NULL) {
-					code->callbacks.onNativeWindowCreated(code,
-							code->nativeWindow);
+					code->callbacks.onNativeWindowCreated((ANativeActivity *)code, code->nativeWindow);
 				}
 				code->lastWindowWidth = width;
 				code->lastWindowHeight = height;
@@ -511,28 +506,25 @@ Java_android_app_NativeActivity_onSurfaceChangedNative(JNIEnv* env, jobject claz
 			if (width != code->lastWindowWidth
 					|| height != code->lastWindowHeight) {
 				if (code->callbacks.onNativeWindowResized != NULL) {
-					code->callbacks.onNativeWindowResized(code,
-							code->nativeWindow);
+					code->callbacks.onNativeWindowResized((ANativeActivity *)code, code->nativeWindow);
 				}
 			}
 		}
 	}
 }
 
-void
-Java_android_app_NativeActivity_onSurfaceRedrawNeededNative(JNIEnv* env, jobject clazz, jlong handle, jobject surface/*?*/)
+void Java_android_app_NativeActivity_onSurfaceRedrawNeededNative(JNIEnv* env, jobject clazz, jlong handle, jobject surface/*?*/)
 {
 	printf("STUB - onSurfaceRedrawNeeded_native\n");
 /*	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->nativeWindow != NULL && code->callbacks.onNativeWindowRedrawNeeded != NULL) {
-			code->callbacks.onNativeWindowRedrawNeeded(code, code->nativeWindow.get());
+			code->callbacks.onNativeWindowRedrawNeeded((ANativeActivity *)code, code->nativeWindow.get());
 		}
 	}*/
 }
 
-void
-Java_android_app_NativeActivity_onSurfaceDestroyedNative(JNIEnv* env, jobject clazz, jlong handle)
+void Java_android_app_NativeActivity_onSurfaceDestroyedNative(JNIEnv* env, jobject clazz, jlong handle)
 {
 	printf("STUB - onSurfaceDestroyed_native\n");
 /*	if (handle != 0) {
@@ -545,33 +537,30 @@ Java_android_app_NativeActivity_onSurfaceDestroyedNative(JNIEnv* env, jobject cl
 	}*/
 }
 
-void
-Java_android_app_NativeActivity_onInputQueueCreatedNative(JNIEnv* env, jobject clazz, jlong handle, jlong queue)
+void Java_android_app_NativeActivity_onInputQueueCreatedNative(JNIEnv* env, jobject clazz, jlong handle, jlong queue)
 {
 	printf("STUB - onInputChannelCreated_native\n");
 	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onInputQueueCreated != NULL) {
-			code->callbacks.onInputQueueCreated(code, queue);
+			code->callbacks.onInputQueueCreated((ANativeActivity *)code, (AInputQueue *)queue);
 		}
 	}
 }
 
-void
-Java_android_app_NativeActivity_onInputQueueDestroyedNative(JNIEnv* env, jobject clazz, jlong handle, jlong queuePtr)
+void Java_android_app_NativeActivity_onInputQueueDestroyedNative(JNIEnv* env, jobject clazz, jlong handle, jlong queuePtr)
 {
 	printf("STUB - onInputChannelDestroyed_native\n");
 /*	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onInputQueueDestroyed != NULL) {
 			AInputQueue* queue = reinterpret_cast<AInputQueue*>(queuePtr);
-			code->callbacks.onInputQueueDestroyed(code, queue);
+			code->callbacks.onInputQueueDestroyed((ANativeActivity *)code, queue);
 		}
 	}*/
 }
 
-void
-Java_android_app_NativeActivity_onContentRectChangedNative(JNIEnv* env, jobject clazz, jlong handle,
+void Java_android_app_NativeActivity_onContentRectChangedNative(JNIEnv* env, jobject clazz, jlong handle,
 		jint x, jint y, jint w, jint h)
 {
 	printf("STUB - onContentRectChanged_native\n");
@@ -583,7 +572,7 @@ Java_android_app_NativeActivity_onContentRectChangedNative(JNIEnv* env, jobject 
 			rect.top = y;
 			rect.right = x+w;
 			rect.bottom = y+h;
-			code->callbacks.onContentRectChanged(code, &rect);
+			code->callbacks.onContentRectChanged((ANativeActivity *)code, &rect);
 		}
 	}*/
 }

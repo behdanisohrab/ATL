@@ -43,7 +43,7 @@ JNIEXPORT jlong JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglCre
     jint* attrib_base = get_int_array_crit(env, attrib_list);
 
     EGLContext egl_context = eglCreateContext(_PTR(egl_display), _PTR(egl_config), NULL, attrib_base);
-	printf("egl_context: %d\n", egl_context);
+	printf("egl_context: %p\n", egl_context);
 
     release_int_array_crit(env, attrib_list, attrib_base);
 
@@ -59,7 +59,7 @@ JNIEXPORT jboolean JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1egl
 	jint* num_config_base = get_int_array_crit(env, num_config);
 
 	ret = eglChooseConfig(_PTR(egl_display), attrib_base, egl_configs ? _PTR(configs_base) : NULL, config_size, num_config_base);
-	printf(".. eglChooseConfig: egl_display: %p, egl_configs: %d, _PTR(configs_base): %p, config_size: %d, num_config_base[0]: %d\n", egl_display, egl_configs, _PTR(configs_base), config_size, num_config_base[0]);
+	printf(".. eglChooseConfig: egl_display: %ld, egl_configs: %p, _PTR(configs_base): %p, config_size: %d, num_config_base[0]: %d\n", egl_display, egl_configs, _PTR(configs_base), config_size, num_config_base[0]);
 
 	release_int_array_crit(env, attrib_list, attrib_base);
 	release_long_array_crit(env, egl_configs, configs_base);
