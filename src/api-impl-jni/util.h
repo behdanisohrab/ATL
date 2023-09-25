@@ -15,7 +15,7 @@ struct handle_cache {
 		jmethodID onDestroy;
 		jmethodID onStop;
 		jmethodID onPause;
-	} apk_main_activity;
+	} activity;
 	struct {
 		jclass class;
 		jmethodID getAttributeValue_string;
