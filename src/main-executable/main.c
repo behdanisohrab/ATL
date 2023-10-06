@@ -207,12 +207,13 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 			exit(1);
 		}
 	}
-	app_data_dir = malloc(strlen(app_data_dir_base) + 1 + strlen(apk_name) + 1 + 1); // +1 for middle '/', +1 for end '/', and +1 for NULL
+	app_data_dir = malloc(strlen(app_data_dir_base) + 1 + strlen(apk_name) + 1 + 1 + 1); // +1 for middle '/', + 1 for _, +1 for end '/', and +1 for NULL
 	strcpy(app_data_dir, app_data_dir_base);
 	strcat(app_data_dir, "/");
-	// TODO: we should possibly use the app id instead, but we don't currently have a way to get that
+	// TODO: we should possibly use the app id instead, but we don't currently have a way to get that soon enough
 	// arguably both the app id and the apk name might have an issue with duplicates, but if two apks use the same app id, chances are it's less of an issue than when two apks have the same name
 	strcat(app_data_dir, apk_name);
+	strcat(app_data_dir, "_"); // !IMPORTANT! Unity can't comprehend that a directory name could end in .apk, so we have to avoid that here
 	strcat(app_data_dir, "/");
 
 	ret = mkdir(app_data_dir, DEFFILEMODE | S_IXUSR | S_IXGRP | S_IXOTH);
