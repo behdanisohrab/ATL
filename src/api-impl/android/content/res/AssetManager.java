@@ -834,7 +834,12 @@ public final class AssetManager {
 		for (TableBlock tableBlock : tableBlocks) {
 			for (PackageBlock packageBlock : tableBlock.listPackages()) {
 				if (packageBlock.getName().equals(defPackage)) {
-					return packageBlock.getEntry("", type, name).getResourceId();
+					Entry entry = packageBlock.getEntry("", type, name);
+					if(entry != null) {
+						return entry.getResourceId();
+					} else {
+						return -1; // TODO: investigate
+					}
 				}
 			}
 		}

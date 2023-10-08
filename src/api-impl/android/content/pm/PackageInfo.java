@@ -17,6 +17,8 @@
 package android.content.pm;
 
 import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
+import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
+import com.reandroid.arsc.chunk.xml.ResXmlElement;
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -249,6 +251,23 @@ public class PackageInfo {
 		packageName = manifest.getPackageName();
 		versionCode = manifest.getVersionCode();
 		versionName = manifest.getVersionName();
+
+		System.out.println("PackageInfo()");
+
+		applicationInfo = new ApplicationInfo();
+
+		ResXmlElement application = manifest.getApplicationElement();
+		for (ResXmlElement metaData : application.listElements(AndroidManifestBlock.TAG_meta_data)) {
+			ResXmlAttribute name = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_name);
+			ResXmlAttribute value = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_value);
+			if (name == null || value == null) {
+				continue;
+			}
+
+			System.out.println("PackageInfo(): applicationInfo.metaData.putString("+name.getValueAsString()+", "+value.getValueAsString()+")");
+			applicationInfo.metaData.putString(name.getValueAsString(), value.getValueAsString());
+		}
+ 
 		System.out.println("PackageInfo(): packageName: >"+packageName+"<, versionCode: >"+versionCode+"<, versionName: >"+versionName+"<");
 	}
 
