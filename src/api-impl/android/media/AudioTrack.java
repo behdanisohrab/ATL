@@ -6,6 +6,10 @@ public class AudioTrack {
 		void onPeriodicNotification(AudioTrack track);
 	}
 
+	public static final int PLAYSTATE_STOPPED = 1;
+	public static final int PLAYSTATE_PAUSED  = 2;
+	public static final int PLAYSTATE_PLAYING = 3;
+
 	int streamType;
 	int sampleRateInHz;
 	int channelConfig;
@@ -13,6 +17,8 @@ public class AudioTrack {
 	int bufferSizeInBytes;
 	int mode;
 	private int sessionId;
+	private int playbackState = PLAYSTATE_STOPPED;
+	private int playbackHeadPosition = 0;
 
 	// for native code's use
 	long pcm_handle;
@@ -38,6 +44,9 @@ public class AudioTrack {
 		switch (channelConfig) {
 			case 2:
 				num_channels = 1;
+				break;
+			case 12:
+				num_channels = 2;
 				break;
 			default:
 				num_channels = 1;
@@ -66,10 +75,15 @@ public class AudioTrack {
 		return this.frames;
 	}
 
-	public native void play();
+	public void play() {
+		System.out.println("calling AudioTrack.play()\n");
+		playbackState = PLAYSTATE_PLAYING;
+		native_play();
+	}
 
 	public void stop() {
 		System.out.println("calling stop(), how did this not get reported before DIDREEEEEEEEEEEEEEEEEEEEEEEEE\n");
+		playbackState = PLAYSTATE_STOPPED;
 	}
 
 	public void flush() {
@@ -81,12 +95,43 @@ public class AudioTrack {
 	}
 
 	public int getState() {
-		return 0; // TODO: fix up the native part and make this work properly
+		return 1; // TODO: fix up the native part and make this work properly
 	}
 
-	public native int write(byte[] audioData, int offsetInBytes, int sizeInBytes);
+	public int write(byte[] audioData, int offsetInBytes, int sizeInBytes) {
+		int framesToWrite = sizeInBytes / channels / 2;  // 2 means PCM16
+		int ret = native_write(audioData, offsetInBytes, framesToWrite);
+		if (ret > 0) {
+			playbackHeadPosition += ret;
+		}
+		return ret * channels * 2; // 2 means PCM16
+	}
 
 	public int getAudioSessionId() {
 		return sessionId;
 	}
+
+	public int getSampleRate() {
+		return sampleRateInHz;
+	}
+
+	public int setStereoVolume(float leftVolume, float rightVolume) {
+		return 0;
+	}
+
+	public int getPlayState() {
+		return playbackState;
+	}
+
+	public void pause() {
+		System.out.println("calling AudioTrack.pause()\n");
+		playbackState = PLAYSTATE_PAUSED;
+	}
+
+	public int getPlaybackHeadPosition() {
+		return playbackHeadPosition;
+	}
+
+	public native void native_play();
+	private native int native_write(byte[] audioData, int offsetInBytes, int sizeInBytes);
 }
