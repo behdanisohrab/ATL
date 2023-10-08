@@ -94,6 +94,11 @@ struct handle_cache {
 		jclass class;
 		jmethodID get_app_icon_path;
 	} application;
+	struct {
+		jclass class;
+		jmethodID loop;
+		jmethodID prepareMainLooper;
+	} looper;
 };
 
 extern struct handle_cache handle_cache;

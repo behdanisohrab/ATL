@@ -27,11 +27,10 @@ static GThread *main_thread_id;
 void prepare_main_looper(JNIEnv* env) {
 	main_thread_id = g_thread_self();
 
-	jclass class = (*env)->FindClass(env, "android/os/Looper");
-	(*env)->CallStaticVoidMethod(env, class, _STATIC_METHOD(class, "prepareMainLooper", "()V"));
+	(*env)->CallStaticVoidMethod(env, handle_cache.looper.class, handle_cache.looper.prepareMainLooper);
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
-	(*env)->CallStaticVoidMethod(env, class, _STATIC_METHOD(class, "loop", "()V"));
+	(*env)->CallStaticVoidMethod(env, handle_cache.looper.class, handle_cache.looper.loop);
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 }
@@ -62,8 +61,7 @@ static gboolean glib_context_callback(gpointer user_data) {
 	JNIEnv *env;
 	(*jvm)->GetEnv(jvm, (void**)&env, JNI_VERSION_1_6);
 
-	jclass class = (*env)->FindClass(env, "android/os/Looper");
-	(*env)->CallStaticVoidMethod(env, class, _STATIC_METHOD(class, "loop", "()V"));
+	(*env)->CallStaticVoidMethod(env, handle_cache.looper.class, handle_cache.looper.loop);
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
