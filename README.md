@@ -1,4 +1,4 @@
-### PoC for a translation layer that would execute the abolute minimum of android-specific code necessary in order to run an android app on a Linux system
+### A translation layer that allows running android apps on a Linux system
 
 ---
 
