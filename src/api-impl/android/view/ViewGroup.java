@@ -75,6 +75,9 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 			index = children.size();
 		children.add(index, child);
 		native_addView(widget, child.widget, index, params);
+		if (isAttachedToWindow()) {
+			child.onAttachedToWindow();
+		}
 		requestLayout();
 	}
 
@@ -290,6 +293,14 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	protected void setChildrenDrawingOrderEnabled(boolean enabled) {}
 
 	public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
+
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		for (View child: children) {
+			child.onAttachedToWindow();
+		}
+	}
 
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;

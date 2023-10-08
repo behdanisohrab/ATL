@@ -183,6 +183,8 @@ public class TextView extends View {
 		return new MovementMethod();
 	}
 
+	public CharSequence getHint() {return "HINT";}
+
 	public static interface OnEditorActionListener {
 	}
 

@@ -5,6 +5,12 @@ import android.animation.TimeInterpolator;
 
 public class ViewPropertyAnimator {
 
+	private View view;
+
+	public ViewPropertyAnimator(View view) {
+		this.view = view;
+	}
+
 	public void cancel() {}
 
 	public ViewPropertyAnimator setInterpolator(TimeInterpolator interpolator) {
@@ -18,6 +24,7 @@ public class ViewPropertyAnimator {
 	}
 
 	public ViewPropertyAnimator alpha(float alpha) {
+		view.setAlpha(alpha);
 		return this;
 	}
 

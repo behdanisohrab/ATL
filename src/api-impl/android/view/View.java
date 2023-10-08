@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -799,6 +800,8 @@ public class View extends Object {
 	private int scrollX = 0;
 	private int scrollY = 0;
 
+	private boolean attachedToWindow = false;
+
 	public long widget; // pointer
 
 	public static HashMap<Integer, View> view_by_id = new HashMap<Integer, View>();
@@ -1247,7 +1250,7 @@ public class View extends Object {
 	public void clearAnimation() {}
 
 	public ViewPropertyAnimator animate() {
-		return new ViewPropertyAnimator();
+		return new ViewPropertyAnimator(this);
 	}
 
 	public float getTranslationX() {return 0.f;}
@@ -1385,7 +1388,7 @@ public class View extends Object {
 
 	public void setPaddingRelative(int start, int top, int end, int bottom) {}
 
-	public boolean isAttachedToWindow() {return true;}
+	public boolean isAttachedToWindow() {return attachedToWindow;}
 
 	public void requestApplyInsets() {}
 
@@ -1457,4 +1460,10 @@ public class View extends Object {
 	}
 
 	public void setKeepScreenOn(boolean screenOn) {}
+
+	protected void onAttachedToWindow () {
+		attachedToWindow = true;
+	}
+
+	public void setLayerType(int layerType, Paint paint) {}
 }
