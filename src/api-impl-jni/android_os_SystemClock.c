@@ -5,8 +5,10 @@
 
 JNIEXPORT jlong JNICALL Java_android_os_SystemClock_elapsedRealtime(JNIEnv *env, jclass this)
 {
-	printf("FIXME: Java_android_os_SystemClock_elapsedRealtime: returning 0\n");
-	return 0; // FIXME
+	struct timespec t;
+	clock_gettime(CLOCK_BOOTTIME, &t);
+	jlong ret = t.tv_sec * 1000 + lround(t.tv_nsec / 1e6);
+    return ret;
 }
 
 JNIEXPORT jlong JNICALL Java_android_os_SystemClock_uptimeMillis(JNIEnv *env, jclass this)
