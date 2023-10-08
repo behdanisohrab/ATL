@@ -19,6 +19,10 @@ public class InputDevice {
 		return new InputDevice();
 	}
 
+	public int getSources() {
+		return 0; // FIXME
+	}
+
 	/*
 	 * FIXME: We pretend we can do literally everything here...
 	 */

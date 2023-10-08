@@ -200,6 +200,10 @@ public class Intent {
 		return defaultValue;
 	}
 
+	public Intent setAction(String action) {
+		return this; // FIXME
+	}
+
 	public String getAction() {
 		return null;
 	}
@@ -239,6 +243,10 @@ public class Intent {
 
 	public Bundle getExtras() {
 		return extras;
+	}
+
+	public Intent addCategory(String action) {
+		return this;
 	}
 
 	@Override
