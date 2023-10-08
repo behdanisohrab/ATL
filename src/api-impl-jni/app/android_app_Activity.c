@@ -37,7 +37,7 @@ static void activity_update_current(JNIEnv *env) {
 			if((*env)->ExceptionCheck(env))
 				(*env)->ExceptionDescribe(env);
 
-			(*env)->CallVoidMethod(env, activity_new, handle_cache.activity.onWindowFocusChanged, false);
+			(*env)->CallVoidMethod(env, activity_current, handle_cache.activity.onWindowFocusChanged, false);
 			if((*env)->ExceptionCheck(env))
 				(*env)->ExceptionDescribe(env);
 
