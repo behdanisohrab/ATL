@@ -152,6 +152,10 @@ public class Uri {
 		return uri.getScheme();
 	}
 
+	public String getPath() {
+		return uri.getPath();
+	}
+
 	@Override
 	public String toString() {
 		return String.valueOf(uri);

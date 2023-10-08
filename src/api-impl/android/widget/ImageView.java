@@ -63,7 +63,11 @@ public class ImageView extends View {
 		return new BitmapDrawable(getContext().getResources(), bitmap);
 	}
 
-	public void setImageDrawable(Drawable drawable) {}
+	public void setImageDrawable(Drawable drawable) {
+		if (drawable instanceof BitmapDrawable) {
+			setImageBitmap(((BitmapDrawable) drawable).getBitmap());
+		}
+	}
 
 	public void setImageMatrix(Matrix matrix) {}
 
