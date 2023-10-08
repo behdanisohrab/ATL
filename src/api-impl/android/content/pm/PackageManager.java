@@ -1330,6 +1330,8 @@ public class PackageManager {
 	 */
 	public static final String ACTION_REQUEST_PERMISSION = "android.content.pm.action.REQUEST_PERMISSION";
 
+	PackageInfo package_info;
+
 	/**
 	 * Extra field name for the list of permissions, which the user must approve.
 	 *
@@ -1364,6 +1366,11 @@ public class PackageManager {
 			"HwlNrAu8jlZ2UqSgskSWlhYdMTAP9CPHiUv9N7FcT58Itv/I4fKREINQYjDpvQcx\n" +
 			"SaTYb9dr5sB4WLNglk7zxDtM80H518VvihTcP7FHL+Gn6g4j5fkI98+S\n" +
 			"-----END CERTIFICATE-----\n").getBytes();
+
+
+	public PackageManager() {
+		package_info = new PackageInfo();
+	}
 
 	/**
 	 * Retrieve overall information about an application package that is
@@ -1400,11 +1407,10 @@ public class PackageManager {
 	 * @see #GET_UNINSTALLED_PACKAGES
 	 */
 	public PackageInfo getPackageInfo(String packageName, int flags) throws NameNotFoundException {
-		PackageInfo packageInfo = new PackageInfo();
 		if ((flags & GET_SIGNATURES) == GET_SIGNATURES) {
-			packageInfo.signatures = new Signature[]{new Signature(X509_DUMMY)};
+			package_info.signatures = new Signature[]{new Signature(X509_DUMMY)};
 		}
-		return packageInfo;
+		return package_info;
 	}
 
 	/**
@@ -1586,7 +1592,7 @@ public class PackageManager {
 	 */
 	public ApplicationInfo getApplicationInfo(String packageName,
 						  int flags) throws NameNotFoundException {
-		return new ApplicationInfo();
+		return package_info.applicationInfo;
 	}
 
 	/**
@@ -1723,7 +1729,7 @@ public class PackageManager {
 	 */
 	public List<PackageInfo> getInstalledPackages(int flags) {
 		List<PackageInfo> ret = new ArrayList<PackageInfo>();
-		ret.add(new PackageInfo());
+		ret.add(package_info);
 		return ret;
 	}
 
