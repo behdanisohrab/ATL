@@ -1,7 +1,9 @@
+#include <stdint.h>
 #include <dlfcn.h>
 #include <pthread.h>
 
 #include "util.h"
+#include "src/api-impl-jni/defines.h"
 
 struct handle_cache handle_cache = {0};
 
@@ -192,4 +194,42 @@ int android_log_printf(android_LogPriority prio, const char *tag, const char *fm
 	va_end(ap);
 
 	return ret;
+}
+
+void *get_nio_buffer(JNIEnv *env, jobject buffer, jarray *array_ref, jbyte **array) {
+	jclass class;
+	void *pointer;
+	int elementSizeShift, position;
+
+	if (!buffer) {
+		*array_ref = NULL;
+		return NULL;
+	}
+	class = _CLASS(buffer);
+	pointer = _PTR((*env)->GetLongField(env, buffer, _FIELD_ID(class, "address", "J")));
+	elementSizeShift = (*env)->GetIntField(env, buffer, _FIELD_ID(class, "_elementSizeShift", "I"));
+	position = (*env)->GetIntField(env, buffer, _FIELD_ID(class, "position", "I"));
+	if (pointer) {   // buffer is direct
+		*array_ref = NULL;
+		pointer += position << elementSizeShift;
+	} else {   // buffer is indirect
+		*array_ref = (*env)->CallObjectMethod(env, buffer, _METHOD(class, "array", "()Ljava/lang/Object;"));
+		pointer = *array = (*env)->GetPrimitiveArrayCritical(env, *array_ref, NULL);
+		jint offset = (*env)->CallIntMethod(env, buffer, _METHOD(class, "arrayOffset", "()I"));
+		pointer += (offset + position) << elementSizeShift;
+	}
+	return pointer;
+}
+
+void release_nio_buffer(JNIEnv *env, jarray array_ref, jbyte *array) {
+	if (array_ref)
+		(*env)->ReleasePrimitiveArrayCritical(env, array_ref, array, 0);
+}
+
+int get_nio_buffer_size(JNIEnv *env, jobject buffer) {
+	jclass class = _CLASS(buffer);;
+	int limit = (*env)->GetIntField(env, buffer, _FIELD_ID(class, "limit", "I"));
+	int position = (*env)->GetIntField(env, buffer, _FIELD_ID(class, "position", "I"));
+
+	return limit - position;
 }

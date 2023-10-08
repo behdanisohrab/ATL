@@ -41,6 +41,13 @@ marshal_files = gnome.genmarshal('marshal',
 	internal: true,
 )
 
+wl_mod = import('unstable-wayland')
+
+xml = wl_mod.find_protocol('linux-dmabuf', state: 'unstable', version: 1)
+linux_dmabuf = wl_mod.scan_xml(xml)
+
+xml = wl_mod.find_protocol('viewporter')
+viewporter = wl_mod.scan_xml(xml)
 
 # libandroid
 libandroid_so = shared_library('android', [
@@ -73,6 +80,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/database/android_database_SQLiteConnection.c',
                                                                   	'src/api-impl-jni/graphics/android_graphics_BitmapFactory.c',
                                                                   	'src/api-impl-jni/graphics/android_graphics_Typeface.c',
+                                                                  	'src/api-impl-jni/media/android_media_MediaCodec.c',
                                                                   	'src/api-impl-jni/android_content_res_AssetManager.c',
                                                                   	'src/api-impl-jni/audio/android_media_AudioTrack.c',
                                                                   	'src/api-impl-jni/audio/android_media_SoundPool.c',
@@ -97,13 +105,15 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/app/android_app_AlertDialog.c',
                                                                   	'src/api-impl-jni/app/android_app_Dialog.c',
                                                                   	'src/sk_area/sk_area.c',
+																	linux_dmabuf,
+																	viewporter,
                                                                   ] + marshal_files,
                                                                   include_directories: ['src/sk_area/'],
                                                                   install: true,
                                                                   install_dir : get_option('libdir') / 'java/dex/android_translation_layer/natives',
                                                                   dependencies: [
                                                                   	dependency('gtk4'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni'),
-                                                                  	dependency('libportal'), dependency('sqlite3'), libskia_dep
+                                                                  	dependency('libportal'), dependency('sqlite3'), libskia_dep, dependency('libavcodec'), dependency('libdrm')
                                                                   ],
                                                                   link_with: [ libandroid_so ],
                                                                   link_args: [

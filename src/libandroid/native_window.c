@@ -51,6 +51,8 @@
 // FIXME: put the header in a common place
 #include "../api-impl-jni/defines.h"
 
+#include "native_window.h"
+
 /**
  * Transforms that can be applied to buffers as they are displayed to a window.
  *
@@ -68,16 +70,6 @@ enum ANativeWindowTransform {
                                                   ANATIVEWINDOW_TRANSFORM_MIRROR_VERTICAL,
     ANATIVEWINDOW_TRANSFORM_ROTATE_270          = ANATIVEWINDOW_TRANSFORM_ROTATE_180 |
                                                   ANATIVEWINDOW_TRANSFORM_ROTATE_90,
-};
-
-struct ANativeWindow {
-	EGLNativeWindowType egl_window;
-	GtkWidget *surface_view_widget;
-	struct wl_display *wayland_display;
-	struct wl_surface *wayland_surface;
-	Display *x11_display;
-	gulong resize_handler;
-	int refcount;
 };
 
 /**
