@@ -22,6 +22,8 @@ import android.os.Trace;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+
+import java.io.ByteArrayInputStream;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -478,17 +480,8 @@ public class BitmapFactory {
 
 		Bitmap bm;
 
-		Trace.traceBegin(Trace.TRACE_TAG_GRAPHICS, "decodeBitmap");
-		try {
-			bm = nativeDecodeByteArray(data, offset, length, opts);
-
-			if (bm == null && opts != null && opts.inBitmap != null) {
-				throw new IllegalArgumentException("Problem decoding into existing bitmap");
-			}
-			setDensityFromOptions(bm, opts);
-		} finally {
-			Trace.traceEnd(Trace.TRACE_TAG_GRAPHICS);
-		}
+		InputStream stream = new ByteArrayInputStream(data, offset, length);
+		bm = decodeStream(stream, null, opts);
 
 		return bm;
 	}

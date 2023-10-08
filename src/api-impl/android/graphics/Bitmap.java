@@ -1208,7 +1208,7 @@ public final class Bitmap {
 	 * @return number of bytes between rows of the native bitmap pixels.
 	 */
 	public final int getRowBytes() {
-		return nativeRowBytes(mNativeBitmap);
+		return nativeRowBytes(pixbuf);
 	}
 
 	/**
@@ -1574,7 +1574,8 @@ public final class Bitmap {
 	 * and therefore is harmless.
 	 */
 	public void prepareToDraw() {
-		nativePrepareToDraw(mNativeBitmap);
+		// nativePrepareToDraw(mNativeBitmap);
+		System.out.println("Bitmap.prepareToDraw() called");
 	}
 
 	private static class BitmapFinalizer {
