@@ -42,8 +42,8 @@ JNIEXPORT void JNICALL Java_android_media_AudioTrack_native_1constructor(JNIEnv 
 	snd_pcm_t *pcm_handle;
 	snd_pcm_hw_params_t *params;
 
-	jint channels_out;
-	jint period_time;
+	unsigned int channels_out;
+	unsigned int period_time;
 
 	int ret;
 
@@ -158,7 +158,7 @@ JNIEXPORT jint JNICALL Java_android_media_AudioTrack_getMinBufferSize(JNIEnv *en
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
-	printf("\n\nJava_android_media_AudioTrack_getMinBufferSize is returning: %d\n\n\n", frames * num_channels * 2);
+	printf("\n\nJava_android_media_AudioTrack_getMinBufferSize is returning: %ld\n\n\n", frames * num_channels * 2);
 	return frames * num_channels * 2; // FIXME: 2 bytes = 16 bits (s16)
 }
 
@@ -197,11 +197,8 @@ void periodic_update_callback(snd_async_handler_t *pcm_callback)
 //	return G_SOURCE_REMOVE;
 }
 
-JNIEXPORT void JNICALL Java_android_media_AudioTrack_play(JNIEnv *env, jobject this)
+JNIEXPORT void JNICALL Java_android_media_AudioTrack_native_1play(JNIEnv *env, jobject this)
 {
-	pthread_t periodic_notification_thread;
-	int ret;
-
 	jint period_time = _GET_INT_FIELD(this, "period_time");
 
 	// FIXME - this callback should probably be set up elsewhere
@@ -229,17 +226,15 @@ JNIEXPORT void JNICALL Java_android_media_AudioTrack_play(JNIEnv *env, jobject t
 /*--↑*/
 }
 
-JNIEXPORT jint JNICALL Java_android_media_AudioTrack_write(JNIEnv *env, jobject this, jbyteArray audioData, jint offsetInBytes, jint sizeInBytes)
+JNIEXPORT jint JNICALL Java_android_media_AudioTrack_native_1write(JNIEnv *env, jobject this, jbyteArray audioData, jint offsetInBytes, jint frames_to_write)
 {
 	int ret;
 
 	if(!PCM_DEVICE)
 		return 0; // STUB
 
-	jint channels = _GET_INT_FIELD(this, "channels");
 	snd_pcm_t *pcm_handle = _PTR(_GET_LONG_FIELD(this, "pcm_handle"));
 
-	snd_pcm_sframes_t frames_to_write = sizeInBytes / channels / 2; // FIXME - 2 means PCM16
 	snd_pcm_sframes_t frames_written;
 
 	jbyte *buffer = _GET_BYTE_ARRAY_ELEMENTS(audioData);
@@ -257,4 +252,5 @@ JNIEXPORT jint JNICALL Java_android_media_AudioTrack_write(JNIEnv *env, jobject 
 //	printf("::::> tried to write %d frames, actually wrote %d frames.\n", frames_to_write, frames_written);
 
 	_RELEASE_BYTE_ARRAY_ELEMENTS(audioData, buffer);
+	return frames_written;
 }
