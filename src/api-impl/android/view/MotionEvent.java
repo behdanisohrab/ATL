@@ -1540,11 +1540,11 @@ public final class MotionEvent extends InputEvent {
 			pc[0].pressure = pressure;
 			pc[0].size = size;
 
-			ev.mNativePtr = nativeInitialize(ev.mNativePtr,
-							 deviceId, /*InputDevice.SOURCE_UNKNOWN*/ 0, action, 0, edgeFlags, metaState, 0,
-							 0, 0, xPrecision, yPrecision,
-							 downTime * NS_PER_MS, eventTime * NS_PER_MS,
-							 1, pp, pc);
+//			ev.mNativePtr = nativeInitialize(ev.mNativePtr,
+//							 deviceId, /*InputDevice.SOURCE_UNKNOWN*/ 0, action, 0, edgeFlags, metaState, 0,
+//							 0, 0, xPrecision, yPrecision,
+//							 downTime * NS_PER_MS, eventTime * NS_PER_MS,
+//							 1, pp, pc);
 			return ev;
 		}
 	}
