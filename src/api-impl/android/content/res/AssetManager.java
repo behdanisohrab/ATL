@@ -212,6 +212,10 @@ public final class AssetManager {
 			return "";
 		ResValue resValue = tableBlockSearch(id).pickOne().getResValue();
 		if (resValue.getValueType() == ValueType.REFERENCE) {
+			if(id == resValue.getData()) {
+				System.out.println("getResourceText: self-reference... returing \"\"");
+				return "";
+			}
 			return getResourceText(resValue.getData());
 		}
 		return resValue.getDataAsPoolString().get();
