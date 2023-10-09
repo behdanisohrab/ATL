@@ -49,7 +49,7 @@ extern int FIXME__HEIGHT;
 
 // mainly frame markers (very obtrusive, not recommended for most builds)
 #ifdef DEBUG_GLAREA
-#define d_printf(...) printf(VA_ARGS)
+#define d_printf(...) printf(__VA_ARGS__)
 #else
 #define d_printf(...)
 #endif
@@ -181,8 +181,6 @@ static void on_realize(GtkGLArea *gl_area, struct jni_gl_callback_data *d)
 	FIXME__WIDTH -= off_x;
 	FIXME__HEIGHT -= off_y;
 // ---
-
-
 
 	gtk_gl_area_make_current(gl_area);
 

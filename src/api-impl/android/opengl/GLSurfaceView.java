@@ -90,19 +90,19 @@ public class GLSurfaceView extends View implements SurfaceHolder.Callback { // T
 		}
 
 		native_set_renderer(renderer, implements_onTouchEvent);
-		/*		checkRenderThreadState();
-				if (mEGLConfigChooser == null) {
-					mEGLConfigChooser = new SimpleEGLConfigChooser(true);
-				}
-				if (mEGLContextFactory == null) {
-					mEGLContextFactory = new DefaultContextFactory();
-				}
-				if (mEGLWindowSurfaceFactory == null) {
-					mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
-				}
-				mRenderer = renderer;
-				mGLThread = new GLThread(mThisWeakRef);
-				mGLThread.start();*/
+/*		checkRenderThreadState();
+		if (mEGLConfigChooser == null) {
+			mEGLConfigChooser = new SimpleEGLConfigChooser(true);
+		}
+		if (mEGLContextFactory == null) {
+			mEGLContextFactory = new DefaultContextFactory();
+		}
+		if (mEGLWindowSurfaceFactory == null) {
+			mEGLWindowSurfaceFactory = new DefaultWindowSurfaceFactory();
+		}
+		mRenderer = renderer;
+		mGLThread = new GLThread(mThisWeakRef);
+		mGLThread.start();*/
 	}
 
 	public interface Renderer {
