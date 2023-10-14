@@ -41,8 +41,10 @@ public class Window {
 	}
 
 	public void setContentView(View view) {
-		contentView = view;
-		set_widget_as_root(native_window, view.widget);
+		if (view != contentView) {
+			contentView = view;
+			set_widget_as_root(native_window, view.widget);
+		}
 	}
 
 	public View getDecorView() {
