@@ -42,7 +42,8 @@ public class Paint {
 		if(skia_font == 0)
 			skia_font = native_create_font();
 
-		native_set_typeface(skia_font, typeface.skia_typeface);
+		if (typeface != null)
+			native_set_typeface(skia_font, typeface.skia_typeface);
 		return this.typeface;
 	}
 	public void getTextBounds(String text, int start, int end, Rect bounds) {}
