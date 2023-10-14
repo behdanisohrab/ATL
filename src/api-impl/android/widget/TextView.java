@@ -81,7 +81,8 @@ public class TextView extends View {
 		native_setTextColor(color);
 	}
 	public void setTextColor(ColorStateList colors) {
-		setTextColor(colors.getDefaultColor()); // TODO: do this properly
+		if (colors != null)
+			setTextColor(colors.getDefaultColor()); // TODO: do this properly
 	}
 	public void setTextSize(int unit, float size) {}
 	public void setTypeface(Typeface tf, int style) {}
