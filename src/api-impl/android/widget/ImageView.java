@@ -34,6 +34,11 @@ public class ImageView extends View {
 	}
 
 	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		native_measure(widget, widthMeasureSpec, heightMeasureSpec, true);
+	}
+
+	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	protected native void native_setPixbuf(long pixbuf);
 

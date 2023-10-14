@@ -218,26 +218,37 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1destructor(JNIEnv *env, jo
 
 #define MEASURE_SPEC_UNSPECIFIED (0 << 30)
 #define MEASURE_SPEC_EXACTLY (1 << 30)
+#define MEASURE_SPEC_AT_MOST (2 << 30)
 #define MEASURE_SPEC_MASK (0x3 << 30)
 
-JNIEXPORT void JNICALL Java_android_view_View_native_1measure(JNIEnv *env, jobject this, jlong widget_ptr, jint width_spec, jint height_spec) {
+JNIEXPORT void JNICALL Java_android_view_View_native_1measure(JNIEnv *env, jobject this, jlong widget_ptr, jint width_spec, jint height_spec, jboolean is_complex) {
 	int width;
 	int height;
 	int for_size;
 	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget_ptr)));
+	int width_spec_size = width_spec & ~MEASURE_SPEC_MASK;
+	int height_spec_size = height_spec & ~MEASURE_SPEC_MASK;
+	int width_spec_mode = width_spec & MEASURE_SPEC_MASK;
+	int height_spec_mode = height_spec & MEASURE_SPEC_MASK;
 
-	if ((width_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY) {
-		width = width_spec & ~MEASURE_SPEC_MASK;
+	if (width_spec_mode == MEASURE_SPEC_EXACTLY || (!is_complex && width_spec_mode == MEASURE_SPEC_AT_MOST)) {
+		width = width_spec_size;
 	} else {
-		for_size = ((height_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY) ? (height_spec & ~MEASURE_SPEC_MASK) : -1;
+		for_size = (height_spec_mode == MEASURE_SPEC_EXACTLY) ? height_spec_size : -1;
 		gtk_widget_measure(widget, GTK_ORIENTATION_HORIZONTAL, for_size, NULL, &width, NULL, NULL);
 	}
+	if (width_spec_mode == MEASURE_SPEC_AT_MOST && width > width_spec_size) {
+		width = width_spec_size;
+	}
 
-	if ((height_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY) {
-		height = height_spec & ~MEASURE_SPEC_MASK;
+	if (height_spec_mode == MEASURE_SPEC_EXACTLY || (!is_complex && height_spec_mode == MEASURE_SPEC_AT_MOST)) {
+		height = height_spec_size;
 	} else {
-		for_size = ((width_spec & MEASURE_SPEC_MASK) == MEASURE_SPEC_EXACTLY) ? (width_spec & ~MEASURE_SPEC_MASK) : -1;
+		for_size = (width_spec_mode == MEASURE_SPEC_EXACTLY) ? width_spec_size : -1;
 		gtk_widget_measure(widget, GTK_ORIENTATION_VERTICAL, for_size, NULL, &height, NULL, NULL);
+	}
+	if (height_spec_mode == MEASURE_SPEC_AT_MOST && height > height_spec_size) {
+		height = height_spec_size;
 	}
 
 	(*env)->CallVoidMethod(env, this, handle_cache.view.setMeasuredDimension, width, height);

@@ -120,6 +120,11 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		native_measure(widget, widthMeasureSpec, heightMeasureSpec, true);
+	}
+
+	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	protected native void native_addView(long widget, long child, int index, LayoutParams params);
 	protected native void native_removeView(long widget, long child);

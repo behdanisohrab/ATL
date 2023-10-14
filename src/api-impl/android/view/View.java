@@ -876,7 +876,11 @@ public class View extends Object {
 	protected native long native_constructor(Context context, AttributeSet attrs); // will create a custom GtkWidget with a custom drawing function
 	public native void native_setLayoutParams(long widget, int width, int height, int gravity, float weight);
 	protected native void native_destructor(long widget);
-	protected native void native_measure(long widget, int widthMeasureSpec, int heightMeasureSpec);
+	/**
+	 * We decide between simple widgets which handles MEASURE_SPEC_AT_MOST the same way as
+	 * MEASURE_SPEC_EXACTLY, and complex widgets which handles MEASURE_SPEC_AT_MOST by measuring the content
+	 */
+	protected native void native_measure(long widget, int widthMeasureSpec, int heightMeasureSpec, boolean isComplex);
 	protected native void native_layout(long widget, int l, int t, int r, int b);
 	protected native void native_requestLayout(long widget);
 
@@ -913,7 +917,7 @@ public class View extends Object {
 	};
 
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		native_measure(widget, widthMeasureSpec, heightMeasureSpec);
+		native_measure(widget, widthMeasureSpec, heightMeasureSpec, false);
 	}
 
 	public void setPressed(boolean pressed) {
