@@ -66,6 +66,11 @@ public class TextView extends View {
 		setText(getContext().getResources().getText(resId));
 	}
 
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		native_measure(widget, widthMeasureSpec, heightMeasureSpec, true);
+	}
+
 	private native final void native_set_markup(int bool);
 
 	public native final void native_setText(String text);
