@@ -9,8 +9,7 @@
 
 #include "../generated_headers/android_media_AudioTrack.h"
 
-//#define PCM_DEVICE "sysdefault:CARD=Generic_1"
-#define PCM_DEVICE getenv("HAX_AUDIOTRACK_PCM_DEVICE")
+#define PCM_DEVICE "default"
 
 void helper_hw_params_init(snd_pcm_t *pcm_handle, snd_pcm_hw_params_t *params, unsigned int rate, unsigned int channels, snd_pcm_format_t format)
 {
@@ -46,9 +45,6 @@ JNIEXPORT void JNICALL Java_android_media_AudioTrack_native_1constructor(JNIEnv 
 	unsigned int period_time;
 
 	int ret;
-
-	if(!PCM_DEVICE)
-		return; // STUB
 
 	/* Open the PCM device in playback mode */
 	ret = snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, 0);
@@ -133,9 +129,6 @@ JNIEXPORT jint JNICALL Java_android_media_AudioTrack_getMinBufferSize(JNIEnv *en
 	}
 	// ---
 
-	if(!PCM_DEVICE)
-		return 256; // STUB
-
 	ret = snd_pcm_open(&pcm_handle, PCM_DEVICE, SND_PCM_STREAM_PLAYBACK, 0);
 	if (ret < 0)
 		printf("Error calling snd_pcm_open: %s\n", snd_strerror(ret));
@@ -168,9 +161,6 @@ void periodic_update_callback(snd_async_handler_t *pcm_callback)
 	struct jni_callback_data *d = snd_async_handler_get_callback_private(pcm_callback);
 	int getenv_ret;
 	int attach_ret = -1;
-
-	if(!PCM_DEVICE)
-		return; // STUB
 
 //	printf("periodic_update_callback called!\n");
 
@@ -229,9 +219,6 @@ JNIEXPORT void JNICALL Java_android_media_AudioTrack_native_1play(JNIEnv *env, j
 JNIEXPORT jint JNICALL Java_android_media_AudioTrack_native_1write(JNIEnv *env, jobject this, jbyteArray audioData, jint offsetInBytes, jint frames_to_write)
 {
 	int ret;
-
-	if(!PCM_DEVICE)
-		return 0; // STUB
 
 	snd_pcm_t *pcm_handle = _PTR(_GET_LONG_FIELD(this, "pcm_handle"));
 
