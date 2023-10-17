@@ -7,7 +7,7 @@ public class MediaCodecInfo {
 
 	public MediaCodecInfo(String name, String mime) {
 		this.name = name;
-		this.mime = mime;		
+		this.mime = mime;
 	}
 
 	public String getName() {

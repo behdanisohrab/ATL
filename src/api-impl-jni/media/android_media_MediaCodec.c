@@ -48,7 +48,8 @@ struct ATL_codec_context {
 
 static enum AVPixelFormat hw_pix_fmt = AV_PIX_FMT_NONE;
 
-JNIEXPORT jlong JNICALL Java_android_media_MediaCodec_native_1constructor(JNIEnv *env, jobject this, jstring codec_name) {
+JNIEXPORT jlong JNICALL Java_android_media_MediaCodec_native_1constructor(JNIEnv *env, jobject this, jstring codec_name)
+{
 	const char *name = (*env)->GetStringUTFChars(env, codec_name, NULL);
 	const AVCodec *codec = avcodec_find_decoder_by_name(name);
 	(*env)->ReleaseStringUTFChars(env, codec_name, name);
@@ -59,7 +60,8 @@ JNIEXPORT jlong JNICALL Java_android_media_MediaCodec_native_1constructor(JNIEnv
 	return _INTPTR(ctx);
 }
 
-JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1audio(JNIEnv *env, jobject this, jlong codec, jobject extradata, jint sample_rate, jint nb_channels) {
+JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1audio(JNIEnv *env, jobject this, jlong codec, jobject extradata, jint sample_rate, jint nb_channels)
+{
 	struct ATL_codec_context *ctx = _PTR(codec);
 	AVCodecContext *codec_ctx = ctx->codec;
 	jarray array_ref;
@@ -95,7 +97,8 @@ static const struct {
 	{ DRM_FORMAT_NV12, 2, { DRM_FORMAT_R8, DRM_FORMAT_GR88 } },
 };
 
-static uint32_t get_drm_frame_format(const AVDRMFrameDescriptor *drm_frame_desc) {
+static uint32_t get_drm_frame_format(const AVDRMFrameDescriptor *drm_frame_desc)
+{
 	if (drm_frame_desc->nb_layers == 1) {
 		return drm_frame_desc->layers[0].format;
 	}
@@ -114,7 +117,8 @@ static uint32_t get_drm_frame_format(const AVDRMFrameDescriptor *drm_frame_desc)
 	return DRM_FORMAT_INVALID;
 }
 
-static int check_hw_device_type(enum AVHWDeviceType type) {
+static int check_hw_device_type(enum AVHWDeviceType type)
+{
 	enum AVHWDeviceType t = AV_HWDEVICE_TYPE_NONE;
 	while (1) {
 		t = av_hwdevice_iterate_types(t);
@@ -129,7 +133,8 @@ static int check_hw_device_type(enum AVHWDeviceType type) {
 }
 
 static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,
-		const enum AVPixelFormat *pix_fmts) {
+		const enum AVPixelFormat *pix_fmts)
+{
 	for (size_t i = 0; pix_fmts[i] != AV_PIX_FMT_NONE; i++) {
 		if (pix_fmts[i] == hw_pix_fmt) {
 			return hw_pix_fmt;
@@ -141,7 +146,8 @@ static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,
 }
 
 static void handle_global(void *data, struct wl_registry *registry,
-		uint32_t name, const char *interface, uint32_t version) {
+		uint32_t name, const char *interface, uint32_t version)
+{
 	struct ATL_codec_context *ctx = data;
 	if (strcmp(interface, zwp_linux_dmabuf_v1_interface.name) == 0) {
 		ctx->video.zwp_linux_dmabuf_v1 =
@@ -153,7 +159,8 @@ static void handle_global(void *data, struct wl_registry *registry,
 }
 
 static void handle_global_remove(void *data, struct wl_registry *registry,
-		uint32_t name) {
+		uint32_t name)
+{
 	// This space is intentionally left blank
 }
 
@@ -163,7 +170,8 @@ static const struct wl_registry_listener registry_listener = {
 };
 
 static struct wl_buffer *import_drm_frame_desc(struct zwp_linux_dmabuf_v1 *zwp_linux_dmabuf_v1,
-		const AVDRMFrameDescriptor *drm_frame_desc, int width, int height) {
+		const AVDRMFrameDescriptor *drm_frame_desc, int width, int height)
+{
 	// VA-API drivers may use separate layers with one plane each, or a single
 	// layer with multiple planes. We need to handle both.
 	uint32_t drm_format = get_drm_frame_format(drm_frame_desc);
@@ -197,7 +205,8 @@ static struct wl_buffer *import_drm_frame_desc(struct zwp_linux_dmabuf_v1 *zwp_l
 		width, height, drm_format, 0);
 }
 
-static void handle_buffer_release(void *data, struct wl_buffer *buffer) {
+static void handle_buffer_release(void *data, struct wl_buffer *buffer)
+{
 	AVFrame *frame = data;
 	av_frame_free(&frame);
 
@@ -208,7 +217,8 @@ static const struct wl_buffer_listener buffer_listener = {
 	.release = handle_buffer_release,
 };
 
-JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JNIEnv *env, jobject this, jlong codec, jobject csd0, jobject csd1, jobject surface_obj) {
+JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JNIEnv *env, jobject this, jlong codec, jobject csd0, jobject csd1, jobject surface_obj)
+{
 	struct ATL_codec_context *ctx = _PTR(codec);
 	AVCodecContext *codec_ctx = ctx->codec;
 	jarray array_ref;
@@ -280,7 +290,8 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JN
 	ctx->video.surface_height = gtk_widget_get_height(native_window->surface_view_widget);
 }
 
-JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1start(JNIEnv *env, jobject this, jlong codec) {
+JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1start(JNIEnv *env, jobject this, jlong codec)
+{
 	struct ATL_codec_context *ctx = _PTR(codec);
 	AVCodecContext *codec_ctx = ctx->codec;
 
@@ -335,7 +346,8 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1start(JNIEnv *env, 
 
 #define INFO_TRY_AGAIN_LATER -1
 
-JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1queueInputBuffer(JNIEnv *env, jobject this, jlong codec, jobject buffer, jlong presentationTimeUs) {
+JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1queueInputBuffer(JNIEnv *env, jobject this, jlong codec, jobject buffer, jlong presentationTimeUs)
+{
 	jarray array_ref;
 	jbyte *array;
 	int ret;
@@ -355,7 +367,8 @@ JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1queueInputBuffer(JN
 	return ret;
 }
 
-JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1dequeueOutputBuffer(JNIEnv *env, jobject this, jlong codec, jobject buffer, jobject buffer_info) {
+JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1dequeueOutputBuffer(JNIEnv *env, jobject this, jlong codec, jobject buffer, jobject buffer_info)
+{
 	struct ATL_codec_context *ctx = _PTR(codec);
 	AVCodecContext *codec_ctx = ctx->codec;
 	AVFrame *frame = av_frame_alloc();
@@ -394,7 +407,8 @@ JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1dequeueOutputBuffer
 // callback to perform wayland stuff on main thread
 struct render_frame_data {AVFrame *frame; struct ATL_codec_context *ctx;};
 
-static gboolean render_frame(void *data) {
+static gboolean render_frame(void *data)
+{
 	struct render_frame_data *d = (struct render_frame_data *)data;
 	AVFrame *frame = d->frame;
 	struct ATL_codec_context *ctx = d->ctx;
@@ -431,7 +445,8 @@ static gboolean render_frame(void *data) {
 	return G_SOURCE_REMOVE;
 }
 
-JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1releaseOutputBuffer(JNIEnv *env, jobject this, jlong codec, jobject buffer, jboolean render) {
+JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1releaseOutputBuffer(JNIEnv *env, jobject this, jlong codec, jobject buffer, jboolean render)
+{
 	struct ATL_codec_context *ctx = _PTR(codec);
 	jarray array_ref;
 	jbyte *array;
