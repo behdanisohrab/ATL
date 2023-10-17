@@ -6,9 +6,11 @@ import java.util.ArrayList;
 public class InputDevice {
 
 	public static final int SOURCE_CLASS_BUTTON = 0x00000001;
+	public static final int SOURCE_CLASS_POINTER = 0x00000002;
 	public static final int SOURCE_CLASS_JOYSTICK = 0x00000010;
 	public static final int SOURCE_CLASS_GAMEPAD = 0x00000400 | SOURCE_CLASS_BUTTON;
 	public static final int SOURCE_KEYBOARD = 0x00000100 | SOURCE_CLASS_BUTTON;
+	public static final int SOURCE_TOUCHSCREEN = 0x00001000 | SOURCE_CLASS_POINTER;
 
 
 	public static int[] getDeviceIds() {
@@ -19,8 +21,32 @@ public class InputDevice {
 		return new InputDevice();
 	}
 
+	public int getId() {
+		return 0; // might work?
+	}
+
+	public int getProductId() {
+		return 0x69;
+	}
+
+	public int getVendorId() {
+		return 0x420;
+	}
+
+	public String getName() {
+		return "FIXME-name";
+	}
+
+	public String getDescriptor() {
+		return "FIXME-descriptor";
+	}
+
+	public boolean isVirtual() {
+		return false;
+	}
+
 	public int getSources() {
-		return 0; // FIXME
+		return 2 | 4098 /* SOURCE_CLASS_POINTER | SOURCE_TOUCHSCREEN */; // FIXME
 	}
 
 	/*

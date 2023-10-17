@@ -1353,8 +1353,10 @@ public final class MotionEvent extends InputEvent {
 	private static native long nativeGetEventTimeNanos(int nativePtr, int historyPos);
 	private static native float nativeGetRawAxisValue(int nativePtr,
 							  int axis, int pointerIndex, int historyPos);
-	private static native float nativeGetAxisValue(int nativePtr,
-						       int axis, int pointerIndex, int historyPos);
+	private static /*native*/ float nativeGetAxisValue(int nativePtr, int axis, int pointerIndex, int historyPos) {
+		try { throw new Exception(); } catch(Exception e) { e.printStackTrace(); System.exit(69); }
+		return 0;
+	}
 	private static native void nativeGetPointerCoords(int nativePtr,
 							  int pointerIndex, int historyPos, PointerCoords outPointerCoords);
 	private static native void nativeGetPointerProperties(int nativePtr,
@@ -1620,6 +1622,7 @@ public final class MotionEvent extends InputEvent {
 		}
 
 		MotionEvent ev = obtain();
+		ev.source = other.source;
 		ev.action = other.action;
 		ev.coord_x = other.coord_x;
 		ev.coord_y = other.coord_y;
@@ -1739,7 +1742,7 @@ public final class MotionEvent extends InputEvent {
 	 * @return The index associated with the action.
 	 */
 	public final int getActionIndex() {
-		return 1;
+		return 0; // FIXME
 	}
 
 	/**
@@ -1810,7 +1813,7 @@ public final class MotionEvent extends InputEvent {
 	 */
 	@Override
 	public final long getEventTime() {
-		return nativeGetEventTimeNanos(mNativePtr, HISTORY_CURRENT) / NS_PER_MS;
+		return System.currentTimeMillis();
 	}
 
 	/**
@@ -1829,7 +1832,7 @@ public final class MotionEvent extends InputEvent {
 	 */
 	@Override
 	public final long getEventTimeNano() {
-		return nativeGetEventTimeNanos(mNativePtr, HISTORY_CURRENT);
+		return System.currentTimeMillis() * 1000; // FIXME
 	}
 
 	/**
@@ -1975,7 +1978,8 @@ public final class MotionEvent extends InputEvent {
 	 * @see #TOOL_TYPE_MOUSE
 	 */
 	public final int getToolType(int pointerIndex) {
-		return nativeGetToolType(mNativePtr, pointerIndex);
+		return 0x1; // TOOL_TYPE_FINGER
+//		return nativeGetToolType(mNativePtr, pointerIndex);
 	}
 
 	/**
@@ -2053,7 +2057,8 @@ public final class MotionEvent extends InputEvent {
 	 * @see #AXIS_SIZE
 	 */
 	public final float getSize(int pointerIndex) {
-		return nativeGetAxisValue(mNativePtr, AXIS_SIZE, pointerIndex, HISTORY_CURRENT);
+		return 1; // arbitrary
+//		return nativeGetAxisValue(mNativePtr, AXIS_SIZE, pointerIndex, HISTORY_CURRENT);
 	}
 
 	/**
@@ -2067,7 +2072,8 @@ public final class MotionEvent extends InputEvent {
 	 * @see #AXIS_TOUCH_MAJOR
 	 */
 	public final float getTouchMajor(int pointerIndex) {
-		return nativeGetAxisValue(mNativePtr, AXIS_TOUCH_MAJOR, pointerIndex, HISTORY_CURRENT);
+		return 2.5f; // arbitrary
+//		return nativeGetAxisValue(mNativePtr, AXIS_TOUCH_MAJOR, pointerIndex, HISTORY_CURRENT);
 	}
 
 	/**
@@ -2081,7 +2087,8 @@ public final class MotionEvent extends InputEvent {
 	 * @see #AXIS_TOUCH_MINOR
 	 */
 	public final float getTouchMinor(int pointerIndex) {
-		return nativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, pointerIndex, HISTORY_CURRENT);
+		return 2.5f; // arbitrary
+//		return nativeGetAxisValue(mNativePtr, AXIS_TOUCH_MINOR, pointerIndex, HISTORY_CURRENT);
 	}
 
 	/**
@@ -2132,7 +2139,8 @@ public final class MotionEvent extends InputEvent {
 	 * @see #AXIS_ORIENTATION
 	 */
 	public final float getOrientation(int pointerIndex) {
-		return nativeGetAxisValue(mNativePtr, AXIS_ORIENTATION, pointerIndex, HISTORY_CURRENT);
+		return 0; // arbitrary
+//		return nativeGetAxisValue(mNativePtr, AXIS_ORIENTATION, pointerIndex, HISTORY_CURRENT);
 	}
 
 	/**
@@ -2268,7 +2276,8 @@ public final class MotionEvent extends InputEvent {
 	 * @return Returns the number of historical points in the event.
 	 */
 	public final int getHistorySize() {
-		return nativeGetHistorySize(mNativePtr);
+		return 0;
+//		return nativeGetHistorySize(mNativePtr);
 	}
 
 	/**
@@ -3008,17 +3017,17 @@ public final class MotionEvent extends InputEvent {
 			msg.append(", id[").append(i).append("]=").append(getPointerId(i));
 			msg.append(", x[").append(i).append("]=").append(getX(i));
 			msg.append(", y[").append(i).append("]=").append(getY(i));
-			msg.append(", toolType[").append(i).append("]=").append(toolTypeToString(getToolType(i)));
+			msg.append(", toolType[").append(i).append("]=").append(/*toolTypeToString(getToolType(i))*/ "FIXME");
 		}
 
-		msg.append(", buttonState=").append(MotionEvent.buttonStateToString(getButtonState()));
+		msg.append(", buttonState=").append(/*MotionEvent.buttonStateToString(getButtonState())*/ "FIXME");
 		msg.append(", metaState=").append(/*KeyEvent.metaStateToString(getMetaState())*/ "FIXME");
-		msg.append(", flags=0x").append(Integer.toHexString(getFlags()));
-		msg.append(", edgeFlags=0x").append(Integer.toHexString(getEdgeFlags()));
+		msg.append(", flags=0x").append(/*Integer.toHexString(getFlags())*/ "FIXME");
+		msg.append(", edgeFlags=0x").append(/*Integer.toHexString(getEdgeFlags())*/ "FIXME");
 		msg.append(", pointerCount=").append(pointerCount);
-		msg.append(", historySize=").append(getHistorySize());
-		msg.append(", eventTime=").append(getEventTime());
-		msg.append(", downTime=").append(getDownTime());
+		msg.append(", historySize=").append(/*getHistorySize()*/ "FIXME");
+		msg.append(", eventTime=").append(/*getEventTime()*/ "FIXME");
+		msg.append(", downTime=").append(/*getDownTime()*/ "FIXME");
 		msg.append(", deviceId=").append(getDeviceId());
 		msg.append(", source=0x").append(Integer.toHexString(getSource()));
 		msg.append(" }");

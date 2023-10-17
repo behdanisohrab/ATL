@@ -78,6 +78,7 @@ JNIEXPORT jlong JNICALL Java_android_widget_FrameLayout_native_1constructor(JNIE
 	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	GtkWidget *frame_layout = frame_layout_widget_new();
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), frame_layout);
+	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 	gtk_widget_set_name(GTK_WIDGET(frame_layout), "FrameLayout");
 	return _INTPTR(frame_layout);
 }

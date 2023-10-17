@@ -32,6 +32,7 @@ import android.os.Environment;
 import android.os.UserHandle;
 import android.util.AndroidException;
 import android.util.DisplayMetrics;
+import android.util.Slog;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,8 @@ class Drawable {}
  * You can find this class through {@link Context#getPackageManager}.
  */
 public class PackageManager {
+
+	private final static String TAG = "PackageManager";
 
 	/**
 	 * This exception is thrown when a given package, application, or component
@@ -2131,6 +2134,7 @@ public class PackageManager {
 	 * false.
 	 */
 	public boolean hasSystemFeature(String name) {
+		Slog.e(TAG, "!!!!!!! hasSystemFeature: case >" + name + "< is not implemented yet");
 		return false; // FIXME
 	}
 

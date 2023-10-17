@@ -7,33 +7,73 @@
 
 #include "../generated_headers/android_view_View.h"
 
-#define SOURCE_TOUCHSCREEN 4098
+#define SOURCE_TOUCHSCREEN 0x1002
 
-struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; };
+struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; unsigned int num_clicks};
 
-static void call_ontouch_callback(int action, float x, float y, struct touch_callback_data *d)
+static void call_ontouch_callback(int action, double x, double y, struct touch_callback_data *d)
 {
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_TOUCHSCREEN, action, x, y);
+	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_TOUCHSCREEN, action, (float)x, (float)y);
 
-	(*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onTouch", "(Landroid/view/View;Landroid/view/MotionEvent;)Z"), d->this, motion_event);
+	/* NULL listener means the callback was registered for onTouchEvent */
+	if(d->on_touch_listener)
+		(*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onTouch", "(Landroid/view/View;Landroid/view/MotionEvent;)Z"), d->this, motion_event);
+	else
+		(*env)->CallBooleanMethod(env, d->this, _METHOD(d->on_touch_listener_class, "onTouchEvent", "(Landroid/view/MotionEvent;)Z"), motion_event);
 
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
 	(*env)->DeleteLocalRef(env, motion_event);
 }
-
-static void on_press(GtkGestureClick *gesture, int n_press, double x, double y, struct touch_callback_data *d)
+static void gdk_event_get_widget_relative_position(GdkEvent *event, GtkWidget *widget, double *x, double *y)
 {
-	call_ontouch_callback(MOTION_EVENT_ACTION_DOWN, (float)x, (float)y, d);
+	double off_x;
+	double off_y;
+	gdk_event_get_position(event, x, y);
+	GtkWidget *window = GTK_WIDGET(gtk_widget_get_native(widget));
+	gtk_native_get_surface_transform(GTK_NATIVE(window), &off_x, &off_y);
+	gtk_widget_translate_coordinates(window, widget, *x - off_x, *y - off_y, x, y);
 }
 
-static void on_release(GtkGestureClick *gesture, int n_press, double x, double y, struct touch_callback_data *d)
+// TODO: find a way to reconcile this with libandroid/input.c?
+static gboolean on_event(GtkEventControllerLegacy *event_controller, GdkEvent *event, struct touch_callback_data *d)
 {
-	call_ontouch_callback(MOTION_EVENT_ACTION_UP, (float)x, (float)y, d);
+	double x;
+	double y;
+
+	GtkWidget *widget = gtk_event_controller_get_widget(GTK_EVENT_CONTROLLER(event_controller));
+
+	// TODO: this doesn't work for multitouch
+	switch(gdk_event_get_event_type(event)) {
+		case GDK_BUTTON_PRESS:
+			d->num_clicks = 1;
+		case GDK_TOUCH_BEGIN:
+			gdk_event_get_widget_relative_position(event, widget, &x, &y);
+			call_ontouch_callback(MOTION_EVENT_ACTION_DOWN, x, y, d);
+			break;
+		case GDK_BUTTON_RELEASE:
+			d->num_clicks = 0;
+		case GDK_TOUCH_END:
+			gdk_event_get_widget_relative_position(event, widget, &x, &y);
+			call_ontouch_callback(MOTION_EVENT_ACTION_UP, x, y, d);
+			break;
+		case GDK_MOTION_NOTIFY:
+			if(d->num_clicks == 0)
+				break;
+		case GDK_TOUCH_UPDATE:
+			printf("d->num_clicks: %u\n", d->num_clicks);
+			gdk_event_get_widget_relative_position(event, widget, &x, &y);
+			call_ontouch_callback(MOTION_EVENT_ACTION_MOVE, x, y, d);
+			break;
+		default:
+			break;
+	}
+
+	return true;
 }
 
 static void on_click(GtkGestureClick *gesture, int n_press, double x, double y, struct touch_callback_data *d)
@@ -47,24 +87,31 @@ static void on_click(GtkGestureClick *gesture, int n_press, double x, double y, 
 		(*env)->ExceptionDescribe(env);
 }
 
-JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener(JNIEnv *env, jobject this, jobject on_touch_listener)
+void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject on_touch_listener)
 {
-	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
-
 	JavaVM *jvm;
 	(*env)->GetJavaVM(env, &jvm);
 
 	struct touch_callback_data *callback_data = malloc(sizeof(struct touch_callback_data));
 	callback_data->jvm = jvm;
 	callback_data->this = _REF(this);
- 	callback_data->on_touch_listener = _REF(on_touch_listener);
-	callback_data->on_touch_listener_class = _REF(_CLASS(callback_data->on_touch_listener));
+ 	callback_data->on_touch_listener = on_touch_listener ? _REF(on_touch_listener) : NULL;
+	callback_data->on_touch_listener_class = on_touch_listener ? _REF(_CLASS(callback_data->on_touch_listener)) : _REF(_CLASS(callback_data->this));
+	callback_data->num_clicks = 0;
 
-	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_click_new());
+	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_event_controller_legacy_new());
+	gtk_event_controller_set_name(controller, "the Java_android_view_View_setOnTouchListener one");
+	gtk_event_controller_set_propagation_phase(controller, GTK_PHASE_CAPTURE); // FIXME?
 
-	g_signal_connect(controller, "pressed", G_CALLBACK(on_press), callback_data);
-	g_signal_connect(controller, "released", G_CALLBACK(on_release), callback_data);
+	g_signal_connect(controller, "event", G_CALLBACK(on_event), callback_data);
 	gtk_widget_add_controller(widget, controller);
+}
+
+JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener(JNIEnv *env, jobject this, jobject on_touch_listener)
+{
+	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
+
+	_setOnTouchListener(env, this, widget, on_touch_listener);
 }
 
 JNIEXPORT void JNICALL Java_android_view_View_setOnClickListener(JNIEnv *env, jobject this, jobject on_click_listener)
@@ -81,6 +128,7 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnClickListener(JNIEnv *env, jo
 	callback_data->this = _REF(this);
  	callback_data->on_touch_listener = _REF(on_click_listener);
 	callback_data->on_touch_listener_class = _REF(_CLASS(callback_data->on_touch_listener));
+	callback_data->num_clicks = 0;
 
 	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_click_new());
 
@@ -198,11 +246,12 @@ JNIEXPORT void JNICALL Java_android_view_View_setVisibility(JNIEnv *env, jobject
 JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
 	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
-	GtkWidget *area = gtk_drawing_area_new();
-	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), area);
+	// FIXME: we don't really care all that much what this is, since drawing into empty widgets is done by WrapperWidget, but a drawing area is just confusing
+	GtkWidget *widget = gtk_drawing_area_new();
+	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), widget);
 	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 
-	return _INTPTR(area);
+	return _INTPTR(widget);
 }
 
 JNIEXPORT void JNICALL Java_android_view_View_nativeInvalidate(JNIEnv *env, jclass, jlong widget_ptr) {

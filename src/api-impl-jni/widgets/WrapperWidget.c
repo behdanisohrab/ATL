@@ -5,6 +5,8 @@
 
 #include "../sk_area/sk_area.h"
 
+#include "../generated_headers/android_view_View.h"
+
 #include "WrapperWidget.h"
 
 G_DEFINE_TYPE(WrapperWidget, wrapper_widget, GTK_TYPE_WIDGET)
@@ -121,5 +123,11 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 		wrapper->measure_method = measure_method;
 		// add a callback for when the widget is mapped, which will call onMeasure to figure out what size the widget wants to be
 		g_signal_connect(wrapper, "map", G_CALLBACK(on_mapped), NULL);
+	}
+
+	jmethodID ontouchevent_method = _METHOD(_CLASS(jobj), "onTouchEvent", "(Landroid/view/MotionEvent;)Z");
+	if (ontouchevent_method != handle_cache.view.onTouchEvent) {
+		/* use gtk_widget_get_first_child since the jobject may not have the "widget" variable set yet */
+		_setOnTouchListener(env, jobj, gtk_widget_get_first_child(wrapper), NULL);
 	}
 }
