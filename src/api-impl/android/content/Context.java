@@ -362,6 +362,11 @@ public class Context extends Object {
 
 	public boolean bindService(Intent intent, ServiceConnection serviceConnection, int dummy3) {
 		try {
+			if(intent.getComponent() == null) {
+				Slog.w(TAG, "Context.bindService: intent.getComponent() is null");
+				return false; // maybe?
+			}
+
 			Class<? extends Service> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Service.class);
 			if (!runningServices.containsKey(cls)) {
 				Service service = cls.getConstructor().newInstance();

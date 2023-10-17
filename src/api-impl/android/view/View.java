@@ -874,6 +874,10 @@ public class View extends Object {
 		this.gravity = gravity;
 	}
 
+	public boolean onTouchEvent(MotionEvent event) {
+		return true;
+	}
+
 	public native void setOnTouchListener(OnTouchListener l);
 	public native void setOnClickListener(OnClickListener l);
 	public /*native*/ void setOnSystemUiVisibilityChangeListener(OnSystemUiVisibilityChangeListener l) {}

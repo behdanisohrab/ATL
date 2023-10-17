@@ -125,6 +125,7 @@ void set_up_handle_cache(JNIEnv *env)
 	handle_cache.view.getScrollX = _METHOD(handle_cache.view.class, "getScrollX", "()I");
 	handle_cache.view.getScrollY = _METHOD(handle_cache.view.class, "getScrollY", "()I");
 	handle_cache.view.performClick = _METHOD(handle_cache.view.class, "performClick", "()Z");
+	handle_cache.view.onTouchEvent = _METHOD(handle_cache.view.class, "onTouchEvent", "(Landroid/view/MotionEvent;)Z");
 
 	handle_cache.asset_manager.class = _REF((*env)->FindClass(env, "android/content/res/AssetManager"));
 	handle_cache.asset_manager.extractFromAPK = _STATIC_METHOD(handle_cache.asset_manager.class, "extractFromAPK", "(Ljava/lang/String;Ljava/lang/String;)V");

@@ -81,6 +81,7 @@ struct handle_cache {
 		jmethodID getScrollX;
 		jmethodID getScrollY;
 		jmethodID performClick;
+		jmethodID onTouchEvent;
 	} view;
 	struct {
 		jclass class;

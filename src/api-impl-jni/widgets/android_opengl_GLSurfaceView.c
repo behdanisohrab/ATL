@@ -62,6 +62,7 @@ JNIEXPORT jlong JNICALL Java_android_opengl_GLSurfaceView_native_1constructor(JN
 	gtk_widget_set_vexpand(wrapper, TRUE);
 	GtkWidget *gl_area = gtk_gl_area_new();
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), gl_area);
+	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 	return _INTPTR(gl_area);
 }
 
@@ -460,54 +461,9 @@ check_gl_error();
 	return TRUE;
 }
 
-struct jni_callback_data { JavaVM *jvm; jobject this; jclass this_class; };
-
-static void call_ontouch_callback(GtkEventControllerLegacy* event_controller, int action, double x, double y, struct jni_callback_data *d)
-{
-	JNIEnv *env;
-	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
-
-	// execute the Java callback function
-
-	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_TOUCHSCREEN, action, (float)x, (float)y);
-
-	(*env)->CallBooleanMethod(env, d->this, handle_cache.gl_surface_view.onTouchEvent, motion_event);
-
-	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);
-
-	(*env)->DeleteLocalRef(env, motion_event);
-}
-
-// TODO: find a way to reconcile this with libandroid/input.c
-static gboolean on_event(GtkEventControllerLegacy* self, GdkEvent* event, struct jni_callback_data *d)
-{
-	double x;
-	double y;
-
-	// TODO: this doesn't work for multitouch
-	switch(gdk_event_get_event_type(event)) {
-		case GDK_BUTTON_PRESS:
-		case GDK_TOUCH_BEGIN:
-			gdk_event_get_position(event, &x, &y);
-			call_ontouch_callback(self, MOTION_EVENT_ACTION_DOWN, x, y, d);
-			break;
-		case GDK_BUTTON_RELEASE:
-		case GDK_TOUCH_END:
-			gdk_event_get_position(event, &x, &y);
-			call_ontouch_callback(self, MOTION_EVENT_ACTION_UP, x, y, d);
-			break;
-		case GDK_MOTION_NOTIFY:
-		case GDK_TOUCH_UPDATE:
-			gdk_event_get_position(event, &x, &y);
-			call_ontouch_callback(self, MOTION_EVENT_ACTION_MOVE, x, y, d);
-			break;
-	}
-}
-
 extern gboolean tick_callback(GtkWidget* widget, GdkFrameClock* frame_clock, gpointer user_data);
 
-JNIEXPORT void JNICALL Java_android_opengl_GLSurfaceView_native_1set_1renderer(JNIEnv *env, jobject this, jobject renderer, jboolean implements_onTouchEvent)
+JNIEXPORT void JNICALL Java_android_opengl_GLSurfaceView_native_1set_1renderer(JNIEnv *env, jobject this, jobject renderer)
 {
 	GtkWidget *gl_area = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
 
@@ -534,21 +490,6 @@ JNIEXPORT void JNICALL Java_android_opengl_GLSurfaceView_native_1set_1renderer(J
 
 	g_signal_connect(gl_area, "render", G_CALLBACK(render), gl_callback_data);
 	g_signal_connect(gl_area, "realize", G_CALLBACK(on_realize), gl_callback_data);
-
-	if(implements_onTouchEvent) {
-		struct jni_callback_data *callback_data = malloc(sizeof(struct jni_callback_data));
-		callback_data->jvm = jvm;
-		callback_data->this = _REF(this);
-		callback_data->this_class = _REF(_CLASS(this));
-
-		printf("callback_data->jvm: %p\n", callback_data->jvm);
-
-		GtkEventController *controller = gtk_event_controller_legacy_new();
-		gtk_widget_add_controller(gl_area, controller);
-		g_signal_connect(controller, "event", G_CALLBACK(on_event), callback_data);
-
-		printf("GREP FOR MEEEE -- //FIXME\n");
-	}
 
 	gtk_widget_add_tick_callback(gl_area, tick_callback, NULL, NULL);
 

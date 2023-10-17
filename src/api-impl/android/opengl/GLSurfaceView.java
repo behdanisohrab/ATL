@@ -42,10 +42,6 @@ public class GLSurfaceView extends View implements SurfaceHolder.Callback { // T
 	// TODO: make use of this
 	public void onResume() {}
 
-	public boolean onTouchEvent(MotionEvent event) {
-		return true;
-	}
-
 	public void setEGLConfigChooser(EGLConfigChooser chooser) {
 		config_chooser = chooser;
 	}
@@ -74,22 +70,12 @@ public class GLSurfaceView extends View implements SurfaceHolder.Callback { // T
 		return false;
 	}
 
-	private native void native_set_renderer(Renderer renderer, boolean implements_onTouchEvent);
+	private native void native_set_renderer(Renderer renderer);
 
 	public void setRenderer(Renderer renderer) {
 		System.out.println("setRenderer(" + renderer + ") called");
 
-		boolean implements_onTouchEvent;
-
-		try {
-			Class[] cArg = new Class[1];
-			cArg[0] = MotionEvent.class;
-			implements_onTouchEvent = !(this.getClass().getMethod("onTouchEvent", cArg).getDeclaringClass() == View.class);
-		} catch (NoSuchMethodException e) {
-			implements_onTouchEvent = false;
-		}
-
-		native_set_renderer(renderer, implements_onTouchEvent);
+		native_set_renderer(renderer);
 /*		checkRenderThreadState();
 		if (mEGLConfigChooser == null) {
 			mEGLConfigChooser = new SimpleEGLConfigChooser(true);

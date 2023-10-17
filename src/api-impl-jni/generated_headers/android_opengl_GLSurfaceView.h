@@ -210,10 +210,10 @@ JNIEXPORT jlong JNICALL Java_android_opengl_GLSurfaceView_native_1constructor
 /*
  * Class:     android_opengl_GLSurfaceView
  * Method:    native_set_renderer
- * Signature: (Landroid/opengl/GLSurfaceView/Renderer;Z)V
+ * Signature: (Landroid/opengl/GLSurfaceView/Renderer;)V
  */
 JNIEXPORT void JNICALL Java_android_opengl_GLSurfaceView_native_1set_1renderer
-  (JNIEnv *, jobject, jobject, jboolean);
+  (JNIEnv *, jobject, jobject);
 
 #ifdef __cplusplus
 }

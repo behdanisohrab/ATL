@@ -423,14 +423,6 @@ JNIEXPORT jfloat JNICALL Java_android_view_MotionEvent_nativeGetRawAxisValue
 
 /*
  * Class:     android_view_MotionEvent
- * Method:    nativeGetAxisValue
- * Signature: (IIII)F
- */
-JNIEXPORT jfloat JNICALL Java_android_view_MotionEvent_nativeGetAxisValue
-  (JNIEnv *, jclass, jint, jint, jint, jint);
-
-/*
- * Class:     android_view_MotionEvent
  * Method:    nativeGetPointerCoords
  * Signature: (IIILandroid/view/MotionEvent/PointerCoords;)V
  */
