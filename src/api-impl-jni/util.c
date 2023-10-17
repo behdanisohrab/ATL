@@ -197,7 +197,8 @@ int android_log_printf(android_LogPriority prio, const char *tag, const char *fm
 	return ret;
 }
 
-void *get_nio_buffer(JNIEnv *env, jobject buffer, jarray *array_ref, jbyte **array) {
+void *get_nio_buffer(JNIEnv *env, jobject buffer, jarray *array_ref, jbyte **array)
+{
 	jclass class;
 	void *pointer;
 	int elementSizeShift, position;
@@ -222,12 +223,14 @@ void *get_nio_buffer(JNIEnv *env, jobject buffer, jarray *array_ref, jbyte **arr
 	return pointer;
 }
 
-void release_nio_buffer(JNIEnv *env, jarray array_ref, jbyte *array) {
+void release_nio_buffer(JNIEnv *env, jarray array_ref, jbyte *array)
+{
 	if (array_ref)
 		(*env)->ReleasePrimitiveArrayCritical(env, array_ref, array, 0);
 }
 
-int get_nio_buffer_size(JNIEnv *env, jobject buffer) {
+int get_nio_buffer_size(JNIEnv *env, jobject buffer)
+{
 	jclass class = _CLASS(buffer);;
 	int limit = (*env)->GetIntField(env, buffer, _FIELD_ID(class, "limit", "I"));
 	int position = (*env)->GetIntField(env, buffer, _FIELD_ID(class, "position", "I"));
