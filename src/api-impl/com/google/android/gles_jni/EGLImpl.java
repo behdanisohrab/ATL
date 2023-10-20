@@ -1,5 +1,24 @@
+/*
+ * parts of this file Copyright (C) 2006 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.google.android.gles_jni;
 
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import javax.microedition.khronos.egl.*;
 
 public class EGLImpl implements EGL10 {
@@ -36,21 +55,78 @@ public class EGLImpl implements EGL10 {
 		return ret;
 	}
 
+	public EGLSurface eglCreateWindowSurface(EGLDisplay display, EGLConfig config, Object native_window, int[] attrib_list) {
+		Surface sur = null;
+		if (native_window instanceof SurfaceView) {
+			SurfaceView surfaceView = (SurfaceView)native_window;
+			sur = surfaceView.getHolder().getSurface();
+		} else if (native_window instanceof SurfaceHolder) {
+			SurfaceHolder holder = (SurfaceHolder)native_window;
+			sur = holder.getSurface();
+		} else if (native_window instanceof Surface) {
+			sur = (Surface)native_window;
+		}
+
+		long eglSurfaceId;
+		if (sur != null) {
+			eglSurfaceId = native_eglCreateWindowSurface(display.native_egl_display, config.native_egl_config, sur, attrib_list);
+		} /*else if (native_window instanceof SurfaceTexture) {
+			eglSurfaceId = native_eglCreateWindowSurfaceTexture(display, config,
+								      native_window, attrib_list);
+		}*/ else {
+			throw new java.lang.UnsupportedOperationException(
+			    "eglCreateWindowSurface() can only be called with an instance of "
+			    +
+			    "Surface, SurfaceView, SurfaceHolder or [FIXME]SurfaceTexture at the moment.");
+		}
+
+		if (eglSurfaceId == 0) {
+			return EGL10.EGL_NO_SURFACE;
+		}
+		return new EGLSurfaceImpl(eglSurfaceId);
+	}
+
+	public EGLDisplay eglGetDisplay(Object display) {
+		long native_display = native_eglGetDisplay(display);
+		if (native_display == 0)
+			return EGL10.EGL_NO_DISPLAY;
+
+		return new EGLDisplay(native_display);
+	}
+
+	public boolean eglInitialize(EGLDisplay display, int[] major_minor) {
+		return native_eglInitialize(display.native_egl_display, major_minor);
+	}
+
+	public boolean eglGetConfigAttrib(EGLDisplay display, EGLConfig config, int attribute, int[] value) {
+		return native_eglGetConfigAttrib(display.native_egl_display, config.native_egl_config, attribute, value);
+	}
+
+	public boolean eglMakeCurrent(EGLDisplay display, EGLSurface draw, EGLSurface read, EGLContext context) {
+		return native_eglMakeCurrent(display.native_egl_display, ((EGLSurfaceImpl)draw).mEGLSurface, ((EGLSurfaceImpl)read).mEGLSurface, context.native_egl_context);
+	}
+
+	public boolean eglSwapBuffers(EGLDisplay display, EGLSurface surface) {
+		return native_eglSwapBuffers(display.native_egl_display, ((EGLSurfaceImpl)surface).mEGLSurface);
+	}
+
+	public boolean eglDestroySurface(EGLDisplay display, EGLSurface surface) {
+		return native_eglDestroySurface(display.native_egl_display, ((EGLSurfaceImpl)surface).mEGLSurface);
+	}
+
+	public boolean eglDestroyContext(EGLDisplay display, EGLContext context) {
+		return native_eglDestroyContext(display.native_egl_display, context.native_egl_context);
+	}
+
+	/* STUBS */
 	public boolean eglCopyBuffers(EGLDisplay display, EGLSurface surface, Object native_pixmap) { return false; }
 	public EGLSurface eglCreatePbufferSurface(EGLDisplay display, EGLConfig config, int[] attrib_list) { return null; }
 	public EGLSurface eglCreatePixmapSurface(EGLDisplay display, EGLConfig config, Object native_pixmap, int[] attrib_list) { return null; }
-	public EGLSurface eglCreateWindowSurface(EGLDisplay display, EGLConfig config, Object native_window, int[] attrib_list) { return null; }
-	public boolean eglDestroyContext(EGLDisplay display, EGLContext context) { return false; }
-	public boolean eglDestroySurface(EGLDisplay display, EGLSurface surface) { return false; }
-	public boolean eglGetConfigAttrib(EGLDisplay display, EGLConfig config, int attribute, int[] value) { return false; }
 	public boolean eglGetConfigs(EGLDisplay display, EGLConfig[] configs, int config_size, int[] num_config) { return false; }
 	public EGLContext eglGetCurrentContext() { return null; }
 	public EGLDisplay eglGetCurrentDisplay() { return null; }
 	public EGLSurface eglGetCurrentSurface(int readdraw) { return null; }
-	public EGLDisplay eglGetDisplay(Object native_display) { return null; }
 	public int eglGetError() { return EGL_SUCCESS; } // don't let yourself get fooled, this is also a stub :P
-	public boolean eglInitialize(EGLDisplay display, int[] major_minor) { return false; }
-	public boolean eglMakeCurrent(EGLDisplay display, EGLSurface draw, EGLSurface read, EGLContext context) { return false; }
 	public boolean eglQueryContext(EGLDisplay display, EGLContext context, int attribute, int[] value) { return false; }
 	public String eglQueryString(EGLDisplay display, int name) { return "FIXME"; }
 	public boolean eglQuerySurface(EGLDisplay display, EGLSurface surface, int attribute, int[] value) { return false; }
@@ -58,8 +134,16 @@ public class EGLImpl implements EGL10 {
 	 * @hide *
 	 */
 	public boolean eglReleaseThread() { return false; }
-	public boolean eglSwapBuffers(EGLDisplay display, EGLSurface surface) { return false; }
 	public boolean eglTerminate(EGLDisplay display) { return false; }
 	public boolean eglWaitGL() { return false; }
 	public boolean eglWaitNative(int engine, Object bindTarget) { return false; }
+
+	private native long native_eglCreateWindowSurface(long native_egl_display, long native_egl_config, Surface surface, int[] attrib_list);
+	private native long native_eglGetDisplay(Object native_display);
+	private native boolean native_eglInitialize(long native_egl_display, int[] major_minor);
+	private native boolean native_eglGetConfigAttrib(long native_egl_display, long native_edl_config, int attribute, int[] value);
+	private native boolean native_eglMakeCurrent(long native_egl_display, long native_draw_surface, long native_read_surface, long native_context);
+	private native boolean native_eglSwapBuffers(long native_egl_display, long native_surface);
+	private native boolean native_eglDestroySurface(long native_egl_display, long native_surface);
+	private native boolean native_eglDestroyContext(long native_egl_display, long native_context);
 }

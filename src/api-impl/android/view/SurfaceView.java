@@ -23,9 +23,15 @@ public class SurfaceView extends View {
 		mSurface.widget = this.widget;
 	}
 
-	private void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+	private void surfaceChanged(int format, int width, int height) {
 		for (SurfaceHolder.Callback c : mCallbacks) {
 			c.surfaceChanged(mSurfaceHolder, format, width, height);
+		}
+	}
+
+	private void surfaceCreated() {
+		for (SurfaceHolder.Callback c : mCallbacks) {
+			c.surfaceCreated(mSurfaceHolder);
 		}
 	}
 

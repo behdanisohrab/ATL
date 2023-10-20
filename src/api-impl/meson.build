@@ -440,6 +440,7 @@ hax_jar = jar('hax', [
               	'com/android/org/conscrypt/OpenSSLSocketFactoryImpl.java',
               	'com/android/org/conscrypt/SSLParametersImpl.java',
               	'com/google/android/gles_jni/EGLImpl.java',
+              	'com/google/android/gles_jni/EGLSurfaceImpl.java',
               	'com/google/android/gles_jni/GLImpl.java',
               	'com/google/android/vending/expansion/downloader/IDownloaderClient.java',
               	'com/google/android/vending/expansion/downloader/impl/DownloaderService.java',

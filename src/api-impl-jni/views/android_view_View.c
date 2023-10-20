@@ -65,7 +65,6 @@ static gboolean on_event(GtkEventControllerLegacy *event_controller, GdkEvent *e
 			if(d->num_clicks == 0)
 				break;
 		case GDK_TOUCH_UPDATE:
-			printf("d->num_clicks: %u\n", d->num_clicks);
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
 			call_ontouch_callback(MOTION_EVENT_ACTION_MOVE, x, y, d);
 			break;

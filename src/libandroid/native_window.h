@@ -14,4 +14,9 @@ struct ANativeWindow {
 	int refcount;
 };
 
+extern EGLSurface egl_surface_hashtable;
+
 struct ANativeWindow *ANativeWindow_fromSurface(JNIEnv* env, jobject surface);
+EGLSurface bionic_eglCreateWindowSurface(EGLDisplay display, EGLConfig config, struct ANativeWindow *native_window, EGLint const *attrib_list);
+EGLDisplay bionic_eglGetDisplay(NativeDisplayType native_display);
+void ANativeWindow_release(struct ANativeWindow *native_window);

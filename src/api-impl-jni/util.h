@@ -43,18 +43,6 @@ struct handle_cache {
 	} canvas;
 	struct {
 		jclass class;
-		jmethodID onSurfaceCreated;
-		jmethodID onSurfaceChanged;
-		jmethodID onDrawFrame;
-	} renderer;
-	struct {
-		jclass class;
-		jmethodID onTouchEvent;
-		jmethodID wrap_EGLContextFactory_createContext;
-		jmethodID wrap_EGLConfigChooser_chooseConfig;
-	} gl_surface_view;
-	struct {
-		jclass class;
 		jmethodID onPeriodicNotification;
 	} audio_track_periodic_listener;
 	struct {
@@ -64,7 +52,8 @@ struct handle_cache {
 	struct {
 		jclass class;
 		jmethodID surfaceCreated;
-	} surface_holder_callback;
+		jmethodID surfaceChanged;
+	} surface_view;
 	struct {
 		jclass class;
 		jmethodID setLayoutParams;

@@ -47,10 +47,6 @@ char *get_app_data_dir()
 	return app_data_dir;
 }
 
-// FIXME: used by hacks in GLSurfaceView
-int FIXME__WIDTH;
-int FIXME__HEIGHT;
-
 char *construct_classpath(char *prefix, char **cp_array, size_t len)
 {
 	size_t result_len = strlen(prefix);
@@ -334,9 +330,6 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	// some apps need the apk path since they directly read their apk
 	jclass context_class = (*env)->FindClass(env, "android/content/Context");
 	_SET_STATIC_OBJ_FIELD(context_class, "apk_path", "Ljava/lang/String;", _JSTRING(apk_classpath));
-
-	FIXME__WIDTH = d->window_width;
-	FIXME__HEIGHT = d->window_height;
 
 	window = gtk_application_window_new(app);
 
