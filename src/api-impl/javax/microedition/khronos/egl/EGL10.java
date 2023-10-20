@@ -91,9 +91,9 @@ public interface EGL10 extends EGL {
 	int EGL_WINDOW_BIT = 0x04;
 
 	Object EGL_DEFAULT_DISPLAY = null;
-	EGLDisplay EGL_NO_DISPLAY = null; // new com.google.android.gles_jni.EGLDisplayImpl(0);
-	EGLContext EGL_NO_CONTEXT = null; // new com.google.android.gles_jni.EGLContextImpl(0);
-	EGLSurface EGL_NO_SURFACE = null; // new com.google.android.gles_jni.EGLSurfaceImpl(0);
+	EGLDisplay EGL_NO_DISPLAY = new javax.microedition.khronos.egl.EGLDisplay(0);
+	EGLContext EGL_NO_CONTEXT = new javax.microedition.khronos.egl.EGLContext(0);
+	EGLSurface EGL_NO_SURFACE = new com.google.android.gles_jni.EGLSurfaceImpl(0);
 
 	boolean eglChooseConfig(EGLDisplay display, int[] attrib_list, EGLConfig[] configs, int config_size, int[] num_config);
 	boolean eglCopyBuffers(EGLDisplay display, EGLSurface surface, Object native_pixmap);

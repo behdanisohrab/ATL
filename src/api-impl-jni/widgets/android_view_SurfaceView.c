@@ -78,9 +78,16 @@ static void on_resize(GtkWidget* self, gint width, gint height, struct jni_callb
 
 	// TODO: are there cases where returning RGBA_8888 is a bad idea?
 	// NOTE: we want to call the private method of android.view.SurfaceView, not the related method with this name in the API
-	(*env)->CallVoidMethod(env, d->this, _METHOD(d->this_class, "surfaceChanged", "(Landroid/view/SurfaceHolder;III)V"),
-	                       _GET_OBJ_FIELD(d->this, "mSurfaceHolder", "Landroid/view/SurfaceHolder;"), 1 /*RGBA_8888*/,
-	                       width, height);
+	(*env)->CallVoidMethod(env, d->this, handle_cache.surface_view.surfaceChanged, 1 /*RGBA_8888*/, width, height);
+}
+
+static void on_realize(GtkWidget* self, struct jni_callback_data *d)
+{
+	JNIEnv *env;
+	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
+
+	// NOTE: we want to call the private method of android.view.SurfaceView, not the related method with this name in the API
+	(*env)->CallVoidMethod(env, d->this, handle_cache.surface_view.surfaceCreated);
 }
 
 JNIEXPORT jlong JNICALL Java_android_view_SurfaceView_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
@@ -89,6 +96,7 @@ JNIEXPORT jlong JNICALL Java_android_view_SurfaceView_native_1constructor(JNIEnv
 	GtkWidget *dummy = surface_view_widget_new();
 	gtk_widget_set_name(dummy, "dummy widget for SurfaceView");
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), dummy);
+	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 	// TODO: is this correct for all usecases? how do we know when it's not?
 	gtk_widget_set_hexpand(wrapper, true);
 	gtk_widget_set_vexpand(wrapper, true);
@@ -102,6 +110,7 @@ JNIEXPORT jlong JNICALL Java_android_view_SurfaceView_native_1constructor(JNIEnv
 	callback_data->this_class = _REF((*env)->FindClass(env, "android/view/SurfaceView"));
 
 	g_signal_connect(dummy, "resize", G_CALLBACK(on_resize), callback_data);
+	g_signal_connect(dummy, "realize", G_CALLBACK(on_realize), callback_data);
 
 	return _INTPTR(dummy);
 }

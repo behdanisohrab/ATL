@@ -3,6 +3,8 @@
 #include "../defines.h"
 #include "../util.h"
 
+#include "../../libandroid/native_window.h"
+
 #include "../generated_headers/com_google_android_gles_jni_EGLImpl.h"
 
 // helpers from android source (TODO: either use GetIntArrayElements, or figure out if GetPrimitiveArrayCritical is superior and use it everywhere if so)
@@ -66,4 +68,60 @@ JNIEXPORT jboolean JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1egl
 	release_int_array_crit(env, num_config, num_config_base);
 
 	return ret;
+}
+
+JNIEXPORT jlong JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglCreateWindowSurface(JNIEnv *env, jobject this, jlong display, jlong config, jobject surface, jintArray _attrib_list)
+{
+	struct ANativeWindow *native_window = ANativeWindow_fromSurface(env, surface);
+	EGLint *attrib_list = get_int_array_crit(env, _attrib_list);
+	EGLSurface ret = bionic_eglCreateWindowSurface(_PTR(display), _PTR(config), native_window, attrib_list);
+	release_int_array_crit(env, _attrib_list, attrib_list);
+	return _INTPTR(ret);
+}
+
+JNIEXPORT jlong JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglGetDisplay(JNIEnv *env, jobject this, jobject display)
+{
+	return _INTPTR(bionic_eglGetDisplay(0)); // FIXME: why is display passed as an Object??? how do we get an integer from that
+}
+
+JNIEXPORT jboolean JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglInitialize(JNIEnv *env, jobject this, jlong display, jintArray _major_minor)
+{
+	EGLint *major_minor = get_int_array_crit(env, _major_minor);
+	bool ret = eglInitialize(_PTR(display), &major_minor[0], &major_minor[1]);
+	release_int_array_crit(env, _major_minor, major_minor);
+	return ret;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglGetConfigAttrib(JNIEnv *env, jobject this, jlong display, jlong config, jint attribute, jintArray _value)
+{
+	EGLint *value = get_int_array_crit(env, _value);
+	bool ret = eglGetConfigAttrib(_PTR(display), _PTR(config), attribute, &value[0]);
+	release_int_array_crit(env, _value, value);
+	return ret;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglMakeCurrent(JNIEnv *env, jobject this, jlong display, jlong draw_surface, jlong read_surface, jlong context)
+{
+	return eglMakeCurrent(_PTR(display), _PTR(draw_surface), _PTR(read_surface), _PTR(context));
+}
+
+JNIEXPORT jboolean JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglSwapBuffers(JNIEnv *env, jobject this, jlong display, jlong surface)
+{
+	return eglSwapBuffers(_PTR(display), _PTR(surface));
+}
+
+JNIEXPORT jboolean JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglDestroySurface(JNIEnv *env, jobject this, jlong display, jlong surface)
+{
+	struct ANativeWindow *native_window = g_hash_table_lookup(egl_surface_hashtable, _PTR(surface));
+
+	bool ret = eglDestroySurface(_PTR(display), _PTR(surface));
+	/* ANativeWindow_fromSurface starts the refcounter at 1, so this will destroy the native window */
+	ANativeWindow_release(native_window);
+
+	return ret;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglDestroyContext(JNIEnv *env, jobject this, jlong display, jlong context)
+{
+	return eglDestroyContext(_PTR(display), _PTR(context));
 }

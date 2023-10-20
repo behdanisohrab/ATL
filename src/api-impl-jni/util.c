@@ -87,24 +87,15 @@ void set_up_handle_cache(JNIEnv *env)
 	handle_cache.canvas.class = _REF((*env)->FindClass(env, "android/graphics/Canvas"));
 	handle_cache.canvas.constructor = _METHOD(handle_cache.canvas.class, "<init>", "(JJ)V");
 
-	handle_cache.renderer.class = _REF((*env)->FindClass(env, "android/opengl/GLSurfaceView$Renderer"));
-	handle_cache.renderer.onSurfaceCreated = _METHOD(handle_cache.renderer.class, "onSurfaceCreated", "(Ljavax/microedition/khronos/opengles/GL10;Ljavax/microedition/khronos/egl/EGLConfig;)V");
-	handle_cache.renderer.onSurfaceChanged = _METHOD(handle_cache.renderer.class, "onSurfaceChanged", "(Ljavax/microedition/khronos/opengles/GL10;II)V");
-	handle_cache.renderer.onDrawFrame = _METHOD(handle_cache.renderer.class, "onDrawFrame", "(Ljavax/microedition/khronos/opengles/GL10;)V");
-
-	handle_cache.gl_surface_view.class = _REF((*env)->FindClass(env, "android/opengl/GLSurfaceView"));
-	handle_cache.gl_surface_view.onTouchEvent = _METHOD(handle_cache.gl_surface_view.class, "onTouchEvent", "(Landroid/view/MotionEvent;)Z");
-	handle_cache.gl_surface_view.wrap_EGLContextFactory_createContext = _METHOD(handle_cache.gl_surface_view.class, "wrap_EGLContextFactory_createContext", "(JJ)J");
-	handle_cache.gl_surface_view.wrap_EGLConfigChooser_chooseConfig = _METHOD(handle_cache.gl_surface_view.class, "wrap_EGLConfigChooser_chooseConfig", "(J)J");
-
 	handle_cache.audio_track_periodic_listener.class = _REF((*env)->FindClass(env, "android/media/AudioTrack$OnPlaybackPositionUpdateListener"));
 	handle_cache.audio_track_periodic_listener.onPeriodicNotification = _METHOD(handle_cache.audio_track_periodic_listener.class, "onPeriodicNotification", "(Landroid/media/AudioTrack;)V");
 
 	handle_cache.input_queue_callback.class = _REF((*env)->FindClass(env, "android/view/InputQueue$Callback"));
 	handle_cache.input_queue_callback.onInputQueueCreated = _METHOD(handle_cache.input_queue_callback.class, "onInputQueueCreated", "(Landroid/view/InputQueue;)V");
 
-	handle_cache.surface_holder_callback.class = _REF((*env)->FindClass(env, "android/view/SurfaceHolder$Callback"));
-	handle_cache.surface_holder_callback.surfaceCreated = _METHOD(handle_cache.surface_holder_callback.class, "surfaceCreated", "(Landroid/view/SurfaceHolder;)V");
+	handle_cache.surface_view.class = _REF((*env)->FindClass(env, "android/view/SurfaceView"));
+	handle_cache.surface_view.surfaceCreated = _METHOD(handle_cache.surface_view.class, "surfaceCreated", "()V");
+	handle_cache.surface_view.surfaceChanged = _METHOD(handle_cache.surface_view.class, "surfaceChanged", "(III)V");
 
 	handle_cache.view.class = _REF((*env)->FindClass(env, "android/view/View"));
 	if((*env)->ExceptionCheck(env))

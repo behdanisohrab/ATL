@@ -468,21 +468,28 @@ EGLDisplay bionic_eglGetDisplay(NativeDisplayType native_display)
 	}
 }
 
+EGLSurface egl_surface_hashtable;
+
 EGLSurface bionic_eglCreateWindowSurface(EGLDisplay display, EGLConfig config, struct ANativeWindow *native_window, EGLint const *attrib_list)
 {
 	// better than crashing (TODO: check if apps try to use the NULL value anyway)
 	if(!native_window)
 		return NULL;
 
+	if(!egl_surface_hashtable)
+		egl_surface_hashtable = g_hash_table_new(NULL, NULL);
+
 	PrintConfigAttributes(display, config);
-	EGLSurface ret = eglCreateWindowSurface(display, config, native_window->egl_window, attrib_list);
+	EGLSurface surface = eglCreateWindowSurface(display, config, native_window->egl_window, attrib_list);
 
 	printf("EGL::: native_window->egl_window: %ld\n", native_window->egl_window);
 	printf("EGL::: eglGetError: %d\n", eglGetError());
 
-	printf("EGL::: ret: %p\n", ret);
+	printf("EGL::: ret: %p\n", surface);
 
-	return ret;
+	g_hash_table_insert(egl_surface_hashtable, surface, native_window);
+
+	return surface;
 }
 
 // FIXME 1.5: this most likely belongs elsewhere
