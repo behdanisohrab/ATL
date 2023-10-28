@@ -806,6 +806,12 @@ public class View extends Object {
 
 	public static HashMap<Integer, View> view_by_id = new HashMap<Integer, View>();
 
+	private int oldWidthMeasureSpec;
+	private int oldHeightMeasureSpec;
+	private boolean layoutRequested;
+	private int oldWidth;
+	private int oldHeight;
+
 	public View() {
 		this(Context.this_application);
 	} // FIXME
@@ -1081,7 +1087,12 @@ public class View extends Object {
 	public void setOnHoverListener(OnHoverListener listener) {}
 
 	public final void measure(int widthMeasureSpec, int heightMeasureSpec) {
-		onMeasure(widthMeasureSpec, heightMeasureSpec);
+		if (layoutRequested || widthMeasureSpec != oldWidthMeasureSpec || heightMeasureSpec != oldHeightMeasureSpec) {
+			oldWidthMeasureSpec = widthMeasureSpec;
+			oldHeightMeasureSpec = heightMeasureSpec;
+			onMeasure(widthMeasureSpec, heightMeasureSpec);
+			layoutRequested = false;
+		}
 	}
 
 	public final int getMeasuredState() {
@@ -1156,6 +1167,18 @@ public class View extends Object {
 		native_layout(widget, l, t, r, b);
 	}
 
+	/** Helper function to be called from GTKs LayoutManager via JNI */
+	private void layoutInternal(int width, int height) {
+		// if the layout is triggered from a native widget, we might not have measured yet
+		if (width != getMeasuredWidth() || height != getMeasuredHeight()) {
+			measure(width | MeasureSpec.EXACTLY, height | MeasureSpec.EXACTLY);
+		}
+		boolean changed = oldWidth != width || oldHeight != height;
+		onLayout(changed, 0, 0, width, height);
+		oldWidth = width;
+		oldHeight = height;
+	}
+
 	public int getLeft() {
 		return left;
 	}
@@ -1190,6 +1213,7 @@ public class View extends Object {
 	public boolean removeCallbacks(Runnable action) {return false;}
 
 	public void requestLayout() {
+		layoutRequested = true;
 		native_requestLayout(widget);
 	};
 
