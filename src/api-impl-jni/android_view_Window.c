@@ -7,7 +7,11 @@
 
 JNIEXPORT void JNICALL Java_android_view_Window_set_1widget_1as_1root(JNIEnv *env, jobject this, jlong window, jlong widget)
 {
-	gtk_window_set_child(GTK_WINDOW(_PTR(window)), gtk_widget_get_parent(GTK_WIDGET(_PTR(widget))));
+	GtkWindow *gtk_window = GTK_WINDOW(_PTR(window));
+	GtkWidget *gtk_widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget)));
+	if (gtk_widget != gtk_window_get_child(gtk_window)) {
+		gtk_window_set_child(gtk_window, gtk_widget);
+	}
 }
 
 // FIXME put this in a header file
