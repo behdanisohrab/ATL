@@ -11,8 +11,9 @@
 
 struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; unsigned int num_clicks;};
 
-static void call_ontouch_callback(int action, double x, double y, struct touch_callback_data *d)
+static bool call_ontouch_callback(int action, double x, double y, struct touch_callback_data *d)
 {
+	bool ret;
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
@@ -20,14 +21,15 @@ static void call_ontouch_callback(int action, double x, double y, struct touch_c
 
 	/* NULL listener means the callback was registered for onTouchEvent */
 	if(d->on_touch_listener)
-		(*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onTouch", "(Landroid/view/View;Landroid/view/MotionEvent;)Z"), d->this, motion_event);
+		ret = (*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onTouch", "(Landroid/view/View;Landroid/view/MotionEvent;)Z"), d->this, motion_event);
 	else
-		(*env)->CallBooleanMethod(env, d->this, _METHOD(d->on_touch_listener_class, "onTouchEvent", "(Landroid/view/MotionEvent;)Z"), motion_event);
+		ret = (*env)->CallBooleanMethod(env, d->this, _METHOD(d->on_touch_listener_class, "onTouchEvent", "(Landroid/view/MotionEvent;)Z"), motion_event);
 
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
 	(*env)->DeleteLocalRef(env, motion_event);
+	return ret;
 }
 static void gdk_event_get_widget_relative_position(GdkEvent *event, GtkWidget *widget, double *x, double *y)
 {
@@ -53,26 +55,26 @@ static gboolean on_event(GtkEventControllerLegacy *event_controller, GdkEvent *e
 			d->num_clicks = 1;
 		case GDK_TOUCH_BEGIN:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
-			call_ontouch_callback(MOTION_EVENT_ACTION_DOWN, x, y, d);
+			return call_ontouch_callback(MOTION_EVENT_ACTION_DOWN, x, y, d);
 			break;
 		case GDK_BUTTON_RELEASE:
 			d->num_clicks = 0;
 		case GDK_TOUCH_END:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
-			call_ontouch_callback(MOTION_EVENT_ACTION_UP, x, y, d);
+			return call_ontouch_callback(MOTION_EVENT_ACTION_UP, x, y, d);
 			break;
 		case GDK_MOTION_NOTIFY:
 			if(d->num_clicks == 0)
 				break;
 		case GDK_TOUCH_UPDATE:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
-			call_ontouch_callback(MOTION_EVENT_ACTION_MOVE, x, y, d);
+			return call_ontouch_callback(MOTION_EVENT_ACTION_MOVE, x, y, d);
 			break;
 		default:
 			break;
 	}
 
-	return true;
+	return false;
 }
 
 static void on_click(GtkGestureClick *gesture, int n_press, double x, double y, struct touch_callback_data *d)

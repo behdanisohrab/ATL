@@ -875,7 +875,7 @@ public class View extends Object {
 	}
 
 	public boolean onTouchEvent(MotionEvent event) {
-		return true;
+		return false;
 	}
 
 	public native void setOnTouchListener(OnTouchListener l);
