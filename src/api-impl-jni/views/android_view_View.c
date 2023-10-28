@@ -9,7 +9,7 @@
 
 #define SOURCE_TOUCHSCREEN 0x1002
 
-struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; unsigned int num_clicks};
+struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; unsigned int num_clicks;};
 
 static void call_ontouch_callback(int action, double x, double y, struct touch_callback_data *d)
 {
@@ -253,7 +253,7 @@ JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, 
 	return _INTPTR(widget);
 }
 
-JNIEXPORT void JNICALL Java_android_view_View_nativeInvalidate(JNIEnv *env, jclass, jlong widget_ptr) {
+JNIEXPORT void JNICALL Java_android_view_View_nativeInvalidate(JNIEnv *env, jclass class, jlong widget_ptr) {
 	GtkWidget *widget = GTK_WIDGET(_PTR(widget_ptr));
 
 	gtk_widget_queue_draw(gtk_widget_get_parent(widget));

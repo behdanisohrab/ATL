@@ -31,8 +31,9 @@ static void wrapper_widget_dispose(GObject *wrapper_widget)
 	G_OBJECT_CLASS (wrapper_widget_parent_class)->dispose (wrapper_widget);
 }
 
-void skia_draw_func(SKArea *sk_area, sk_canvas_t *canvas, WrapperWidget *wrapper_widget)
+void skia_draw_func(SKArea *sk_area, sk_canvas_t *canvas, void *user_data)
 {
+	WrapperWidget *wrapper_widget = WRAPPER_WIDGET(user_data);
 	JNIEnv *env;
 	(*wrapper_widget->jvm)->GetEnv(wrapper_widget->jvm, (void**)&env, JNI_VERSION_1_6);
 	if(wrapper_widget->canvas == NULL) {
@@ -128,6 +129,6 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 	jmethodID ontouchevent_method = _METHOD(_CLASS(jobj), "onTouchEvent", "(Landroid/view/MotionEvent;)Z");
 	if (ontouchevent_method != handle_cache.view.onTouchEvent) {
 		/* use gtk_widget_get_first_child since the jobject may not have the "widget" variable set yet */
-		_setOnTouchListener(env, jobj, gtk_widget_get_first_child(wrapper), NULL);
+		_setOnTouchListener(env, jobj, gtk_widget_get_first_child(GTK_WIDGET(wrapper)), NULL);
 	}
 }
