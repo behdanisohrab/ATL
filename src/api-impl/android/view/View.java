@@ -945,8 +945,12 @@ public class View extends Object {
 
 	protected void onFinishInflate() {}
 
-	public void invalidate(Rect dirty) {}
-	public void invalidate(int l, int t, int r, int b) {}
+	public void invalidate(Rect dirty) {
+		nativeInvalidate(widget);
+	}
+	public void invalidate(int l, int t, int r, int b) {
+		nativeInvalidate(widget);
+	}
 	public void invalidate() {
 		nativeInvalidate(widget);
 	}
@@ -1018,13 +1022,18 @@ public class View extends Object {
 		new Handler(Looper.getMainLooper()).post(new Runnable() {
 			@Override
 			public void run() {
-				requestLayout();
+				invalidate();
 			}
 		});
 	}
 
-	public void postInvalidate(int left, int top, int right, int bottom) {
-		Slog.w(TAG, "postInvalidate(" + left + "," + top + "," + right + "," + bottom + ") called");
+	public void postInvalidate(final int left, final int top, final int right, final int bottom) {
+		new Handler(Looper.getMainLooper()).post(new Runnable() {
+			@Override
+			public void run() {
+				invalidate(left, top, right, bottom);
+			}
+		});
 	}
 
 	public void setOnGenericMotionListener(View.OnGenericMotionListener l) {}
