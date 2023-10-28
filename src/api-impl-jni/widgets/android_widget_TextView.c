@@ -32,7 +32,7 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setText(JNIEnv *env,
 // FIXME: this will probably behave unfortunately if called multiple times
 JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setTextColor(JNIEnv *env, jobject this, jint color)
 {
-	GtkLabel *label = GTK_LABEL(_PTR(_GET_LONG_FIELD(this, "widget")));
+	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
 
 	GtkCssProvider *css_provider = gtk_css_provider_new();
 
@@ -40,7 +40,7 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setTextColor(JNIEnv 
 	gtk_css_provider_load_from_string(css_provider, css_string);
 	g_free(css_string);
 
-	gtk_style_context_add_provider(gtk_widget_get_style_context(GTK_WIDGET(label)), GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_style_context_add_provider(gtk_widget_get_style_context(widget), GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
 JNIEXPORT void JNICALL Java_android_widget_TextView_setTextSize(JNIEnv *env, jobject this, jfloat size)
