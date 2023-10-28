@@ -8,8 +8,6 @@
 #include "../generated_headers/android_view_ViewGroup.h"
 #include "../generated_headers/android_view_View.h"
 
-#define MEASURE_SPEC_EXACTLY (1 << 30)
-
 #define SOURCE_CLASS_POINTER 0x2
 
 struct _AndroidLayout {
@@ -41,17 +39,7 @@ static void android_layout_allocate(GtkLayoutManager *layout_manager, GtkWidget 
 	AndroidLayout *layout = ATL_ANDROID_LAYOUT(layout_manager);
 	JNIEnv *env = get_jni_env();
 
-	(*env)->CallVoidMethod(env, layout->view, handle_cache.view.onMeasure, MEASURE_SPEC_EXACTLY | width, MEASURE_SPEC_EXACTLY | height);
-	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);
-
-	(*env)->CallVoidMethod(env, layout->view, handle_cache.view.computeScroll);
-	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);
-	int scroll_x = (*env)->CallIntMethod(env, layout->view, handle_cache.view.getScrollX);
-	int scroll_y = (*env)->CallIntMethod(env, layout->view, handle_cache.view.getScrollY);
-
-	(*env)->CallVoidMethod(env, layout->view, handle_cache.view.onLayout, TRUE, scroll_x, scroll_y, width, height);
+	(*env)->CallVoidMethod(env, layout->view, handle_cache.view.layoutInternal, width, height);
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 }
