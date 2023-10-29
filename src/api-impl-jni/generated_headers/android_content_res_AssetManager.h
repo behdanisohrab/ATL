@@ -75,14 +75,6 @@ JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getLocales
 
 /*
  * Class:     android_content_res_AssetManager
- * Method:    getResourcePackageName
- * Signature: (I)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourcePackageName
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     android_content_res_AssetManager
  * Method:    getResourceEntryName
  * Signature: (I)Ljava/lang/String;
  */

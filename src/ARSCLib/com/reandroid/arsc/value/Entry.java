@@ -217,7 +217,7 @@ public class Entry extends Block implements JSONConvert<JSONObject> {
     public TypeBlock getTypeBlock(){
         return getParent(TypeBlock.class);
     }
-    private String getPackageName(){
+    public String getPackageName(){
         PackageBlock packageBlock = getPackageBlock();
         if(packageBlock!=null){
             return packageBlock.getName();

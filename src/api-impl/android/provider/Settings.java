@@ -10,6 +10,8 @@ public class Settings {
 			switch (key) {
 				case "android_id":
 					return "_totally_an_androidID"; // TODO: is this a good ID? :P
+				case "advertising_id":
+					return "";
 				default:
 					java.lang.System.out.println("!!!! Settings$Secure.getString: unknown key: >" + key + "<");
 					return "NOTICEME";
