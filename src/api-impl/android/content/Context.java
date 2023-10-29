@@ -443,4 +443,8 @@ public class Context extends Object {
 	public void unbindService(ServiceConnection serviceConnection) {}
 
 	public void unregisterReceiver(BroadcastReceiver receiver) {}
+
+	public Context createPackageContext(String dummy, int dummy2) {
+		return this; // FIXME?
+	}
 }

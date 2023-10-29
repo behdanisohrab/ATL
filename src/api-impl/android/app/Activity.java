@@ -390,5 +390,7 @@ public class Activity extends Context implements Window.Callback {
 		finish();
 	}
 
+	public void setIntent(Intent newIntent) {}
+
 	public void unregisterReceiver(BroadcastReceiver receiver) {}
 }

@@ -15,6 +15,11 @@ char *get_app_data_dir();
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openAsset(JNIEnv *env, jobject this, jstring _file_name, jint mode)
 {
 	const char *file_name = _CSTRING(_file_name);
+
+	/* handle absolute paths */
+	if(file_name[0] == '/')
+		return open(file_name, O_CLOEXEC | O_RDWR);
+
 	char *app_data_dir = get_app_data_dir();
 	char *path = malloc(strlen(app_data_dir) + strlen(ASSET_DIR) + strlen(file_name) + 1);
 	int fd;

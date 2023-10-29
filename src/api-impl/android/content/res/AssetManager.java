@@ -464,11 +464,14 @@ public final class AssetManager {
 				throw new RuntimeException("Assetmanager has been closed");
 			}
 			asset = openAsset(fileName, 0);
+			if (asset < 0)
+				throw new FileNotFoundException("Asset file: " + fileName + ", errno: " + asset);
+
 			FileDescriptor fd = new FileDescriptor();
 			fd.setInt$(asset);
 			ParcelFileDescriptor pfd = new ParcelFileDescriptor(fd);
 			if (pfd != null) {
-				AssetFileDescriptor afd = new AssetFileDescriptor(pfd, mOffsets[0], mOffsets[1]);
+				AssetFileDescriptor afd = new AssetFileDescriptor(pfd, 0, getAssetLength(asset));
 				afd.fileName = "/assets/" + fileName;
 				return afd;
 			}
@@ -860,7 +863,9 @@ public final class AssetManager {
 	/*package*/ /*native*/ final String getResourceName(int resid) {
 		return tableBlockSearch(resid).pickOne().getName();
 	}
-	/*package*/ native final String getResourcePackageName(int resid);
+	/*package*/ /*native*/ final String getResourcePackageName(int resid) {
+		return tableBlockSearch(resid).pickOne().getPackageName();
+	}
 	/*package*/ /*native*/ final String getResourceTypeName(int resid) {
 		return tableBlockSearch(resid).pickOne().getTypeName();
 	}
