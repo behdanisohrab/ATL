@@ -147,13 +147,18 @@ public final class AssetManager {
 		}
 	}
 
+	private Map<Integer, EntryGroup> tableBlockCache = new HashMap<>();
 	private EntryGroup tableBlockSearch(int resId) {
+		if (tableBlockCache.containsKey(resId)) {
+			return tableBlockCache.get(resId);
+		}
 		EntryGroup ret = null;
 		for (TableBlock tableBlock : tableBlocks) {
 			ret = tableBlock.search(resId);
 			if (ret != null)
 				break;
 		}
+		tableBlockCache.put(resId, ret);
 		return ret;
 	}
 
@@ -913,6 +918,12 @@ public final class AssetManager {
 		ResXmlPullParser parser = (ResXmlPullParser)set;
 		outIndices[0] = 0;
 
+		Map<Integer,Integer> xmlCache = new HashMap<>();
+		if (set != null) {
+			for (int j=0; j<set.getAttributeCount(); j++) {
+				xmlCache.put(set.getAttributeNameResource(j), j);
+			}
+		}
 		for (int i = 0; i < inAttrs.length; i++) {
 			int d = i*AssetManager.STYLE_NUM_ENTRIES;
 			// reset values in case of cached array
@@ -928,13 +939,8 @@ public final class AssetManager {
 			ValueItem valueItem = null;
 			while ("attr".equals(entry.getTypeName())) {
 				valueItem = null;
-				if (set != null) {
-					for (int j=0; j<set.getAttributeCount(); j++) {
-						if (set.getAttributeNameResource(j) == resId) {
-							valueItem = parser.getResXmlAttributeAt(j);
-							break;
-						}
-					}
+				if (xmlCache.containsKey(resId)) {
+					valueItem = parser.getResXmlAttributeAt(xmlCache.get(resId));
 				}
 				if (valueItem == null) {
 					valueItem = defStyle.get(resId);
