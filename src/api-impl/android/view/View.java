@@ -3,6 +3,7 @@ package android.view;
 import android.animation.StateListAnimator;
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -830,6 +831,22 @@ public class View extends Object {
 			if (id != 0) {
 				this.id = id;
 				view_by_id.put(id, this);
+			}
+
+
+			TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.View, defStyle, 0);
+			if (a.hasValue(com.android.internal.R.styleable.View_background)) {
+				int background = a.getResourceId(com.android.internal.R.styleable.View_background, 0);
+
+				if(background != 0) {
+					if(context.getResources().getResourceTypeName(background).equals("color")) {// drawables not currently supported
+						System.out.printf("__background__: >%x<\n", context.getResources().getColor(background));
+
+						final android.util.TypedValue typedValue = new android.util.TypedValue();
+
+						setBackgroundColor(context.getResources().getColor(background));
+					}
+				}
 			}
 		}
 	}
