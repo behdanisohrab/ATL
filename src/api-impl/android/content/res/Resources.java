@@ -1379,7 +1379,7 @@ public class Resources {
 			array.mXml = parser;
 			if (false) {
 				int[] data = array.mData;
-				
+
 				System.out.println("Attributes:");
 				String s = "  Attrs:";
 				int i;
