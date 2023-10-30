@@ -962,7 +962,7 @@ public class View extends Object {
 	}
 	private static native void nativeInvalidate(long widget);
 
-	public void setBackgroundColor(int color) {}
+	public native void setBackgroundColor(int color);
 	public native void setVisibility(int visibility);
 	public void setPadding(int left, int top, int right, int bottom) {}
 	public void setBackgroundResource(int resid) {

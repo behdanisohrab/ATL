@@ -289,6 +289,14 @@ JNIEXPORT void JNICALL Java_android_view_View_nativeInvalidate
 
 /*
  * Class:     android_view_View
+ * Method:    setBackgroundColor
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_setBackgroundColor
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     android_view_View
  * Method:    setVisibility
  * Signature: (I)V
  */
