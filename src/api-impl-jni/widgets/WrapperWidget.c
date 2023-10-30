@@ -48,10 +48,25 @@ void skia_draw_func(SKArea *sk_area, sk_canvas_t *canvas, void *user_data)
 		(*env)->ExceptionDescribe(env);
 }
 
-/*void wrapper_snapshot(GtkWidget* widget, GtkSnapshot* snapshot)
+void wrapper_snapshot(GtkWidget* widget, GtkSnapshot* snapshot)
 {
-	gtk_widget_snapshot_child(widget, gtk_widget_get_first_child(widget), snapshot);
-}*/
+	WrapperWidget *wrapper = WRAPPER_WIDGET(widget);
+	if (wrapper->computeScroll_method) {
+		JNIEnv *env;
+		(*wrapper->jvm)->GetEnv(wrapper->jvm, (void**)&env, JNI_VERSION_1_6);
+		(*env)->CallVoidMethod(env, wrapper->jobj, wrapper->computeScroll_method);
+		if((*env)->ExceptionCheck(env))
+			(*env)->ExceptionDescribe(env);
+		graphene_point_t translation = {
+			.x = -(*env)->CallIntMethod(env, wrapper->jobj, handle_cache.view.getScrollX),
+			.y = -(*env)->CallIntMethod(env, wrapper->jobj, handle_cache.view.getScrollY),
+		};
+		gtk_snapshot_translate(snapshot, &translation);
+	}
+	gtk_widget_snapshot_child(widget, wrapper->child, snapshot);
+	if (wrapper->sk_area)
+		gtk_widget_snapshot_child(widget, wrapper->sk_area, snapshot);
+}
 
 
 static void wrapper_widget_class_init(WrapperWidgetClass *class)
@@ -61,7 +76,7 @@ static void wrapper_widget_class_init(WrapperWidgetClass *class)
 
 	object_class->dispose = wrapper_widget_dispose;
 
-//	widget_class->snapshot = wrapper_snapshot;
+	widget_class->snapshot = wrapper_snapshot;
 
 	gtk_widget_class_set_layout_manager_type(widget_class, GTK_TYPE_BIN_LAYOUT);
 }
@@ -118,5 +133,10 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 	if (ontouchevent_method != handle_cache.view.onTouchEvent) {
 		/* use wrapper->child since the jobject may not have the "widget" variable set yet */
 		_setOnTouchListener(env, jobj, wrapper->child, NULL);
+	}
+
+	jmethodID computeScroll_method = _METHOD(_CLASS(jobj), "computeScroll", "()V");
+	if (computeScroll_method != handle_cache.view.computeScroll) {
+		wrapper->computeScroll_method = computeScroll_method;
 	}
 }
