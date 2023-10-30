@@ -321,3 +321,17 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1requestLayout(JNIEnv *env,
 
 	gtk_widget_queue_resize(widget);
 }
+
+// FIXME: this will probably behave unfortunately if called multiple times
+JNIEXPORT void JNICALL Java_android_view_View_setBackgroundColor(JNIEnv *env, jobject this, jint color)
+{
+	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
+
+	GtkCssProvider *css_provider = gtk_css_provider_new();
+
+	char *css_string = g_markup_printf_escaped("* { background-color: #%06x%02x; }", color & 0xFFFFFF, (color >> 24) & 0xFF);
+	gtk_css_provider_load_from_string(css_provider, css_string);
+	g_free(css_string);
+
+	gtk_style_context_add_provider(gtk_widget_get_style_context(gtk_widget_get_parent(widget)), GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+}
