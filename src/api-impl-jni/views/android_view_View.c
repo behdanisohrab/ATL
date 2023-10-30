@@ -105,7 +105,7 @@ void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject o
 		gtk_widget_remove_controller(widget, old_controller);
 
 	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_event_controller_legacy_new());
-	gtk_event_controller_set_propagation_phase(controller, GTK_PHASE_CAPTURE); // FIXME?
+	gtk_event_controller_set_propagation_phase(controller, GTK_PHASE_BUBBLE);
 
 	g_signal_connect(controller, "event", G_CALLBACK(on_event), callback_data);
 	gtk_widget_add_controller(widget, controller);

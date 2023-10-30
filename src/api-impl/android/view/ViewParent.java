@@ -6,4 +6,6 @@ public interface ViewParent {
 	public boolean isLayoutRequested();
 
 	public void requestDisallowInterceptTouchEvent(boolean disallowIntercept);
+
+	public abstract boolean onStartNestedScroll(View child, View target, int nestedScrollAxes);
 }

@@ -1991,7 +1991,7 @@ public final class MotionEvent extends InputEvent {
 	 * that pointer identifier.
 	 */
 	public final int findPointerIndex(int pointerId) {
-		return nativeFindPointerIndex(mNativePtr, pointerId);
+		return 0 /*nativeFindPointerIndex(mNativePtr, pointerId)*/;
 	}
 
 	/**
