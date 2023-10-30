@@ -16,6 +16,7 @@ struct _WrapperWidget
 	jobject canvas;
 	jmethodID draw_method;
 	jmethodID measure_method;
+	jmethodID computeScroll_method;
 };
 
 struct _WrapperWidgetClass

@@ -1195,6 +1195,8 @@ public class View extends Object {
 			measure(width | MeasureSpec.EXACTLY, height | MeasureSpec.EXACTLY);
 		}
 		boolean changed = oldWidth != width || oldHeight != height;
+		if (changed)
+			onSizeChanged(width, height, oldWidth, oldHeight);
 		onLayout(changed, 0, 0, width, height);
 		oldWidth = width;
 		oldHeight = height;
@@ -1526,4 +1528,6 @@ public class View extends Object {
 	public void setLayerType(int layerType, Paint paint) {}
 
 	public float getZ() {return 0.f;}
+
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {}
 }
