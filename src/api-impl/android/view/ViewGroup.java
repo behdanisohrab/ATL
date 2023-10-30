@@ -302,6 +302,13 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		}
 	}
 
+	protected boolean isChildrenDrawingOrderEnabled() { return false; }
+
+	@Override
+	public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
+		return false;
+	}
+
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;
 		public static final int MATCH_PARENT = -1;

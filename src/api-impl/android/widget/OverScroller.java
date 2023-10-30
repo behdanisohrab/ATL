@@ -22,4 +22,6 @@ public class OverScroller {
 
 	public int getFinalX() {return 0;}
 	public int getFinalY() {return 0;}
+
+	public boolean isFinished() {return true;}
 }

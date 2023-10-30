@@ -89,6 +89,7 @@ JNIEXPORT jlong JNICALL Java_android_view_ViewGroup_native_1constructor(JNIEnv *
 	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1); // spacing of 1
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), box);
+	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 
 	const char *name = _CSTRING((*env)->CallObjectMethod(env, _CLASS(this),
 			_METHOD((*env)->FindClass(env, "java/lang/Class"), "getName", "()Ljava/lang/String;")));

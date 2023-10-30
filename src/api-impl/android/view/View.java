@@ -1520,4 +1520,6 @@ public class View extends Object {
 	}
 
 	public void setLayerType(int layerType, Paint paint) {}
+
+	public float getZ() {return 0.f;}
 }
