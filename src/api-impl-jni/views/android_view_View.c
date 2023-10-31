@@ -266,6 +266,14 @@ JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, 
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), widget);
 	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 
+	jclass class = _CLASS(this);
+	jmethodID measure_method = _METHOD(class, "onMeasure", "(II)V");
+	jmethodID layout_method = _METHOD(class, "onLayout", "(ZIIII)V");
+	if (measure_method != handle_cache.view.onMeasure || layout_method != handle_cache.view.onLayout) {
+		gtk_widget_set_layout_manager(widget, android_layout_new(_REF(this)));
+		(*env)->SetBooleanField(env, this, _FIELD_ID(class, "haveCustomMeasure", "Z"), true);
+	}
+
 	return _INTPTR(widget);
 }
 

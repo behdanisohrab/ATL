@@ -77,25 +77,6 @@ void wrapper_widget_set_child(WrapperWidget *parent, GtkWidget *child) // TODO: 
 	parent->child = child;
 }
 
-#define MEASURE_SPEC_EXACTLY (1 << 30)
-
-static void on_mapped(GtkWidget* self, gpointer data)
-{
-	WrapperWidget *wrapper = WRAPPER_WIDGET(self);
-	if (wrapper->jvm) {
-		JNIEnv *env;
-		(*wrapper->jvm)->GetEnv(wrapper->jvm, (void**)&env, JNI_VERSION_1_6);
-
-		(*env)->CallVoidMethod(env, wrapper->jobj, wrapper->measure_method, MEASURE_SPEC_EXACTLY | gtk_widget_get_width(self), MEASURE_SPEC_EXACTLY | gtk_widget_get_height(self));
-		int width = (*env)->CallIntMethod(env, wrapper->jobj, handle_cache.view.getMeasuredWidth);
-		if (width > 0)
-			g_object_set(G_OBJECT(self), "width-request", width, NULL);
-		int height = (*env)->CallIntMethod(env, wrapper->jobj, handle_cache.view.getMeasuredHeight);
-		if (height > 0)
-			g_object_set(G_OBJECT(self), "height-request", height, NULL);
-	}
-}
-
 static guint sk_area_queue_queue_redraw(GtkWidget *sk_area)
 {
 	gtk_widget_queue_draw(sk_area);
@@ -131,13 +112,6 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 		gtk_widget_insert_before(sk_area, GTK_WIDGET(wrapper), NULL);
 		wrapper->sk_area = sk_area;
 //		gtk_widget_add_tick_callback(sk_area, tick_callback, NULL, NULL);
-	}
-
-	jmethodID measure_method = _METHOD(_CLASS(jobj), "onMeasure", "(II)V");
-	if (measure_method != handle_cache.view.onMeasure) {
-		wrapper->measure_method = measure_method;
-		// add a callback for when the widget is mapped, which will call onMeasure to figure out what size the widget wants to be
-		g_signal_connect(wrapper, "map", G_CALLBACK(on_mapped), NULL);
 	}
 
 	jmethodID ontouchevent_method = _METHOD(_CLASS(jobj), "onTouchEvent", "(Landroid/view/MotionEvent;)Z");

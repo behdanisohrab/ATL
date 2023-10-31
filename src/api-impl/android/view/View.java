@@ -809,9 +809,10 @@ public class View extends Object {
 
 	private int oldWidthMeasureSpec;
 	private int oldHeightMeasureSpec;
-	private boolean layoutRequested;
+	private boolean layoutRequested = true;
 	private int oldWidth;
 	private int oldHeight;
+	private boolean haveCustomMeasure;
 
 	public View() {
 		this(Context.this_application);
@@ -951,7 +952,10 @@ public class View extends Object {
 	};
 
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		native_measure(widget, widthMeasureSpec, heightMeasureSpec, false);
+		if (haveCustomMeasure) // calling native_measure here would create infinite loop
+			setMeasuredDimension(getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec), getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec));
+		else
+			native_measure(widget, widthMeasureSpec, heightMeasureSpec, false);
 	}
 
 	public void setPressed(boolean pressed) {
@@ -1121,10 +1125,10 @@ public class View extends Object {
 	}
 
 	protected int getSuggestedMinimumHeight() {
-		return 50;
+		return 10;
 	}
 	protected int getSuggestedMinimumWidth() {
-		return 100;
+		return 10;
 	}
 
 	/**
