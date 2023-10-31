@@ -100,12 +100,16 @@ void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject o
 	callback_data->on_touch_listener_class = on_touch_listener ? _REF(_CLASS(callback_data->on_touch_listener)) : _REF(_CLASS(callback_data->this));
 	callback_data->num_clicks = 0;
 
+	GtkEventController *old_controller = g_object_get_data(G_OBJECT(widget), "on_touch_listener");
+	if(old_controller)
+		gtk_widget_remove_controller(widget, old_controller);
+
 	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_event_controller_legacy_new());
-	gtk_event_controller_set_name(controller, "the Java_android_view_View_setOnTouchListener one");
 	gtk_event_controller_set_propagation_phase(controller, GTK_PHASE_CAPTURE); // FIXME?
 
 	g_signal_connect(controller, "event", G_CALLBACK(on_event), callback_data);
 	gtk_widget_add_controller(widget, controller);
+	g_object_set_data(G_OBJECT(widget), "on_touch_listener", controller);
 }
 
 JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener(JNIEnv *env, jobject this, jobject on_touch_listener)
@@ -131,10 +135,15 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnClickListener(JNIEnv *env, jo
 	callback_data->on_touch_listener_class = _REF(_CLASS(callback_data->on_touch_listener));
 	callback_data->num_clicks = 0;
 
+	GtkEventController *old_controller = g_object_get_data(G_OBJECT(widget), "on_click_listener");
+	if(old_controller)
+		gtk_widget_remove_controller(widget, old_controller);
+
 	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_click_new());
 
 	g_signal_connect(controller, "released", G_CALLBACK(on_click), callback_data); // the release completes the click, I guess?
 	gtk_widget_add_controller(widget, controller);
+	g_object_set_data(G_OBJECT(widget), "on_click_listener", controller);
 }
 
 JNIEXPORT jint JNICALL Java_android_view_View_getWidth(JNIEnv *env, jobject this)
