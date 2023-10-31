@@ -88,6 +88,7 @@ public class Context extends Object {
 		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
 		try {
 			manifest = AndroidManifestBlock.load(inStream);
+			application_info.targetSdkVersion = manifest.getTargetSdkVersion();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
