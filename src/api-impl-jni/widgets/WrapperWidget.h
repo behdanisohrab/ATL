@@ -9,6 +9,8 @@ G_DECLARE_FINAL_TYPE (WrapperWidget, wrapper_widget, WRAPPER, WIDGET, GtkWidget)
 struct _WrapperWidget
 {
 	GtkWidget parent_instance;
+	GtkWidget *child;
+	GtkWidget *sk_area;
 	JavaVM *jvm;
 	jobject jobj;
 	jobject canvas;
@@ -24,6 +26,7 @@ struct _WrapperWidgetClass
 GtkWidget * wrapper_widget_new(void);
 void wrapper_widget_set_child(WrapperWidget *parent, GtkWidget *child);
 void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject jobj);
+void wrapper_widget_queue_draw(WrapperWidget *wrapper);
 
 void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject on_touch_listener);
 

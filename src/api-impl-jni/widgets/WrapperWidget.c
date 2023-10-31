@@ -74,6 +74,7 @@ GtkWidget * wrapper_widget_new(void)
 void wrapper_widget_set_child(WrapperWidget *parent, GtkWidget *child) // TODO: make sure there can only be one child
 {
 	gtk_widget_insert_before(child, GTK_WIDGET(parent), NULL);
+	parent->child = child;
 }
 
 #define MEASURE_SPEC_EXACTLY (1 << 30)
@@ -95,12 +96,23 @@ static void on_mapped(GtkWidget* self, gpointer data)
 	}
 }
 
-// FIXME: this is used in one other place as well, should probably go in util.c or gtk_util.c?
-gboolean tick_callback(GtkWidget* widget, GdkFrameClock* frame_clock, gpointer user_data)
+static guint sk_area_queue_queue_redraw(GtkWidget *sk_area)
 {
-	gtk_widget_queue_draw(widget);
-	gtk_widget_queue_draw(gtk_widget_get_parent(widget));
-	return G_SOURCE_CONTINUE;
+	gtk_widget_queue_draw(sk_area);
+	return G_SOURCE_REMOVE;
+}
+
+void wrapper_widget_queue_draw(WrapperWidget *wrapper)
+{
+	if(wrapper->sk_area) {
+		/* schedule the call to gtk_widget_queue_draw for a future event loop pass in case we're currently inside the sk_area's snapshot */
+		/* GTK+ uses G_PRIORITY_HIGH_IDLE + 10 for resizing operations, and G_PRIORITY_HIGH_IDLE + 20 for redrawing operations. */
+		g_idle_add_full(G_PRIORITY_HIGH_IDLE + 20, G_SOURCE_FUNC(sk_area_queue_queue_redraw), wrapper->sk_area, NULL);
+	}
+
+	if(wrapper->child)
+		gtk_widget_queue_draw(wrapper->child);
+	gtk_widget_queue_draw(GTK_WIDGET(wrapper));
 }
 
 void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject jobj)
@@ -114,9 +126,11 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 		wrapper->draw_method = draw_method;
 
 		GtkWidget *sk_area = sk_area_new();
+		gtk_widget_set_sensitive(sk_area, false);
 		sk_area_set_draw_func(SK_AREA_WIDGET(sk_area), skia_draw_func, wrapper);
 		gtk_widget_insert_before(sk_area, GTK_WIDGET(wrapper), NULL);
-		gtk_widget_add_tick_callback(sk_area, tick_callback, NULL, NULL);
+		wrapper->sk_area = sk_area;
+//		gtk_widget_add_tick_callback(sk_area, tick_callback, NULL, NULL);
 	}
 
 	jmethodID measure_method = _METHOD(_CLASS(jobj), "onMeasure", "(II)V");
@@ -128,7 +142,7 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 
 	jmethodID ontouchevent_method = _METHOD(_CLASS(jobj), "onTouchEvent", "(Landroid/view/MotionEvent;)Z");
 	if (ontouchevent_method != handle_cache.view.onTouchEvent) {
-		/* use gtk_widget_get_first_child since the jobject may not have the "widget" variable set yet */
-		_setOnTouchListener(env, jobj, gtk_widget_get_first_child(GTK_WIDGET(wrapper)), NULL);
+		/* use wrapper->child since the jobject may not have the "widget" variable set yet */
+		_setOnTouchListener(env, jobj, wrapper->child, NULL);
 	}
 }
