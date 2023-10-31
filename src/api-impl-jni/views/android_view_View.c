@@ -4,6 +4,7 @@
 #include "../util.h"
 
 #include "../widgets/WrapperWidget.h"
+#include "../views/AndroidLayout.h"
 
 #include "../generated_headers/android_view_View.h"
 
@@ -236,6 +237,10 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setLayoutParams(JNIEnv *en
 		g_object_set(G_OBJECT(widget), "width-request", width, NULL);
 	if(height > 0)
 		g_object_set(G_OBJECT(widget), "height-request", height, NULL);
+
+	GtkLayoutManager *layout_manager = gtk_widget_get_layout_manager(WRAPPER_WIDGET(widget)->child);
+	if (ATL_IS_ANDROID_LAYOUT(layout_manager))
+		android_layout_set_params(ATL_ANDROID_LAYOUT(layout_manager), width, height);
 }
 
 JNIEXPORT void JNICALL Java_android_view_View_setVisibility(JNIEnv *env, jobject this, jint visibility) {

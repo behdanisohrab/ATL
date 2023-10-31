@@ -26,6 +26,11 @@ public class FrameLayout extends ViewGroup {
 		return new LayoutParams(getContext(), attrs);
 	}
 
+	@Override
+	protected LayoutParams generateDefaultLayoutParams() {
+		return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+	}
+
 	public static class LayoutParams extends ViewGroup.MarginLayoutParams {
 		public LayoutParams (Context c, AttributeSet attrs) {
 			super(c, attrs);
