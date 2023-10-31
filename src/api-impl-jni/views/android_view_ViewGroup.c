@@ -94,6 +94,9 @@ JNIEXPORT jlong JNICALL Java_android_view_ViewGroup_native_1constructor(JNIEnv *
 			_METHOD((*env)->FindClass(env, "java/lang/Class"), "getName", "()Ljava/lang/String;")));
 	gtk_widget_set_name(box, name);
 
+	/* this should better match default android behavior */
+	gtk_widget_set_overflow(wrapper, GTK_OVERFLOW_HIDDEN);
+
 	jmethodID measure_method = _METHOD(_CLASS(this), "onMeasure", "(II)V");
 	jmethodID layout_method = _METHOD(_CLASS(this), "onLayout", "(ZIIII)V");
 	if (measure_method != handle_cache.view.onMeasure || layout_method != handle_cache.view.onLayout) {
