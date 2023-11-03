@@ -163,6 +163,8 @@ public class Paint {
 
 	public Xfermode setXfermode(Xfermode xfermode) { return xfermode; }
 
+	public void setLetterSpacing(float spacing) {}
+
 	public enum Cap {
 		/**
 		 * The stroke ends with the path, and does not project beyond it.

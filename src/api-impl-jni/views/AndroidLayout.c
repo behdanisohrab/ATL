@@ -64,10 +64,24 @@ static void android_layout_allocate(GtkLayoutManager *layout_manager, GtkWidget 
 		(*env)->ExceptionDescribe(env);
 }
 
+static GtkSizeRequestMode android_layout_get_request_mode(GtkLayoutManager *layout_manager, GtkWidget *widget)
+{
+	AndroidLayout *layout = ATL_ANDROID_LAYOUT(layout_manager);
+
+	if (layout->height == WRAP_CONTENT) {
+		return GTK_SIZE_REQUEST_HEIGHT_FOR_WIDTH;
+	} else if (layout->width == WRAP_CONTENT) {
+		return GTK_SIZE_REQUEST_WIDTH_FOR_HEIGHT;
+	} else {
+		return GTK_SIZE_REQUEST_CONSTANT_SIZE;
+	}
+}
+
 static void android_layout_class_init(AndroidLayoutClass *klass)
 {
 	klass->parent_class.measure = android_layout_measure;
 	klass->parent_class.allocate = android_layout_allocate;
+	klass->parent_class.get_request_mode = android_layout_get_request_mode;
 }
 
 static void android_layout_init(AndroidLayout *self) {}
