@@ -324,7 +324,8 @@ public class Matrix {
 	 * M' = M * T(dx, dy)
 	 */
 	public boolean preTranslate(float dx, float dy) {
-		return native_preTranslate(native_instance, dx, dy);
+		// return native_preTranslate(native_instance, dx, dy);
+		return false;
 	}
 	/**
 	 * Preconcats the matrix with the specified scale.
@@ -630,7 +631,8 @@ public class Matrix {
 		if (dst == null || src == null) {
 			throw new NullPointerException();
 		}
-		return native_mapRect(native_instance, dst, src);
+		// return native_mapRect(native_instance, dst, src);
+		return false;
 	}
 	/**
 	 * Apply this matrix to the rectangle, and write the transformed rectangle
