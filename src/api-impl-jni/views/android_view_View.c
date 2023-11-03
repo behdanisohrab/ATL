@@ -10,7 +10,7 @@
 
 #define SOURCE_TOUCHSCREEN 0x1002
 
-struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; unsigned int num_clicks;};
+struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class;};
 
 static bool call_ontouch_callback(int action, double x, double y, struct touch_callback_data *d)
 {
@@ -53,19 +53,17 @@ static gboolean on_event(GtkEventControllerLegacy *event_controller, GdkEvent *e
 	// TODO: this doesn't work for multitouch
 	switch(gdk_event_get_event_type(event)) {
 		case GDK_BUTTON_PRESS:
-			d->num_clicks = 1;
 		case GDK_TOUCH_BEGIN:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
 			return call_ontouch_callback(MOTION_EVENT_ACTION_DOWN, x, y, d);
 			break;
 		case GDK_BUTTON_RELEASE:
-			d->num_clicks = 0;
 		case GDK_TOUCH_END:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
 			return call_ontouch_callback(MOTION_EVENT_ACTION_UP, x, y, d);
 			break;
 		case GDK_MOTION_NOTIFY:
-			if(d->num_clicks == 0)
+			if (!(gdk_event_get_modifier_state(event) & GDK_BUTTON1_MASK))
 				break;
 		case GDK_TOUCH_UPDATE:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
@@ -99,7 +97,6 @@ void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject o
 	callback_data->this = _REF(this);
  	callback_data->on_touch_listener = on_touch_listener ? _REF(on_touch_listener) : NULL;
 	callback_data->on_touch_listener_class = on_touch_listener ? _REF(_CLASS(callback_data->on_touch_listener)) : _REF(_CLASS(callback_data->this));
-	callback_data->num_clicks = 0;
 
 	GtkEventController *old_controller = g_object_get_data(G_OBJECT(widget), "on_touch_listener");
 	if(old_controller)
@@ -134,7 +131,6 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnClickListener(JNIEnv *env, jo
 	callback_data->this = _REF(this);
  	callback_data->on_touch_listener = _REF(on_click_listener);
 	callback_data->on_touch_listener_class = _REF(_CLASS(callback_data->on_touch_listener));
-	callback_data->num_clicks = 0;
 
 	GtkEventController *old_controller = g_object_get_data(G_OBJECT(widget), "on_click_listener");
 	if(old_controller)
