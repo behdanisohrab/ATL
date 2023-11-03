@@ -807,8 +807,8 @@ public class View extends Object {
 
 	public static HashMap<Integer, View> view_by_id = new HashMap<Integer, View>();
 
-	private int oldWidthMeasureSpec;
-	private int oldHeightMeasureSpec;
+	private int oldWidthMeasureSpec = -1;
+	private int oldHeightMeasureSpec = -1;
 	private boolean layoutRequested = true;
 	private int oldWidth;
 	private int oldHeight;
@@ -1237,6 +1237,9 @@ public class View extends Object {
 
 	public void requestLayout() {
 		layoutRequested = true;
+		if (parent != null && !parent.isLayoutRequested()) {
+			parent.requestLayout();
+		}
 		native_requestLayout(widget);
 	};
 
@@ -1302,7 +1305,7 @@ public class View extends Object {
 
 	public boolean isEnabled() {return true;}
 	public boolean hasFocus() {return false;}
-	public boolean isLayoutRequested() {return true;}
+	public boolean isLayoutRequested() {return layoutRequested;}
 	public int getBaseline() {return -1;}
 	public boolean hasFocusable() {return false;}
 	public boolean isFocused() {return false;}

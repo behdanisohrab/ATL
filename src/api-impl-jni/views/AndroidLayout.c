@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 
 #include "../util.h"
+#include "../defines.h"
 #include "AndroidLayout.h"
 
 static int make_measure_spec(int layout_size, int for_size)
@@ -26,6 +27,11 @@ static void android_layout_measure(GtkLayoutManager *layout_manager, GtkWidget *
 		int widthMeasureSpec = make_measure_spec(layout->width, orientation == GTK_ORIENTATION_VERTICAL ? for_size : -1);
 		int heightMeasureSpec = make_measure_spec(layout->height, orientation == GTK_ORIENTATION_HORIZONTAL ? for_size : -1);
 
+		// if layout params say match_parent, but GTK doesnt specify the dimension, fallback to old specification if available
+		if (widthMeasureSpec == -1)
+			widthMeasureSpec = _GET_INT_FIELD(layout->view, "oldWidthMeasureSpec");
+		if (heightMeasureSpec == -1)
+			heightMeasureSpec = _GET_INT_FIELD(layout->view, "oldHeightMeasureSpec");
 		if (widthMeasureSpec != -1 && heightMeasureSpec != -1) {
 			(*env)->CallVoidMethod(env, layout->view, handle_cache.view.measure, widthMeasureSpec, heightMeasureSpec);
 			if((*env)->ExceptionCheck(env))
