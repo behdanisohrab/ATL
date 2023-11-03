@@ -34,8 +34,10 @@ static void android_layout_measure(GtkLayoutManager *layout_manager, GtkWidget *
 			heightMeasureSpec = _GET_INT_FIELD(layout->view, "oldHeightMeasureSpec");
 		if (widthMeasureSpec != -1 && heightMeasureSpec != -1) {
 			(*env)->CallVoidMethod(env, layout->view, handle_cache.view.measure, widthMeasureSpec, heightMeasureSpec);
-			if((*env)->ExceptionCheck(env))
+			if((*env)->ExceptionCheck(env)) {
 				(*env)->ExceptionDescribe(env);
+				(*env)->ExceptionClear(env);
+			}
 		}
 	}
 
