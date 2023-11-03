@@ -38,8 +38,8 @@ struct ATL_codec_context {
 		struct {
 			struct zwp_linux_dmabuf_v1 *zwp_linux_dmabuf_v1;
 			struct wp_viewporter *wp_viewporter;
-			struct wl_display *display;
-			struct wl_surface *surface;
+			struct wp_viewport *viewport;
+			struct ANativeWindow *native_window;
 			int surface_width;
 			int surface_height;
 		} video;
@@ -217,6 +217,13 @@ static const struct wl_buffer_listener buffer_listener = {
 	.release = handle_buffer_release,
 };
 
+static void on_resize(GtkWidget* widget, gint width, gint height, struct ATL_codec_context *ctx)
+{
+	ctx->video.surface_width = gtk_widget_get_width(widget);
+	ctx->video.surface_height = gtk_widget_get_height(widget);
+	wp_viewport_set_destination(ctx->video.viewport, ctx->video.surface_width, ctx->video.surface_height);
+}
+
 JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JNIEnv *env, jobject this, jlong codec, jobject csd0, jobject csd1, jobject surface_obj)
 {
 	struct ATL_codec_context *ctx = _PTR(codec);
@@ -284,8 +291,7 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JN
 	fprintf(stderr, "Selected pixel format %s\n", av_get_pix_fmt_name(hw_pix_fmt));
 
 	struct ANativeWindow *native_window = ANativeWindow_fromSurface(env, surface_obj);
-	ctx->video.display = native_window->wayland_display;
-	ctx->video.surface = native_window->wayland_surface;
+	ctx->video.native_window = native_window;
 	ctx->video.surface_width = gtk_widget_get_width(native_window->surface_view_widget);
 	ctx->video.surface_height = gtk_widget_get_height(native_window->surface_view_widget);
 }
@@ -329,9 +335,10 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1start(JNIEnv *env, 
 		}
 		codec_ctx->hw_device_ctx = av_buffer_ref(hw_device_ctx);
 
-		struct wl_registry *registry = wl_display_get_registry(ctx->video.display);
+		struct ANativeWindow *native_window = ctx->video.native_window;
+		struct wl_registry *registry = wl_display_get_registry(native_window->wayland_display);
 		wl_registry_add_listener(registry, &registry_listener, ctx);
-		wl_display_roundtrip(ctx->video.display);
+		wl_display_roundtrip(native_window->wayland_display);
 		wl_registry_destroy(registry);
 
 		if (ctx->video.zwp_linux_dmabuf_v1 == NULL || ctx->video.wp_viewporter == NULL) {
@@ -339,8 +346,9 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1start(JNIEnv *env, 
 			exit(1);
 		}
 
-		struct wp_viewport *viewport = wp_viewporter_get_viewport(ctx->video.wp_viewporter, ctx->video.surface);
-		wp_viewport_set_destination(viewport, ctx->video.surface_width, ctx->video.surface_height);
+		ctx->video.viewport = wp_viewporter_get_viewport(ctx->video.wp_viewporter, native_window->wayland_surface);
+		wp_viewport_set_destination(ctx->video.viewport, ctx->video.surface_width, ctx->video.surface_height);
+		g_signal_connect(native_window->surface_view_widget, "resize", G_CALLBACK(on_resize), ctx);
 	}
 }
 
@@ -434,9 +442,11 @@ static gboolean render_frame(void *data)
 	}
 	wl_buffer_add_listener(wl_buffer, &buffer_listener, frame);
 
-	wl_surface_damage(ctx->video.surface, 0, 0, INT32_MAX, INT32_MAX);
-	wl_surface_attach(ctx->video.surface, wl_buffer, 0, 0);
-	wl_surface_commit(ctx->video.surface);
+	struct ANativeWindow *native_window = ctx->video.native_window;
+
+	wl_surface_damage(native_window->wayland_surface, 0, 0, INT32_MAX, INT32_MAX);
+	wl_surface_attach(native_window->wayland_surface, wl_buffer, 0, 0);
+	wl_surface_commit(native_window->wayland_surface);
 
 	// actual frame will be freed in handle_buffer_release callback
 	av_frame_free(&drm_frame);
