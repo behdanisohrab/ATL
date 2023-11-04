@@ -48,26 +48,46 @@ void skia_draw_func(SKArea *sk_area, sk_canvas_t *canvas, void *user_data)
 		(*env)->ExceptionDescribe(env);
 }
 
-void wrapper_snapshot(GtkWidget* widget, GtkSnapshot* snapshot)
+GtkSizeRequestMode wrapper_widget_get_request_mode(GtkWidget *widget)
 {
 	WrapperWidget *wrapper = WRAPPER_WIDGET(widget);
+	return gtk_widget_get_request_mode(wrapper->child);
+}
+
+void wrapper_widget_measure(GtkWidget *widget, GtkOrientation orientation, int for_size, int *minimum, int *natural, int *minimum_baseline, int *natural_baseline)
+{
+	WrapperWidget *wrapper = WRAPPER_WIDGET(widget);
+	gtk_widget_measure(wrapper->child, orientation, for_size, minimum, natural, minimum_baseline, natural_baseline);
+}
+
+void wrapper_widget_allocate(GtkWidget *widget, int width, int height, int baseline)
+{
+	WrapperWidget *wrapper = WRAPPER_WIDGET(widget);
+	GtkAllocation allocation = {
+		.x = 0,
+		.y = 0,
+		.width = width,
+		.height = height,
+	};
+
 	if (wrapper->computeScroll_method) {
+		// The child needs to know its size before calling computeScroll, so we allocate it twice.
+		// second allocate will not trigger onLayout, because of unchanged size
+		gtk_widget_size_allocate(wrapper->child, &allocation, baseline);
+
 		JNIEnv *env;
 		(*wrapper->jvm)->GetEnv(wrapper->jvm, (void**)&env, JNI_VERSION_1_6);
 		(*env)->CallVoidMethod(env, wrapper->jobj, wrapper->computeScroll_method);
 		if((*env)->ExceptionCheck(env))
 			(*env)->ExceptionDescribe(env);
-		graphene_point_t translation = {
-			.x = -(*env)->CallIntMethod(env, wrapper->jobj, handle_cache.view.getScrollX),
-			.y = -(*env)->CallIntMethod(env, wrapper->jobj, handle_cache.view.getScrollY),
-		};
-		gtk_snapshot_translate(snapshot, &translation);
+		allocation.x = -(*env)->CallIntMethod(env, wrapper->jobj, handle_cache.view.getScrollX);
+		allocation.y = -(*env)->CallIntMethod(env, wrapper->jobj, handle_cache.view.getScrollY);
 	}
-	gtk_widget_snapshot_child(widget, wrapper->child, snapshot);
-	if (wrapper->sk_area)
-		gtk_widget_snapshot_child(widget, wrapper->sk_area, snapshot);
-}
 
+	gtk_widget_size_allocate(wrapper->child, &allocation, baseline);
+	if (wrapper->sk_area)
+		gtk_widget_size_allocate(wrapper->sk_area, &allocation, baseline);
+}
 
 static void wrapper_widget_class_init(WrapperWidgetClass *class)
 {
@@ -76,9 +96,9 @@ static void wrapper_widget_class_init(WrapperWidgetClass *class)
 
 	object_class->dispose = wrapper_widget_dispose;
 
-	widget_class->snapshot = wrapper_snapshot;
-
-	gtk_widget_class_set_layout_manager_type(widget_class, GTK_TYPE_BIN_LAYOUT);
+	widget_class->get_request_mode = wrapper_widget_get_request_mode;
+	widget_class->measure = wrapper_widget_measure;
+	widget_class->size_allocate = wrapper_widget_allocate;
 }
 
 GtkWidget * wrapper_widget_new(void)
@@ -108,7 +128,8 @@ void wrapper_widget_queue_draw(WrapperWidget *wrapper)
 
 	if(wrapper->child)
 		gtk_widget_queue_draw(wrapper->child);
-	gtk_widget_queue_draw(GTK_WIDGET(wrapper));
+	if (wrapper->computeScroll_method)
+		gtk_widget_queue_allocate(GTK_WIDGET(wrapper));
 }
 
 void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject jobj)
