@@ -47,6 +47,8 @@ public class Window {
 	}
 
 	public View getDecorView() {
+		if (contentView != null)
+			return contentView;
 		return new View(); // FIXME: this can probably backfire
 	}
 
