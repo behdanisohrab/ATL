@@ -136,6 +136,9 @@ void set_up_handle_cache(JNIEnv *env)
 	handle_cache.looper.class = _REF((*env)->FindClass(env, "android/os/Looper"));
 	handle_cache.looper.loop = _STATIC_METHOD(handle_cache.looper.class, "loop", "()V");
 	handle_cache.looper.prepareMainLooper = _STATIC_METHOD(handle_cache.looper.class, "prepareMainLooper", "()V");
+
+	handle_cache.key_event.class = _REF((*env)->FindClass(env, "android/view/KeyEvent"));
+	handle_cache.key_event.constructor = _METHOD(handle_cache.key_event.class, "<init>", "(II)V");
 }
 
 void extract_from_apk(const char *path, const char *target) {
