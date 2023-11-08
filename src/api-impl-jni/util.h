@@ -91,6 +91,10 @@ struct handle_cache {
 		jmethodID loop;
 		jmethodID prepareMainLooper;
 	} looper;
+	struct {
+		jclass class;
+		jmethodID constructor;
+	} key_event;
 };
 
 extern struct handle_cache handle_cache;

@@ -19,6 +19,7 @@ public class EditText extends TextView {
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	protected native String native_getText(long widget);
 	protected native void native_addTextChangedListener(long widget, TextWatcher watcher);
+	protected native void native_setOnEditorActionListener(long widget, OnEditorActionListener l);
 
 	public Editable getText() {
 		return new SpannableStringBuilder(native_getText(widget));
@@ -36,5 +37,10 @@ public class EditText extends TextView {
 	@Override
 	public void addTextChangedListener(TextWatcher watcher) {
 		native_addTextChangedListener(widget, watcher);
+	}
+
+	@Override
+	public void setOnEditorActionListener(OnEditorActionListener l) {
+		native_setOnEditorActionListener(widget, l);
 	}
 }

@@ -16,6 +16,7 @@ import android.text.method.TransformationMethod;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 
 public class TextView extends View {
@@ -186,6 +187,7 @@ public class TextView extends View {
 	public CharSequence getHint() {return "HINT";}
 
 	public static interface OnEditorActionListener {
+		public abstract boolean onEditorAction(TextView v, int actionId, KeyEvent event);
 	}
 
 	public static enum BufferType {
