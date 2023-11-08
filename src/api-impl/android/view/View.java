@@ -877,7 +877,18 @@ public class View extends Object {
 		if (gravity == -1 && parent != null)
 			gravity = parent.gravity;
 
-		native_setLayoutParams(widget, params.width, params.height, gravity, params.weight);
+		int leftMargin = 0;
+		int topMargin = 0;
+		int rightMargin = 0;
+		int bottomMargin = 0;
+		if (params instanceof ViewGroup.MarginLayoutParams) {
+			leftMargin = ((ViewGroup.MarginLayoutParams) params).leftMargin;
+			topMargin = ((ViewGroup.MarginLayoutParams) params).topMargin;
+			rightMargin = ((ViewGroup.MarginLayoutParams) params).rightMargin;
+			bottomMargin = ((ViewGroup.MarginLayoutParams) params).bottomMargin;
+		}
+
+		native_setLayoutParams(widget, params.width, params.height, gravity, params.weight, leftMargin, topMargin, rightMargin, bottomMargin);
 
 		layout_params = params;
 	}
@@ -910,7 +921,7 @@ public class View extends Object {
 	public native final int getHeight();
 
 	protected native long native_constructor(Context context, AttributeSet attrs); // will create a custom GtkWidget with a custom drawing function
-	public native void native_setLayoutParams(long widget, int width, int height, int gravity, float weight);
+	public native void native_setLayoutParams(long widget, int width, int height, int gravity, float weight, int leftMargin, int topMargin, int rightMargin, int bottomMargin);
 	protected native void native_destructor(long widget);
 	/**
 	 * We decide between simple widgets which handles MEASURE_SPEC_AT_MOST the same way as

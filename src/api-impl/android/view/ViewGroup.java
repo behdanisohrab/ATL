@@ -348,8 +348,6 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 			a.recycle();
 		}
 
-		public void setMargins(int left, int top, int right, int bottom) {}
-
 		/**
 		 * Used to animate layouts.
 		 */
@@ -382,6 +380,19 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 		public MarginLayoutParams(Context context, AttributeSet attributeSet) {
 			super(context, attributeSet);
+			TypedArray a = context.obtainStyledAttributes(attributeSet, R.styleable.ViewGroup_MarginLayout);
+			leftMargin = a.getDimensionPixelSize(R.styleable.ViewGroup_MarginLayout_layout_marginLeft, 0);
+			topMargin = a.getDimensionPixelSize(R.styleable.ViewGroup_MarginLayout_layout_marginTop, 0);
+			rightMargin = a.getDimensionPixelSize(R.styleable.ViewGroup_MarginLayout_layout_marginRight, 0);
+			bottomMargin = a.getDimensionPixelSize(R.styleable.ViewGroup_MarginLayout_layout_marginBottom, 0);
+			a.recycle();
+		}
+
+		public void setMargins(int left, int top, int right, int bottom) {
+			leftMargin = left;
+			topMargin = top;
+			rightMargin = right;
+			bottomMargin = bottom;
 		}
 
 		public int getMarginStart() {
@@ -392,8 +403,12 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 			return rightMargin;
 		}
 
-		public void setMarginStart(int marginStart) {}
-		public void setMarginEnd(int marginEnd) {}
+		public void setMarginStart(int marginStart) {
+			leftMargin = marginStart;
+		}
+		public void setMarginEnd(int marginEnd) {
+			rightMargin = marginEnd;
+		}
 	}
 
 	public interface OnHierarchyChangeListener {

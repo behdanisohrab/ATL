@@ -174,7 +174,8 @@ JNIEXPORT jint JNICALL Java_android_view_View_getHeight(JNIEnv *env, jobject thi
 
 #define MATCH_PARENT (-1)
 
-JNIEXPORT void JNICALL Java_android_view_View_native_1setLayoutParams(JNIEnv *env, jobject this, jlong widget_ptr, jint width, jint height, jint gravity, jfloat weight)
+JNIEXPORT void JNICALL Java_android_view_View_native_1setLayoutParams(JNIEnv *env, jobject this, jlong widget_ptr, jint width, jint height, jint gravity, jfloat weight,
+		jint leftMargin, jint topMargin, jint rightMargin, jint bottomMargin)
 {
 	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget_ptr)));
 
@@ -233,6 +234,15 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setLayoutParams(JNIEnv *en
 		g_object_set(G_OBJECT(widget), "width-request", width, NULL);
 	if(height > 0)
 		g_object_set(G_OBJECT(widget), "height-request", height, NULL);
+
+	GtkWidget *parent = gtk_widget_get_parent(widget);
+	// if parent is Java widget, it will handle the margins by itself
+	if (parent && !ATL_IS_ANDROID_LAYOUT(gtk_widget_get_layout_manager(parent))) {
+		gtk_widget_set_margin_start(widget, leftMargin);
+		gtk_widget_set_margin_top(widget, topMargin);
+		gtk_widget_set_margin_end(widget, rightMargin);
+		gtk_widget_set_margin_bottom(widget, bottomMargin);
+	}
 
 	GtkLayoutManager *layout_manager = gtk_widget_get_layout_manager(WRAPPER_WIDGET(widget)->child);
 	if (ATL_IS_ANDROID_LAYOUT(layout_manager))
