@@ -89,7 +89,6 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/widgets/android_widget_ImageButton.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_ScrollView.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_ImageView.c',
-                                                                  	'src/api-impl-jni/widgets/android_widget_FrameLayout.c',
                                                                   	'src/api-impl-jni/widgets/WrapperWidget.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_TextView.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_LinearLayout.c',
