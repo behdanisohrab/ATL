@@ -984,7 +984,11 @@ public class View extends Object {
 	private static native void nativeInvalidate(long widget);
 
 	public native void setBackgroundColor(int color);
-	public native void setVisibility(int visibility);
+	public native void native_setVisibility(long widget, int visibility);
+	public void setVisibility(int visibility) {
+		native_setVisibility(widget, visibility);
+		requestLayout();
+	}
 	public void setPadding(int left, int top, int right, int bottom) {}
 	public void setBackgroundResource(int resid) {
 //		Slog.w(TAG, "*** setBackgroundResource: " + getString(resid));
