@@ -1229,7 +1229,7 @@ public class Resources {
 		 * @param other The existing Theme to copy from.
 		 */
 		public void setTo(Theme other) {
-			themeMap = other.themeMap;
+			themeMap = new HashMap<>(other.themeMap);
 		}
 
 		/**

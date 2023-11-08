@@ -1,6 +1,7 @@
 package android.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
 import android.util.AttributeSet;
 import android.util.Slog;
@@ -42,7 +43,14 @@ public class LayoutInflater {
 
 		Constructor constructor = view_class.getConstructor(Context.class, AttributeSet.class);
 
-		View view_instance = (View)constructor.newInstance(Context.this_application, attrs);
+		Context context = Context.this_application;
+		final TypedArray ta = context.obtainStyledAttributes(attrs, new int[]{com.android.internal.R.attr.theme});
+		final int themeResId = ta.getResourceId(0, 0);
+		if (themeResId != 0) {
+			context = new ContextThemeWrapper(context, themeResId);
+		}
+		ta.recycle();
+		View view_instance = (View)constructor.newInstance(context, attrs);
 
 		return view_instance;
 	}
