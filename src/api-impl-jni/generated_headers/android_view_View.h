@@ -242,10 +242,10 @@ JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor
 /*
  * Class:     android_view_View
  * Method:    native_setLayoutParams
- * Signature: (JIIIF)V
+ * Signature: (JIIIFIIII)V
  */
 JNIEXPORT void JNICALL Java_android_view_View_native_1setLayoutParams
-  (JNIEnv *, jobject, jlong, jint, jint, jint, jfloat);
+  (JNIEnv *, jobject, jlong, jint, jint, jint, jfloat, jint, jint, jint, jint);
 
 /*
  * Class:     android_view_View
