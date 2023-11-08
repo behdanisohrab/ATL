@@ -94,6 +94,8 @@ GtkLayoutManager *android_layout_new(jobject view)
 {
 	AndroidLayout *layout = g_object_new(android_layout_get_type(), NULL);
 	layout->view = view;
+	layout->width = MATCH_PARENT;
+	layout->height = MATCH_PARENT;
 	return &layout->parent_instance;
 }
 
