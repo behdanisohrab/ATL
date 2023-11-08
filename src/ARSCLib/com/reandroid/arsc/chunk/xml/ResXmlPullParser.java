@@ -165,7 +165,7 @@ public class ResXmlPullParser implements XmlResourceParser {
     public int getAttributeListValue(String namespace, String attribute, String[] options, int defaultValue) {
         ResXmlAttribute xmlAttribute = getAttribute(namespace, attribute);
         if(xmlAttribute == null){
-            return 0;
+            return defaultValue;
         }
         List<String> list = Arrays.asList(options);
         int index = list.indexOf(decodeAttributeValue(xmlAttribute));
@@ -186,7 +186,7 @@ public class ResXmlPullParser implements XmlResourceParser {
     public int getAttributeResourceValue(String namespace, String attribute, int defaultValue) {
         ResXmlAttribute xmlAttribute = getAttribute(namespace, attribute);
         if(xmlAttribute == null){
-            return 0;
+            return defaultValue;
         }
         ValueType valueType=xmlAttribute.getValueType();
         if(valueType==ValueType.ATTRIBUTE
@@ -201,7 +201,7 @@ public class ResXmlPullParser implements XmlResourceParser {
     public int getAttributeIntValue(String namespace, String attribute, int defaultValue) {
         ResXmlAttribute xmlAttribute = getAttribute(namespace, attribute);
         if(xmlAttribute == null){
-            return 0;
+            return defaultValue;
         }
         ValueType valueType=xmlAttribute.getValueType();
         if(valueType==ValueType.INT_DEC
@@ -214,7 +214,7 @@ public class ResXmlPullParser implements XmlResourceParser {
     public int getAttributeUnsignedIntValue(String namespace, String attribute, int defaultValue) {
         ResXmlAttribute xmlAttribute = getAttribute(namespace, attribute);
         if(xmlAttribute == null){
-            return 0;
+            return defaultValue;
         }
         ValueType valueType=xmlAttribute.getValueType();
         if(valueType==ValueType.INT_DEC){
@@ -226,7 +226,7 @@ public class ResXmlPullParser implements XmlResourceParser {
     public float getAttributeFloatValue(String namespace, String attribute, float defaultValue) {
         ResXmlAttribute xmlAttribute = getAttribute(namespace, attribute);
         if(xmlAttribute == null){
-            return 0;
+            return defaultValue;
         }
         ValueType valueType=xmlAttribute.getValueType();
         if(valueType==ValueType.FLOAT){
@@ -239,7 +239,7 @@ public class ResXmlPullParser implements XmlResourceParser {
     public int getAttributeListValue(int index, String[] options, int defaultValue) {
         ResXmlAttribute xmlAttribute = getResXmlAttributeAt(index);
         if(xmlAttribute == null){
-            return 0;
+            return defaultValue;
         }
         List<String> list = Arrays.asList(options);
         int i = list.indexOf(decodeAttributeValue(xmlAttribute));
@@ -260,7 +260,7 @@ public class ResXmlPullParser implements XmlResourceParser {
     public int getAttributeResourceValue(int index, int defaultValue) {
         ResXmlAttribute xmlAttribute = getResXmlAttributeAt(index);
         if(xmlAttribute == null){
-            return 0;
+            return defaultValue;
         }
         ValueType valueType=xmlAttribute.getValueType();
         if(valueType==ValueType.ATTRIBUTE
@@ -283,7 +283,7 @@ public class ResXmlPullParser implements XmlResourceParser {
     public int getAttributeUnsignedIntValue(int index, int defaultValue) {
         ResXmlAttribute xmlAttribute = getResXmlAttributeAt(index);
         if(xmlAttribute == null){
-            return 0;
+            return defaultValue;
         }
         return xmlAttribute.getData();
     }
@@ -291,7 +291,7 @@ public class ResXmlPullParser implements XmlResourceParser {
     public float getAttributeFloatValue(int index, float defaultValue) {
         ResXmlAttribute xmlAttribute = getResXmlAttributeAt(index);
         if(xmlAttribute == null){
-            return 0;
+            return defaultValue;
         }
         ValueType valueType=xmlAttribute.getValueType();
         if(valueType==ValueType.FLOAT){
