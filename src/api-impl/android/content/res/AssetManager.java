@@ -223,6 +223,9 @@ public final class AssetManager {
 			}
 			return getResourceText(resValue.getData());
 		}
+		if (resValue.getValueType() == ValueType.INT_COLOR_RGB8) {
+			return String.format("#%08x", resValue.getData());
+		}
 		return resValue.getDataAsPoolString().get();
 	}
 
@@ -869,7 +872,9 @@ public final class AssetManager {
 	/*package*/ /*native*/ final String getResourceTypeName(int resid) {
 		return tableBlockSearch(resid).pickOne().getTypeName();
 	}
-	/*package*/ native final String getResourceEntryName(int resid);
+	/*package*/ /*native*/ final String getResourceEntryName(int resid) {
+		return tableBlockSearch(resid).pickOne().getName();
+	}
 
 	private native final int openAsset(String fileName, int accessMode);
 	private final native ParcelFileDescriptor openAssetFd(String fileName,

@@ -79,4 +79,12 @@ public abstract class Drawable {
 	public int getIntrinsicHeight() {return 0;}
 
 	public void setTintList (ColorStateList tint) {}
+
+	public void setTint(int tint) {}
+
+	public boolean isStateful() {
+		return false;
+	}
+
+	public void setTintMode(PorterDuff.Mode tintMode) {}
 }

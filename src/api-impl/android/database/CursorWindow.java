@@ -402,7 +402,11 @@ public class CursorWindow extends SQLiteClosable implements Parcelable {
 	 * @return The value of the field as a <code>long</code>.
 	 */
 	public long getLong(int row, int column) {
-		return (Long)rows.get(row - startPos)[column];
+		Long field = (Long)rows.get(row - startPos)[column];
+		if (field == null) {
+			return 0L;
+		}
+		return field.longValue();
 	}
 
 	/**

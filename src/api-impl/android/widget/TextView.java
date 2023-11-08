@@ -186,6 +186,12 @@ public class TextView extends View {
 
 	public CharSequence getHint() {return "HINT";}
 
+	public int getMinHeight() {return 0;}
+	public int getMinWidth() {return 0;}
+	public void setMinHeight(int minHeight) {}
+
+	public void setHorizontallyScrolling(boolean whether) {}
+
 	public static interface OnEditorActionListener {
 		public abstract boolean onEditorAction(TextView v, int actionId, KeyEvent event);
 	}
