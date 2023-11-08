@@ -50,4 +50,8 @@ public class Typeface {
 	}
 
 	private static native long native_create(CharSequence family_name, int style);
+
+	public int getStyle() {
+		return 0;
+	}
 }

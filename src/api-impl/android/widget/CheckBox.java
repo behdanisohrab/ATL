@@ -13,4 +13,6 @@ public class CheckBox extends CompoundButton {
 		super(context, attributeSet);
 	}
 
+	public void setLines(int lines) {}
+
 }

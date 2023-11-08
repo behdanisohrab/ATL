@@ -8,4 +8,6 @@ public class Animation {
 
 	public void setInterpolator(Interpolator i) {}
 
+	public void cancel() {}
+
 }

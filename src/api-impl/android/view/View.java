@@ -2,6 +2,7 @@ package android.view;
 
 import android.animation.StateListAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -1537,4 +1538,14 @@ public class View extends Object {
 	public float getZ() {return 0.f;}
 
 	protected void onSizeChanged(int w, int h, int oldw, int oldh) {}
+
+	public void setBackgroundTintList(ColorStateList tint) {}
+
+	protected int computeHorizontalScrollRange() {
+		return getWidth();
+	}
+
+	protected int computeHorizontalScrollExtent() {
+		return getWidth();
+	}
 }

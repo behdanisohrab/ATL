@@ -381,7 +381,8 @@ public class Matrix {
 	 * M' = T(dx, dy) * M
 	 */
 	public boolean postTranslate(float dx, float dy) {
-		return native_postTranslate(native_instance, dx, dy);
+		// return native_postTranslate(native_instance, dx, dy);
+		return true;
 	}
 	/**
 	 * Postconcats the matrix with the specified scale.
@@ -396,14 +397,16 @@ public class Matrix {
 	 * M' = S(sx, sy) * M
 	 */
 	public boolean postScale(float sx, float sy) {
-		return native_postScale(native_instance, sx, sy);
+		// return native_postScale(native_instance, sx, sy);
+		return true;
 	}
 	/**
 	 * Postconcats the matrix with the specified rotation.
 	 * M' = R(degrees, px, py) * M
 	 */
 	public boolean postRotate(float degrees, float px, float py) {
-		return native_postRotate(native_instance, degrees, px, py);
+		// return native_postRotate(native_instance, degrees, px, py);
+		return true;
 	}
 	/**
 	 * Postconcats the matrix with the specified rotation.

@@ -95,6 +95,27 @@ public class BaseBundle {
 	}
 
 	/**
+	 * Returns the value associated with the given key, or defaultValue if
+	 * no mapping of the desired type exists for the given key.
+	 *
+	 * @param key a String
+	 * @param defaultValue Value to return if key does not exist
+	 * @return a long value
+	 */
+	public long getLong(String key, long defaultValue) {
+		Object o = mMap.get(key);
+		if (o == null) {
+			return defaultValue;
+		}
+		try {
+			return (Long)o;
+		} catch (ClassCastException e) {
+			typeWarning(key, o, "Long", defaultValue, e);
+			return defaultValue;
+		}
+	}
+
+	/**
 	 * Inserts a long value into the mapping of this Bundle, replacing
 	 * any existing value for the given key.
 	 *

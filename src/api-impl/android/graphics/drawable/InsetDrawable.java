@@ -1,6 +1,7 @@
 package android.graphics.drawable;
 
 import android.graphics.Canvas;
+import android.graphics.Rect;
 
 public class InsetDrawable extends Drawable {
 
@@ -13,5 +14,7 @@ public class InsetDrawable extends Drawable {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'draw'");
 	}
+
+	public boolean getPadding(Rect padding) { return false; }
 	
 }
