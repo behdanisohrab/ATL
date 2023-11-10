@@ -247,6 +247,8 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setLayoutParams(JNIEnv *en
 	GtkLayoutManager *layout_manager = gtk_widget_get_layout_manager(WRAPPER_WIDGET(widget)->child);
 	if (ATL_IS_ANDROID_LAYOUT(layout_manager))
 		android_layout_set_params(ATL_ANDROID_LAYOUT(layout_manager), width, height);
+
+	wrapper_widget_set_layout_params(WRAPPER_WIDGET(widget), width, height);
 }
 
 JNIEXPORT void JNICALL Java_android_view_View_native_1setVisibility(JNIEnv *env, jobject this, jlong widget_ptr, jint visibility) {
