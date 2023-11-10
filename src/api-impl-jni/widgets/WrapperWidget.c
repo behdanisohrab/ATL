@@ -58,6 +58,11 @@ void wrapper_widget_measure(GtkWidget *widget, GtkOrientation orientation, int f
 {
 	WrapperWidget *wrapper = WRAPPER_WIDGET(widget);
 	gtk_widget_measure(wrapper->child, orientation, for_size, minimum, natural, minimum_baseline, natural_baseline);
+	if (orientation == GTK_ORIENTATION_HORIZONTAL && (wrapper->layout_width > 0)) {
+		*minimum = *natural = wrapper->layout_width;
+	} else if (orientation == GTK_ORIENTATION_VERTICAL && (wrapper->layout_height > 0)) {
+		*minimum = *natural = wrapper->layout_height;
+	}
 }
 
 void wrapper_widget_allocate(GtkWidget *widget, int width, int height, int baseline)
@@ -160,4 +165,10 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 	if (computeScroll_method != handle_cache.view.computeScroll) {
 		wrapper->computeScroll_method = computeScroll_method;
 	}
+}
+
+void wrapper_widget_set_layout_params(WrapperWidget *wrapper, int width, int height)
+{
+	wrapper->layout_width = width;
+	wrapper->layout_height = height;
 }

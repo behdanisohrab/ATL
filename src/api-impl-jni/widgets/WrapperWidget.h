@@ -17,6 +17,8 @@ struct _WrapperWidget
 	jmethodID draw_method;
 	jmethodID measure_method;
 	jmethodID computeScroll_method;
+	int layout_width;
+	int layout_height;
 };
 
 struct _WrapperWidgetClass
@@ -28,6 +30,7 @@ GtkWidget * wrapper_widget_new(void);
 void wrapper_widget_set_child(WrapperWidget *parent, GtkWidget *child);
 void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject jobj);
 void wrapper_widget_queue_draw(WrapperWidget *wrapper);
+void wrapper_widget_set_layout_params(WrapperWidget *wrapper, int width, int height);
 
 void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject on_touch_listener);
 
