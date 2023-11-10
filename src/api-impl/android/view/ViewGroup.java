@@ -75,8 +75,8 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		if (!checkLayoutParams(params)) {
 			params = generateLayoutParams(params);
 		}
-		child.setLayoutParams(params);
 		child.parent = this;
+		child.setLayoutParams(params);
 		if (index < 0)
 			index = children.size();
 		children.add(index, child);
