@@ -315,6 +315,16 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		return false;
 	}
 
+	@Override
+	public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
+		return false;
+	}
+
+	@Override
+	public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
+		return false;
+	}
+
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;
 		public static final int MATCH_PARENT = -1;
