@@ -1019,6 +1019,7 @@ public class View extends Object {
 	public void scrollTo(int x, int y) {
 		scrollX = x;
 		scrollY = y;
+		invalidate();
 	}
 
 	protected void onScrollChanged(int l, int t, int oldl, int oldt) {}
