@@ -1291,6 +1291,7 @@ public class View extends Object {
 	}
 
 	public void addOnLayoutChangeListener(OnLayoutChangeListener listener) {}
+	public void removeOnLayoutChangeListener(OnLayoutChangeListener listener) {}
 
 	public boolean isSelected() {return false;}
 
@@ -1559,5 +1560,13 @@ public class View extends Object {
 
 	protected int computeHorizontalScrollExtent() {
 		return getWidth();
+	}
+
+	protected int computeVerticalScrollRange() {
+		return getHeight();
+	}
+
+	protected int computeVerticalScrollExtent() {
+		return getHeight();
 	}
 }
