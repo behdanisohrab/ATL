@@ -2,7 +2,6 @@ package android.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.ViewGroup;
 
 public class LinearLayout extends ViewGroup {
@@ -11,12 +10,10 @@ public class LinearLayout extends ViewGroup {
 
 	public LinearLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setGravity(Gravity.START | Gravity.TOP);
 	}
 
 	public LinearLayout(Context context) {
 		super(context);
-		setGravity(Gravity.START | Gravity.TOP);
 	}
 
 	@Override
