@@ -251,19 +251,11 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setLayoutParams(JNIEnv *en
 	wrapper_widget_set_layout_params(WRAPPER_WIDGET(widget), width, height);
 }
 
-JNIEXPORT void JNICALL Java_android_view_View_native_1setVisibility(JNIEnv *env, jobject this, jlong widget_ptr, jint visibility) {
+JNIEXPORT void JNICALL Java_android_view_View_native_1setVisibility(JNIEnv *env, jobject this, jlong widget_ptr, jint visibility, jfloat alpha) {
 	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget_ptr)));
 
-	switch (visibility) {
-		case android_view_View_VISIBLE:
-			gtk_widget_set_visible(widget, true);
-			break;
-		// TODO: View.INVISIBLE should still reserve layout space for the hidden view
-		case android_view_View_INVISIBLE:
-		case android_view_View_GONE:
-			gtk_widget_set_visible(widget, false);
-			break;
-	}
+	gtk_widget_set_visible(widget, visibility != android_view_View_GONE);
+	gtk_widget_set_opacity(widget, (visibility != android_view_View_INVISIBLE) * alpha);
 }
 
 JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
