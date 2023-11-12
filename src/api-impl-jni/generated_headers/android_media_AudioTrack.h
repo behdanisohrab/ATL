@@ -39,6 +39,14 @@ JNIEXPORT void JNICALL Java_android_media_AudioTrack_native_1play
 
 /*
  * Class:     android_media_AudioTrack
+ * Method:    native_pause
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_android_media_AudioTrack_native_1pause
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     android_media_AudioTrack
  * Method:    native_write
  * Signature: ([BII)I
  */
