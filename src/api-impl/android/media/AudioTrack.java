@@ -126,6 +126,7 @@ public class AudioTrack {
 	public void pause() {
 		System.out.println("calling AudioTrack.pause()\n");
 		playbackState = PLAYSTATE_PAUSED;
+		native_pause();
 	}
 
 	public int getPlaybackHeadPosition() {
@@ -133,5 +134,6 @@ public class AudioTrack {
 	}
 
 	public native void native_play();
+	public native void native_pause();
 	private native int native_write(byte[] audioData, int offsetInBytes, int sizeInBytes);
 }

@@ -213,6 +213,7 @@ JNIEXPORT void JNICALL Java_android_media_AudioTrack_native_1play(JNIEnv *env, j
 
 	snd_async_add_pcm_handler(&pcm_callback, pcm_handle, periodic_update_callback, callback_data);
 	snd_pcm_start(pcm_handle);
+	snd_pcm_pause(pcm_handle, FALSE);
 /*--↑*/
 }
 
@@ -240,4 +241,10 @@ JNIEXPORT jint JNICALL Java_android_media_AudioTrack_native_1write(JNIEnv *env, 
 
 	_RELEASE_BYTE_ARRAY_ELEMENTS(audioData, buffer);
 	return frames_written;
+}
+
+JNIEXPORT void JNICALL Java_android_media_AudioTrack_native_1pause(JNIEnv *env, jobject this)
+{
+	snd_pcm_t *pcm_handle = _PTR(_GET_LONG_FIELD(this, "pcm_handle"));
+	snd_pcm_pause(pcm_handle, TRUE);
 }
