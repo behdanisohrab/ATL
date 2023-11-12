@@ -815,6 +815,9 @@ public class View extends Object {
 	private int oldHeight;
 	private boolean haveCustomMeasure;
 
+	private int visibility = View.VISIBLE;
+	private float alpha = 1.0f;
+
 	public View() {
 		this(Context.this_application);
 	} // FIXME
@@ -996,10 +999,13 @@ public class View extends Object {
 	private static native void nativeInvalidate(long widget);
 
 	public native void setBackgroundColor(int color);
-	public native void native_setVisibility(long widget, int visibility);
+	public native void native_setVisibility(long widget, int visibility, float alpha);
 	public void setVisibility(int visibility) {
-		native_setVisibility(widget, visibility);
-		requestLayout();
+		native_setVisibility(widget, visibility, alpha);
+		if ((visibility == View.GONE) != (this.visibility == View.GONE)) {
+			requestLayout();
+		}
+		this.visibility = visibility;
 	}
 	public void setPadding(int left, int top, int right, int bottom) {}
 	public void setBackgroundResource(int resid) {
@@ -1302,7 +1308,7 @@ public class View extends Object {
 
 	public void setActivated (boolean activated) {}
 
-	public int getVisibility() {return View.VISIBLE;}
+	public int getVisibility() {return visibility;}
 
 	public boolean isInEditMode() {return false;}
 
@@ -1340,7 +1346,8 @@ public class View extends Object {
 	public void setTranslationY(float translationY) {}
 
 	public void setAlpha(float alpha) {
-		setVisibility((alpha == 0.f) ? INVISIBLE : VISIBLE);
+		native_setVisibility(widget, visibility, alpha);
+		this.alpha = alpha;
 	}
 
 	public boolean onGenericMotionEvent(MotionEvent event) {return false;}
@@ -1485,7 +1492,7 @@ public class View extends Object {
 
 	public int getWindowVisibility() {return VISIBLE;}
 
-	public float getAlpha() {return 1.f;}
+	public float getAlpha() {return alpha;}
 
 	public View findFocus() {return this;}
 
