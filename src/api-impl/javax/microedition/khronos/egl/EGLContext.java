@@ -12,7 +12,7 @@ public class EGLContext {
 	}
 
 	// FIXME - not all GLs are created equal
-	public static GL getGL() {
+	public GL getGL() {
 		return GL_INSTANCE;
 	}
 
