@@ -328,6 +328,11 @@ public class Context extends Object {
 
 	public ComponentName startService(Intent intent) {
 		ComponentName component = intent.getComponent();
+		if(component == null) {
+			Slog.w(TAG, "startService: component is null");
+			return null;
+		}
+
 		try {
 			Class<? extends Service> cls = Class.forName(component.getClassName()).asSubclass(Service.class);
 			if (!runningServices.containsKey(cls)) {
