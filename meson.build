@@ -59,6 +59,7 @@ libandroid_so = shared_library('android', [
                           	'src/libandroid/media.c',
                           	'src/libandroid/native_window.c',
                           	'src/libandroid/sensor.c',
+                          	'src/libandroid/trace.c',
                           ],
                           install: true,
                           soversion: 0,
