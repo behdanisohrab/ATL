@@ -546,6 +546,8 @@ PFN_vkVoidFunction bionic_vkGetInstanceProcAddr(VkInstance instance, const char 
 
 typedef XrResult(*xr_func)();
 
+#define ARRRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
+
 // avoid hard dependency on libopenxr_loader for the three functions that we only ever call when running a VR app
 static void *openxr_loader_handle = NULL;
 static inline __attribute__((__always_inline__)) XrResult xr_lazy_call(char *func_name, ...) {
@@ -557,9 +559,10 @@ static inline __attribute__((__always_inline__)) XrResult xr_lazy_call(char *fun
 	return func(__builtin_va_arg_pack());
 }
 
-static void xrInitializeLoaderKHR_noop() //FIXME: does it really return void?
+static XrResult bionic_xrInitializeLoaderKHR(void *loaderInitInfo)
 {
-	printf("STUB: xrInitializeLoaderKHR_noop called\n");
+	fprintf(stderr, "STUB: xrInitializeLoaderKHR noop called\n");
+	return XR_SUCCESS;
 }
 
 struct XrGraphicsBindingOpenGLESAndroidKHR {
@@ -584,25 +587,112 @@ XrResult bionic_xrCreateSession(XrInstance instance, XrSessionCreateInfo *create
 	return xr_lazy_call("xrCreateSession", instance, createInfo, session);
 }
 
-
-
-XrResult bionic_xrGetInstanceProcAddr(XrInstance instance, const char *name, PFN_xrVoidFunction *func)
+/*
+ * Intercept XrInstanceProperties and notify the user of our meta-layer.
+ */
+XrResult bionic_xrGetInstanceProperties(XrInstance instance, XrInstanceProperties* instanceProperties)
 {
-	if(!strcmp(name, "xrInitializeLoaderKHR")) {
-		*func = xrInitializeLoaderKHR_noop;
-		return (XrResult)xrInitializeLoaderKHR_noop; //TODO: is this correct return value?
-	} else {
-		return xr_lazy_call("xrGetInstanceProcAddr", instance, name, func);
-	}
+	XrResult ret = xr_lazy_call("xrGetInstanceProperties", instance, instanceProperties);
+
+	strncat(instanceProperties->runtimeName, " (With ATL meta-layer)",
+		XR_MAX_RUNTIME_NAME_SIZE - 1 - strlen(instanceProperties->runtimeName));
+
+	return ret;
 }
 
 XrResult bionic_xrCreateInstance(XrInstanceCreateInfo *createInfo, XrInstance *instance)
 {
-	const char* enabled_exts[2] = {"XR_KHR_opengl_es_enable", "XR_MNDX_egl_enable"};
-	createInfo->enabledExtensionCount = 2;
-	createInfo->enabledExtensionNames = enabled_exts;
+	const char* extra_exts[] = {
+		"XR_KHR_opengl_es_enable",
+		"XR_MNDX_egl_enable",
+		"XR_EXT_local_floor",
+	};
+
+	char **old_names = createInfo->enabledExtensionNames, **new_names;
+	int i, new_count = createInfo->enabledExtensionCount + ARRRAY_SIZE(extra_exts);
+
+	printf("eee xrCreateInstance\n");
+
+	//FIXME: Leak?
+	new_names = malloc(sizeof(*new_names) * new_count);
+	memcpy(new_names, old_names, createInfo->enabledExtensionCount * sizeof(*old_names));
+
+	for (i = 0; i < ARRRAY_SIZE(extra_exts); ++i)
+		new_names[createInfo->enabledExtensionCount + i] = extra_exts[i];
+
+	createInfo->enabledExtensionCount = new_count;
+	createInfo->enabledExtensionNames = new_names;
+
+	fprintf(stderr, "## xrCreateInstance: Enabled extensions:\n");
+	for (i = 0; i < createInfo->enabledExtensionCount; ++i)
+		fprintf(stderr, "## ---- %s\n", createInfo->enabledExtensionNames[i]);
+
 	return xr_lazy_call("xrCreateInstance", createInfo, instance);
 }
+
+XrResult bionic_xrCreateReferenceSpace(
+    XrSession                                   session,
+    const XrReferenceSpaceCreateInfo*           createInfo,
+    XrSpace*                                    space)
+{
+	fprintf(stderr, "xrCreateReferenceSpace(s=0x%x, info={rs_type=%d})\n", session, createInfo->referenceSpaceType);
+
+	//FIXME: this is sad for oculus refspace extension it assumes we have...
+	if (createInfo->referenceSpaceType > 100)
+		*(int*)(&createInfo->referenceSpaceType) = XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR_EXT;
+
+	return xr_lazy_call("xrCreateReferenceSpace", session, createInfo, space);
+}
+
+/*
+ * NOTE: Here we implement a NIH OpenXR API layer.
+ *
+ * We should make sure all our overrides are available via
+ * "xrGetInstanceProcAddr" so the table below should contain
+ * all our special functions.
+ *
+ * Maybe we should implement a proper OpenXR layer lib and inject
+ * it in xrCreateInstance or extend our XR runtime in a way where
+ * we won't need to help it.
+ */
+
+
+/*
+ * HACK: The name prop here is deliberately an in-struct
+ * string so we can do bsearch with plain strcmp.
+ * So it must always be first.
+ */
+struct xr_proc_override {
+	char name[64];
+	PFN_xrVoidFunction *func;
+};
+
+#define XR_PROC_BIONIC(name) {#name, bionic_ ## name }
+
+/* Please keep the alphabetical order */
+static const struct xr_proc_override xr_proc_override_tbl[] = {
+	XR_PROC_BIONIC(xrCreateInstance),
+	XR_PROC_BIONIC(xrCreateReferenceSpace),
+	XR_PROC_BIONIC(xrCreateSession),
+	XR_PROC_BIONIC(xrGetInstanceProperties),
+	XR_PROC_BIONIC(xrInitializeLoaderKHR),
+};
+
+XrResult bionic_xrGetInstanceProcAddr(XrInstance instance, const char *name, PFN_xrVoidFunction *func)
+{
+	printf("xrGetInstanceProcAddr(%s)\n", name);
+
+	struct xr_proc_override *match = bsearch(name, xr_proc_override_tbl,
+			ARRRAY_SIZE(xr_proc_override_tbl), sizeof(xr_proc_override_tbl[0]), strcmp);
+
+	if (match) {
+		*func = match->func;
+		return XR_SUCCESS;
+	}
+
+	return xr_lazy_call("xrGetInstanceProcAddr", instance, name, func);
+}
+
 
 typedef void* ANativeActivity;
 
