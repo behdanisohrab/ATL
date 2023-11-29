@@ -575,15 +575,19 @@ struct XrGraphicsBindingOpenGLESAndroidKHR {
 
 XrResult bionic_xrCreateSession(XrInstance instance, XrSessionCreateInfo *createInfo, XrSession *session)
 {
-	// TODO: check the type and handle Vulkan
 	struct XrGraphicsBindingOpenGLESAndroidKHR *android_bind = createInfo->next;
-
 	XrGraphicsBindingEGLMNDX egl_bind = {XR_TYPE_GRAPHICS_BINDING_EGL_MNDX};
-	egl_bind.getProcAddress = eglGetProcAddress;
-	egl_bind.display = android_bind->display;
-	egl_bind.config = android_bind->config;
-	egl_bind.context = android_bind->context;
-	createInfo->next = &egl_bind;
+
+	if (android_bind->type == XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR) {
+		egl_bind.getProcAddress = eglGetProcAddress;
+		egl_bind.display = android_bind->display;
+		egl_bind.config = android_bind->config;
+		egl_bind.context = android_bind->context;
+		createInfo->next = &egl_bind;
+	} else {
+		fprintf(stderr, "xrCreateSession: The graphics binding type = %d\n", android_bind->type);
+	}
+
 	return xr_lazy_call("xrCreateSession", instance, createInfo, session);
 }
 
