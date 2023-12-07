@@ -167,6 +167,11 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 		exit(1);
 	}
 
+	if(access(apk_classpath, F_OK) < 0) {
+		printf("error: the specified file path doesn't seem to exist (%m)\n", errno);
+		exit(1);
+	}
+
 	Dl_info libart_so_dl_info;
 	// JNI_CreateJavaVM chosen arbitrarily, what matters is that it's a symbol exported by by libart.so
 	// TODO: we shouldn't necessarily count on art being installed in the same prefix as we are
