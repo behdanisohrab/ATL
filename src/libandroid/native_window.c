@@ -606,14 +606,19 @@ XrResult bionic_xrGetInstanceProperties(XrInstance instance, XrInstancePropertie
 
 XrResult bionic_xrCreateInstance(XrInstanceCreateInfo *createInfo, XrInstance *instance)
 {
+	/* so that we can use simpler (and faster) code, we replace extensions which we
+	 * want to remove with this extension rather than delete them and copy the following
+	 * extensions over
+	 */
+	const char *harmless_extension = "XR_KHR_opengl_es_enable";
+
 	const char* extra_exts[] = {
-		"XR_KHR_opengl_es_enable",
 		"XR_MNDX_egl_enable",
 		"XR_EXT_local_floor",
 	};
 
 	char **old_names = createInfo->enabledExtensionNames, **new_names;
-	int i, new_count = createInfo->enabledExtensionCount + ARRRAY_SIZE(extra_exts);
+	int new_count = createInfo->enabledExtensionCount + ARRRAY_SIZE(extra_exts);
 
 	printf("eee xrCreateInstance\n");
 
@@ -621,14 +626,19 @@ XrResult bionic_xrCreateInstance(XrInstanceCreateInfo *createInfo, XrInstance *i
 	new_names = malloc(sizeof(*new_names) * new_count);
 	memcpy(new_names, old_names, createInfo->enabledExtensionCount * sizeof(*old_names));
 
-	for (i = 0; i < ARRRAY_SIZE(extra_exts); ++i)
+	for(int i = 0; i < createInfo->enabledExtensionCount; i++) {
+		if(!strcmp(new_names[i], "XR_KHR_android_create_instance"))
+			new_names[i] = harmless_extension;
+	}
+
+	for (int i = 0; i < ARRRAY_SIZE(extra_exts); ++i)
 		new_names[createInfo->enabledExtensionCount + i] = extra_exts[i];
 
 	createInfo->enabledExtensionCount = new_count;
 	createInfo->enabledExtensionNames = new_names;
 
 	fprintf(stderr, "## xrCreateInstance: Enabled extensions:\n");
-	for (i = 0; i < createInfo->enabledExtensionCount; ++i)
+	for (int i = 0; i < createInfo->enabledExtensionCount; ++i)
 		fprintf(stderr, "## ---- %s\n", createInfo->enabledExtensionNames[i]);
 
 	return xr_lazy_call("xrCreateInstance", createInfo, instance);
