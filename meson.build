@@ -81,6 +81,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/database/android_database_SQLiteConnection.c',
                                                                   	'src/api-impl-jni/graphics/android_graphics_BitmapFactory.c',
                                                                   	'src/api-impl-jni/graphics/android_graphics_drawable_Drawable.c',
+                                                                  	'src/api-impl-jni/graphics/android_graphics_drawable_DrawableContainer.c',
                                                                   	'src/api-impl-jni/graphics/android_graphics_Typeface.c',
                                                                   	'src/api-impl-jni/media/android_media_MediaCodec.c',
                                                                   	'src/api-impl-jni/android_content_res_AssetManager.c',

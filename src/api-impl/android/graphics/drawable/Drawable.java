@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -59,7 +60,10 @@ public class Drawable {
 	public void draw(Canvas canvas) {}
 
 	public boolean setState(int[] stateSet) {
-		this.mStateSet = stateSet;
+		if (!Arrays.equals(this.mStateSet, stateSet)) {
+			this.mStateSet = stateSet;
+			return onStateChange(stateSet);
+		}
 		return false;
 	}
 
@@ -136,6 +140,10 @@ public class Drawable {
 		}
 		long paintable = native_paintable_from_path(path.toString());
 		return new Drawable(paintable);
+	}
+
+	protected boolean onStateChange(int[] stateSet) {
+		return false;
 	}
 
 	protected static native long native_paintable_from_path(String path);

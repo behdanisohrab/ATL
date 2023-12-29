@@ -41,6 +41,7 @@ import com.reandroid.arsc.value.ValueItem;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -1490,12 +1491,12 @@ public class Resources {
 		// To support generic XML files we will need to manually parse
 		// out the attributes from the XML file (applying type information
 		// contained in the resources and such).
-		XmlBlock.Parser parser = (XmlBlock.Parser)set;
-		mAssets.retrieveAttributes(parser.mParseState, attrs,
-					   array.mData, array.mIndices);
+		ResXmlPullParser parser = (ResXmlPullParser)set;
+		mAssets.applyStyle(Collections.EMPTY_MAP, 0, 0,
+				set, attrs, array.mData, array.mIndices);
 
 		array.mRsrcs = attrs;
-		// array.mXml = parser;
+		array.mXml = parser;
 
 		return array;
 	}

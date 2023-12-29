@@ -43662,6 +43662,33 @@ public final class R {
 		  @attr name android:visible
 		*/
 		public static final int StateListDrawable_visible = 1;
+		/**  Represents a single state inside a StateListDrawable. 
+			 <p>Includes the following attributes:</p>
+			<table>
+			<colgroup align="left" />
+			<colgroup align="left" />
+			<tr><th>Attribute</th><th>Description</th></tr>
+			<tr><td><code>{@link #StateListDrawableItem_drawable android:drawable}</code></td><td> Reference to a drawable resource to use for the state.</td></tr>
+			</table>
+			@see #StateListDrawableItem_drawable
+			*/
+		public static final int[] StateListDrawableItem = {
+			0x01010199
+		};
+		/**
+			 <p>
+			@attr description
+			Reference to a drawable resource to use for the state. If not
+				given, the drawable must be defined by the first child tag. 
+
+
+			<p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+			or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+			<p>This corresponds to the global attribute
+			resource symbol {@link android.R.attr#drawable}.
+			@attr name android:drawable
+		*/
+		public static final int StateListDrawableItem_drawable = 0;
 		/**
 		   Attributes that can be used with a Storage.
 		   <p>Includes the following attributes:</p>

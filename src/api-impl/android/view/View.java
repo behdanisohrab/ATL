@@ -1,5 +1,6 @@
 package android.view;
 
+import android.R;
 import android.animation.StateListAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -818,6 +819,8 @@ public class View extends Object {
 
 	private int visibility = View.VISIBLE;
 	private float alpha = 1.0f;
+	private boolean pressed = false;
+	private Drawable background;
 
 	public View(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -973,6 +976,11 @@ public class View extends Object {
 
 	public void setPressed(boolean pressed) {
 		Slog.w(TAG, "calling setPressed on " + this + " with value: " + pressed);
+		if (this.pressed != pressed) {
+			this.pressed = pressed;
+			if (background != null && background.isStateful())
+				background.setState(getDrawableState());
+		}
 	}
 
 	public void setSelected(boolean selected) {
@@ -1108,10 +1116,7 @@ public class View extends Object {
 	public static class AccessibilityDelegate {}
 
 	public Drawable getBackground() {
-		return new Drawable() {
-			@Override
-			public void draw(Canvas canvas) {}
-		};
+		return background;
 	}
 
 	public void setClickable(boolean clickable) {}
@@ -1245,6 +1250,7 @@ public class View extends Object {
 	}
 
 	public void setBackgroundDrawable(Drawable backgroundDrawable) {
+		this.background = backgroundDrawable;
 		native_setBackgroundDrawable(widget, backgroundDrawable != null ? backgroundDrawable.paintable : 0);
 	}
 
@@ -1321,7 +1327,14 @@ public class View extends Object {
 		}
 	}
 
-	public final int[] getDrawableState() {return new int[0];}
+	public final int[] getDrawableState() {
+		int[] state = new int[2];
+		state[0] = R.attr.state_enabled;
+		if (pressed) {
+			state[1] = R.attr.state_pressed;
+		}
+		return state;
+	}
 
 	public float getRotation() {return 0.f;}
 
@@ -1452,7 +1465,9 @@ public class View extends Object {
 
 	public int getLayoutDirection() {return LAYOUT_DIRECTION_LTR;}
 
-	public void setBackground(Drawable background) {}
+	public void setBackground(Drawable background) {
+		setBackgroundDrawable(background);
+	}
 
 	private float elevation;
 	public void setElevation(float elevation) {
