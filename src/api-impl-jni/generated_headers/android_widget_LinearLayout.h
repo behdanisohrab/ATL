@@ -215,6 +215,14 @@ JNIEXPORT jlong JNICALL Java_android_widget_LinearLayout_native_1constructor
 JNIEXPORT void JNICALL Java_android_widget_LinearLayout_setOrientation
   (JNIEnv *, jobject, jint);
 
+/*
+ * Class:     android_widget_LinearLayout
+ * Method:    getOrientation
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_android_widget_LinearLayout_getOrientation
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

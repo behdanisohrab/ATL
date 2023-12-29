@@ -45,3 +45,8 @@ JNIEXPORT void JNICALL Java_android_widget_LinearLayout_setOrientation(JNIEnv *e
 {
 	gtk_orientable_set_orientation(GTK_ORIENTABLE(_PTR(_GET_LONG_FIELD(this, "widget"))), orientation ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL);
 }
+
+JNIEXPORT jint JNICALL Java_android_widget_LinearLayout_getOrientation(JNIEnv *env, jobject this)
+{
+	return gtk_orientable_get_orientation(GTK_ORIENTABLE(_PTR(_GET_LONG_FIELD(this, "widget"))));
+}

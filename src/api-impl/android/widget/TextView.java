@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -192,5 +193,9 @@ public class TextView extends View {
 		EDITABLE,
 		NORMAL,
 		SPANNABLE,
+	}
+
+	public Layout getLayout() {
+		return new Layout();
 	}
 }

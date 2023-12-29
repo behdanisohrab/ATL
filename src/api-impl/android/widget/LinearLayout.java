@@ -6,8 +6,6 @@ import android.view.ViewGroup;
 
 public class LinearLayout extends ViewGroup {
 
-	boolean orientation;
-
 	public LinearLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
@@ -20,6 +18,7 @@ public class LinearLayout extends ViewGroup {
 	protected native long native_constructor(Context context, AttributeSet attrs);
 
 	public native void setOrientation(int orientation);
+	public native int getOrientation();
 	public void setWeightSum(float weightSum) {}
 
 	@Override

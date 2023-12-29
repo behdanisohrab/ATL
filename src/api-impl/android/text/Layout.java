@@ -9,4 +9,6 @@ public class Layout {
 		ALIGN_LEFT,
 		ALIGN_RIGHT,
 	}
+
+	public int getLineCount() {return 1;}
 }

@@ -1573,4 +1573,6 @@ public class View extends Object {
 	protected int computeVerticalScrollExtent() {
 		return getHeight();
 	}
+
+	public void setAccessibilityLiveRegion(int mode) {}
 }

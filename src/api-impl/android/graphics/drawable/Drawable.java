@@ -87,4 +87,6 @@ public abstract class Drawable {
 	}
 
 	public void setTintMode(PorterDuff.Mode tintMode) {}
+
+	public boolean isProjected () {return false;}
 }
