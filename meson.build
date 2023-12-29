@@ -114,7 +114,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   install_dir : get_option('libdir') / 'java/dex/android_translation_layer/natives',
                                                                   dependencies: [
                                                                   	dependency('gtk4', version: '>=4.8'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni'),
-                                                                  	dependency('libportal'), dependency('sqlite3'), libskia_dep, dependency('libavcodec', version: '>=60'), dependency('libdrm')
+                                                                  	dependency('libportal'), dependency('sqlite3'), libskia_dep, dependency('libavcodec', version: '>=59'), dependency('libdrm')
                                                                   ],
                                                                   link_with: [ libandroid_so ],
                                                                   link_args: [
