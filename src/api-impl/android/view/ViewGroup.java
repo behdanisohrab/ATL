@@ -12,38 +12,23 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	public int id;
 	public ArrayList<View> children;
 
-	public ViewGroup() {
-		children = new ArrayList<View>();
-	}
-
 	public ViewGroup(Context context) {
-		super(context);
-
-		children = new ArrayList<View>();
+		this(context, null);
 	}
 
 	public ViewGroup(Context context, AttributeSet attrs) {
-		super(context, attrs);
-
-		children = new ArrayList<View>();
+		this(context, attrs, 0);
 	}
 
 	public ViewGroup(Context context, AttributeSet attrs, int defStyleAttr) {
-		super(context, attrs);
-
-		children = new ArrayList<View>();
+		this(context, attrs, defStyleAttr, 0);
 	}
 
 	public ViewGroup(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		super(context, attrs, defStyleAttr);
 
 		children = new ArrayList<View>();
-	}
-
-	public ViewGroup(int _id) { // FIXME
-		children = new ArrayList<View>();
-
-		id = _id;
+		haveComplexMeasure = true;
 	}
 
 	public void addView(View child) {
@@ -126,11 +111,6 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 	protected void removeDetachedView(View child, boolean animate) {
 		removeView(child);
-	}
-
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		native_measure(widget, widthMeasureSpec, heightMeasureSpec, true);
 	}
 
 	@Override

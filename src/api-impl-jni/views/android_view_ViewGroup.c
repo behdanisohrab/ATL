@@ -42,17 +42,19 @@ JNIEXPORT jlong JNICALL Java_android_view_ViewGroup_native_1constructor(JNIEnv *
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), box);
 	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 
-	const char *name = _CSTRING((*env)->CallObjectMethod(env, _CLASS(this),
+	jclass class = _CLASS(this);
+	const char *name = _CSTRING((*env)->CallObjectMethod(env, class,
 			_METHOD((*env)->FindClass(env, "java/lang/Class"), "getName", "()Ljava/lang/String;")));
 	gtk_widget_set_name(box, name);
 
 	/* this should better match default android behavior */
 	gtk_widget_set_overflow(wrapper, GTK_OVERFLOW_HIDDEN);
 
-	jmethodID measure_method = _METHOD(_CLASS(this), "onMeasure", "(II)V");
-	jmethodID layout_method = _METHOD(_CLASS(this), "onLayout", "(ZIIII)V");
+	jmethodID measure_method = _METHOD(class, "onMeasure", "(II)V");
+	jmethodID layout_method = _METHOD(class, "onLayout", "(ZIIII)V");
 	if (measure_method != handle_cache.view.onMeasure || layout_method != handle_cache.view.onLayout) {
 		gtk_widget_set_layout_manager(box, android_layout_new(_REF(this)));
+		(*env)->SetBooleanField(env, this, _FIELD_ID(class, "haveCustomMeasure", "Z"), true);
 	}
 	if (_METHOD(_CLASS(this), "onGenericMotionEvent", "(Landroid/view/MotionEvent;)Z") != handle_cache.view.onGenericMotionEvent) {
 		GtkEventController *controller = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);

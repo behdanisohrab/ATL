@@ -1,5 +1,6 @@
 package android.view;
 
+import android.content.Context;
 import android.view.SurfaceHolder;
 
 public class Window {
@@ -49,7 +50,7 @@ public class Window {
 	public View getDecorView() {
 		if (contentView != null)
 			return contentView;
-		return new View(); // FIXME: this can probably backfire
+		return new View(Context.this_application); // FIXME: this can probably backfire
 	}
 
 	private native void set_widget_as_root(long native_window, long widget);

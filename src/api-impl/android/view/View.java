@@ -814,13 +814,10 @@ public class View extends Object {
 	private int oldWidth;
 	private int oldHeight;
 	private boolean haveCustomMeasure;
+	protected boolean haveComplexMeasure = false;
 
 	private int visibility = View.VISIBLE;
 	private float alpha = 1.0f;
-
-	public View() {
-		this(Context.this_application);
-	} // FIXME
 
 	public View(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -970,7 +967,7 @@ public class View extends Object {
 		if (haveCustomMeasure) // calling native_measure here would create infinite loop
 			setMeasuredDimension(getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec), getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec));
 		else
-			native_measure(widget, widthMeasureSpec, heightMeasureSpec, false);
+			native_measure(widget, widthMeasureSpec, heightMeasureSpec, haveComplexMeasure);
 	}
 
 	public void setPressed(boolean pressed) {

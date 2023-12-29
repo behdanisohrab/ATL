@@ -22,10 +22,6 @@ import android.view.View;
 public class TextView extends View {
 	public String text;
 
-	public TextView(int _id) { // FIXME
-		id = _id;
-	}
-
 	public TextView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
@@ -50,6 +46,7 @@ public class TextView extends View {
 			}
 			a.recycle();
 		}
+		haveComplexMeasure = true;
 	}
 
 	@Override
@@ -69,11 +66,6 @@ public class TextView extends View {
 
 	public void setText(int resId) {
 		setText(getContext().getResources().getText(resId));
-	}
-
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		native_measure(widget, widthMeasureSpec, heightMeasureSpec, true);
 	}
 
 	private native final void native_set_markup(int bool);

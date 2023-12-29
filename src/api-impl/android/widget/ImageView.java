@@ -17,26 +17,24 @@ public class ImageView extends View {
 	private ScaleType scaleType = ScaleType.FIT_CENTER;
 
 	public ImageView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-
-		if (attrs != null) {
-			int resource = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "src", 0);
-			if (resource != 0)
-				setImageResource(resource);
-		}
+		this(context, attrs, 0);
 	}
 
 	public ImageView(Context context) {
-		super(context);
+		this(context, null);
 	}
 
 	public ImageView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-	}
 
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		native_measure(widget, widthMeasureSpec, heightMeasureSpec, true);
+		haveComplexMeasure = true;
+		if (attrs != null) {
+			int resid = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "src", 0);
+			if (resid != 0 && !getResources().getString(resid).endsWith(".xml")) {
+				bitmap = BitmapFactory.decodeResource(getResources(), resid);
+				native_setPixbuf(bitmap.pixbuf);
+			}
+		}
 	}
 
 	@Override
