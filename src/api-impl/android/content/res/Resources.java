@@ -19,6 +19,7 @@ package android.content.res;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.icu.text.PluralRules;
+import android.graphics.drawable.ColorDrawable;
 // import android.graphics.Movie;
 import android.graphics.drawable.Drawable;
 // import android.graphics.drawable.ColorDrawable;
@@ -48,7 +49,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 class Movie {}
-class ColorDrawable {}
 
 class ConstantState {}
 
@@ -2017,7 +2017,7 @@ public class Resources {
 		 final String name = getResourceName(id);
 		 if (name != null) android.util.Log.d("PreloadDrawable", name);
 	     }
-	 }
+	 }*/
 
 	 boolean isColorDrawable = false;
 	 if (value.type >= TypedValue.TYPE_FIRST_COLOR_INT &&
@@ -2027,6 +2027,8 @@ public class Resources {
 	 final long key = isColorDrawable ? value.data :
 		 (((long) value.assetCookie) << 32) | value.data;
 
+	 Drawable dr = null;
+	 /*
 	 Drawable dr = getCachedDrawable(isColorDrawable ? mColorDrawableCache : mDrawableCache, key);
 
 	 if (dr != null) {
@@ -2040,7 +2042,7 @@ public class Resources {
 	 }
 	 if (cs != null) {
 	     dr = cs.newDrawable(this);
-	 } else {
+	 } else*/ {
 	     if (isColorDrawable) {
 		 dr = new ColorDrawable(value.data);
 	     }
@@ -2089,8 +2091,7 @@ public class Resources {
 			 InputStream is = mAssets.openNonAsset(
 				 value.assetCookie, file, AssetManager.ACCESS_STREAMING);
 	 //                System.out.println("Opened file " + file + ": " + is);
-			 dr = null/*Drawable.createFromResourceStream(this, value, is,
-				 file, null)* /;
+			 dr = Drawable.createFromResourceStream(this, value, is, file, null);
 			 is.close();
 	 //                System.out.println("Created stream: " + dr);
 		     } catch (Exception e) {
@@ -2108,7 +2109,7 @@ public class Resources {
 
 	 if (dr != null) {
 	     dr.setChangingConfigurations(value.changingConfigurations);
-	     cs = dr.getConstantState();
+	     /* cs = dr.getConstantState();
 	     if (cs != null) {
 		 if (mPreloading) {
 		     final int changingConfigs = cs.getChangingConfigurations();
@@ -2145,12 +2146,10 @@ public class Resources {
 			 }
 		     }
 		 }
-	     }
+	     }*/
 	 }
 
 	 return dr;
-     */
-		return null;
 	}
 
 	private Drawable getCachedDrawable(

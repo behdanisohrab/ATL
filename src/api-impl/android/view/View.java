@@ -930,6 +930,7 @@ public class View extends Object {
 	protected native void native_measure(long widget, int widthMeasureSpec, int heightMeasureSpec, boolean isComplex);
 	protected native void native_layout(long widget, int l, int t, int r, int b);
 	protected native void native_requestLayout(long widget);
+	protected native void native_setBackgroundDrawable(long widget, long paintable);
 
 	// --- stubs
 
@@ -1005,8 +1006,8 @@ public class View extends Object {
 		this.visibility = visibility;
 	}
 	public void setPadding(int left, int top, int right, int bottom) {}
-	public void setBackgroundResource(int resid) {
-//		Slog.w(TAG, "*** setBackgroundResource: " + getString(resid));
+	public void setBackgroundResource(int resid) throws Exception {
+		setBackgroundDrawable(getResources().getDrawable(resid));
 	}
 
 	public void getHitRect(Rect outRect) {}
@@ -1243,7 +1244,9 @@ public class View extends Object {
 		layout(left + offset, top, right + offset, bottom);
 	}
 
-	public void setBackgroundDrawable(Drawable backgroundDrawable) {}
+	public void setBackgroundDrawable(Drawable backgroundDrawable) {
+		native_setBackgroundDrawable(widget, backgroundDrawable != null ? backgroundDrawable.paintable : 0);
+	}
 
 	public int getOverScrollMode() {return 0;}
 

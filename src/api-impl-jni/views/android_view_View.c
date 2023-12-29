@@ -405,3 +405,9 @@ JNIEXPORT void JNICALL Java_android_view_View_setBackgroundColor(JNIEnv *env, jo
 
 	gtk_style_context_add_provider(gtk_widget_get_style_context(gtk_widget_get_parent(widget)), GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
+
+JNIEXPORT void JNICALL Java_android_view_View_native_1setBackgroundDrawable(JNIEnv *env, jobject this, jlong widget_ptr, jlong paintable_ptr) {
+	GtkWidget *widget = GTK_WIDGET(_PTR(widget_ptr));
+	GdkPaintable *paintable = GDK_PAINTABLE(_PTR(paintable_ptr));
+	wrapper_widget_set_background(WRAPPER_WIDGET(gtk_widget_get_parent(widget)), paintable);
+}

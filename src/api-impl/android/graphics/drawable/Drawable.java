@@ -1,17 +1,35 @@
 package android.graphics.drawable;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.content.res.XmlResourceParser;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.util.TypedValue;
 
-public abstract class Drawable {
+public class Drawable {
 	public static interface Callback {}
 
 	private Rect mBounds = new Rect();
 	private int[] mStateSet = new int[0];
+	public long paintable;
+
+	public Drawable() {}
+
+	public Drawable(long paintable) {
+		this.paintable = paintable;
+	}
 
 	public int getChangingConfigurations() {
 		return 0;
@@ -38,7 +56,7 @@ public abstract class Drawable {
 		return mBounds;
 	}
 
-	public abstract void draw(Canvas canvas);
+	public void draw(Canvas canvas) {}
 
 	public boolean setState(int[] stateSet) {
 		this.mStateSet = stateSet;
@@ -89,4 +107,36 @@ public abstract class Drawable {
 	public void setTintMode(PorterDuff.Mode tintMode) {}
 
 	public boolean isProjected () {return false;}
+
+	public static Drawable createFromXml(Resources resources, XmlResourceParser parser) throws XmlPullParserException, IOException {
+		int type;
+		while ((type=parser.next()) != XmlPullParser.START_TAG && type != XmlPullParser.END_DOCUMENT);
+		if (type != XmlPullParser.START_TAG)
+			throw new XmlPullParserException("No start tag found");
+		if ("selector".equals(parser.getName())) {
+			StateListDrawable drawable = new StateListDrawable();
+			drawable.inflate(resources, parser, parser, null);
+			return drawable;
+		}
+		return null;
+	}
+
+	public static Drawable createFromResourceStream(Resources resources, TypedValue value, InputStream is, String file,
+			Object object) {
+		Path path = Paths.get(android.os.Environment.getExternalStorageDirectory().getPath(), file);
+		if (!Files.exists(path)) {
+			try (InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(file)) {
+				if (inputStream != null) {
+					Files.createDirectories(path.getParent());
+					Files.copy(inputStream, path);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		long paintable = native_paintable_from_path(path.toString());
+		return new Drawable(paintable);
+	}
+
+	protected static native long native_paintable_from_path(String path);
 }

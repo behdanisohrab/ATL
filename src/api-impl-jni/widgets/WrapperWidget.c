@@ -92,6 +92,8 @@ void wrapper_widget_allocate(GtkWidget *widget, int width, int height, int basel
 	gtk_widget_size_allocate(wrapper->child, &allocation, baseline);
 	if (wrapper->sk_area)
 		gtk_widget_size_allocate(wrapper->sk_area, &allocation, baseline);
+	if (wrapper->background)
+		gtk_widget_size_allocate(wrapper->background, &allocation, baseline);
 }
 
 static void wrapper_widget_class_init(WrapperWidgetClass *class)
@@ -171,4 +173,13 @@ void wrapper_widget_set_layout_params(WrapperWidget *wrapper, int width, int hei
 {
 	wrapper->layout_width = width;
 	wrapper->layout_height = height;
+}
+
+void wrapper_widget_set_background(WrapperWidget *wrapper, GdkPaintable *paintable)
+{
+	if (!wrapper->background) {
+		wrapper->background = gtk_picture_new();
+		gtk_widget_insert_after(wrapper->background, GTK_WIDGET(wrapper), NULL);
+	}
+	gtk_picture_set_paintable(GTK_PICTURE(wrapper->background), paintable);
 }
