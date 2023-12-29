@@ -201,14 +201,6 @@ extern "C" {
 #define android_view_ViewGroup_TEXT_DIRECTION_RTL 4L
 /*
  * Class:     android_view_ViewGroup
- * Method:    native_constructor
- * Signature: (Landroid/content/Context;Landroid/util/AttributeSet;)J
- */
-JNIEXPORT jlong JNICALL Java_android_view_ViewGroup_native_1constructor
-  (JNIEnv *, jobject, jobject, jobject);
-
-/*
- * Class:     android_view_ViewGroup
  * Method:    native_addView
  * Signature: (JJILandroid/view/ViewGroup/LayoutParams;)V
  */

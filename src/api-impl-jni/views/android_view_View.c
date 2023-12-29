@@ -87,6 +87,28 @@ static void on_click(GtkGestureClick *gesture, int n_press, double x, double y, 
 		(*env)->ExceptionDescribe(env);
 }
 
+#define SOURCE_CLASS_POINTER 0x2
+
+#define MAGIC_SCROLL_FACTOR 32
+
+static gboolean scroll_cb(GtkEventControllerScroll* self, gdouble dx, gdouble dy, jobject this)
+{
+	JNIEnv *env = get_jni_env();
+	GdkScrollUnit scroll_unit = gtk_event_controller_scroll_get_unit (self);
+
+	if (scroll_unit == GDK_SCROLL_UNIT_SURFACE) {
+		dx /= MAGIC_SCROLL_FACTOR;
+		dy /= MAGIC_SCROLL_FACTOR;
+	}
+	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_CLASS_POINTER, MOTION_EVENT_ACTION_SCROLL, dx, -dy);
+
+	gboolean ret = (*env)->CallBooleanMethod(env, this, handle_cache.view.onGenericMotionEvent, motion_event);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
+	return ret;
+}
+
 void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject on_touch_listener)
 {
 	JavaVM *jvm;
@@ -258,20 +280,46 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setVisibility(JNIEnv *env,
 	gtk_widget_set_opacity(widget, (visibility != android_view_View_INVISIBLE) * alpha);
 }
 
+/** JavaWidget:
+ * Minimal gtk widget class which does nothing.
+ * Drawing will be overwritten by WrapperWidget.
+ * If it holds children, they will be layouted by AndroidLayout
+ */
+struct _JavaWidget {GtkWidget parent_instance;};
+G_DECLARE_FINAL_TYPE(JavaWidget, java_widget, JAVA, WIDGET, GtkWidget)
+static void java_widget_init(JavaWidget *java_widget) {}
+static void java_widget_class_init(JavaWidgetClass *class) {}
+G_DEFINE_TYPE(JavaWidget, java_widget, GTK_TYPE_WIDGET)
+
 JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
 	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
-	// FIXME: we don't really care all that much what this is, since drawing into empty widgets is done by WrapperWidget, but a drawing area is just confusing
-	GtkWidget *widget = gtk_drawing_area_new();
+	GtkWidget *widget = g_object_new(java_widget_get_type(), NULL);
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), widget);
 	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 
 	jclass class = _CLASS(this);
+	jstring nameObj = (*env)->CallObjectMethod(env, class,
+			_METHOD(_CLASS(class), "getName", "()Ljava/lang/String;"));
+	const char *name = (*env)->GetStringUTFChars(env, nameObj, NULL);
+	gtk_widget_set_name(widget, name);
+	(*env)->ReleaseStringUTFChars(env, nameObj, name);
+
+	/* this should better match default android behavior */
+	gtk_widget_set_overflow(wrapper, GTK_OVERFLOW_HIDDEN);
+
 	jmethodID measure_method = _METHOD(class, "onMeasure", "(II)V");
 	jmethodID layout_method = _METHOD(class, "onLayout", "(ZIIII)V");
 	if (measure_method != handle_cache.view.onMeasure || layout_method != handle_cache.view.onLayout) {
 		gtk_widget_set_layout_manager(widget, android_layout_new(_REF(this)));
 		(*env)->SetBooleanField(env, this, _FIELD_ID(class, "haveCustomMeasure", "Z"), true);
+	}
+
+	if (_METHOD(_CLASS(this), "onGenericMotionEvent", "(Landroid/view/MotionEvent;)Z") != handle_cache.view.onGenericMotionEvent) {
+		GtkEventController *controller = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
+
+		g_signal_connect(controller, "scroll", G_CALLBACK(scroll_cb), _REF(this));
+		gtk_widget_add_controller(widget, controller);
 	}
 
 	return _INTPTR(widget);
