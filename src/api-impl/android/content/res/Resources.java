@@ -2050,8 +2050,9 @@ public class Resources {
 
 	     if (dr == null) {
 		 if (value.string == null) {
-		     throw new NotFoundException(
+		     Log.w(TAG,
 			     "Resource is not a Drawable (color or path): " + value);
+			return null;
 		 }
 
 		 String file = value.string.toString();

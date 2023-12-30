@@ -844,12 +844,14 @@ public class View extends Object {
 				int background = a.getResourceId(com.android.internal.R.styleable.View_background, 0);
 
 				if(background != 0) {
-					if(context.getResources().getResourceTypeName(background).equals("color")) {// drawables not currently supported
+					if(context.getResources().getResourceTypeName(background).equals("color")) {
 						System.out.printf("__background__: >%x<\n", context.getResources().getColor(background));
 
 						final android.util.TypedValue typedValue = new android.util.TypedValue();
 
 						setBackgroundColor(context.getResources().getColor(background));
+					} else {
+						setBackgroundResource(background);
 					}
 				}
 			}
@@ -1014,7 +1016,7 @@ public class View extends Object {
 		this.visibility = visibility;
 	}
 	public void setPadding(int left, int top, int right, int bottom) {}
-	public void setBackgroundResource(int resid) throws Exception {
+	public void setBackgroundResource(int resid) {
 		setBackgroundDrawable(getResources().getDrawable(resid));
 	}
 

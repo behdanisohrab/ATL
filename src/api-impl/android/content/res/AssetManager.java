@@ -923,6 +923,8 @@ public final class AssetManager {
 							   int[] inAttrs, int[] outValues, int[] outIndices) {
 		if (defStyleRes == 0 && theme.containsKey(defStyleAttr))
 			defStyleRes = theme.get(defStyleAttr).getData();
+		if (defStyleRes == 0 && set != null)
+			defStyleRes = set.getAttributeResourceValue(null, "style", 0);
 		Map<Integer,ValueItem> defStyle = loadStyle(defStyleRes);
 
 		ResXmlPullParser parser = (ResXmlPullParser)set;

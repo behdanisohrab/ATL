@@ -121,6 +121,8 @@ public class Drawable {
 			StateListDrawable drawable = new StateListDrawable();
 			drawable.inflate(resources, parser, parser, null);
 			return drawable;
+		} else if ("shape".equals(parser.getName())) {
+			return new GradientDrawable();
 		}
 		return null;
 	}
@@ -143,6 +145,12 @@ public class Drawable {
 	}
 
 	protected boolean onStateChange(int[] stateSet) {
+		return false;
+	}
+
+	public void setAlpha(int alpha) {}
+
+	public boolean getPadding(Rect padding) {
 		return false;
 	}
 
