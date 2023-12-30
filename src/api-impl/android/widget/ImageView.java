@@ -40,10 +40,13 @@ public class ImageView extends View {
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	protected native void native_setPixbuf(long pixbuf);
+	protected native void native_setDrawable(long widget, long paintable);
 
 	public /*native*/ void setImageResource(final int resid) {
-		if (Context.this_application.getResources().getString(resid).endsWith(".xml"))
+		if (Context.this_application.getResources().getString(resid).endsWith(".xml")) {
+			setImageDrawable(getResources().getDrawable(resid));
 			return;
+		}
 		bitmap = BitmapFactory.decodeResource(Context.this_application.getResources(), resid);
 		native_setPixbuf(bitmap.pixbuf);
 	}
@@ -64,6 +67,8 @@ public class ImageView extends View {
 	public void setImageDrawable(Drawable drawable) {
 		if (drawable instanceof BitmapDrawable) {
 			setImageBitmap(((BitmapDrawable) drawable).getBitmap());
+		} else if (drawable != null) {
+			native_setDrawable(widget, drawable.paintable);
 		}
 	}
 

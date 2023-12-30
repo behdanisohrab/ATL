@@ -22,3 +22,10 @@ JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1setPixbuf(JNIEnv *e
 	GdkPixbuf *pixbuf = _PTR(pixbuf_ptr);
 	gtk_picture_set_pixbuf(GTK_PICTURE(image), pixbuf);
 }
+
+JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1setDrawable(JNIEnv *env, jobject this, jlong widget_ptr, jlong paintable_ptr)
+{
+	GtkPicture *picture = _PTR(widget_ptr);
+	GdkPaintable *paintable = _PTR(paintable_ptr);
+	gtk_picture_set_paintable(picture, paintable);
+}

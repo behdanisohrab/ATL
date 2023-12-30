@@ -215,6 +215,14 @@ JNIEXPORT jlong JNICALL Java_android_widget_ImageView_native_1constructor
 JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1setPixbuf
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     android_widget_ImageView
+ * Method:    native_setDrawable
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1setDrawable
+  (JNIEnv *, jobject, jlong, jlong);
+
 #ifdef __cplusplus
 }
 #endif
