@@ -123,6 +123,10 @@ public class Drawable {
 			return drawable;
 		} else if ("shape".equals(parser.getName())) {
 			return new GradientDrawable();
+		} else if ("bitmap".equals(parser.getName())) {
+			BitmapDrawable drawable = new BitmapDrawable();
+			drawable.inflate(resources, parser, parser, null);
+			return drawable;
 		}
 		return null;
 	}
