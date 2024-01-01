@@ -67,7 +67,7 @@ public class ImageView extends View {
 	public void setImageDrawable(Drawable drawable) {
 		if (drawable instanceof BitmapDrawable) {
 			setImageBitmap(((BitmapDrawable) drawable).getBitmap());
-		} else if (drawable != null) {
+		} else if (drawable != null && drawable.paintable != 0) {
 			native_setDrawable(widget, drawable.paintable);
 		}
 	}
