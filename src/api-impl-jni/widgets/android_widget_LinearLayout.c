@@ -23,6 +23,7 @@ JNIEXPORT jlong JNICALL Java_android_widget_LinearLayout_native_1constructor(JNI
 
 	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	GtkWidget *box = gtk_box_new(orientation ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, 0); // spacing of 0
+	gtk_box_set_homogeneous(GTK_BOX(box), TRUE);
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), box);
 	gtk_widget_set_name(GTK_WIDGET(box), "LinearLayout");
 	if (!attrs) {
@@ -49,4 +50,9 @@ JNIEXPORT void JNICALL Java_android_widget_LinearLayout_setOrientation(JNIEnv *e
 JNIEXPORT jint JNICALL Java_android_widget_LinearLayout_getOrientation(JNIEnv *env, jobject this)
 {
 	return gtk_orientable_get_orientation(GTK_ORIENTABLE(_PTR(_GET_LONG_FIELD(this, "widget"))));
+}
+
+JNIEXPORT void JNICALL Java_android_widget_LinearLayout_native_1setHomogenousWeight(JNIEnv *env, jobject this, jlong widget_ptr, jboolean homogeneous)
+{
+	gtk_box_set_homogeneous(_PTR(widget_ptr), homogeneous);
 }

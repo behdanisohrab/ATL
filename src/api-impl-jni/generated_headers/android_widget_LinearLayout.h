@@ -223,6 +223,14 @@ JNIEXPORT void JNICALL Java_android_widget_LinearLayout_setOrientation
 JNIEXPORT jint JNICALL Java_android_widget_LinearLayout_getOrientation
   (JNIEnv *, jobject);
 
+/*
+ * Class:     android_widget_LinearLayout
+ * Method:    native_setHomogenousWeight
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_android_widget_LinearLayout_native_1setHomogenousWeight
+  (JNIEnv *, jobject, jlong, jboolean);
+
 #ifdef __cplusplus
 }
 #endif

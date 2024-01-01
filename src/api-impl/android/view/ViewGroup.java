@@ -54,7 +54,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		addView(child, params);
 	}
 
-	private void addViewInternal(View child, int index, LayoutParams params) {
+	protected void addViewInternal(View child, int index, LayoutParams params) {
 		if (child.parent == this)
 			return;
 		if (!checkLayoutParams(params)) {
