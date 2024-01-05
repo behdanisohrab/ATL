@@ -79,6 +79,9 @@ public class Context extends Object {
 	File cache_dir = null;
 
 	static {
+		/* this is here because it has to be somewhere */
+		System.loadLibrary("translation_layer_main");
+
 		assets = new AssetManager();
 		dm = new DisplayMetrics();
 		config = new Configuration();

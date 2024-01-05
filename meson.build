@@ -16,8 +16,9 @@ dir_base = meson.current_source_dir()
 builddir_base = meson.current_build_dir()
 # FIXME: make art install a pkgconfig file
 libart_dep = [
-	cc.find_library('art', dirs : [ '/usr' / get_option('libdir') / 'art', '/usr/local' / get_option('libdir') / 'art', get_option('prefix') / get_option('libdir') / 'art' ]),
-     	cc.find_library('nativebridge', dirs : [ '/usr' / get_option('libdir') / 'art', '/usr/local' / get_option('libdir') / 'art', get_option('prefix') / get_option('libdir') / 'art' ])
+#	cc.find_library('art', dirs : [ '/usr' / get_option('libdir') / 'art', '/usr/local' / get_option('libdir') / 'art', get_option('prefix') / get_option('libdir') / 'art' ]),
+#     	cc.find_library('nativebridge', dirs : [ '/usr' / get_option('libdir') / 'art', '/usr/local' / get_option('libdir') / 'art', get_option('prefix') / get_option('libdir') / 'art' ])
+	cc.find_library('jvm', dirs : [ '/home/Mis012/graalvm-jdk-21.0.1+12.1/lib/server/' ]),
 ]
 libdl_bio_dep = [
 	cc.find_library('dl_bio')

@@ -2,6 +2,54 @@
 
 ---
 
+####what's this branch?
+
+this branch is an experiment to see how large changes would be required in order to make
+this project work with a "standard" JVM. There are not necessarily any benefits to doing this,
+quite on the contrary, but it might be interesting to use GraalVM native image in order
+to support "porting" of fully-(or mostly-)native apps, where a full JVM isn't really necessary
+but we would still like to use most of this project as-is, with parts written in java and C code
+using JNI.
+
+There's also the remote possibility that someone will at some point make GraalVM support
+dex bytecode, in which case we could avoid the maintenance burden of being a downstream of art
+(though it seems quite unlikely that someone will not only introduce dex support to GraalVM but
+also maintain it)
+
+Tested on OpenJDK 17 and GraalVM 21 (not native-image yet) with ndk endless tunnel sample
+(fully native using NativeActivity) and Gravity Defied (fully java, but we have
+the source code so why not try)
+
+endless tunnel works fine, Gravity Defied may work fine with `apachehttp-host.jar` compiled against
+non-art bootstrap but this wasn't tested.
+
+some stuff had to be patched out because I didn't see a trivial way to make it work with !art,
+some stuff was changed to what may or may not be equivalent code.
+
+this is here just as a backup (and so that someone who independently thinks of trying this can save
+themselves some sad duplicate work), it's not supported in any way.
+
+basic instructions if you want to try this yourself (this is unsupported stuff, but might as well
+try to help):
+
+you need api-impl.jar and ARSCLib.jar, `javac -source 8 -target 8 **/*.java` in the right folder
+and `jar -cvf <name>` seems to work alright (the versions compiled against art bootstrap try to use
+stuff like `arraycopy` in a version that doesn't exist on !art)
+
+you also need `core-libart-host.jar` for some stuff, seems to work as-is with the one compiled
+against/as part of art bootstrap in dalvik-standalone.
+
+some stuff in libcore needs JNI counterparts in libjavacore.so,
+make yourself a patched one in `libcore_natives_nonart` (without patches it doesn't load properly)
+
+for Gravity Defied, you will need `apachehttp-host.jar` (really need to figure out what business
+it thinks it has connecting to the internet outside downloading mods and sending crash reports),
+specifically you'll want it to be compiled against non-art bootstrap (though for *launching*
+Gravity Defied, the one built in dalvik-standalone works)
+
+---
+
+
 dependencies on debian:
 `sudo apt install libglib2.0-dev libgtk-4-dev libasound2-dev libopenxr-dev libportal-dev libsqlite3-dev`
 

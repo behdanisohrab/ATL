@@ -75,8 +75,9 @@ char *construct_classpath(char *prefix, char **cp_array, size_t len)
 JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, char *framework_res_apk, char *api_impl_natives_dir, char *app_lib_dir) {
 	JavaVM* jvm;
 	JNIEnv* env;
+
 	JavaVMInitArgs args;
-	JavaVMOption options[4];
+	JavaVMOption options[6];
 	args.version = JNI_VERSION_1_6;
 	args.nOptions = 3;
 	char jdwp_option_string[sizeof(JDWP_ARG) + 5] = JDWP_ARG;// 5 chars for port number, NULL byte is counted by sizeof
@@ -85,29 +86,33 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 	if(jdwp_port)
 		args.nOptions += 1;
 
+	options[0].optionString = "-agentlib:native-image-agent=trace-output=./trace-file.json,config-write-period-secs=10";
+
 	if(getenv("RUN_FROM_BUILDDIR")) {
-		options[0].optionString = construct_classpath("-Djava.library.path=", (char *[]){"./", app_lib_dir}, 2);
+		options[1].optionString = construct_classpath("-Djava.library.path=", (char *[]){"./", app_lib_dir}, 2);
 	} else {
 		printf(">>%s<<\n", api_impl_natives_dir);
-		options[0].optionString = construct_classpath("-Djava.library.path=", (char *[]){api_impl_natives_dir, app_lib_dir}, 2);
+		options[1].optionString = construct_classpath("-Djava.library.path=", (char *[]){api_impl_natives_dir, app_lib_dir}, 2);
 	}
 
 	// microg is purposefully after the apk, so that we get the correct resources.arsc
 	// TODO: request resources.arsc from concrete apk instead of taking the first one in classpath
-	options[1].optionString = construct_classpath("-Djava.class.path=", (char *[]){api_impl_jar, apk_classpath, microg_apk, framework_res_apk}, 4);
-	options[2].optionString = "-verbose:jni";
+	options[2].optionString = construct_classpath("-Djava.class.path=", (char *[]){"./ARSCLib.jar", "./apachehttp-host.jar", api_impl_jar, apk_classpath, microg_apk, framework_res_apk}, 6);
+//	options[3].optionString = "-Dsun.boot.library.path=/home/Mis012/sata_ssd/android_dalvik/libcore_natives_nonart/";
+//	options[4].optionString = "-Xbootclasspath/a:./core-libart-host.jar";
 	if(jdwp_port) {
 		strncat(jdwp_option_string, jdwp_port, 5); // 5 chars is enough for a port number, and won't overflow our array
-		options[3].optionString = jdwp_option_string;
+		options[5].optionString = jdwp_option_string;
 	}
 
 	args.options = options;
 	args.ignoreUnrecognized = JNI_FALSE;
 
 	int ret = JNI_CreateJavaVM(&jvm, (void **)&env, &args);
-	if (ret<0){
+
+	if (ret < 0){
 		printf("Unable to Launch JVM\n");
-    } else {
+	} else {
 		printf("JVM launched successfully\n");
 	}
 	return env;
@@ -315,20 +320,15 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	set_up_handle_cache(env);
 
-	/* -- register our JNI library under the appropriate classloader -- */
+	/* -- register libjavacore -- */
+/*
+	jclass java_lang_system = (*env)->FindClass(env, "java/lang/System");
 
-	/* 'android/view/View' is part of the "hax.dex" package, any other function from that package would serve just as well */
-	jmethodID getClassLoader = _METHOD((*env)->FindClass(env, "java/lang/Class"), "getClassLoader", "()Ljava/lang/ClassLoader;");
-	jobject class_loader = (*env)->CallObjectMethod(env, (*env)->FindClass(env, "android/view/View"), getClassLoader);
-
-	jclass java_runtime_class = (*env)->FindClass(env, "java/lang/Runtime");
-
-	jmethodID getRuntime = _STATIC_METHOD(java_runtime_class, "getRuntime", "()Ljava/lang/Runtime;");
-	jobject java_runtime = (*env)->CallStaticObjectMethod(env, java_runtime_class, getRuntime);
-
-	/* this method is private, but it seems we get away with calling it from C */
-	jmethodID loadLibrary_with_classloader = _METHOD(java_runtime_class, "loadLibrary", "(Ljava/lang/String;Ljava/lang/ClassLoader;)V");
-	(*env)->CallVoidMethod(env, java_runtime, loadLibrary_with_classloader, _JSTRING("translation_layer_main"), class_loader);
+	jmethodID loadLibrary = _STATIC_METHOD(java_lang_system, "loadLibrary", "(Ljava/lang/String;)V");
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+	(*env)->CallStaticVoidMethod(env, java_lang_system, loadLibrary, _JSTRING("javacore"));
+*/
 
 	/* -- misc -- */
 

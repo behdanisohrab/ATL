@@ -81,8 +81,8 @@ void set_up_handle_cache(JNIEnv *env)
 	handle_cache.paint.class = _REF((*env)->FindClass(env, "android/graphics/Paint"));
 	handle_cache.paint.getColor = _METHOD(handle_cache.paint.class, "getColor", "()I");
 
-	handle_cache.motion_event.class = _REF((*env)->FindClass(env, "android/view/MotionEvent"));
-	handle_cache.motion_event.constructor = _METHOD(handle_cache.motion_event.class, "<init>", "(IIFF)V");
+//	handle_cache.motion_event.class = _REF((*env)->FindClass(env, "android/view/MotionEvent"));
+//	handle_cache.motion_event.constructor = _METHOD(handle_cache.motion_event.class, "<init>", "(IIFF)V");
 
 	handle_cache.canvas.class = _REF((*env)->FindClass(env, "android/graphics/Canvas"));
 	handle_cache.canvas.constructor = _METHOD(handle_cache.canvas.class, "<init>", "(JJ)V");
@@ -137,8 +137,8 @@ void set_up_handle_cache(JNIEnv *env)
 	handle_cache.looper.loop = _STATIC_METHOD(handle_cache.looper.class, "loop", "()V");
 	handle_cache.looper.prepareMainLooper = _STATIC_METHOD(handle_cache.looper.class, "prepareMainLooper", "()V");
 
-	handle_cache.key_event.class = _REF((*env)->FindClass(env, "android/view/KeyEvent"));
-	handle_cache.key_event.constructor = _METHOD(handle_cache.key_event.class, "<init>", "(II)V");
+//	handle_cache.key_event.class = _REF((*env)->FindClass(env, "android/view/KeyEvent"));
+//	handle_cache.key_event.constructor = _METHOD(handle_cache.key_event.class, "<init>", "(II)V");
 }
 
 void extract_from_apk(const char *path, const char *target) {
