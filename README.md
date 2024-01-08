@@ -36,12 +36,12 @@ or just
 `android-translation-layer [path to apk] -l [activity to launch]`  
 to use the default data dir of `~/.local/share/android_translation_layer/`
 
-NOTE: some apps don't like runtime changes to resolution, and currently GLSurfaceView will stretch instead of changing resolution  
-to sidestep this, we allow for specifying the initial resolution, which will currently always get passed as the screen resolution to GLSurfaceView even when you resize the window.
+NOTE: some apps don't like runtime changes to resolution.  
+to sidestep this, we allow for specifying the initial resolution.
 example with custom width/height: `android-translation-layer path/to/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity -w 540 -h 960`
 
 NOTE: on X11, Gtk might decide to use GLX, which completely messes up our EGL-dependent code.
-If you have a debug build of Gtk, you can use GDK_DEBUG=gl-egl to force the use of EGL  
+Use GDK_DEBUG=gl-egl to force the use of EGL.  
 
 when it doesn't work:  
 if you are trying to launch a random app, chances are that we are missing implementations for some  
@@ -57,6 +57,9 @@ it shows up as a Gtk Widget.
 for more specific instructions, see `doc/QuickHelp.md`
 for general description of the architecure, see `doc/Architecture.md`
 
+if you want to contribute, and find the codebase overwhelming, don't hesitate to open an issue
+so we can help you out and possibly write more documentation.
+
 screenshot:
 
 ![angry birds 3.2.0, Worms 2 Armageddon, and gravity defied running side by side by side](https://gitlab.com/Mis012/android_translation_layer_PoC/-/raw/master/screenshot_2.png)
@@ -66,7 +69,6 @@ screenshot:
 - fix issues mentioned above
 
 - fix ugly hacks
-	- figure out a way to dynamically change the resolution of a GLSurfaceView (probably just implement it in terms of SurfaceView, though that one currently doesn't work on X11)
 
 - implement more stuff (there is a lot of it, and it won't get done if nobody helps... ideally pick a simple-ish application and stub/implement stuff until it works)
 
