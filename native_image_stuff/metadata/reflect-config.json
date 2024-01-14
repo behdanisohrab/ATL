@@ -1,0 +1,10 @@
+[
+{
+  "name":"android.app.Application",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"android.app.NativeActivity",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+}
+]

@@ -18,7 +18,7 @@ builddir_base = meson.current_build_dir()
 libart_dep = [
 #	cc.find_library('art', dirs : [ '/usr' / get_option('libdir') / 'art', '/usr/local' / get_option('libdir') / 'art', get_option('prefix') / get_option('libdir') / 'art' ]),
 #     	cc.find_library('nativebridge', dirs : [ '/usr' / get_option('libdir') / 'art', '/usr/local' / get_option('libdir') / 'art', get_option('prefix') / get_option('libdir') / 'art' ])
-	cc.find_library('jvm', dirs : [ '/home/Mis012/graalvm-jdk-21.0.1+12.1/lib/server/' ]),
+	cc.find_library('atl-java', dirs : [ 'FIXME-path_to_where_you_have_the_native_image_output' ]),
 ]
 libdl_bio_dep = [
 	cc.find_library('dl_bio')

@@ -46,14 +46,8 @@ public class Application extends ContextWrapper {
 	public Application() {
 		super(null);
 		/* TODO: is this the right place to put this? */
-		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
-		try {
-			AndroidManifestBlock manifest = AndroidManifestBlock.load(inStream);
-			int app_icon_resid = manifest.getIconResourceId();
-			app_icon_path = this.getResources().getString(app_icon_resid);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		int app_icon_resid = manifest.getIconResourceId();
+		app_icon_path = this.getResources().getString(app_icon_resid);
 	}
 	/**
 	 * Called when the application is starting, before any activity, service,

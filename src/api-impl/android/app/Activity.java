@@ -47,11 +47,9 @@ public class Activity extends Context implements Window.Callback {
 	 */
 	private static Activity createMainActivity(String className, long native_window) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 		if (className == null) {
-			InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
-			AndroidManifestBlock block = AndroidManifestBlock.load(inStream);
-			className = block.getMainActivity().searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString();
+			className = manifest.getMainActivity().searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString();
 			if (className.startsWith(".")) {
-				className = block.getPackageName() + className;
+				className = manifest.getPackageName() + className;
 			}
 		} else {
 			className = className.replace('/', '.');

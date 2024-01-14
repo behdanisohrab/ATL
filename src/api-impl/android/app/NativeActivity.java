@@ -166,28 +166,26 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 		}*/
 
 		// parse AndroidManifest.xml to get name and entry of native lib
-		try (InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml")) {
-			for (ResXmlElement activity : AndroidManifestBlock.load(inStream).listActivities()) {
-				if (!getClass().getName().equals(activity.searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString())) {
+
+		for (ResXmlElement activity : manifest.listActivities()) {
+			if (!getClass().getName().equals(activity.searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString())) {
+				continue;
+			}
+			for (ResXmlElement metaData : activity.listElements(AndroidManifestBlock.TAG_meta_data)) {
+				ResXmlAttribute name = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_name);
+				ResXmlAttribute value = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_value);
+				if (name == null || value == null) {
 					continue;
 				}
-				for (ResXmlElement metaData : activity.listElements(AndroidManifestBlock.TAG_meta_data)) {
-					ResXmlAttribute name = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_name);
-					ResXmlAttribute value = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_value);
-					if (name == null || value == null) {
-						continue;
-					}
-					if (META_DATA_LIB_NAME.equals(name.getValueAsString())) {
-						libname = value.getValueAsString();
-					}
-					if (META_DATA_FUNC_NAME.equals(name.getValueAsString())) {
-						funcname = value.getValueAsString();
-					}
+				if (META_DATA_LIB_NAME.equals(name.getValueAsString())) {
+					libname = value.getValueAsString();
+				}
+				if (META_DATA_FUNC_NAME.equals(name.getValueAsString())) {
+					funcname = value.getValueAsString();
 				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
+
 
 		String path = null;
 

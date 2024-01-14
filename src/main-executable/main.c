@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
+#define ATL_PORTING_MODE
+
 #ifndef DEFFILEMODE
 #define DEFFILEMODE (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)/* 0666*/
 #endif
@@ -79,30 +81,33 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 	JavaVMInitArgs args;
 	JavaVMOption options[6];
 	args.version = JNI_VERSION_1_6;
-	args.nOptions = 3;
+	args.nOptions = 1;
 	char jdwp_option_string[sizeof(JDWP_ARG) + 5] = JDWP_ARG;// 5 chars for port number, NULL byte is counted by sizeof
 
 	const char* jdwp_port = getenv("JDWP_LISTEN");
 	if(jdwp_port)
 		args.nOptions += 1;
 
-	options[0].optionString = "-agentlib:native-image-agent=trace-output=./trace-file.json,config-write-period-secs=10";
+//	options[0].optionString = "-agentlib:native-image-agent=trace-output=./trace-file.json,config-write-period-secs=10";
 
 	if(getenv("RUN_FROM_BUILDDIR")) {
-		options[1].optionString = construct_classpath("-Djava.library.path=", (char *[]){"./", app_lib_dir}, 2);
+		options[0].optionString = construct_classpath("-Djava.library.path=", (char *[]){"./", app_lib_dir}, 2);
 	} else {
 		printf(">>%s<<\n", api_impl_natives_dir);
-		options[1].optionString = construct_classpath("-Djava.library.path=", (char *[]){api_impl_natives_dir, app_lib_dir}, 2);
+		options[0].optionString = construct_classpath("-Djava.library.path=", (char *[]){api_impl_natives_dir, app_lib_dir}, 2);
 	}
 
 	// microg is purposefully after the apk, so that we get the correct resources.arsc
 	// TODO: request resources.arsc from concrete apk instead of taking the first one in classpath
-	options[2].optionString = construct_classpath("-Djava.class.path=", (char *[]){"./ARSCLib.jar", "./apachehttp-host.jar", api_impl_jar, apk_classpath, microg_apk, framework_res_apk}, 6);
+#ifndef ATL_PORTING_MODE
+	args.nOptions += 1;
+	options[1].optionString = construct_classpath("-Djava.class.path=", (char *[]){apk_classpath, microg_apk, framework_res_apk}, 3);
+#endif
 //	options[3].optionString = "-Dsun.boot.library.path=/home/Mis012/sata_ssd/android_dalvik/libcore_natives_nonart/";
 //	options[4].optionString = "-Xbootclasspath/a:./core-libart-host.jar";
 	if(jdwp_port) {
 		strncat(jdwp_option_string, jdwp_port, 5); // 5 chars is enough for a port number, and won't overflow our array
-		options[5].optionString = jdwp_option_string;
+		options[2].optionString = jdwp_option_string;
 	}
 
 	args.options = options;
@@ -153,6 +158,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 		printf(">- [%s]\n", g_file_get_path(files[i]));
 	}
 */
+
 	char *dex_install_dir;
 	char *api_impl_jar;
 	char *microg_apk = NULL;
@@ -164,8 +170,15 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	jobject activity_object;
 	jobject application_object;
 
+#ifndef ATL_PORTING_MODE
 	char *apk_classpath =  g_file_get_path(files[0]);
 	char *apk_name = g_file_get_basename(files[0]);
+#else
+	char *apk_classpath = NULL;
+	char *apk_name = NULL;
+#endif
+
+#ifndef ATL_PORTING_MODE
 
 	if(apk_classpath == NULL) {
 		printf("error: the specified file path doesn't seem to be valid\n");
@@ -301,6 +314,11 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	strcpy(api_impl_natives_dir, dex_install_dir);
 	strcat(api_impl_natives_dir, REL_API_IMPL_NATIVES_INSTALL_PATH);
 
+#else
+	char *api_impl_natives_dir = "./";
+	app_data_dir = "./data";
+#endif
+
 	char *app_lib_dir = malloc(strlen(app_data_dir) + strlen("/lib") + 1); // +1 for NULL
 	strcpy(app_lib_dir, app_data_dir);
 	strcat(app_lib_dir, "/lib");
@@ -427,8 +445,12 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 static void activate(GtkApplication *app, struct jni_callback_data *d)
 {
+#ifndef ATL_PORTING_MODE
 	printf("error: usage: ./android-translation-layer [app.apk] -l [path/to/activity]\nyou can specify --help to see the list of options\n");
 	exit(1);
+#else
+	open(app, NULL, 0, NULL, d);
+#endif
 }
 
 void init_cmd_parameters(GApplication *app, struct jni_callback_data *d)

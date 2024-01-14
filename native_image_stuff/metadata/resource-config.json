@@ -1,0 +1,19 @@
+{
+  "resources":{
+  "includes":[{
+    "pattern":"\\QAndroidManifest.xml\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.lang.System$LoggerFinder\\E"
+  }, {
+    "pattern":"\\QMETA-INF/services/java.time.zone.ZoneRulesProvider\\E"
+  }, {
+    "pattern":"\\Qresources.arsc\\E"
+  }]},
+  "bundles":[{
+    "name":"sun.util.resources.TimeZoneNames",
+    "locales":["en", "und"]
+  }, {
+    "name":"sun.util.resources.cldr.TimeZoneNames",
+    "locales":["en", "en-US", "und"]
+  }]
+}

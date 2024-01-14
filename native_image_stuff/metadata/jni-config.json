@@ -1,0 +1,82 @@
+[
+{
+  "name":"android.app.Activity",
+  "methods":[{"name":"createMainActivity","parameterTypes":["java.lang.String","long"] }, {"name":"onCreate","parameterTypes":["android.os.Bundle"] }, {"name":"onDestroy","parameterTypes":[] }, {"name":"onPause","parameterTypes":[] }, {"name":"onResume","parameterTypes":[] }, {"name":"onStart","parameterTypes":[] }, {"name":"onStop","parameterTypes":[] }, {"name":"onWindowFocusChanged","parameterTypes":["boolean"] }]
+},
+{
+  "name":"android.app.Application",
+  "methods":[{"name":"get_app_icon_path","parameterTypes":[] }, {"name":"onCreate","parameterTypes":[] }]
+},
+{
+  "name":"android.app.NativeActivity$NativeContentView"
+},
+{
+  "name":"android.content.ContentProvider",
+  "methods":[{"name":"createContentProviders","parameterTypes":[] }]
+},
+{
+  "name":"android.content.Context",
+  "fields":[{"name":"apk_path"}],
+  "methods":[{"name":"createApplication","parameterTypes":["long"] }, {"name":"getPackageName","parameterTypes":[] }]
+},
+{
+  "name":"android.content.res.AssetManager",
+  "methods":[{"name":"extractFromAPK","parameterTypes":["java.lang.String","java.lang.String"] }]
+},
+{
+  "name":"android.graphics.Canvas",
+  "methods":[{"name":"<init>","parameterTypes":["long","long"] }]
+},
+{
+  "name":"android.graphics.Paint",
+  "methods":[{"name":"getColor","parameterTypes":[] }]
+},
+{
+  "name":"android.media.AudioTrack$OnPlaybackPositionUpdateListener",
+  "methods":[{"name":"onPeriodicNotification","parameterTypes":["android.media.AudioTrack"] }]
+},
+{
+  "name":"android.os.Looper",
+  "methods":[{"name":"loop","parameterTypes":[] }, {"name":"prepareMainLooper","parameterTypes":[] }]
+},
+{
+  "name":"android.util.AttributeSet",
+  "methods":[{"name":"getAttributeIntValue","parameterTypes":["java.lang.String","java.lang.String","int"] }, {"name":"getAttributeValue","parameterTypes":["java.lang.String","java.lang.String"] }]
+},
+{
+  "name":"android.view.Display",
+  "fields":[{"name":"window_height"}, {"name":"window_width"}]
+},
+{
+  "name":"android.view.InputQueue",
+  "fields":[{"name":"native_ptr"}]
+},
+{
+  "name":"android.view.InputQueue$Callback",
+  "methods":[{"name":"onInputQueueCreated","parameterTypes":["android.view.InputQueue"] }]
+},
+{
+  "name":"android.view.Surface",
+  "fields":[{"name":"widget"}]
+},
+{
+  "name":"android.view.SurfaceView",
+  "methods":[{"name":"surfaceChanged","parameterTypes":["int","int","int"] }, {"name":"surfaceCreated","parameterTypes":[] }]
+},
+{
+  "name":"android.view.View",
+  "methods":[{"name":"computeScroll","parameterTypes":[] }, {"name":"getMeasuredHeight","parameterTypes":[] }, {"name":"getMeasuredWidth","parameterTypes":[] }, {"name":"getScrollX","parameterTypes":[] }, {"name":"getScrollY","parameterTypes":[] }, {"name":"getSuggestedMinimumHeight","parameterTypes":[] }, {"name":"getSuggestedMinimumWidth","parameterTypes":[] }, {"name":"layoutInternal","parameterTypes":["int","int"] }, {"name":"measure","parameterTypes":["int","int"] }, {"name":"onDraw","parameterTypes":["android.graphics.Canvas"] }, {"name":"onGenericMotionEvent","parameterTypes":["android.view.MotionEvent"] }, {"name":"onLayout","parameterTypes":["boolean","int","int","int","int"] }, {"name":"onMeasure","parameterTypes":["int","int"] }, {"name":"onTouchEvent","parameterTypes":["android.view.MotionEvent"] }, {"name":"performClick","parameterTypes":[] }, {"name":"setLayoutParams","parameterTypes":["android.view.ViewGroup$LayoutParams"] }, {"name":"setMeasuredDimension","parameterTypes":["int","int"] }]
+},
+{
+  "name":"android.view.ViewGroup",
+  "methods":[{"name":"onMeasure","parameterTypes":["int","int"] }]
+},
+{
+  "name":"java.lang.Class",
+  "methods":[{"name":"getName","parameterTypes":[] }]
+},
+{
+  "name":"java.util.ArrayList",
+  "methods":[{"name":"add","parameterTypes":["java.lang.Object"] }, {"name":"clear","parameterTypes":[] }, {"name":"get","parameterTypes":["int"] }, {"name":"remove","parameterTypes":["java.lang.Object"] }, {"name":"size","parameterTypes":[] }]
+}
+]

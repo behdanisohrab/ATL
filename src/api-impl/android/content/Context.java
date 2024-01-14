@@ -72,7 +72,7 @@ public class Context extends Object {
 
 	public /*← FIXME?*/ static Application this_application;
 
-	File data_dir = null;
+	static File data_dir = null;
 	File prefs_dir = null;
 	File files_dir = null;
 	File obb_dir = null;
@@ -88,7 +88,14 @@ public class Context extends Object {
 		r = new Resources(assets, dm, config);
 		theme = r.newTheme();
 		application_info = new ApplicationInfo();
-		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
+		data_dir = android.os.Environment.getExternalStorageDirectory();
+		InputStream inStream = null;
+		if(System.getProperty("org.graalvm.nativeimage.imagecode") == null)
+			inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
+		else {
+			try { inStream = new FileInputStream(new File(data_dir, "AndroidManifest.xml")); }
+				catch (FileNotFoundException e) { System.out.println(e); System.exit(69); }
+		}
 		try {
 			manifest = AndroidManifestBlock.load(inStream);
 			Integer targetSdkVersion = manifest.getTargetSdkVersion();
@@ -243,9 +250,6 @@ public class Context extends Object {
 	}
 
 	private File getDataDirFile() {
-		if (data_dir == null) {
-			data_dir = android.os.Environment.getExternalStorageDirectory();
-		}
 		return data_dir;
 	}
 

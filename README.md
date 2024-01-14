@@ -2,7 +2,7 @@
 
 ---
 
-####what's this branch?
+#### what's this branch?
 
 this branch is an experiment to see how large changes would be required in order to make
 this project work with a "standard" JVM. There are not necessarily any benefits to doing this,
@@ -16,9 +16,9 @@ dex bytecode, in which case we could avoid the maintenance burden of being a dow
 (though it seems quite unlikely that someone will not only introduce dex support to GraalVM but
 also maintain it)
 
-Tested on OpenJDK 17 and GraalVM 21 (not native-image yet) with ndk endless tunnel sample
+Tested on OpenJDK 17 and GraalVM 21 (also native-image, see below) with ndk endless tunnel sample
 (fully native using NativeActivity) and Gravity Defied (fully java, but we have
-the source code so why not try)
+the source code so why not try) (GD was not tested with native-image)
 
 endless tunnel works fine, Gravity Defied may work fine with `apachehttp-host.jar` compiled against
 non-art bootstrap but this wasn't tested.
@@ -41,11 +41,40 @@ against/as part of art bootstrap in dalvik-standalone.
 
 some stuff in libcore needs JNI counterparts in libjavacore.so,
 make yourself a patched one in `libcore_natives_nonart` (without patches it doesn't load properly)
+(this is not needed for endless-tunnel)
 
-for Gravity Defied, you will need `apachehttp-host.jar` (really need to figure out what business
-it thinks it has connecting to the internet outside downloading mods and sending crash reports),
+for Gravity Defied, you will need `apachehttp-host.jar` (or patch out the "stat" tracking),
 specifically you'll want it to be compiled against non-art bootstrap (though for *launching*
 Gravity Defied, the one built in dalvik-standalone works)
+
+###### native image
+
+in `native_image_stuff`, there are:
+
+`api-impl.jar`, `ARSCLib.jar`, `core-libart-host.jar`  
+how these were acquired is explained above
+
+`liblooper.so` includes looper stuff extracted from art repo (linked as follows)  
+`gcc -shared -o liblooper.so Looper.o RefBase.o VectorImpl.o SharedBuffer.o`
+
+`liblog.so` is taken as-is from art build
+
+`metadata` obtained from running endless-tunnel, making sure that everything necessary to launch endless-tunnel gets compiled
+
+`data` contains stuff extracted from endless-tunnel apk, so that the apk isn't needed
+
+`dist` contains the "finished product" - endless tunnel "ported" to Linux, with no java needed except the 16MB monstrosity that the java stuff was compiled to
+(kinda sad that the dead code elimination decided we still need 4MB worth of java stdlib)
+
+to create libatl-java (which you will link the main executable against in place of libart/libjvm):  
+`/path/to/graalvm-jdk-21.0.1+12.1/bin/native-image --shared -H:JNIConfigurationFiles=./metadata/jni-config.json -H:ReflectionConfigurationFiles=./metadata/reflect-config.json -H:Name=libatl-java -cp 'core-libart-host.jar:apachehttp-host.jar:ARSCLib.jar:api-impl.jar'`
+
+to run endless tunnel "linux port": put everything together and run `LINKER_DIE_AT_RUNTIME= LD_PRELOAD=liblooper.so LD_LIBRARY_PATH=. ./android-translation-layer`
+
+NOTE: endless tunnel contains no java code (it uses the AOSP/atl-provided NativeActivity class for it's Activity), any app which contains java code would need it's classes provided when building the native-image.
+
+Experiment conclusions: dead code elimination doesn't seem to be able to reduce the amount of java code as much as I'd hoped, and it's unclear how much this can be optimized by adding checks for native image build
+(which would take code paths that make more sense for a "port" as opposed the full atl), since the largest contributors to the library's size are java.base and some String stuff (the 2MB for reflection could be eliminated)
 
 ---
 
