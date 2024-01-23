@@ -76,9 +76,9 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 	JavaVM* jvm;
 	JNIEnv* env;
 	JavaVMInitArgs args;
-	JavaVMOption options[4];
+	JavaVMOption options[5];
 	args.version = JNI_VERSION_1_6;
-	args.nOptions = 3;
+	args.nOptions = 4;
 	char jdwp_option_string[sizeof(JDWP_ARG) + 5] = JDWP_ARG;// 5 chars for port number, NULL byte is counted by sizeof
 
 	const char* jdwp_port = getenv("JDWP_LISTEN");
@@ -96,9 +96,10 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 	// TODO: request resources.arsc from concrete apk instead of taking the first one in classpath
 	options[1].optionString = construct_classpath("-Djava.class.path=", (char *[]){api_impl_jar, apk_classpath, microg_apk, framework_res_apk}, 4);
 	options[2].optionString = "-verbose:jni";
+	options[3].optionString = "-Xcheck:jni";
 	if(jdwp_port) {
 		strncat(jdwp_option_string, jdwp_port, 5); // 5 chars is enough for a port number, and won't overflow our array
-		options[3].optionString = jdwp_option_string;
+		options[4].optionString = jdwp_option_string;
 	}
 
 	args.options = options;
@@ -168,7 +169,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	}
 
 	if(access(apk_classpath, F_OK) < 0) {
-		printf("error: the specified file path doesn't seem to exist (%m)\n", errno);
+		printf("error: the specified file path doesn't seem to exist (%m)\n");
 		exit(1);
 	}
 
@@ -356,7 +357,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	prepare_main_looper(env);
 
 	jclass content_provider = (*env)->FindClass(env, "android/content/ContentProvider");
-	(*env)->CallStaticObjectMethod(env, content_provider, _STATIC_METHOD(content_provider, "createContentProviders", "()V"));
+	(*env)->CallStaticVoidMethod(env, content_provider, _STATIC_METHOD(content_provider, "createContentProviders", "()V"));
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 

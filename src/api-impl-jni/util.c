@@ -15,7 +15,8 @@ const char * attribute_set_get_string(JNIEnv *env, jobject attrs, char *attribut
 	if(!schema)
 		schema = "http://schemas.android.com/apk/res/android";
 
-	return _CSTRING( (jstring)(*env)->CallObjectMethod(env, attrs, handle_cache.attribute_set.getAttributeValue_string, _JSTRING(schema), _JSTRING(attribute)) );
+	jstring string = (jstring)(*env)->CallObjectMethod(env, attrs, handle_cache.attribute_set.getAttributeValue_string, _JSTRING(schema), _JSTRING(attribute));
+	return string ? _CSTRING(string) : NULL;
 }
 
 int attribute_set_get_int(JNIEnv *env, jobject attrs, char *attribute, char *schema, int default_value)
@@ -143,7 +144,7 @@ void set_up_handle_cache(JNIEnv *env)
 
 void extract_from_apk(const char *path, const char *target) {
 	JNIEnv *env = get_jni_env();
-	(*env)->CallStaticObjectMethod(env, handle_cache.asset_manager.class, handle_cache.asset_manager.extractFromAPK, _JSTRING(path), _JSTRING(target));
+	(*env)->CallStaticVoidMethod(env, handle_cache.asset_manager.class, handle_cache.asset_manager.extractFromAPK, _JSTRING(path), _JSTRING(target));
 }
 
 /* logging with fallback to stderr */
