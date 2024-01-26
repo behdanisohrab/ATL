@@ -102,7 +102,7 @@ public final class AssetManager {
 	private final long[] mOffsets = new long[2];
 
 	// For communication with native code.
-	private int mObject;
+	private long mObject;
 	private int mNObject; // used by the NDK
 
 	private StringBlock mStringBlocks[] = null;
@@ -121,18 +121,18 @@ public final class AssetManager {
 	 * {@hide}
 	 */
 	public AssetManager() {
-		try {
-			tableBlocks = new ArrayList<>();
-			Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources("resources.arsc");
-			while (resources.hasMoreElements()) {
-				URL resource = resources.nextElement();
-				if (!resource.getFile().contains("com.google.android.gms")) { // ignore MicroG .apk
-					tableBlocks.add(TableBlock.load(resource.openStream()));
-				}
-			}
-		} catch (IOException e) {
-			Log.e(TAG, "failed to load resources.arsc" + e);
-		}
+		tableBlocks = new ArrayList<>();
+		// try {
+		// 	Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources("resources.arsc");
+		// 	while (resources.hasMoreElements()) {
+		// 		URL resource = resources.nextElement();
+		// 		if (!resource.getFile().contains("com.google.android.gms")) { // ignore MicroG .apk
+		// 			tableBlocks.add(TableBlock.load(resource.openStream()));
+		// 		}
+		// 	}
+		// } catch (IOException e) {
+		// 	Log.e(TAG, "failed to load resources.arsc" + e);
+		// }
 
 		// FIXME: evaluate if this can be axed
 		synchronized (this) {
@@ -144,6 +144,19 @@ public final class AssetManager {
 			if (localLOGV)
 				Log.v(TAG, "New asset manager: " + this);
 			//            ensureSystemAssets()
+			try {
+				Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources("resources.arsc");
+				while (resources.hasMoreElements()) {
+					URL resource = resources.nextElement();
+					String path = resource.getPath();
+					if (!path.contains("com.google.android.gms")) { // ignore MicroG .apk
+						path = path.substring(path.indexOf("file:") + 5, path.indexOf("!/resources.arsc"));
+						addAssetPath(path);
+					}
+				}
+			} catch (IOException e) {
+				Log.e(TAG, "failed to load resources.arsc" + e);
+			}
 		}
 	}
 
@@ -215,18 +228,9 @@ public final class AssetManager {
 	/*package*/ final CharSequence getResourceText(int id) {
 		if (id == 0)
 			return "";
-		ResValue resValue = tableBlockSearch(id).pickOne().getResValue();
-		if (resValue.getValueType() == ValueType.REFERENCE) {
-			if(id == resValue.getData()) {
-				System.out.println("getResourceText: self-reference... returing \"\"");
-				return "";
-			}
-			return getResourceText(resValue.getData());
-		}
-		if (resValue.getValueType() == ValueType.INT_COLOR_RGB8) {
-			return String.format("#%08x", resValue.getData());
-		}
-		return resValue.getDataAsPoolString().get();
+		TypedValue value = new TypedValue();
+		loadResourceValue(id, (short) 0, value, true);
+		return value.coerceToString();
 	}
 
 	/**
@@ -256,43 +260,15 @@ public final class AssetManager {
 	 * @param id Resource id of the string array
 	 */
 	/*package*/ final String[] getResourceStringArray(final int id) {
-		ArrayList<String> values = new ArrayList<String>();
-		for (ResValueMap map : tableBlockSearch(id).pickOne().getResValueMapArray().getChildes()) {
-			if (map.getType() == TypedValue.TYPE_REFERENCE) {
-				values.add(String.valueOf(getResourceText(map.getData())));
-			} else if (map.getType() == TypedValue.TYPE_STRING) {
-				values.add(map.getValueAsString());
-			} else {
-				values.add("value of unknown type " + map.getType());
-			}
-		}
-		return values.toArray(new String[0]);
+		return getArrayStringResource(id);
 	}
 
 	/*package*/ final boolean getResourceValue(int ident,
 						   int density,
 						   TypedValue outValue,
 						   boolean resolveRefs) {
-		/*int block = loadResourceValue(ident, (short) density, outValue, resolveRefs);
-		if (block >= 0) {
-		    if (outValue.type != TypedValue.TYPE_STRING) {
-			return true;
-		    }
-		    outValue.string = mStringBlocks[block].get(outValue.data);
-		    return true;
-		}*/
-		EntryGroup entryGroup = tableBlockSearch(ident);
-		if (entryGroup == null)
-			return false;  // not found
-		ResValue resValue = entryGroup.pickOne().getResValue();
-		if (resValue == null)
-			return false;  // not found
-		outValue.resourceId = ident;
-		outValue.type = resValue.getType();
-		outValue.data = resValue.getData();
-		if (outValue.type == TypedValue.TYPE_STRING)
-			outValue.string = getResourceText(ident);
-		return true;
+		int block = loadResourceValue(ident, (short) density, outValue, resolveRefs);
+		return block >= 0;
 	}
 
 	/**
@@ -397,13 +373,7 @@ public final class AssetManager {
 		}
 	}
 
-	/*package*/ final CharSequence getPooledString(int block, int id) {
-		// System.out.println("Get pooled: block=" + block
-		//                    + ", id=#" + Integer.toHexString(id)
-		//                    + ", blocks=" + mStringBlocks);
-		TableString string = tableBlocks.get(block).getStringPool().get(id);
-		return string != null ? string.get() : null;
-	}
+	/*package*/ native final CharSequence getPooledString(int block, int id);
 
 	/**
 	 * Open an asset using ACCESS_STREAMING mode.  This provides access to
@@ -844,24 +814,7 @@ public final class AssetManager {
 	/**
 	 * Retrieve the resource identifier for the given resource name.
 	 */
-	/*package*/ /*native*/ final int getResourceIdentifier(String name, String type, String defPackage) {
-		System.out.println("getResourceIdentifier(" + name + "," + type + "," + defPackage + ") called");
-		for (TableBlock tableBlock : tableBlocks) {
-			for (PackageBlock packageBlock : tableBlock.listPackages()) {
-				if (packageBlock.getName().equals(defPackage)) {
-					Entry entry = packageBlock.getEntry("", type, name);
-					if(entry != null) {
-						return entry.getResourceId();
-					} else {
-						return -1; // TODO: investigate
-					}
-				}
-			}
-		}
-
-		// package not found
-		return -1;
-	}
+	/*package*/ native final int getResourceIdentifier(String name, String type, String defPackage);
 
 	/*package*/ /*native*/ final String getResourceName(int resid) {
 		return tableBlockSearch(resid).pickOne().getName();
@@ -944,12 +897,10 @@ public final class AssetManager {
 			outValues[d+AssetManager.STYLE_DATA] = 0;
 			outValues[d+AssetManager.STYLE_ASSET_COOKIE] = 0;
 			int resId = inAttrs[i];
-			EntryGroup entryGroup = tableBlockSearch(resId);
-			if (entryGroup == null)
-				continue;
-			Entry entry = entryGroup.pickOne();
+			EntryGroup entryGroup = null;
+			Entry entry = null;
 			ValueItem valueItem = null;
-			while ("attr".equals(entry.getTypeName())) {
+			while (entry == null || "attr".equals(entry.getTypeName())) {
 				valueItem = null;
 				if (xmlCache.containsKey(resId)) {
 					valueItem = parser.getResXmlAttributeAt(xmlCache.get(resId));
@@ -975,6 +926,17 @@ public final class AssetManager {
 			if (valueItem == null)
 				continue;
 			if (valueItem.getValueType() == ValueType.REFERENCE) {
+				resId = valueItem.getData();
+				TypedValue value = new TypedValue();
+				int block = loadResourceValue(resId, (short)0, value, true);
+				if (block >= 0) {
+					outValues[d + AssetManager.STYLE_RESOURCE_ID] = value.resourceId;
+					outValues[d + AssetManager.STYLE_TYPE] = value.type;
+					outValues[d + AssetManager.STYLE_DATA] = value.data;
+					outValues[d + AssetManager.STYLE_ASSET_COOKIE] = block;
+					outIndices[++outIndices[0]] = i;
+					continue;
+				}
 				while (valueItem.getValueType() == ValueType.REFERENCE) {
 					resId = valueItem.getData();
 					if (resId == 0)
@@ -1045,7 +1007,7 @@ public final class AssetManager {
 		return values;
 	}
 
-	private /* native */ final void init() {}
+	private native final void init();
 	private native final void destroy();
 
 	private final void incRefsLocked(int id) {

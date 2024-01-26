@@ -35,6 +35,14 @@ extern "C" {
 #define android_content_res_AssetManager_STYLE_DENSITY 5L
 /*
  * Class:     android_content_res_AssetManager
+ * Method:    getPooledString
+ * Signature: (II)Ljava/lang/CharSequence;
+ */
+JNIEXPORT jobject JNICALL Java_android_content_res_AssetManager_getPooledString
+  (JNIEnv *, jobject, jint, jint);
+
+/*
+ * Class:     android_content_res_AssetManager
  * Method:    list
  * Signature: (Ljava/lang/String;)[Ljava/lang/String;
  */
@@ -72,6 +80,14 @@ JNIEXPORT void JNICALL Java_android_content_res_AssetManager_setLocale
  */
 JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getLocales
   (JNIEnv *, jobject);
+
+/*
+ * Class:     android_content_res_AssetManager
+ * Method:    getResourceIdentifier
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getResourceIdentifier
+  (JNIEnv *, jobject, jstring, jstring, jstring);
 
 /*
  * Class:     android_content_res_AssetManager
@@ -296,6 +312,14 @@ JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getArrayStr
  */
 JNIEXPORT jintArray JNICALL Java_android_content_res_AssetManager_getArrayStringInfo
   (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     android_content_res_AssetManager
+ * Method:    init
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_android_content_res_AssetManager_init
+  (JNIEnv *, jobject);
 
 /*
  * Class:     android_content_res_AssetManager

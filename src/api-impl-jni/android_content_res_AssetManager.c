@@ -1,9 +1,12 @@
 #include <errno.h>
 #include <fcntl.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <androidfw/androidfw_c_api.h>
 
 #include "defines.h"
 #include "util.h"
@@ -106,4 +109,118 @@ JNIEXPORT void JNICALL Java_android_content_res_AssetManager_destroyAsset(JNIEnv
 {
 	printf("closing asset with fd: %d\n", fd);
 	close(fd);
+}
+
+JNIEXPORT void JNICALL Java_android_content_res_AssetManager_init(JNIEnv *env, jobject this)
+{
+	struct AssetManager *asset_manager = AssetManager_new();
+	const struct ResTable_config config = {
+		.density = /*ACONFIGURATION_DENSITY_MEDIUM*/ 160,
+		.sdkVersion = 24,
+	};
+	AssetManager_setConfiguration(asset_manager, &config, NULL);
+	_SET_LONG_FIELD(this, "mObject", _INTPTR(asset_manager));
+}
+
+JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_addAssetPathNative(JNIEnv *env, jobject this, jstring path)
+{
+	int32_t cookie;
+	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
+	AssetManager_addAssetPath(asset_manager, _CSTRING(path), &cookie, false, false);
+	return cookie;
+}
+
+JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadResourceValue(JNIEnv *env, jobject this, jint ident, jshort density, jobject outValue, jboolean resolve)
+{
+	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
+	const struct ResTable *res_table = AssetManager_getResources(asset_manager, true);
+	uint32_t resId = ident;
+	struct Res_value value;
+	uint32_t outSpecFlags;
+	struct ResTable_config outConfig;
+	ssize_t block = ResTable_getResource(res_table, resId, &value, false, density, &outSpecFlags, &outConfig);
+	if (resolve) {
+		block = ResTable_resolveReference(res_table, &value, block, &resId, &outSpecFlags, &outConfig);
+	}
+	if (block >= 0) {
+		_SET_INT_FIELD(outValue, "type", value.dataType);
+		_SET_INT_FIELD(outValue, "data", value.data);
+		_SET_INT_FIELD(outValue, "resourceId", resId);
+		if (value.dataType == TYPE_STRING) {
+			const struct ResStringPool *string_pool = ResTable_getTableStringBlock(res_table, block);
+			size_t len;
+			const char16_t *string = ResStringPool_stringAt(string_pool, value.data, &len);
+			_SET_OBJ_FIELD(outValue, "string", "Ljava/lang/CharSequence;", (*env)->NewString(env, string, len));
+		} else {
+			_SET_OBJ_FIELD(outValue, "string", "Ljava/lang/CharSequence;", NULL);
+		}
+	}
+	return block;
+}
+
+JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getArrayStringResource(JNIEnv *env, jobject this, jint ident)
+{
+	int i;
+	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
+	const struct ResTable *res_table = AssetManager_getResources(asset_manager, true);
+	const struct bag_entry *bag;
+	int bag_count = ResTable_lockBag(res_table, ident, &bag);
+	jobjectArray array = (*env)->NewObjectArray(env, bag_count, (*env)->FindClass(env, "java/lang/String"), NULL);
+	for (i = 0; i < bag_count; i++) {
+		if (bag[i].map.value.dataType == TYPE_STRING) {
+			const struct ResStringPool *string_pool = ResTable_getTableStringBlock(res_table, bag[i].stringBlock);
+			if (string_pool == NULL)
+				continue;
+			size_t len;
+			const char16_t *string = ResStringPool_stringAt(string_pool, bag[i].map.value.data, &len);
+			(*env)->SetObjectArrayElement(env, array, i, (*env)->NewString(env, string, len));
+		} 
+	}
+
+	ResTable_unlockBag(res_table, bag);
+	return array;
+}
+
+JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getResourceIdentifier(JNIEnv *env, jobject this, jstring name, jstring defType, jstring defPackage)
+{
+	const char16_t *name16 = NULL;
+	const char16_t *defType16 = NULL;
+	const char16_t *defPackage16 = NULL;
+	int name_len = 0;
+	int defType_len = 0;
+	int defPackage_len = 0;
+	int ret;
+
+	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
+	const struct ResTable *res_table = AssetManager_getResources(asset_manager, true);
+	if (name) {
+		name16 = (*env)->GetStringChars(env, name, NULL);
+		name_len = (*env)->GetStringLength(env, name);
+	}
+	if (defType) {
+		defType16 = (*env)->GetStringChars(env, defType, NULL);
+		defType_len = (*env)->GetStringLength(env, defType);
+	}
+	if (defPackage) {
+		defPackage16 = (*env)->GetStringChars(env, defPackage, NULL);
+		defPackage_len = (*env)->GetStringLength(env, defPackage);
+	}
+	ret = ResTable_identifierForName(res_table, name16, name_len, defType16, defType_len, defPackage16, defPackage_len, NULL);
+	if (name)
+		(*env)->ReleaseStringChars(env, name, name16);
+	if (defType)
+		(*env)->ReleaseStringChars(env, defType, defType16);
+	if (defPackage)
+		(*env)->ReleaseStringChars(env, defPackage, defPackage16);
+	return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_android_content_res_AssetManager_getPooledString(JNIEnv *env, jobject this, jint block, jint index)
+{
+	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
+	const struct ResTable *res_table = AssetManager_getResources(asset_manager, true);
+	const struct ResStringPool *string_pool = ResTable_getTableStringBlock(res_table, block);
+	size_t len;
+	const char16_t *string = ResStringPool_stringAt(string_pool, index, &len);
+	return (*env)->NewString(env, string, len);
 }

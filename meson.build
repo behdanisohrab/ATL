@@ -25,6 +25,9 @@ libdl_bio_dep = [
 libskia_dep = [
 	cc.find_library('SkiaSharp')
 ]
+libandroidfw_dep = [
+	cc.find_library('androidfw', dirs : [ '/usr' / get_option('libdir') / 'art', '/usr/local' / get_option('libdir') / 'art', get_option('prefix') / get_option('libdir') / 'art' ]),
+]
 if fs.is_file('/usr' / get_option('libdir') / 'java/core-all_classes.jar')
   bootclasspath = '/usr' / get_option('libdir') / 'java/core-all_classes.jar'
 elif fs.is_file('/usr/local' / get_option('libdir') / 'java/core-all_classes.jar')
@@ -117,7 +120,8 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   install_dir : get_option('libdir') / 'java/dex/android_translation_layer/natives',
                                                                   dependencies: [
                                                                   	dependency('gtk4', version: '>=4.8'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni'),
-                                                                  	dependency('libportal'), dependency('sqlite3'), libskia_dep, dependency('libavcodec', version: '>=59'), dependency('libdrm')
+                                                                  	dependency('libportal'), dependency('sqlite3'), libskia_dep, dependency('libavcodec', version: '>=59'), dependency('libdrm'),
+																	libandroidfw_dep
                                                                   ],
                                                                   link_with: [ libandroid_so ],
                                                                   link_args: [

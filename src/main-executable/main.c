@@ -314,8 +314,6 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	_SET_STATIC_INT_FIELD(display_class, "window_width", d->window_width);
 	_SET_STATIC_INT_FIELD(display_class, "window_height", d->window_height);
 
-	set_up_handle_cache(env);
-
 	/* -- register our JNI library under the appropriate classloader -- */
 
 	/* 'android/view/View' is part of the "hax.dex" package, any other function from that package would serve just as well */
@@ -330,6 +328,8 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	/* this method is private, but it seems we get away with calling it from C */
 	jmethodID loadLibrary_with_classloader = _METHOD(java_runtime_class, "loadLibrary", "(Ljava/lang/String;Ljava/lang/ClassLoader;)V");
 	(*env)->CallVoidMethod(env, java_runtime, loadLibrary_with_classloader, _JSTRING("translation_layer_main"), class_loader);
+
+	set_up_handle_cache(env);
 
 	/* -- misc -- */
 
