@@ -81,7 +81,7 @@ static void on_click(GtkGestureClick *gesture, int n_press, double x, double y, 
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	(*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onClick", "(Landroid/view/View;)V"), d->this);
+	(*env)->CallVoidMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onClick", "(Landroid/view/View;)V"), d->this);
 
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);

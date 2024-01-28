@@ -39,7 +39,7 @@ static void clicked_cb(GtkWidget *button, struct touch_callback_data *d) {
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	(*env)->CallBooleanMethod(env, d->listener, d->listener_method, d->this);
+	(*env)->CallVoidMethod(env, d->listener, d->listener_method, d->this);
 
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
