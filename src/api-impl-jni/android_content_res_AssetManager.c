@@ -224,3 +224,49 @@ JNIEXPORT jobject JNICALL Java_android_content_res_AssetManager_getPooledString(
 	const char16_t *string = ResStringPool_stringAt(string_pool, index, &len);
 	return (*env)->NewString(env, string, len);
 }
+
+JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_newTheme(JNIEnv *env, jobject this)
+{
+	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
+	struct Theme *theme = Theme_new(AssetManager_getResources(asset_manager, true));
+	return _INTPTR(theme);
+}
+
+JNIEXPORT void JNICALL Java_android_content_res_AssetManager_deleteTheme(JNIEnv *env, jobject this, jlong theme_ptr)
+{
+	Theme_delete(_PTR(theme_ptr));
+}
+
+JNIEXPORT void JNICALL Java_android_content_res_AssetManager_applyThemeStyle(JNIEnv *env, jobject this, jlong theme_ptr, jint styleRes, jboolean force)
+{
+	Theme_applyStyle(_PTR(theme_ptr), styleRes, force);
+}
+
+JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadThemeAttributeValue(JNIEnv *env, jobject this, jlong theme_ptr, jint ident, jobject outValue, jboolean resolve)
+{
+	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
+	const struct ResTable *res_table = AssetManager_getResources(asset_manager, true);
+	struct Theme *theme = _PTR(theme_ptr);
+	uint32_t resId = ident;
+	struct Res_value value;
+	uint32_t outSpecFlags;
+	struct ResTable_config outConfig;
+	int block = Theme_getAttribute(theme, resId, &value, &outSpecFlags);
+	if (resolve) {
+		block = Theme_resolveAttributeReference(theme, &value, block, &resId, &outSpecFlags, &outConfig);
+	}
+	if (block >= 0) {
+		_SET_INT_FIELD(outValue, "type", value.dataType);
+		_SET_INT_FIELD(outValue, "data", value.data);
+		_SET_INT_FIELD(outValue, "resourceId", resId);
+		if (value.dataType == TYPE_STRING) {
+			const struct ResStringPool *string_pool = ResTable_getTableStringBlock(res_table, block);
+			size_t len;
+			const char16_t *string = ResStringPool_stringAt(string_pool, value.data, &len);
+			_SET_OBJ_FIELD(outValue, "string", "Ljava/lang/CharSequence;", (*env)->NewString(env, string, len));
+		} else {
+			_SET_OBJ_FIELD(outValue, "string", "Ljava/lang/CharSequence;", NULL);
+		}
+	}
+	return block;
+}

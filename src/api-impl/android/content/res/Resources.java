@@ -1198,7 +1198,8 @@ public class Resources {
 	 * retrieve XML attributes with style and theme information applied.
 	 */
 	public final class Theme {
-		private Map<Integer,ValueItem> themeMap = new HashMap<>();
+		private long theme;
+
 		/**
 		 * Place new attribute values into the theme.  The style resource
 		 * specified by <var>resid</var> will be retrieved from this Theme's
@@ -1217,7 +1218,7 @@ public class Resources {
 		 *              if not already defined in the theme.
 		 */
 		public void applyStyle(int resid, boolean force) {
-			themeMap.putAll(mAssets.loadStyle(resid));
+			mAssets.applyThemeStyle(theme, resid, force);
 		}
 
 		/**
@@ -1230,7 +1231,7 @@ public class Resources {
 		 * @param other The existing Theme to copy from.
 		 */
 		public void setTo(Theme other) {
-			themeMap = new HashMap<>(other.themeMap);
+			this.theme = other.theme;
 		}
 
 		/**
@@ -1256,7 +1257,7 @@ public class Resources {
 			int len = attrs.length;
 			TypedArray array = getCachedStyledAttributes(len);
 			array.mRsrcs = attrs;
-			mAssets.applyStyle(themeMap, 0, 0, null, attrs, array.mData, array.mIndices);
+			mAssets.applyStyle(theme, 0, 0, null, attrs, array.mData, array.mIndices);
 			return array;
 		}
 
@@ -1285,7 +1286,7 @@ public class Resources {
 			int len = attrs.length;
 			TypedArray array = getCachedStyledAttributes(len);
 			array.mRsrcs = attrs;
-			mAssets.applyStyle(themeMap, 0, resid, null, attrs,
+			mAssets.applyStyle(theme, 0, resid, null, attrs,
 				array.mData, array.mIndices);
 			if (false) {
 				int[] data = array.mData;
@@ -1374,7 +1375,7 @@ public class Resources {
 			// out the attributes from the XML file (applying type information
 			// contained in the resources and such).
 			ResXmlPullParser parser = (ResXmlPullParser)set;
-			mAssets.applyStyle(themeMap, defStyleAttr, defStyleRes,
+			mAssets.applyStyle(theme, defStyleAttr, defStyleRes,
 				set, attrs, array.mData, array.mIndices);
 			array.mRsrcs = attrs;
 			array.mXml = parser;
@@ -1428,7 +1429,7 @@ public class Resources {
 		 */
 		public boolean resolveAttribute(int resid, TypedValue outValue,
 						boolean resolveRefs) {
-			boolean got = mAssets.getThemeValue(themeMap, resid, outValue, resolveRefs);
+			boolean got = mAssets.getThemeValue(theme, resid, outValue, resolveRefs);
 			if (false) {
 				System.out.println(
 				    "resolveAttribute #" + Integer.toHexString(resid) + " got=" + got + ", type=0x" + Integer.toHexString(outValue.type) + ", data=0x" + Integer.toHexString(outValue.data));
@@ -1444,21 +1445,20 @@ public class Resources {
 		 * @param prefix Text to prefix each line printed.
 		 */
 		public void dump(int priority, String tag, String prefix) {
-			AssetManager.dumpTheme(mTheme, priority, tag, prefix);
+			AssetManager.dumpTheme(theme, priority, tag, prefix);
 		}
 
 		protected void finalize() throws Throwable {
 			super.finalize();
-			mAssets.releaseTheme(mTheme);
+			mAssets.releaseTheme(theme);
 		}
 
 		/*package*/ Theme() {
 			mAssets = Resources.this.mAssets;
-			mTheme = 0 /*mAssets.createTheme()*/;
+			theme = mAssets.createTheme();
 		}
 
 		private final AssetManager mAssets;
-		private final int mTheme;
 	}
 
 	/**
@@ -1492,7 +1492,7 @@ public class Resources {
 		// out the attributes from the XML file (applying type information
 		// contained in the resources and such).
 		ResXmlPullParser parser = (ResXmlPullParser)set;
-		mAssets.applyStyle(Collections.EMPTY_MAP, 0, 0,
+		mAssets.applyStyle(0, 0, 0,
 				set, attrs, array.mData, array.mIndices);
 
 		array.mRsrcs = attrs;

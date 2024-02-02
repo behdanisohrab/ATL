@@ -252,50 +252,50 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getGlobalAssetManag
 /*
  * Class:     android_content_res_AssetManager
  * Method:    newTheme
- * Signature: ()I
+ * Signature: ()J
  */
-JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_newTheme
+JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_newTheme
   (JNIEnv *, jobject);
 
 /*
  * Class:     android_content_res_AssetManager
  * Method:    deleteTheme
- * Signature: (I)V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_android_content_res_AssetManager_deleteTheme
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     android_content_res_AssetManager
  * Method:    applyThemeStyle
- * Signature: (IIZ)V
+ * Signature: (JIZ)V
  */
 JNIEXPORT void JNICALL Java_android_content_res_AssetManager_applyThemeStyle
-  (JNIEnv *, jclass, jint, jint, jboolean);
+  (JNIEnv *, jclass, jlong, jint, jboolean);
 
 /*
  * Class:     android_content_res_AssetManager
  * Method:    copyTheme
- * Signature: (II)V
+ * Signature: (JJ)V
  */
 JNIEXPORT void JNICALL Java_android_content_res_AssetManager_copyTheme
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jlong);
 
 /*
  * Class:     android_content_res_AssetManager
  * Method:    loadThemeAttributeValue
- * Signature: (IILandroid/util/TypedValue;Z)I
+ * Signature: (JILandroid/util/TypedValue;Z)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadThemeAttributeValue
-  (JNIEnv *, jclass, jint, jint, jobject, jboolean);
+  (JNIEnv *, jobject, jlong, jint, jobject, jboolean);
 
 /*
  * Class:     android_content_res_AssetManager
  * Method:    dumpTheme
- * Signature: (IILjava/lang/String;Ljava/lang/String;)V
+ * Signature: (JILjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_android_content_res_AssetManager_dumpTheme
-  (JNIEnv *, jclass, jint, jint, jstring, jstring);
+  (JNIEnv *, jclass, jlong, jint, jstring, jstring);
 
 /*
  * Class:     android_content_res_AssetManager

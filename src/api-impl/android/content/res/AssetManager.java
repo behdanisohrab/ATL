@@ -301,51 +301,10 @@ public final class AssetManager {
 		return map;
 	}
 
-	/*package*/ final boolean getThemeValue(Map<Integer,ValueItem> style, int ident,
+	/*package*/ final boolean getThemeValue(long style, int ident,
 						TypedValue outValue, boolean resolveRefs) {
-		EntryGroup entryGroup = tableBlockSearch(ident);
-		if (entryGroup == null)
-			return false;
-		Entry entry = entryGroup.pickOne();
-		ValueItem valueItem = null;
-		while ("attr".equals(entry.getTypeName())) {
-			valueItem = null;
-			if (style.containsKey(ident))
-				valueItem = style.get(ident);
-			if (valueItem != null && valueItem.getValueType() == ValueType.ATTRIBUTE) {
-				ident = valueItem.getData();
-				entryGroup = tableBlockSearch(ident);
-				if (entryGroup == null) {
-					break;
-				}
-				entry = entryGroup.pickOne();
-			} else {
-				break;
-			}
-		}
-
-		ident = 0;
-		if (valueItem != null && valueItem.getValueType() == ValueType.REFERENCE) {
-			while (valueItem.getValueType() == ValueType.REFERENCE) {
-				ident = valueItem.getData();
-				valueItem = null;
-				if (ident == 0)
-					break;
-				valueItem = tableBlockSearch(ident).pickOne().getResValue();
-				if (valueItem == null)
-					break;
-			}
-		}
-		if (valueItem == null)
-			return false;
-		outValue.resourceId = ident;
-		outValue.type = valueItem.getType();
-		outValue.data = valueItem.getData();
-		outValue.assetCookie = -1;
-		if (outValue.type == TypedValue.TYPE_STRING) {
-			outValue.string = valueItem.getDataAsPoolString().get();
-		}
-		return true;
+		int block = loadThemeAttributeValue(style, ident, outValue, resolveRefs);
+		return block >= 0;
 	}
 
 	/*package*/ final void ensureStringBlocks() {
@@ -628,21 +587,21 @@ public final class AssetManager {
 		}
 	}
 
-	/*package*/ final int createTheme() {
+	/*package*/ final long createTheme() {
 		synchronized (this) {
 			if (!mOpen) {
 				throw new RuntimeException("Assetmanager has been closed");
 			}
-			int res = newTheme();
-			incRefsLocked(res);
+			long res = newTheme();
+			incRefsLocked(new Long(res).hashCode());
 			return res;
 		}
 	}
 
-	/*package*/ final void releaseTheme(int theme) {
+	/*package*/ final void releaseTheme(long theme) {
 		synchronized (this) {
 			// deleteTheme(theme);
-			decRefsLocked(theme);
+			decRefsLocked(new Long(theme).hashCode());
 		}
 	}
 
@@ -871,11 +830,11 @@ public final class AssetManager {
 	/*package*/ static final int STYLE_RESOURCE_ID = 3;
 	/*package*/ static final int STYLE_CHANGING_CONFIGURATIONS = 4;
 	/*package*/ static final int STYLE_DENSITY = 5;
-	/*package*/ /*native*/ final boolean applyStyle(Map<Integer,ValueItem> theme,
+	/*package*/ /*native*/ final boolean applyStyle(long theme,
 							   int defStyleAttr, int defStyleRes, AttributeSet set,
 							   int[] inAttrs, int[] outValues, int[] outIndices) {
-		if (defStyleRes == 0 && theme.containsKey(defStyleAttr))
-			defStyleRes = theme.get(defStyleAttr).getData();
+		// if (defStyleRes == 0 && theme.containsKey(defStyleAttr))
+		// 	defStyleRes = theme.get(defStyleAttr).getData();
 		if (defStyleRes == 0 && set != null)
 			defStyleRes = set.getAttributeResourceValue(null, "style", 0);
 		Map<Integer,ValueItem> defStyle = loadStyle(defStyleRes);
@@ -910,8 +869,6 @@ public final class AssetManager {
 					if (valueItem != null && valueItem.getValueType() == ValueType.ATTRIBUTE && valueItem.getData() == resId)
 						valueItem = null;
 				}
-				if (valueItem == null)
-					valueItem = theme.get(resId);
 				if (valueItem != null && valueItem.getValueType() == ValueType.ATTRIBUTE) {
 					resId = valueItem.getData();
 					entryGroup = tableBlockSearch(resId);
@@ -923,8 +880,20 @@ public final class AssetManager {
 					break;
 				}
 			}
-			if (valueItem == null)
+			if (valueItem == null) {
+				if (theme != 0) {
+					TypedValue value = new TypedValue();
+					int block = loadThemeAttributeValue(theme, resId, value, true);
+					if (block >= 0) {
+						outValues[d + AssetManager.STYLE_RESOURCE_ID] = value.resourceId;
+						outValues[d + AssetManager.STYLE_TYPE] = value.type;
+						outValues[d + AssetManager.STYLE_DATA] = value.data;
+						outValues[d + AssetManager.STYLE_ASSET_COOKIE] = block;
+						outIndices[++outIndices[0]] = i;
+					}
+				}
 				continue;
+			}
 			if (valueItem.getValueType() == ValueType.REFERENCE) {
 				resId = valueItem.getData();
 				TypedValue value = new TypedValue();
@@ -983,14 +952,14 @@ public final class AssetManager {
 	 */
 	public native static final int getGlobalAssetManagerCount();
 
-	private native final int newTheme();
-	private native final void deleteTheme(int theme);
-	/*package*/ native static final void applyThemeStyle(int theme, int styleRes, boolean force);
-	/*package*/ native static final void copyTheme(int dest, int source);
-	/*package*/ native static final int loadThemeAttributeValue(int theme, int ident,
+	private native final long newTheme();
+	private native final void deleteTheme(long theme);
+	/*package*/ native static final void applyThemeStyle(long theme, int styleRes, boolean force);
+	/*package*/ native static final void copyTheme(long dest, long source);
+	/*package*/ native final int loadThemeAttributeValue(long theme, int ident,
 								    TypedValue outValue,
 								    boolean resolve);
-	/*package*/ native static final void dumpTheme(int theme, int priority, String tag, String prefix);
+	/*package*/ native static final void dumpTheme(long theme, int priority, String tag, String prefix);
 
 	private /*native*/ final int openXmlAssetNative(int cookie, String fileName) {
 		return openAsset("../" + fileName, 0);
