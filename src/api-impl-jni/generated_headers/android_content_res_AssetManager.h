@@ -91,6 +91,30 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_getResourceIdentifi
 
 /*
  * Class:     android_content_res_AssetManager
+ * Method:    getResourcePackageName
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourcePackageName
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     android_content_res_AssetManager
+ * Method:    getResourceTypeName
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourceTypeName
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     android_content_res_AssetManager
+ * Method:    getResourceEntryName
+ * Signature: (I)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourceEntryName
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     android_content_res_AssetManager
  * Method:    openAsset
  * Signature: (Ljava/lang/String;I)I
  */

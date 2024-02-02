@@ -111,8 +111,6 @@ public final class AssetManager {
 	private boolean mOpen = true;
 	private HashMap<Integer, RuntimeException> mRefStacks;
 
-	private List<TableBlock> tableBlocks;
-
 	/**
 	 * Create a new AssetManager containing only the basic system assets.
 	 * Applications will not generally use this method, instead retrieving the
@@ -121,19 +119,6 @@ public final class AssetManager {
 	 * {@hide}
 	 */
 	public AssetManager() {
-		tableBlocks = new ArrayList<>();
-		// try {
-		// 	Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources("resources.arsc");
-		// 	while (resources.hasMoreElements()) {
-		// 		URL resource = resources.nextElement();
-		// 		if (!resource.getFile().contains("com.google.android.gms")) { // ignore MicroG .apk
-		// 			tableBlocks.add(TableBlock.load(resource.openStream()));
-		// 		}
-		// 	}
-		// } catch (IOException e) {
-		// 	Log.e(TAG, "failed to load resources.arsc" + e);
-		// }
-
 		// FIXME: evaluate if this can be axed
 		synchronized (this) {
 			if (DEBUG_REFS) {
@@ -158,21 +143,6 @@ public final class AssetManager {
 				Log.e(TAG, "failed to load resources.arsc" + e);
 			}
 		}
-	}
-
-	private Map<Integer, EntryGroup> tableBlockCache = new HashMap<>();
-	private EntryGroup tableBlockSearch(int resId) {
-		if (tableBlockCache.containsKey(resId)) {
-			return tableBlockCache.get(resId);
-		}
-		EntryGroup ret = null;
-		for (TableBlock tableBlock : tableBlocks) {
-			ret = tableBlock.search(resId);
-			if (ret != null)
-				break;
-		}
-		tableBlockCache.put(resId, ret);
-		return ret;
 	}
 
 	private static void ensureSystemAssets() {
@@ -238,20 +208,12 @@ public final class AssetManager {
 	 * identifier for the current configuration / skin.
 	 */
 	/*package*/ final CharSequence getResourceBagText(int ident, int bagEntryId) {
-		PluralsBag pluralsBag = PluralsBag.create(tableBlockSearch(ident).pickOne());
-		return pluralsBag.getQuantityString(PluralsQuantity.valueOf((short)bagEntryId));
-
-//		synchronized (this) {
-//			TypedValue tmpValue = mValue;
-//			int block = loadResourceBagValue(ident, bagEntryId, tmpValue, true);
-//			if (block >= 0) {
-//				if (tmpValue.type == TypedValue.TYPE_STRING) {
-//					return mStringBlocks[block].get(tmpValue.data);
-//				}
-//				return tmpValue.coerceToString();
-//			}
-//		}
-//		return null;
+		TypedValue value = new TypedValue();
+		int block = loadResourceBagValue(ident, bagEntryId, value, true);
+		if (block >= 0) {
+			return value.coerceToString();
+		}
+		return null;
 	}
 
 	/**
@@ -277,28 +239,22 @@ public final class AssetManager {
 	 * @param id Resource id of the string array
 	 */
 	/*package*/ final CharSequence[] getResourceTextArray(final int id) {
-		ResValueMap children[] = tableBlockSearch(id).pickOne().getResValueMapArray().getChildes();
-		CharSequence values[] = new CharSequence[children.length];
-		for (int i = 0; i < children.length; i++) {
-			StringItem stringItem = children[i].getDataAsPoolString();
-			values[i] = (stringItem != null) ? stringItem.get() : "";
+		int n = getArraySize(id);
+		int[] valueArray = new int[n * STYLE_NUM_ENTRIES];
+		retrieveArray(id, valueArray);
+		CharSequence[] values = new String[n];
+		TypedValue value = new TypedValue();
+		for (int i = 0; i < n; i++) {
+			value.data = valueArray[i*STYLE_NUM_ENTRIES + STYLE_DATA];
+			value.type = valueArray[i*STYLE_NUM_ENTRIES + STYLE_TYPE];
+			value.assetCookie = valueArray[i*STYLE_NUM_ENTRIES + STYLE_ASSET_COOKIE];
+			if (value.type == TypedValue.TYPE_STRING) {
+				values[i] = getPooledString(value.assetCookie, value.data);
+			} else {
+				values[i] = value.coerceToString();
+			}
 		}
 		return values;
-	}
-
-	public Map<Integer,ValueItem> loadStyle(int resId) {
-		Map<Integer,ValueItem> map = new HashMap<>();
-		EntryGroup entryGroup = tableBlockSearch(resId);
-		while (entryGroup != null) {
-			Entry entry = entryGroup.pickOne();
-			ResValueMapArray array = entry.getResValueMapArray();
-			for (int i = 0; i < array.childesCount(); i++) {
-				map.putIfAbsent(array.get(i).getName(), array.get(i));
-			}
-			int parent_id = ((EntryHeaderMap)entry.getHeader()).getParentId();
-			entryGroup = tableBlockSearch(parent_id);
-		}
-		return map;
 	}
 
 	/*package*/ final boolean getThemeValue(long style, int ident,
@@ -776,17 +732,18 @@ public final class AssetManager {
 	/*package*/ native final int getResourceIdentifier(String name, String type, String defPackage);
 
 	/*package*/ /*native*/ final String getResourceName(int resid) {
-		return tableBlockSearch(resid).pickOne().getName();
+		String name = getResourcePackageName(resid);
+		String type = getResourceTypeName(resid);
+		if (type != null)
+			name += ':' + type;
+		String entry = getResourceEntryName(resid);
+		if (entry != null)
+			name += '/' + entry;
+		return name;
 	}
-	/*package*/ /*native*/ final String getResourcePackageName(int resid) {
-		return tableBlockSearch(resid).pickOne().getPackageName();
-	}
-	/*package*/ /*native*/ final String getResourceTypeName(int resid) {
-		return tableBlockSearch(resid).pickOne().getTypeName();
-	}
-	/*package*/ /*native*/ final String getResourceEntryName(int resid) {
-		return tableBlockSearch(resid).pickOne().getName();
-	}
+	/*package*/ native final String getResourcePackageName(int resid);
+	/*package*/ native final String getResourceTypeName(int resid);
+	/*package*/ native final String getResourceEntryName(int resid);
 
 	private native final int openAsset(String fileName, int accessMode);
 	private final native ParcelFileDescriptor openAssetFd(String fileName,
@@ -810,13 +767,6 @@ public final class AssetManager {
 	private native final int loadResourceValue(int ident, short density, TypedValue outValue,
 						   boolean resolve);
 
-	private int getCookie(ValueItem valueItem) {
-		for (int i=0; i<tableBlocks.size(); i++) {
-			if (valueItem.getStringPool() == tableBlocks.get(i).getStringPool())
-				return i;
-		}
-		return -1;
-	}
 	/**
 	 * Returns true if the resource was found, filling in mRetStringBlock and
 	 *  mRetData.
@@ -833,12 +783,6 @@ public final class AssetManager {
 	/*package*/ /*native*/ final boolean applyStyle(long theme,
 							   int defStyleAttr, int defStyleRes, AttributeSet set,
 							   int[] inAttrs, int[] outValues, int[] outIndices) {
-		// if (defStyleRes == 0 && theme.containsKey(defStyleAttr))
-		// 	defStyleRes = theme.get(defStyleAttr).getData();
-		if (defStyleRes == 0 && set != null)
-			defStyleRes = set.getAttributeResourceValue(null, "style", 0);
-		Map<Integer,ValueItem> defStyle = loadStyle(defStyleRes);
-
 		ResXmlPullParser parser = (ResXmlPullParser)set;
 		outIndices[0] = 0;
 
@@ -854,31 +798,11 @@ public final class AssetManager {
 			outValues[d+AssetManager.STYLE_RESOURCE_ID] = 0;
 			outValues[d+AssetManager.STYLE_TYPE] = 0;
 			outValues[d+AssetManager.STYLE_DATA] = 0;
-			outValues[d+AssetManager.STYLE_ASSET_COOKIE] = 0;
+			outValues[d+AssetManager.STYLE_ASSET_COOKIE] = -1;
 			int resId = inAttrs[i];
-			EntryGroup entryGroup = null;
-			Entry entry = null;
 			ValueItem valueItem = null;
-			while (entry == null || "attr".equals(entry.getTypeName())) {
-				valueItem = null;
-				if (xmlCache.containsKey(resId)) {
-					valueItem = parser.getResXmlAttributeAt(xmlCache.get(resId));
-				}
-				if (valueItem == null) {
-					valueItem = defStyle.get(resId);
-					if (valueItem != null && valueItem.getValueType() == ValueType.ATTRIBUTE && valueItem.getData() == resId)
-						valueItem = null;
-				}
-				if (valueItem != null && valueItem.getValueType() == ValueType.ATTRIBUTE) {
-					resId = valueItem.getData();
-					entryGroup = tableBlockSearch(resId);
-					if (entryGroup == null) {
-						break;
-					}
-					entry = entryGroup.pickOne();
-				} else {
-					break;
-				}
+			if (xmlCache.containsKey(resId)) {
+				valueItem = parser.getResXmlAttributeAt(xmlCache.get(resId));
 			}
 			if (valueItem == null) {
 				if (theme != 0) {
@@ -894,34 +818,40 @@ public final class AssetManager {
 				}
 				continue;
 			}
-			if (valueItem.getValueType() == ValueType.REFERENCE) {
+			if (valueItem.getValueType() == ValueType.REFERENCE || valueItem.getValueType() == ValueType.ATTRIBUTE) {
+				int prev_resId = resId;
 				resId = valueItem.getData();
 				TypedValue value = new TypedValue();
-				int block = loadResourceValue(resId, (short)0, value, true);
-				if (block >= 0) {
-					outValues[d + AssetManager.STYLE_RESOURCE_ID] = value.resourceId;
-					outValues[d + AssetManager.STYLE_TYPE] = value.type;
-					outValues[d + AssetManager.STYLE_DATA] = value.data;
-					outValues[d + AssetManager.STYLE_ASSET_COOKIE] = block;
-					outIndices[++outIndices[0]] = i;
-					continue;
+				int block = -1;
+				if (theme != 0)
+					block = loadThemeAttributeValue(theme, resId, value, true);
+				if (block < 0)
+					block = loadResourceValue(resId, (short)0, value, true);
+				if (block < 0) {
+					block = -1;
+					if (resId == 0) {
+						value.resourceId = 0;
+						value.type = 0;
+						value.data = 0;
+					} else {
+						value.resourceId = prev_resId;
+						value.type = valueItem.getType();
+						value.data = valueItem.getData();
+					}
 				}
-				while (valueItem.getValueType() == ValueType.REFERENCE) {
-					resId = valueItem.getData();
-					if (resId == 0)
-						break;
-					entry = tableBlockSearch(resId).pickOne();
-					if (entry == null || entry.getResValue() == null)
-						break;
-					valueItem = entry.getResValue();
-				}
-
-				outValues[d + AssetManager.STYLE_RESOURCE_ID] = resId;
+				outValues[d + AssetManager.STYLE_RESOURCE_ID] = value.resourceId;
+				outValues[d + AssetManager.STYLE_TYPE] = value.type;
+				outValues[d + AssetManager.STYLE_DATA] = value.data;
+				outValues[d + AssetManager.STYLE_ASSET_COOKIE] = block;
+				outIndices[++outIndices[0]] = i;
+				continue;
+			} else {
+				outValues[d + AssetManager.STYLE_RESOURCE_ID] = 0;
+				outValues[d + AssetManager.STYLE_TYPE] = valueItem.getType();
+				outValues[d + AssetManager.STYLE_DATA] = valueItem.getData();
+				outValues[d + AssetManager.STYLE_ASSET_COOKIE] = -1;
+				outIndices[++outIndices[0]] = i;
 			}
-			outValues[d + AssetManager.STYLE_TYPE] = valueItem.getType();
-			outValues[d + AssetManager.STYLE_DATA] = valueItem.getData();
-			outValues[d + AssetManager.STYLE_ASSET_COOKIE] = getCookie(valueItem);
-			outIndices[++outIndices[0]] = i;
 		}
 		return true;
 	}
@@ -968,10 +898,16 @@ public final class AssetManager {
 	private native final String[] getArrayStringResource(int arrayRes);
 	private native final int[] getArrayStringInfo(int arrayRes);
 	/*package*/ final int[] getArrayIntResource(int arrayRes) {
-		ResValueMap children[] = tableBlockSearch(arrayRes).pickOne().getResValueMapArray().getChildes();
-		int values[] = new int[children.length];
-		for (int i = 0; i < children.length; i++) {
-			values[i] = children[i].getData();
+		int n = getArraySize(arrayRes);
+		int[] valueArray = new int[n * STYLE_NUM_ENTRIES];
+		retrieveArray(arrayRes, valueArray);
+		int[] values = new int[n];
+		TypedValue value = new TypedValue();
+		for (int i = 0; i < n; i++) {
+			value.data = valueArray[i*STYLE_NUM_ENTRIES + STYLE_DATA];
+			value.type = valueArray[i*STYLE_NUM_ENTRIES + STYLE_TYPE];
+			value.assetCookie = valueArray[i*STYLE_NUM_ENTRIES + STYLE_ASSET_COOKIE];
+			values[i] = value.data;
 		}
 		return values;
 	}
