@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.IBinder;
@@ -841,17 +842,14 @@ public class View extends Object {
 
 			TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.View, defStyle, 0);
 			if (a.hasValue(com.android.internal.R.styleable.View_background)) {
-				int background = a.getResourceId(com.android.internal.R.styleable.View_background, 0);
+				Drawable background = a.getDrawable(com.android.internal.R.styleable.View_background);
 
-				if(background != 0) {
-					if(context.getResources().getResourceTypeName(background).equals("color")) {
-						System.out.printf("__background__: >%x<\n", context.getResources().getColor(background));
-
-						final android.util.TypedValue typedValue = new android.util.TypedValue();
-
-						setBackgroundColor(context.getResources().getColor(background));
+				if(background != null) {
+					if(background instanceof ColorDrawable) {
+						System.out.printf("__background__: >%x<\n", ((ColorDrawable)background).getColor());
+						setBackgroundColor(((ColorDrawable)background).getColor());
 					} else {
-						setBackgroundResource(background);
+						setBackgroundDrawable(background);
 					}
 				}
 			}
