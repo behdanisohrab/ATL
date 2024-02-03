@@ -18,46 +18,27 @@ package android.content.res;
 
 import android.content.Context;
 import android.os.ParcelFileDescriptor;
-import android.os.Trace;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 
-import com.reandroid.arsc.array.ResValueMapArray;
-import com.reandroid.arsc.chunk.PackageBlock;
-import com.reandroid.arsc.chunk.TableBlock;
 import com.reandroid.arsc.chunk.xml.ResXmlDocument;
 import com.reandroid.arsc.chunk.xml.ResXmlPullParser;
-import com.reandroid.arsc.group.EntryGroup;
-import com.reandroid.arsc.item.StringItem;
-import com.reandroid.arsc.value.Entry;
-import com.reandroid.arsc.value.EntryHeaderMap;
-import com.reandroid.arsc.item.TableString;
-import com.reandroid.arsc.value.ResValue;
-import com.reandroid.arsc.value.ResValueMap;
 import com.reandroid.arsc.value.ValueItem;
-import com.reandroid.arsc.value.ValueType;
-import com.reandroid.arsc.value.plurals.PluralsBag;
-import com.reandroid.arsc.value.plurals.PluralsQuantity;
 
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * Provides access to an application's raw asset files; see {@link Resources}
@@ -783,6 +764,17 @@ public final class AssetManager {
 	/*package*/ /*native*/ final boolean applyStyle(long theme,
 							   int defStyleAttr, int defStyleRes, AttributeSet set,
 							   int[] inAttrs, int[] outValues, int[] outIndices) {
+		TypedValue value = new TypedValue();
+		if (defStyleRes == 0 && theme != 0 && loadThemeAttributeValue(theme, defStyleAttr, value, true) >= 0)
+			defStyleRes = value.data;
+		if (defStyleRes == 0 && set != null)
+			defStyleRes = set.getAttributeResourceValue(null, "style", 0);
+		long defStyle = 0;
+		if (defStyleRes != 0) {
+			defStyle = newTheme();
+			applyThemeStyle(defStyle, defStyleRes, true);
+		}
+
 		ResXmlPullParser parser = (ResXmlPullParser)set;
 		outIndices[0] = 0;
 
@@ -795,63 +787,60 @@ public final class AssetManager {
 		for (int i = 0; i < inAttrs.length; i++) {
 			int d = i*AssetManager.STYLE_NUM_ENTRIES;
 			// reset values in case of cached array
-			outValues[d+AssetManager.STYLE_RESOURCE_ID] = 0;
-			outValues[d+AssetManager.STYLE_TYPE] = 0;
-			outValues[d+AssetManager.STYLE_DATA] = 0;
-			outValues[d+AssetManager.STYLE_ASSET_COOKIE] = -1;
 			int resId = inAttrs[i];
-			ValueItem valueItem = null;
-			if (xmlCache.containsKey(resId)) {
-				valueItem = parser.getResXmlAttributeAt(xmlCache.get(resId));
-			}
-			if (valueItem == null) {
-				if (theme != 0) {
-					TypedValue value = new TypedValue();
-					int block = loadThemeAttributeValue(theme, resId, value, true);
+			boolean found = false;
+			value.resourceId = 0;
+			value.type = -1;
+			value.data = 0;
+			value.assetCookie = -1;
+			while (true) {
+				if (resId == 0) {
+					value.type = 0;
+					value.data = 0;
+					value.resourceId = 0;
+					value.assetCookie = -1;
+					found = true;
+				} else if (xmlCache.containsKey(resId)) {
+					ValueItem valueItem = parser.getResXmlAttributeAt(xmlCache.get(resId));
+					value.type = valueItem.getType();
+					value.data = valueItem.getData();
+					value.resourceId = resId;
+					value.assetCookie = -1;
+					if (value.type != TypedValue.TYPE_ATTRIBUTE)
+						found = true;
+				} else {
+					int block = -1;
+					if (theme != 0 && (value.type == TypedValue.TYPE_ATTRIBUTE || value.type == -1))
+						block = loadThemeAttributeValue(theme, resId, value, true);
+					if (block < 0 && defStyle != 0 && (value.type == TypedValue.TYPE_ATTRIBUTE || value.type == -1))
+						block = loadThemeAttributeValue(defStyle, resId, value, true);
+					if (block < 0 && value.type == TypedValue.TYPE_REFERENCE)
+						block = loadResourceValue(resId, (short)0, value, true);
 					if (block >= 0) {
-						outValues[d + AssetManager.STYLE_RESOURCE_ID] = value.resourceId;
-						outValues[d + AssetManager.STYLE_TYPE] = value.type;
-						outValues[d + AssetManager.STYLE_DATA] = value.data;
-						outValues[d + AssetManager.STYLE_ASSET_COOKIE] = block;
-						outIndices[++outIndices[0]] = i;
+						found = true;
 					}
 				}
-				continue;
+				if ((value.type == TypedValue.TYPE_REFERENCE || value.type == TypedValue.TYPE_ATTRIBUTE) && value.data != resId) {
+					resId = value.data;
+				} else {
+					break;
+				}
 			}
-			if (valueItem.getValueType() == ValueType.REFERENCE || valueItem.getValueType() == ValueType.ATTRIBUTE) {
-				int prev_resId = resId;
-				resId = valueItem.getData();
-				TypedValue value = new TypedValue();
-				int block = -1;
-				if (theme != 0)
-					block = loadThemeAttributeValue(theme, resId, value, true);
-				if (block < 0)
-					block = loadResourceValue(resId, (short)0, value, true);
-				if (block < 0) {
-					block = -1;
-					if (resId == 0) {
-						value.resourceId = 0;
-						value.type = 0;
-						value.data = 0;
-					} else {
-						value.resourceId = prev_resId;
-						value.type = valueItem.getType();
-						value.data = valueItem.getData();
-					}
-				}
+			if (found) {
 				outValues[d + AssetManager.STYLE_RESOURCE_ID] = value.resourceId;
 				outValues[d + AssetManager.STYLE_TYPE] = value.type;
 				outValues[d + AssetManager.STYLE_DATA] = value.data;
-				outValues[d + AssetManager.STYLE_ASSET_COOKIE] = block;
+				outValues[d + AssetManager.STYLE_ASSET_COOKIE] = value.assetCookie;
 				outIndices[++outIndices[0]] = i;
-				continue;
 			} else {
-				outValues[d + AssetManager.STYLE_RESOURCE_ID] = 0;
-				outValues[d + AssetManager.STYLE_TYPE] = valueItem.getType();
-				outValues[d + AssetManager.STYLE_DATA] = valueItem.getData();
-				outValues[d + AssetManager.STYLE_ASSET_COOKIE] = -1;
-				outIndices[++outIndices[0]] = i;
+				outValues[d+AssetManager.STYLE_RESOURCE_ID] = 0;
+				outValues[d+AssetManager.STYLE_TYPE] = 0;
+				outValues[d+AssetManager.STYLE_DATA] = 0;
+				outValues[d+AssetManager.STYLE_ASSET_COOKIE] = -1;
 			}
+		}
+		if (defStyle != 0) {
+			deleteTheme(defStyle);
 		}
 		return true;
 	}

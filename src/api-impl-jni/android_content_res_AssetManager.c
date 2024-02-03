@@ -146,6 +146,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadResourceValue(J
 		_SET_INT_FIELD(outValue, "type", value.dataType);
 		_SET_INT_FIELD(outValue, "data", value.data);
 		_SET_INT_FIELD(outValue, "resourceId", resId);
+		_SET_INT_FIELD(outValue, "assetCookie", block);
 		if (value.dataType == TYPE_STRING) {
 			const struct ResStringPool *string_pool = ResTable_getTableStringBlock(res_table, block);
 			size_t len;
@@ -261,6 +262,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadThemeAttributeV
 		_SET_INT_FIELD(outValue, "type", value.dataType);
 		_SET_INT_FIELD(outValue, "data", value.data);
 		_SET_INT_FIELD(outValue, "resourceId", resId);
+		_SET_INT_FIELD(outValue, "assetCookie", block);
 		if (value.dataType == TYPE_STRING) {
 			const struct ResStringPool *string_pool = ResTable_getTableStringBlock(res_table, block);
 			size_t len;
@@ -353,6 +355,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadResourceBagValu
 			_SET_INT_FIELD(outValue, "type", value.dataType);
 			_SET_INT_FIELD(outValue, "data", value.data);
 			_SET_INT_FIELD(outValue, "resourceId", resId);
+			_SET_INT_FIELD(outValue, "assetCookie", block);
 			if (value.dataType == TYPE_STRING) {
 				const struct ResStringPool *string_pool = ResTable_getTableStringBlock(res_table, block);
 				size_t len;
