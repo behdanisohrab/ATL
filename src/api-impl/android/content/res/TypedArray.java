@@ -719,4 +719,8 @@ public class TypedArray {
 	public String toString() {
 		return Arrays.toString(mData);
 	}
+
+	public int getChangingConfigurations() {
+		return 0;
+	}
 }

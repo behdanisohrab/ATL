@@ -1251,7 +1251,8 @@ public final class Bitmap {
 	 * that config, otherwise return null.
 	 */
 	public final Config getConfig() {
-		return Config.nativeToConfig(nativeConfig(mNativeBitmap));
+		// return Config.nativeToConfig(nativeConfig(mNativeBitmap));
+		return Config.ARGB_8888;
 	}
 
 	/**

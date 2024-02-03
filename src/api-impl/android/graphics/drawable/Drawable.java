@@ -13,10 +13,12 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
+import android.content.res.Resources.Theme;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.util.AttributeSet;
 import android.util.TypedValue;
 
 public class Drawable {
@@ -128,6 +130,10 @@ public class Drawable {
 			drawable.inflate(resources, parser, parser, null);
 			return drawable;
 		}
+		return null;
+	}
+
+	public static Drawable createFromXmlInner(Resources resources, XmlPullParser parser, AttributeSet attrs, Theme theme) {
 		return null;
 	}
 

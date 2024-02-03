@@ -42,6 +42,9 @@ JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1bitmap_1from_1path(
 JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_getWidth(JNIEnv *env, jobject this)
 {
 	GdkPixbuf *pixbuf = _PTR(_GET_LONG_FIELD(this, "pixbuf"));
+	if (!pixbuf) {
+		return 10;
+	}
 
 	return gdk_pixbuf_get_width(pixbuf);
 }
@@ -49,6 +52,9 @@ JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_getWidth(JNIEnv *env, jobjec
 JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_getHeight(JNIEnv *env, jobject this)
 {
 	GdkPixbuf *pixbuf = _PTR(_GET_LONG_FIELD(this, "pixbuf"));
+	if (!pixbuf) {
+		return 10;
+	}
 
 	return gdk_pixbuf_get_height(pixbuf);
 }
