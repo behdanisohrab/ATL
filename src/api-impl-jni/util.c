@@ -213,8 +213,8 @@ void *get_nio_buffer(JNIEnv *env, jobject buffer, jarray *array_ref, jbyte **arr
 		pointer += position << elementSizeShift;
 	} else {   // buffer is indirect
 		*array_ref = (*env)->CallObjectMethod(env, buffer, _METHOD(class, "array", "()Ljava/lang/Object;"));
-		pointer = *array = (*env)->GetPrimitiveArrayCritical(env, *array_ref, NULL);
 		jint offset = (*env)->CallIntMethod(env, buffer, _METHOD(class, "arrayOffset", "()I"));
+		pointer = *array = (*env)->GetPrimitiveArrayCritical(env, *array_ref, NULL);
 		pointer += (offset + position) << elementSizeShift;
 	}
 	return pointer;

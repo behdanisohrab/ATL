@@ -74,8 +74,8 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1audio(JN
 	codec_ctx->ch_layout = (AVChannelLayout) AV_CHANNEL_LAYOUT_STEREO;
 	codec_ctx->ch_layout.nb_channels = nb_channels;
 
-	data = get_nio_buffer(env, extradata, &array_ref, &array);
 	codec_ctx->extradata_size = get_nio_buffer_size(env, extradata);
+	data = get_nio_buffer(env, extradata, &array_ref, &array);
 	codec_ctx->extradata = av_mallocz(codec_ctx->extradata_size + AV_INPUT_BUFFER_PADDING_SIZE);
 	memcpy(codec_ctx->extradata, data, codec_ctx->extradata_size);
 	release_nio_buffer(env, array_ref, array);
@@ -395,20 +395,22 @@ JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1dequeueOutputBuffer
 	}
 	_SET_LONG_FIELD(buffer_info, "presentationTimeUs", frame->pts);
 
-	uint8_t *raw_buffer = get_nio_buffer(env, buffer, &array_ref, &array);
 	if (codec_ctx->codec_type == AVMEDIA_TYPE_AUDIO) {
+		uint8_t *raw_buffer = get_nio_buffer(env, buffer, &array_ref, &array);
 		int outSamples = swr_convert(ctx->audio.swr, &raw_buffer, frame->nb_samples, (uint8_t const **) (frame->data), frame->nb_samples);
+		release_nio_buffer(env, array_ref, array);
 		_SET_INT_FIELD(buffer_info, "offset", 0);
 		_SET_INT_FIELD(buffer_info, "size", outSamples * 2 * 2);
 
 		av_frame_free(&frame);
 	} else if (codec_ctx->codec_type == AVMEDIA_TYPE_VIDEO) {
 		// copy frame pointer into data buffer to be read by releaseOutputBuffer function
+		uint8_t *raw_buffer = get_nio_buffer(env, buffer, &array_ref, &array);
 		*((AVFrame **)raw_buffer) = frame;
+		release_nio_buffer(env, array_ref, array);
 		_SET_INT_FIELD(buffer_info, "offset", 0);
 		_SET_INT_FIELD(buffer_info, "size", sizeof(AVFrame *));
 	}
-	release_nio_buffer(env, array_ref, array);
 	return 0;
 }
 
