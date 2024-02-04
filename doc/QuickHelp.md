@@ -93,13 +93,9 @@ to get to work in order to cut down on the amount of stubbing you need to do.
 
 There are two basic types of widgets (Views): containers (Layouts) and the rest.
 
-To implement a container widget, simply copy an existing container widget implementation (e.g LinearLayout 
-(`src/api-impl/android/widget/LinearLayout.java` and `src/api-impl-jni/widgets/android_widget_LinearLayout.c`)), and that's 
-it! Now, chances are that you wanted something slightly different, but this will at least display the child 
-widgets so that you can focus on implementing those.
-
-When you get around to properly implementing the particularities of the specific container widget, it's 
-basically the same process as below.
+Initially all container widgets where backed by Gtk container widgets. As this caused lots of behaviour diffeneces with AOSP,
+we have instead implemented the API of ViewGroup, which is the super class of all container widgets. This allows to more or
+less completely reuse specialized container widget implementation from AOSP source code.
 
 To implement any other widget, copy a widget that is closest to what you're looking for, and if Gtk has 
 a better approximation for your widget, then change to that as the backing Gtk widget. If Gtk doesn't have 
