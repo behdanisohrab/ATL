@@ -143,4 +143,8 @@ public class ImageView extends View {
 	public void setImageTintList(ColorStateList tint) {}
 
 	public void setImageAlpha(int alpha) {}
+
+	public void setMaxWidth(int width) {}
+
+	public void setMaxHeight(int height) {}
 }

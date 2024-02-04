@@ -28,5 +28,7 @@ public abstract class AdapterView extends ViewGroup {
 
 	public void setOnItemSelectedListener(AdapterView.OnItemSelectedListener listener) {}
 
+	public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {}
+
 	public void setSelection(int position, boolean animate) {}
 }

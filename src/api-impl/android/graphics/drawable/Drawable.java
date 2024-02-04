@@ -129,6 +129,8 @@ public class Drawable {
 			BitmapDrawable drawable = new BitmapDrawable();
 			drawable.inflate(resources, parser, parser, null);
 			return drawable;
+		} else if ("transition".equals(parser.getName())) {
+			return new Drawable();
 		}
 		return null;
 	}

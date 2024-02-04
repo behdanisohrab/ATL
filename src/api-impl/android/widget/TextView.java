@@ -198,4 +198,8 @@ public class TextView extends View {
 	public Layout getLayout() {
 		return new Layout();
 	}
+
+	public int getCurrentTextColor() {return 0;}
+
+	public void setSingleLine(boolean singleLine) {}
 }

@@ -31,6 +31,7 @@ import android.telephony.TelephonyManager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Slog;
+import android.view.LayoutInflater;
 import android.view.WindowManagerImpl;
 import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.InputMethodManager;
@@ -182,6 +183,8 @@ public class Context extends Object {
 				return new InputMethodManager();
 			case "accessibility":
 				return new AccessibilityManager();
+			case "layout_inflater":
+				return new LayoutInflater();
 			default:
 				Slog.e(TAG, "!!!!!!! getSystemService: case >" + name + "< is not implemented yet");
 				return null;

@@ -5,9 +5,12 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 
-public class Dialog {
+public class Dialog implements Window.Callback {
 	protected long nativePtr;
 
 	private native long nativeInit();
@@ -68,9 +71,46 @@ public class Dialog {
 		System.out.println("totally dismissing the Dialog " + this + " right now, which was most definitely being shown just a moment ago");
 	}
 
+	public Window getWindow() {
+		return new Window(this);
+	}
+
+	public void setCanceledOnTouchOutside(boolean cancel) {}
+
 	public class Builder {
 		public Builder(Context context) {
 			System.out.println("making a Dialog$Builder as we speak, my word!");
 		}
+	}
+
+	@Override
+	public void onContentChanged() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'onContentChanged'");
+	}
+	@Override
+	public boolean onCreatePanelMenu(int featureId, Menu menu) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'onCreatePanelMenu'");
+	}
+	@Override
+	public View onCreatePanelView(int featureId) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'onCreatePanelView'");
+	}
+	@Override
+	public boolean onPreparePanel(int featureId, View view, Menu menu) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'onPreparePanel'");
+	}
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'onMenuItemSelected'");
+	}
+	@Override
+	public void onPanelClosed(int featureId, Menu menu) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'onPanelClosed'");
 	}
 }

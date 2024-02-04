@@ -11,4 +11,8 @@ public class Layout {
 	}
 
 	public int getLineCount() {return 1;}
+
+	public float getLineWidth(int line) {return 10;}
+
+	public TextPaint getPaint() {return new TextPaint();}
 }
