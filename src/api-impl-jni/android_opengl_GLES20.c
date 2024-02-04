@@ -2,38 +2,9 @@
 #include <jni.h>
 #include <stdint.h>
 #include "defines.h"
+#include "util.h"
 
 #include "generated_headers/android_opengl_GLES20.h"
-
-static void *get_nio_buffer(JNIEnv *env, jobject buffer, jarray *array_ref, jbyte **array) {
-    jclass class;
-    void *pointer;
-    int elementSizeShift, position;
-
-    if (!buffer) {
-        *array_ref = NULL;
-        return NULL;
-    }
-	class = _CLASS(buffer);
-	pointer = _PTR((*env)->GetLongField(env, buffer, _FIELD_ID(class, "address", "J")));
-	elementSizeShift = (*env)->GetIntField(env, buffer, _FIELD_ID(class, "_elementSizeShift", "I"));
-	position = (*env)->GetIntField(env, buffer, _FIELD_ID(class, "position", "I"));
-	if (pointer) {   // buffer is direct
-        *array_ref = NULL;
-		pointer += position << elementSizeShift;
-	} else {   // buffer is indirect
-		*array_ref = (*env)->CallObjectMethod(env, buffer, _METHOD(class, "array", "()Ljava/lang/Object;"));
-		pointer = *array = (*env)->GetPrimitiveArrayCritical(env, *array_ref, NULL);
-		jint offset = (*env)->CallIntMethod(env, buffer, _METHOD(class, "arrayOffset", "()I"));
-		pointer += (offset + position) << elementSizeShift;
-	}
-	return pointer;
-}
-
-static void release_nio_buffer(JNIEnv *env, jarray array_ref, jbyte *array) {
-	if (array_ref)
-		(*env)->ReleasePrimitiveArrayCritical(env, array_ref, array, 0);
-}
 
 JNIEXPORT jstring JNICALL Java_android_opengl_GLES20_glGetString(JNIEnv *env, jclass, jint name) {
     const char* chars = (const char*) glGetString((GLenum) name);
