@@ -19,6 +19,12 @@ JNIEXPORT jlong JNICALL Java_android_widget_TextView_native_1constructor(JNIEnv 
 	gtk_label_set_xalign(GTK_LABEL(label), 0.f);
 	gtk_label_set_yalign(GTK_LABEL(label), 0.f);
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), label);
+
+	PangoAttrList* pango_attrs = pango_attr_list_new();
+	pango_attr_list_insert(pango_attrs, pango_attr_font_features_new("tnum"));
+	gtk_label_set_attributes(GTK_LABEL(label), pango_attrs);
+	pango_attr_list_unref(pango_attrs);
+
 	return _INTPTR(label);
 }
 
