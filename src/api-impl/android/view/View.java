@@ -853,6 +853,9 @@ public class View extends Object {
 					}
 				}
 			}
+			if (a.hasValue(com.android.internal.R.styleable.View_visibility)) {
+				setVisibility(VISIBILITY_FLAGS[a.getInt(com.android.internal.R.styleable.View_visibility, 0)]);
+			}
 		}
 	}
 
