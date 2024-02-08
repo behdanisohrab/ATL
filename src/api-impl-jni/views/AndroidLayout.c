@@ -20,12 +20,14 @@ static int make_measure_spec(int layout_size, int for_size)
 
 static void android_layout_measure(GtkLayoutManager *layout_manager, GtkWidget *widget, GtkOrientation orientation, int for_size, int *minimum, int *natural, int *minimum_baseline, int *natural_baseline)
 {
+	int widthMeasureSpec = 0;
+	int heightMeasureSpec = 0;
 	AndroidLayout *layout = ATL_ANDROID_LAYOUT(layout_manager);
 	JNIEnv *env = get_jni_env();
 
 	if (layout->width || layout->height) {
-		int widthMeasureSpec = make_measure_spec(layout->width, orientation == GTK_ORIENTATION_VERTICAL ? for_size : -1);
-		int heightMeasureSpec = make_measure_spec(layout->height, orientation == GTK_ORIENTATION_HORIZONTAL ? for_size : -1);
+		widthMeasureSpec = make_measure_spec(layout->width, orientation == GTK_ORIENTATION_VERTICAL ? for_size : -1);
+		heightMeasureSpec = make_measure_spec(layout->height, orientation == GTK_ORIENTATION_HORIZONTAL ? for_size : -1);
 
 		// if layout params say match_parent, but GTK doesnt specify the dimension, fallback to old specification if available
 		if (widthMeasureSpec == -1)
@@ -42,12 +44,14 @@ static void android_layout_measure(GtkLayoutManager *layout_manager, GtkWidget *
 	}
 
 	if (orientation == GTK_ORIENTATION_HORIZONTAL) {
-		*minimum = (*env)->CallIntMethod(env, layout->view, handle_cache.view.getSuggestedMinimumWidth);
 		*natural = (*env)->CallIntMethod(env, layout->view, handle_cache.view.getMeasuredWidth);
+		*minimum = heightMeasureSpec && !widthMeasureSpec ? *natural
+				: (*env)->CallIntMethod(env, layout->view, handle_cache.view.getSuggestedMinimumWidth);
 	}
 	if (orientation == GTK_ORIENTATION_VERTICAL) {
-		*minimum = (*env)->CallIntMethod(env, layout->view, handle_cache.view.getSuggestedMinimumHeight);
 		*natural = (*env)->CallIntMethod(env, layout->view, handle_cache.view.getMeasuredHeight);
+		*minimum = widthMeasureSpec && !heightMeasureSpec ? *natural
+				:(*env)->CallIntMethod(env, layout->view, handle_cache.view.getSuggestedMinimumHeight);
 	}
 	if (*natural < *minimum)
 		*natural = *minimum;
