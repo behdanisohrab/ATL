@@ -63,6 +63,7 @@ public class TextView extends View {
 
 		if (text instanceof android.text.Spanned)
 			native_set_markup(1);
+		requestLayout();
 	}
 
 	public void setText(int resId) {
