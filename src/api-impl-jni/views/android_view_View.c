@@ -278,6 +278,7 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setVisibility(JNIEnv *env,
 
 	gtk_widget_set_visible(widget, visibility != android_view_View_GONE);
 	gtk_widget_set_opacity(widget, (visibility != android_view_View_INVISIBLE) * alpha);
+	gtk_widget_set_sensitive(widget, visibility != android_view_View_INVISIBLE && alpha != 0.0f);
 }
 
 /** JavaWidget:
