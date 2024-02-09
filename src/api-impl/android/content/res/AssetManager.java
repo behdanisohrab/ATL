@@ -804,7 +804,7 @@ public final class AssetManager {
 					ValueItem valueItem = parser.getResXmlAttributeAt(xmlCache.get(resId));
 					value.type = valueItem.getType();
 					value.data = valueItem.getData();
-					value.resourceId = resId;
+					value.resourceId = 0;
 					value.assetCookie = -1;
 					if (value.type != TypedValue.TYPE_ATTRIBUTE)
 						found = true;
@@ -818,6 +818,14 @@ public final class AssetManager {
 						block = loadResourceValue(resId, (short)0, value, true);
 					if (block >= 0) {
 						found = true;
+					}
+				}
+				if (value.type == TypedValue.TYPE_REFERENCE && value.data != 0) {
+					String typeName = getResourceTypeName(value.data);
+					if ("style".equals(typeName) || "array".equals(typeName)) {
+						// style and array are complex types, which can't be stored in a TypedArray
+						value.resourceId = value.data;
+						break;
 					}
 				}
 				if ((value.type == TypedValue.TYPE_REFERENCE || value.type == TypedValue.TYPE_ATTRIBUTE) && value.data != resId) {
