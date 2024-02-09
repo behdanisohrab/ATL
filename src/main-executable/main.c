@@ -70,20 +70,20 @@ char *construct_classpath(char *prefix, char **cp_array, size_t len)
 	return result;
 }
 
-#define JDWP_ARG "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address="
+#define JDWP_ARG "-XjdwpOptions:transport=dt_socket,server=y,suspend=y,address="
 
 JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, char *framework_res_apk, char *api_impl_natives_dir, char *app_lib_dir) {
 	JavaVM* jvm;
 	JNIEnv* env;
 	JavaVMInitArgs args;
-	JavaVMOption options[5];
+	JavaVMOption options[6];
 	args.version = JNI_VERSION_1_6;
 	args.nOptions = 4;
 	char jdwp_option_string[sizeof(JDWP_ARG) + 5] = JDWP_ARG;// 5 chars for port number, NULL byte is counted by sizeof
 
 	const char* jdwp_port = getenv("JDWP_LISTEN");
 	if(jdwp_port)
-		args.nOptions += 1;
+		args.nOptions += 2;
 
 	if(getenv("RUN_FROM_BUILDDIR")) {
 		options[0].optionString = construct_classpath("-Djava.library.path=", (char *[]){"./", app_lib_dir}, 2);
@@ -99,7 +99,8 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 	options[3].optionString = "-Xcheck:jni";
 	if(jdwp_port) {
 		strncat(jdwp_option_string, jdwp_port, 5); // 5 chars is enough for a port number, and won't overflow our array
-		options[4].optionString = jdwp_option_string;
+		options[4].optionString = "-XjdwpProvider:internal";
+		options[5].optionString = jdwp_option_string;
 	}
 
 	args.options = options;
