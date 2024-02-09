@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ViewGroup extends View implements ViewParent, ViewManager {
-	public int id;
 	public ArrayList<View> children;
 
 	public ViewGroup(Context context) {
@@ -336,6 +335,8 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 			a.recycle();
 		}
 
+		public void resolveLayoutDirection(int layoutDirection) {}
+
 		/**
 		 * Used to animate layouts.
 		 */
@@ -397,6 +398,8 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		public void setMarginEnd(int marginEnd) {
 			rightMargin = marginEnd;
 		}
+
+		public int getLayoutDirection() { return LAYOUT_DIRECTION_LTR; }
 	}
 
 	public interface OnHierarchyChangeListener {

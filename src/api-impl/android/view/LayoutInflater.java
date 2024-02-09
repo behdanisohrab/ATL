@@ -153,6 +153,7 @@ public class LayoutInflater {
 
 				// Create layout params that match root, if supplied
 				params = root.generateLayoutParams(attrs);
+				params.resolveLayoutDirection(root.getLayoutDirection());
 				if (!attachToRoot) {
 					// Set the layout params for temp if we are not
 					// attaching. (If we are, we use addView, below)
@@ -219,6 +220,7 @@ public class LayoutInflater {
 				final View view = createViewFromTag(parent, name, attrs);
 				final ViewGroup viewGroup = (ViewGroup)parent;
 				final ViewGroup.LayoutParams params = viewGroup.generateLayoutParams(attrs);
+				params.resolveLayoutDirection(viewGroup.getLayoutDirection());
 				rInflate(parser, view, attrs, true);
 				viewGroup.addView(view, params);
 			}
@@ -261,6 +263,7 @@ public class LayoutInflater {
 			if (params == null) {
 				params = group.generateLayoutParams(childAttrs);
 			}
+			params.resolveLayoutDirection(group.getLayoutDirection());
 			view.setLayoutParams(params);
 			// Inflate all children.
 			rInflate(childParser, view, childAttrs, true);
