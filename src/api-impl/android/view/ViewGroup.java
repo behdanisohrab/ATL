@@ -302,6 +302,8 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		return false;
 	}
 
+	public void setClipToPadding(boolean clipToPadding) {}
+
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;
 		public static final int MATCH_PARENT = -1;

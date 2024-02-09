@@ -1598,4 +1598,8 @@ public class View extends Object {
 	public void setAccessibilityLiveRegion(int mode) {}
 
 	public void invalidateOutline() {}
+
+	public int getMeasuredWidthAndState() {
+		return measuredWidth;
+	}
 }

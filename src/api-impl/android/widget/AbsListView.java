@@ -15,4 +15,12 @@ public abstract class AbsListView extends AdapterView {
 
 	public void setChoiceMode(int choiceMode) {}
 
+	public void setOnScrollListener(OnScrollListener onScrollListener) {}
+
+	public void setAdapter(ListAdapter adapter) {}
+
+	public void setItemChecked(int position, boolean value) {}
+
+	public interface OnScrollListener {}
+
 }

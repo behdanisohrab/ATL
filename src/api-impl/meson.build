@@ -429,6 +429,7 @@ hax_jar = jar('hax', [
               	'android/widget/Scroller.java',
               	'android/widget/ScrollView.java',
               	'android/widget/SeekBar.java',
+              	'android/widget/Space.java',
               	'android/widget/Spinner.java',
               	'android/widget/SpinnerAdapter.java',
               	'android/widget/Switch.java',

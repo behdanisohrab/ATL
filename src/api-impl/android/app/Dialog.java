@@ -3,6 +3,7 @@ package android.app;
 import android.content.Context;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Menu;
@@ -55,6 +56,7 @@ public class Dialog implements Window.Callback {
 
 	public void show() {
 		System.out.println("totally showing the Dialog " + this + " right now, most definitely doing that");
+		onCreate(null);
 		new Handler(Looper.getMainLooper()).post(new Runnable() {
 			@Override
 			public void run() {
@@ -72,7 +74,12 @@ public class Dialog implements Window.Callback {
 	}
 
 	public Window getWindow() {
-		return new Window(this);
+		return new Window(this) {
+			@Override
+			public void setContentView(View view) {
+				Dialog.this.setContentView(view);
+			}
+		};
 	}
 
 	public void setCanceledOnTouchOutside(boolean cancel) {}
@@ -85,8 +92,6 @@ public class Dialog implements Window.Callback {
 
 	@Override
 	public void onContentChanged() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'onContentChanged'");
 	}
 	@Override
 	public boolean onCreatePanelMenu(int featureId, Menu menu) {
@@ -112,5 +117,9 @@ public class Dialog implements Window.Callback {
 	public void onPanelClosed(int featureId, Menu menu) {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'onPanelClosed'");
+	}
+
+	protected void onCreate (Bundle savedInstanceState) {
+		System.out.println("- onCreate - Dialog!");
 	}
 }

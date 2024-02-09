@@ -15,4 +15,6 @@ public class Layout {
 	public float getLineWidth(int line) {return 10;}
 
 	public TextPaint getPaint() {return new TextPaint();}
+
+	public int getEllipsisCount(int line) {return 0;}
 }
