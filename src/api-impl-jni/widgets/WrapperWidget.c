@@ -139,6 +139,17 @@ void wrapper_widget_queue_draw(WrapperWidget *wrapper)
 		gtk_widget_queue_allocate(GTK_WIDGET(wrapper));
 }
 
+static bool on_click(GtkGestureClick *gesture, int n_press, double x, double y, jobject this)
+{
+	JNIEnv *env = get_jni_env();
+
+	bool ret = (*env)->CallBooleanMethod(env, this, handle_cache.view.performClick);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
+	return ret;
+}
+
 void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject jobj)
 {
 	JavaVM *jvm;
@@ -166,6 +177,14 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 	jmethodID computeScroll_method = _METHOD(_CLASS(jobj), "computeScroll", "()V");
 	if (computeScroll_method != handle_cache.view.computeScroll) {
 		wrapper->computeScroll_method = computeScroll_method;
+	}
+
+	jmethodID performClick_method = _METHOD(_CLASS(jobj), "performClick", "()Z");
+	if (performClick_method != handle_cache.view.performClick) {
+		GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_click_new());
+
+		g_signal_connect(controller, "released", G_CALLBACK(on_click), _REF(jobj));
+		gtk_widget_add_controller(wrapper->child, controller);
 	}
 }
 
