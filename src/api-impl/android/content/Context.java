@@ -393,12 +393,17 @@ public class Context extends Object {
 
 	public void startActivity(Intent intent) {
 		Slog.i(TAG, "startActivity(" + intent + ") called");
-		if ("android.intent.action.CHOOSER".equals(intent.getAction())) {
+		if (intent.getAction() != null && intent.getAction().equals("android.intent.action.CHOOSER")) {
 			intent = (Intent) intent.getExtras().get("android.intent.extra.INTENT");
 		}
 		if (intent.getComponent() == null) {
-			Slog.i(TAG, "starting extern activity with intent: " + intent);
-			Activity.nativeOpenURI(String.valueOf(intent.getData()));
+			if(intent.getAction() != null && intent.getAction().equals("android.intent.action.SEND")) {
+				Slog.i(TAG, "starting extern activity with intent: " + intent);
+				Activity.nativeShare((String) intent.getExtras().get("android.intent.extra.TEXT"));
+			} else if (intent.getData() != null) {
+				Slog.i(TAG, "starting extern activity with intent: " + intent);
+				Activity.nativeOpenURI(String.valueOf(intent.getData()));
+			}
 			return;
 		}
 		try {

@@ -11,6 +11,7 @@ public class Intent {
 	private String action;
 	private Uri data;
 	private int flags;
+	private String type;
 
 	public Intent() {}
 	public Intent(Intent o) {
@@ -43,8 +44,18 @@ public class Intent {
 		this.flags = flags;
 		return this;
 	}
+
+	public int getFlags() {
+		return flags;
+	}
+
 	public Intent setPackage(String packageName) {
 		return this; //??
+	}
+
+	public Intent setType(String type) {
+		this.type = type;
+		return this;
 	}
 
 	public Intent putExtra(String name, Parcelable value) {
@@ -220,7 +231,7 @@ public class Intent {
 		this.component = component;
 		return this;
 	}
-	
+
 	public ComponentName getComponent() {
 		return component;
 	}
@@ -255,15 +266,10 @@ public class Intent {
 
 	@Override
 	public String toString() {
-		return "Intent [component=" + component + ", extras=" + extras + ", action=" + action + ", uri=" + data + "]";
+		return "Intent [component=" + component + ", extras=" + extras + ", action=" + action + ", type=" + type + ", uri=" + data + "]";
 	}
 
 	public static Intent createChooser(Intent target, CharSequence title) {
 		return target;
 	}
-
-	public int getFlags() {
-		return flags;
-	}
-
 }

@@ -4,6 +4,7 @@ import android.R;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.XmlResourceParser;
@@ -27,7 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Activity extends Context implements Window.Callback {
+public class Activity extends ContextWrapper implements Window.Callback {
 	LayoutInflater layout_inflater;
 	Window window = new Window(this);
 	int requested_orientation = -1 /*ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED*/; // dummy
@@ -64,6 +65,7 @@ public class Activity extends Context implements Window.Callback {
 	}
 
 	public Activity() {
+		super(null);
 		layout_inflater = new LayoutInflater();
 		intent = new Intent();
 	}
@@ -320,10 +322,6 @@ public class Activity extends Context implements Window.Callback {
 
 	public boolean isChangingConfigurations() {return false;}
 
-	private native void nativeFinish(long native_window);
-	public static native void nativeStartActivity(Activity activity);
-	public static native void nativeOpenURI(String uri);
-
 	@Override
 	public void onContentChanged() {
 		// TODO Auto-generated method stub
@@ -393,4 +391,9 @@ public class Activity extends Context implements Window.Callback {
 	public void setIntent(Intent newIntent) {}
 
 	public void unregisterReceiver(BroadcastReceiver receiver) {}
+
+	private native void nativeFinish(long native_window);
+	public static native void nativeStartActivity(Activity activity);
+	public static native void nativeOpenURI(String uri);
+	public static native void nativeShare(String text);
 }

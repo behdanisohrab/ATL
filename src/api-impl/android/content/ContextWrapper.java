@@ -10,5 +10,4 @@ public class ContextWrapper extends Context {
 	public Context getBaseContext() {
 		return baseContext;
 	}
-	
 }

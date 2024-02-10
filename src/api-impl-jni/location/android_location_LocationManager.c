@@ -22,19 +22,20 @@ static void location_updated (
 	(*env)->CallStaticVoidMethod(env, class, _STATIC_METHOD(class, "locationUpdated", "(DDD)V"), latitude, longitude, heading);
 }
 
-static XdpPortal *portal = NULL;
-
 JNIEXPORT void JNICALL Java_android_location_LocationManager_nativeGetLocation(JNIEnv *env, jobject) {
 	if (!getenv("ATL_UGLY_ENABLE_LOCATION")) {
 		// Location access is prohibited by default until sanboxing is implemented.
 		// Set ATL_UGLY_ENABLE_LOCATION environment variable to enable it.
 		return;
 	}
+
+	static XdpPortal *portal = NULL;
 	if (!portal) {
 		portal = xdp_portal_new();
 		JavaVM *jvm;
 		(*env)->GetJavaVM(env, &jvm);
 		g_signal_connect(portal, "location-updated", G_CALLBACK(location_updated), jvm);
 	}
+
 	xdp_portal_location_monitor_start (portal, NULL, 0, 0, XDP_LOCATION_ACCURACY_EXACT, XDP_LOCATION_MONITOR_FLAG_NONE, NULL, NULL, NULL);
 }

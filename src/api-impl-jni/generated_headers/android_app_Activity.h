@@ -33,6 +33,14 @@ JNIEXPORT void JNICALL Java_android_app_Activity_nativeStartActivity
 JNIEXPORT void JNICALL Java_android_app_Activity_nativeOpenURI
   (JNIEnv *, jclass, jstring);
 
+/*
+ * Class:     android_app_Activity
+ * Method:    nativeShare
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_android_app_Activity_nativeShare
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif
