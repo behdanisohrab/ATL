@@ -1231,7 +1231,7 @@ public class Resources {
 		 * @param other The existing Theme to copy from.
 		 */
 		public void setTo(Theme other) {
-			this.theme = other.theme;
+			AssetManager.copyTheme(this.theme, other.theme);
 		}
 
 		/**

@@ -371,3 +371,8 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadResourceBagValu
 	ResTable_unlockBag(res_table, bag);
 	return block;
 }
+
+JNIEXPORT void JNICALL Java_android_content_res_AssetManager_copyTheme(JNIEnv *env, jclass class, jlong dest, jlong src)
+{
+	Theme_setTo(_PTR(dest), _PTR(src));
+}
