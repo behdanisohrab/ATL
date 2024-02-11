@@ -239,7 +239,9 @@ public class Activity extends ContextWrapper implements Window.Callback {
 
 	public <T extends android.view.View> T findViewById(int id) {
 		System.out.println("- findViewById - asked for view with id: " + id);
-		View view = View.view_by_id.get(id);
+		View view = null;
+		if (window.contentView != null)
+			view = window.contentView.findViewById(id);
 		System.out.println("- findViewById - found this: " + view);
 
 		return (T)view;

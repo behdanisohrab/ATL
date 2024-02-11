@@ -808,8 +808,6 @@ public class View extends Object {
 
 	public long widget; // pointer
 
-	public static HashMap<Integer, View> view_by_id = new HashMap<Integer, View>();
-
 	private int oldWidthMeasureSpec = -1;
 	private int oldHeightMeasureSpec = -1;
 	private boolean layoutRequested = true;
@@ -836,7 +834,6 @@ public class View extends Object {
 			int id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
 			if (id != 0) {
 				this.id = id;
-				view_by_id.put(id, this);
 			}
 
 
@@ -860,8 +857,10 @@ public class View extends Object {
 	}
 
 	public View findViewById(int id) {
-		/* TODO: this should probably only search among children, but the id is surely unique anyway? :P */
-		return view_by_id.get(id);
+		if (this.id == id)
+			return this;
+		else
+			return null;
 	}
 
 	public void onDraw(Canvas canvas) {}
@@ -946,7 +945,6 @@ public class View extends Object {
 
 	public void setId(int id) {
 		this.id = id;
-		view_by_id.put(id, this);
 	}
 
 	public void setOnKeyListener(OnKeyListener l) {}

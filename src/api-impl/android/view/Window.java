@@ -28,6 +28,8 @@ public class Window {
 
 	public Window(Window.Callback callback) {
 		this.callback = callback;
+		contentView = new ViewGroup(Context.this_application);
+		contentView.setId(android.R.id.content);
 	}
 
 	public void addFlags(int flags) {}
@@ -66,7 +68,10 @@ public class Window {
 	}
 
 	public View findViewById(int id) {
-		return View.view_by_id.get(id);
+		if (contentView != null)
+			return contentView.findViewById(id);
+		else
+			return null;
 	}
 
 	public View peekDecorView() {
