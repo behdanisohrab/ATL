@@ -1,8 +1,7 @@
 package android.app;
 
 import android.content.Context;
-import android.content.DialogInterface.OnCancelListener;
-import android.content.DialogInterface.OnDismissListener;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,19 +10,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 
-public class Dialog implements Window.Callback {
+public class Dialog implements Window.Callback, DialogInterface {
 	protected long nativePtr;
 
 	private native long nativeInit();
 	private native void nativeSetTitle(long ptr, String title);
 	private native void nativeSetContentView(long ptr, long widget);
 	private native void nativeShow(long ptr);
+	private native void nativeClose(long ptr);
 
 	private Context context;
+	private Window window;
+	private OnDismissListener onDismissListener;
 
 	public Dialog(Context context, int themeResId) {
 		this.context = context;
 		nativePtr = nativeInit();
+		window = new Window(this);
+		window.native_window = nativePtr;
 	}
 
 	public final boolean requestWindowFeature(int featureId) {
@@ -35,7 +39,7 @@ public class Dialog implements Window.Callback {
 	}
 
 	public void setContentView(View view) {
-		nativeSetContentView(nativePtr, view.widget);
+		getWindow().setContentView(view);
 	}
 
 	public void setTitle(CharSequence title) {
@@ -52,14 +56,16 @@ public class Dialog implements Window.Callback {
 
 	public void setOnCancelListener(OnCancelListener onCancelListener) {}
 
-	public void setOnDismissListener(OnDismissListener onDismissListener) {}
+	public void setOnDismissListener(OnDismissListener onDismissListener) {
+		this.onDismissListener = onDismissListener;
+	}
 
 	public void show() {
-		System.out.println("totally showing the Dialog " + this + " right now, most definitely doing that");
-		onCreate(null);
+		System.out.println("showing the Dialog " + this);
 		new Handler(Looper.getMainLooper()).post(new Runnable() {
 			@Override
 			public void run() {
+				onCreate(null);
 				nativeShow(nativePtr);
 			}
 		});
@@ -70,23 +76,21 @@ public class Dialog implements Window.Callback {
 	}
 
 	public void dismiss() {
-		System.out.println("totally dismissing the Dialog " + this + " right now, which was most definitely being shown just a moment ago");
+		System.out.println("dismissing the Dialog " + this);
+		nativeClose(nativePtr);
+		if (onDismissListener != null)
+			onDismissListener.onDismiss(this);
 	}
 
 	public Window getWindow() {
-		return new Window(this) {
-			@Override
-			public void setContentView(View view) {
-				Dialog.this.setContentView(view);
-			}
-		};
+		return window;
 	}
 
 	public void setCanceledOnTouchOutside(boolean cancel) {}
 
 	public class Builder {
 		public Builder(Context context) {
-			System.out.println("making a Dialog$Builder as we speak, my word!");
+			System.out.println("making a Dialog$Builder");
 		}
 	}
 
@@ -121,5 +125,10 @@ public class Dialog implements Window.Callback {
 
 	protected void onCreate (Bundle savedInstanceState) {
 		System.out.println("- onCreate - Dialog!");
+	}
+
+	public void hide() {
+		System.out.println("hiding the Dialog " + this);
+		nativeClose(nativePtr);
 	}
 }

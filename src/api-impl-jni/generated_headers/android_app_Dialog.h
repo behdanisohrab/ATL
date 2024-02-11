@@ -39,6 +39,14 @@ JNIEXPORT void JNICALL Java_android_app_Dialog_nativeSetContentView
 JNIEXPORT void JNICALL Java_android_app_Dialog_nativeShow
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     android_app_Dialog
+ * Method:    nativeClose
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_android_app_Dialog_nativeClose
+  (JNIEnv *, jobject, jlong);
+
 #ifdef __cplusplus
 }
 #endif

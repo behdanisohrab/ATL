@@ -7,8 +7,9 @@
 JNIEXPORT jlong JNICALL Java_android_app_Dialog_nativeInit(JNIEnv *env, jobject this)
 {
 	GtkWidget *dialog = gtk_dialog_new();
+	gtk_window_set_default_size(GTK_WINDOW(dialog), 500, 500);
 	g_signal_connect_swapped(dialog, "response", G_CALLBACK(gtk_window_destroy), dialog);
-	return _INTPTR(dialog);
+	return _INTPTR(g_object_ref(dialog));
 }
 
 JNIEXPORT void JNICALL Java_android_app_Dialog_nativeSetTitle(JNIEnv *env, jobject this, jlong ptr, jstring title)
@@ -31,4 +32,10 @@ JNIEXPORT void JNICALL Java_android_app_Dialog_nativeShow(JNIEnv *env, jobject t
 {
 	GtkWindow *dialog = GTK_WINDOW(_PTR(ptr));
 	gtk_window_present(dialog);
+}
+
+JNIEXPORT void JNICALL Java_android_app_Dialog_nativeClose(JNIEnv *env, jobject this, jlong ptr)
+{
+	GtkWindow *dialog = GTK_WINDOW(_PTR(ptr));
+	gtk_window_close(dialog);
 }

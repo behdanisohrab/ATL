@@ -8,7 +8,10 @@ public interface DialogInterface {
 	/** The identifier for the neutral button. */
 	int BUTTON_NEUTRAL = -3;
 
+	public void dismiss();
+
 	public interface OnDismissListener {
+		void onDismiss(DialogInterface dialog);
 	}
 	public interface OnClickListener {
 		void onClick(DialogInterface dialog, int which);
