@@ -13,13 +13,24 @@ public abstract class AbsListView extends AdapterView {
 		super(context, attributeSet);
 	}
 
+	@Override
+	protected native long native_constructor(Context context, AttributeSet attrs);
+
 	public void setChoiceMode(int choiceMode) {}
 
 	public void setOnScrollListener(OnScrollListener onScrollListener) {}
 
-	public void setAdapter(ListAdapter adapter) {}
+	public native void setAdapter(ListAdapter adapter);
 
-	public void setItemChecked(int position, boolean value) {}
+	public native void setItemChecked(int position, boolean value);
+
+	@Override
+	public native void setOnItemSelectedListener(OnItemSelectedListener listener);
+
+	@Override
+	public native void setOnItemClickListener(OnItemClickListener listener);
+
+	public native int getCheckedItemPosition();
 
 	public interface OnScrollListener {}
 

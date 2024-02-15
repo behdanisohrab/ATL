@@ -91,6 +91,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/android_content_res_AssetManager.c',
                                                                   	'src/api-impl-jni/audio/android_media_AudioTrack.c',
                                                                   	'src/api-impl-jni/audio/android_media_SoundPool.c',
+                                                                  	'src/api-impl-jni/widgets/android_widget_AbsListView.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_Button.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_EditText.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_ImageButton.c',

@@ -2,6 +2,7 @@ package android.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 
 public abstract class AdapterView extends ViewGroup {
@@ -18,6 +19,7 @@ public abstract class AdapterView extends ViewGroup {
 	}
 
 	public interface OnItemClickListener {
+		public void onItemClick(AdapterView parent, View view, int position, long id);
 	}
 
 	public void setAdapter(SpinnerAdapter adapter) {
