@@ -821,6 +821,9 @@ public class View extends Object {
 	private boolean pressed = false;
 	private Drawable background;
 
+	private int minWidth = 0;
+	private int minHeight = 0;
+
 	public View(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
@@ -852,6 +855,12 @@ public class View extends Object {
 			}
 			if (a.hasValue(com.android.internal.R.styleable.View_visibility)) {
 				setVisibility(VISIBILITY_FLAGS[a.getInt(com.android.internal.R.styleable.View_visibility, 0)]);
+			}
+			if (a.hasValue(com.android.internal.R.styleable.View_minWidth)) {
+				minWidth = a.getDimensionPixelSize(com.android.internal.R.styleable.View_minWidth, 0);
+			}
+			if (a.hasValue(com.android.internal.R.styleable.View_minHeight)) {
+				minHeight = a.getDimensionPixelSize(com.android.internal.R.styleable.View_minHeight, 0);
 			}
 		}
 	}
@@ -1152,10 +1161,10 @@ public class View extends Object {
 	}
 
 	protected int getSuggestedMinimumHeight() {
-		return 10;
+		return getMinimumHeight();
 	}
 	protected int getSuggestedMinimumWidth() {
-		return 10;
+		return getMinimumWidth();
 	}
 
 	/**
@@ -1310,8 +1319,12 @@ public class View extends Object {
 
 	public void sendAccessibilityEvent(int eventType) {}
 
-	public void setMinimumHeight(int minHeight) {}
-	public void setMinimumWidth(int minWidth) {}
+	public void setMinimumHeight(int minHeight) {
+		this.minHeight = minHeight;
+	}
+	public void setMinimumWidth(int minWidth) {
+		this.minWidth = minWidth;
+	}
 
 	public void setActivated (boolean activated) {}
 
@@ -1512,8 +1525,8 @@ public class View extends Object {
 
 	public View findFocus() {return this;}
 
-	public int getMinimumHeight() {return getSuggestedMinimumHeight();}
-	public int getMinimumWidth() {return getSuggestedMinimumWidth();}
+	public int getMinimumHeight() {return minHeight;}
+	public int getMinimumWidth() {return minWidth;}
 
 	public boolean isNestedScrollingEnabled() {return true;}
 
