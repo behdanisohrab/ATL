@@ -13,6 +13,4 @@ public class Switch extends CompoundButton {
 		super(context, attributeSet);
 	}
 
-	public void setChecked(boolean checked) {}
-
 }

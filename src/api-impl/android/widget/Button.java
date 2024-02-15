@@ -26,7 +26,7 @@ public class Button extends TextView {
 	protected native void native_setOnClickListener(long widget, OnClickListener l);
 
 	@Override
-	public final void setText(CharSequence text) {
+	public void setText(CharSequence text) {
 		native_setText(widget, String.valueOf(text));
 	}
 
