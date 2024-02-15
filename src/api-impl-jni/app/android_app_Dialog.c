@@ -2,13 +2,24 @@
 #include <jni.h>
 
 #include "../defines.h"
+#include "../util.h"
 #include "../generated_headers/android_app_Dialog.h"
+
+static gboolean on_close_request(GtkWidget *dialog, jobject jobj)
+{
+	printf("on_close_request\n");
+	JNIEnv *env = get_jni_env();
+	jmethodID dismiss = _METHOD(_CLASS(jobj), "dismiss", "()V");
+	(*env)->CallVoidMethod(env, jobj, dismiss);
+	return FALSE;
+}
 
 JNIEXPORT jlong JNICALL Java_android_app_Dialog_nativeInit(JNIEnv *env, jobject this)
 {
 	GtkWidget *dialog = gtk_dialog_new();
 	gtk_window_set_default_size(GTK_WINDOW(dialog), 500, 500);
 	g_signal_connect_swapped(dialog, "response", G_CALLBACK(gtk_window_destroy), dialog);
+	g_signal_connect(GTK_WINDOW(dialog), "close-request", G_CALLBACK(on_close_request), _REF(this));
 	return _INTPTR(g_object_ref(dialog));
 }
 
