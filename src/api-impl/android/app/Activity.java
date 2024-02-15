@@ -394,6 +394,10 @@ public class Activity extends ContextWrapper implements Window.Callback {
 
 	public void unregisterReceiver(BroadcastReceiver receiver) {}
 
+	public Intent getParentActivityIntent() {
+		return null;
+	}
+
 	private native void nativeFinish(long native_window);
 	public static native void nativeStartActivity(Activity activity);
 	public static native void nativeOpenURI(String uri);
