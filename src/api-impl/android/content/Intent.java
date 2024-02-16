@@ -272,4 +272,10 @@ public class Intent {
 	public static Intent createChooser(Intent target, CharSequence title) {
 		return target;
 	}
+
+	public Intent setDataAndType(Uri uri, String type) {
+		this.data = uri;
+		this.type = type;
+		return this;
+	}
 }
