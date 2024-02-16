@@ -203,4 +203,8 @@ public class TextView extends View {
 	public int getCurrentTextColor() {return 0;}
 
 	public void setSingleLine(boolean singleLine) {}
+
+	public int getCompoundPaddingLeft() {return 0;}
+
+	public int getCompoundPaddingRight() {return 0;}
 }

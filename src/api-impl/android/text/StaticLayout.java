@@ -1,5 +1,7 @@
 package android.text;
 
+import android.graphics.Canvas;
+
 public class StaticLayout extends Layout {
 
 	private CharSequence text;
@@ -16,4 +18,16 @@ public class StaticLayout extends Layout {
 	public CharSequence getText() {
 		return text;
 	}
+
+	public int getWidth() {
+		return 200;  // arbitrary value for stub method
+	}
+
+	public int getHeight() {
+		return 50;  // arbitrary value for stub method
+	}
+
+	public float getLineLeft(int line) {return 0;}
+
+	public void draw(Canvas canvas) {}
 }
