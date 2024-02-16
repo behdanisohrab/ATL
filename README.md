@@ -10,10 +10,10 @@ dependencies you might have to build from source:
 (can also use the prebuilt in https://www.nuget.org/api/v2/package/SkiaSharp.NativeAssets.Linux/2.88.5 if it's compatible with your distro)
 
 some apps depend on the following (though the translation layer itself currently does not):
-- https://gitlab.com/Mis012/libopensles-standalone/
+- https://gitlab.com/android_translation_layer/libopensles-standalone/
 
 build instructions:  
-1. compile and install https://gitlab.com/Mis012/dalvik_standalone (art branch) (you can run it from builddir, but it requires some additional env variables)
+1. compile and install https://gitlab.com/android_translation_layer/dalvik_standalone (art branch) (you can run it from builddir, but it requires some additional env variables)
 2. `mkdir builddir`
 3. `meson builddir`
 4. `ninja -C builddir`
@@ -31,9 +31,9 @@ to install:
 `meson install`  
 
 to run after installataion:  
-`ANDROID_APP_DATA_DIR=[data dir] android-translation-layer [path to apk] -l [activity to launch]`  
+`ANDROID_APP_DATA_DIR=[data dir] android-translation-layer [path to apk] [-l activity to launch]`  
 or just  
-`android-translation-layer [path to apk] -l [activity to launch]`  
+`android-translation-layer [path to apk] [-l activity to launch]`  
 to use the default data dir of `~/.local/share/android_translation_layer/`
 
 NOTE: some apps don't like runtime changes to resolution.  
@@ -62,7 +62,7 @@ so we can help you out and possibly write more documentation.
 
 screenshot:
 
-![angry birds 3.2.0, Worms 2 Armageddon, and gravity defied running side by side by side](https://gitlab.com/Mis012/android_translation_layer_PoC/-/raw/master/screenshot_2.png)
+![angry birds 3.2.0, Worms 2 Armageddon, and gravity defied running side by side by side](https://gitlab.com/android_translation_layer/android_translation_layer/-/raw/master/screenshot_2.png)
 
 ##### Roadmap:
 
