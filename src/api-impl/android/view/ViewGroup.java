@@ -102,6 +102,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	public void detachViewFromParent(int index) {
+		removeViewAt(index);
 	}
 
 	public void attachViewToParent(View view, int index, LayoutParams params) {
@@ -109,7 +110,6 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	protected void removeDetachedView(View child, boolean animate) {
-		removeView(child);
 	}
 
 	protected native void native_addView(long widget, long child, int index, LayoutParams params);
