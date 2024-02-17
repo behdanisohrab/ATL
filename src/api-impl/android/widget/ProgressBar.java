@@ -11,12 +11,17 @@ public class ProgressBar extends View {
 	private int max = 100;
 	private int progress = 0;
 
+	public ProgressBar(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		haveComplexMeasure = true;
+	}
+
 	public ProgressBar(Context context, AttributeSet attrs) {
-		super(context, attrs);
+		this(context, attrs, 0);
 	}
 
 	public ProgressBar(Context context) {
-		super(context);
+		this(context, null, 0);
 	}
 
 	@Override
