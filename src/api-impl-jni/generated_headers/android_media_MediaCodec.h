@@ -63,6 +63,14 @@ JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1dequeueOutputBuffer
 JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1releaseOutputBuffer
   (JNIEnv *, jobject, jlong, jobject, jboolean);
 
+/*
+ * Class:     android_media_MediaCodec
+ * Method:    native_release
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1release
+  (JNIEnv *, jobject, jlong);
+
 #ifdef __cplusplus
 }
 #endif

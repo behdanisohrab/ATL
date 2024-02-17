@@ -92,6 +92,7 @@ public class AudioTrack {
 
 	public void release() {
 		System.out.println("calling release(), how did this not get reported before DIDREEEEEEEEEEEEEEEEEEEEEEEEE\n");
+		native_release();
 	}
 
 	public int getState() {
@@ -136,4 +137,5 @@ public class AudioTrack {
 	public native void native_play();
 	public native void native_pause();
 	private native int native_write(byte[] audioData, int offsetInBytes, int sizeInBytes);
+	public native void native_release();
 }

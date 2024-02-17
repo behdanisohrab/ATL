@@ -128,6 +128,11 @@ public class MediaCodec {
 		System.out.println("MediaCodec.setVideoScalingMode(" + mode + "): codecName=" + codecName);
 	}
 
+	public void release() {
+		System.out.println("MediaCodec.release(): codecName=" + codecName);
+		native_release(native_codec);
+	}
+
 	private native long native_constructor(String codecName);
 	private native void native_configure_audio(long codec, ByteBuffer extradata, int sampleRate, int channelCount);
 	private native void native_configure_video(long codec, ByteBuffer csd0, ByteBuffer csd1, Surface surface);
@@ -135,6 +140,7 @@ public class MediaCodec {
 	private native int native_queueInputBuffer(long codec, ByteBuffer buffer, long presentationTimeUs);
 	private native int native_dequeueOutputBuffer(long codec, ByteBuffer buffer, BufferInfo info);
 	private native void native_releaseOutputBuffer(long codec, ByteBuffer buffer, boolean render);
+	private native void native_release(long codec);
 
 	public static final class CryptoInfo {}
 

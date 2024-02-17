@@ -481,3 +481,10 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1releaseOutputBuffer
 		g_idle_add(render_frame, data);
 	}
 }
+
+JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1release(JNIEnv *env, jobject this, jlong codec)
+{
+	struct ATL_codec_context *ctx = _PTR(codec);
+	avcodec_free_context(&ctx->codec);
+	free(ctx);
+}

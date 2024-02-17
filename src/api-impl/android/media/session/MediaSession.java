@@ -39,4 +39,6 @@ public class MediaSession {
 	public void setMetadata(MediaMetadata metadata) {}
 
 	public void setQueue(List<QueueItem> queue) {}
+
+	public void release() {}
 }
