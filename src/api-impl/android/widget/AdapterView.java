@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 
 public abstract class AdapterView extends ViewGroup {
 
+	private Adapter adapter;
+
 	public AdapterView(Context context) {
 		super(context);
 	}
@@ -22,7 +24,8 @@ public abstract class AdapterView extends ViewGroup {
 		public void onItemClick(AdapterView parent, View view, int position, long id);
 	}
 
-	public void setAdapter(SpinnerAdapter adapter) {
+	public void setAdapter(Adapter adapter) {
+		this.adapter = adapter;
 	}
 
 	public void setSelection(int i) {
@@ -33,4 +36,8 @@ public abstract class AdapterView extends ViewGroup {
 	public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {}
 
 	public void setSelection(int position, boolean animate) {}
+
+	public Adapter getAdapter() {
+		return adapter;
+	}
 }

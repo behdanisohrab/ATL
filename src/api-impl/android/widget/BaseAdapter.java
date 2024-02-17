@@ -27,7 +27,7 @@ import android.view.ViewGroup;
  * {@link ListAdapter} interface} and {@link Spinner} (by implementing the
  * specialized {@link SpinnerAdapter} interface.
  */
-public abstract class BaseAdapter implements /*ListAdapter,*/ SpinnerAdapter {
+public abstract class BaseAdapter implements ListAdapter, SpinnerAdapter {
 	private final DataSetObservable mDataSetObservable = new DataSetObservable();
 	public boolean hasStableIds() {
 		return false;

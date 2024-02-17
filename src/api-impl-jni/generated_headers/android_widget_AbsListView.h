@@ -209,11 +209,11 @@ JNIEXPORT jlong JNICALL Java_android_widget_AbsListView_native_1constructor
 
 /*
  * Class:     android_widget_AbsListView
- * Method:    setAdapter
- * Signature: (Landroid/widget/ListAdapter;)V
+ * Method:    native_setAdapter
+ * Signature: (JLandroid/widget/ListAdapter;)V
  */
-JNIEXPORT void JNICALL Java_android_widget_AbsListView_setAdapter
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT void JNICALL Java_android_widget_AbsListView_native_1setAdapter
+  (JNIEnv *, jobject, jlong, jobject);
 
 /*
  * Class:     android_widget_AbsListView

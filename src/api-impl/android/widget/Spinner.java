@@ -13,4 +13,8 @@ public class Spinner extends AbsSpinner {
 		super(context, attributeSet);
 	}
 
+	public void setAdapter(SpinnerAdapter adapter) {
+		super.setAdapter(adapter);
+	}
+
 }

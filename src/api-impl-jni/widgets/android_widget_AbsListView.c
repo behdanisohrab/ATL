@@ -104,10 +104,14 @@ JNIEXPORT jlong JNICALL Java_android_widget_AbsListView_native_1constructor(JNIE
 	return _INTPTR(scrolled_window);
 }
 
-JNIEXPORT void JNICALL Java_android_widget_AbsListView_setAdapter(JNIEnv *env, jobject this, jobject adapter)
+JNIEXPORT void JNICALL Java_android_widget_AbsListView_native_1setAdapter(JNIEnv *env, jobject this, jlong widget_ptr, jobject adapter)
 {
-	GtkScrolledWindow *scrolled_window = GTK_SCROLLED_WINDOW(_PTR(_GET_LONG_FIELD(this, "widget")));
+	GtkScrolledWindow *scrolled_window = GTK_SCROLLED_WINDOW(_PTR(widget_ptr));
 	GtkListView *list_view = GTK_LIST_VIEW(gtk_scrolled_window_get_child(scrolled_window));
+	if (!adapter) {
+		gtk_list_view_set_model(list_view, NULL);
+		return;
+	}
 	RangeListModel *model = g_object_new(range_list_model_get_type(), NULL);
 	model->list_view = list_view;
 	model->jobject = _REF(this);
