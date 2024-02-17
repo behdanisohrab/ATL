@@ -14,6 +14,7 @@ struct _RangeListModel {
 	GtkListView *list_view;
 	jobject jobject;
 	jobject adapter;
+	guint n_items;
 };
 G_DECLARE_FINAL_TYPE(RangeListModel, range_list_model, RANGE, LIST_MODEL, GObject)
 static void range_list_model_init(RangeListModel *list_model) {}
@@ -21,9 +22,7 @@ static void range_list_model_class_init(RangeListModelClass *class) {}
 
 static guint range_list_model_get_n_items(GListModel *list_model)
 {
-	JNIEnv *env = get_jni_env();
-	RangeListModel *range_list_model = RANGE_LIST_MODEL(list_model);
-	return (*env)->CallIntMethod(env, range_list_model->adapter, _METHOD(_CLASS(range_list_model->adapter), "getCount", "()I"));
+	return (RANGE_LIST_MODEL(list_model))->n_items;
 }
 
 static gpointer range_list_model_get_item(GListModel *list_model, guint index)
@@ -65,6 +64,11 @@ static void bind_listitem_cb(GtkListItemFactory *factory, GtkListItem *list_item
 	guint index = gtk_list_item_get_position(list_item);
 	WrapperWidget *wrapper = WRAPPER_WIDGET(gtk_list_item_get_child(list_item));
 	RangeListModel *model = RANGE_LIST_MODEL(gtk_list_item_get_item(list_item));
+	int n_items = g_list_model_get_n_items(G_LIST_MODEL(model));
+	if (index >= n_items) {
+		printf("invalid index: %d >= %d\n", index, n_items);
+		exit(0);
+	}
 	jmethodID getView = _METHOD(_CLASS(model->adapter), "getView", "(ILandroid/view/View;Landroid/view/ViewGroup;)Landroid/view/View;");
 	jobject view = (*env)->CallObjectMethod(env, model->adapter, getView, index, wrapper ? wrapper->jobj : NULL, model->jobject);
 	view = _REF(view);
@@ -92,7 +96,10 @@ JNIEXPORT jlong JNICALL Java_android_widget_AbsListView_native_1constructor(JNIE
 	GtkListItemFactory *factory = gtk_signal_list_item_factory_new();
 	g_signal_connect(factory, "bind", G_CALLBACK(bind_listitem_cb), NULL);
 	g_signal_connect(factory, "unbind", G_CALLBACK(unbind_listitem_cb), NULL);
-	GtkWidget *list_view = gtk_list_view_new(NULL, factory);
+	RangeListModel *model = g_object_new(range_list_model_get_type(), NULL);
+	GtkWidget *list_view = gtk_list_view_new(GTK_SELECTION_MODEL(gtk_single_selection_new(G_LIST_MODEL(model))), factory);
+	model->list_view = GTK_LIST_VIEW(list_view);
+	model->jobject = _REF(this);
 	GtkWidget *scrolled_window = gtk_scrolled_window_new();
 	gtk_scrolled_window_set_propagate_natural_height(GTK_SCROLLED_WINDOW(scrolled_window), TRUE);
 	gtk_scrolled_window_set_propagate_natural_width(GTK_SCROLLED_WINDOW(scrolled_window), TRUE);
@@ -108,15 +115,14 @@ JNIEXPORT void JNICALL Java_android_widget_AbsListView_native_1setAdapter(JNIEnv
 {
 	GtkScrolledWindow *scrolled_window = GTK_SCROLLED_WINDOW(_PTR(widget_ptr));
 	GtkListView *list_view = GTK_LIST_VIEW(gtk_scrolled_window_get_child(scrolled_window));
-	if (!adapter) {
-		gtk_list_view_set_model(list_view, NULL);
-		return;
-	}
-	RangeListModel *model = g_object_new(range_list_model_get_type(), NULL);
-	model->list_view = list_view;
-	model->jobject = _REF(this);
-	model->adapter = _REF(adapter);
-	gtk_list_view_set_model(list_view, GTK_SELECTION_MODEL(gtk_single_selection_new(G_LIST_MODEL(model))));
+	RangeListModel *model = RANGE_LIST_MODEL(gtk_single_selection_get_model(GTK_SINGLE_SELECTION(gtk_list_view_get_model(list_view))));
+
+	if (model->adapter)
+		_UNREF(model->adapter);
+	model->adapter = adapter ? _REF(adapter) : NULL;
+	guint old_n_items = model->n_items;
+	model->n_items = adapter ? (*env)->CallIntMethod(env, adapter, _METHOD(_CLASS(adapter), "getCount", "()I")) : 0;
+	g_list_model_items_changed(G_LIST_MODEL(model), 0, old_n_items, model->n_items);
 }
 
 JNIEXPORT void JNICALL Java_android_widget_AbsListView_setItemChecked(JNIEnv *env, jobject this, jint position, jboolean checked)

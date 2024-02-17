@@ -17,6 +17,10 @@ public abstract class AdapterView extends ViewGroup {
 		super(context, attributeSet);
 	}
 
+	public AdapterView(Context context, AttributeSet attributeSet, int defStyle) {
+		super(context, attributeSet, defStyle);
+	}
+
 	public interface OnItemSelectedListener {
 	}
 
