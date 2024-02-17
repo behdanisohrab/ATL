@@ -12,5 +12,4 @@ public class RippleDrawable extends Drawable {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Unimplemented method 'draw'");
 	}
-	
 }

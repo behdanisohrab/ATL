@@ -11,5 +11,5 @@ public class ColorDrawable extends Drawable {
 	public int getColor() {
 		return color;
 	}
-	
+
 }

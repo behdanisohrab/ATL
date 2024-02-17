@@ -43,7 +43,7 @@ public class Drawable {
 	public ConstantState getConstantState() {
 		return null;
 	}
-	
+
 	public abstract class ConstantState {
 
 		public abstract Drawable newDrawable(Resources res);
@@ -131,6 +131,9 @@ public class Drawable {
 			return drawable;
 		} else if ("transition".equals(parser.getName())) {
 			return new Drawable();
+		} else if ("ripple".equals(parser.getName())) {
+			// FIXME: the non-pressed state of RippleDrawable should be equivalent to this
+			return new ColorDrawable(0);
 		}
 		return null;
 	}
