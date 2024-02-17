@@ -1497,6 +1497,10 @@ public class View extends Object {
 		post(action);
 	}
 
+	public void postOnAnimationDelayed(Runnable action, long delayMillis) {
+		postDelayed(action, delayMillis);
+	}
+
 	public void setHorizontalScrollBarEnabled(boolean enabled) {}
 
 	public void postInvalidateOnAnimation() {
@@ -1613,4 +1617,10 @@ public class View extends Object {
 	public int getMeasuredWidthAndState() {
 		return measuredWidth;
 	}
+
+	public void forceLayout() {
+		requestLayout();
+	}
+
+	public void removeOnAttachStateChangeListener(OnAttachStateChangeListener listener) {}
 }

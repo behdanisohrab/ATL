@@ -18,6 +18,8 @@ public class Window {
 		public boolean onMenuItemSelected(int featureId, MenuItem item);
 
 		public void onPanelClosed(int featureId, Menu menu);
+
+		public boolean onMenuOpened(int featureId, Menu menu);
 	}
 
 	// FIXME private

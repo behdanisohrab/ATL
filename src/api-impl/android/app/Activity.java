@@ -398,6 +398,12 @@ public class Activity extends ContextWrapper implements Window.Callback {
 		return null;
 	}
 
+	@Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		System.out.println("onMenuOpened(" + featureId + ", " + menu + ") called");
+		return false;
+	}
+
 	private native void nativeFinish(long native_window);
 	public static native void nativeStartActivity(Activity activity);
 	public static native void nativeOpenURI(String uri);

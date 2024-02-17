@@ -28,6 +28,8 @@ public class MediaSession {
 
 	public void setCallback(Callback callback, Handler handler) {}
 
+	public void setCallback(Callback callback) {}
+
 	public void setMediaButtonReceiver(PendingIntent pendingIntent)	{}
 
 	public void setActive(boolean active) {}

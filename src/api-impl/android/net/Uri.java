@@ -2,6 +2,8 @@ package android.net;
 
 import java.net.URI;
 import libcore.net.UriCodec;
+
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
@@ -159,5 +161,16 @@ public class Uri {
 	@Override
 	public String toString() {
 		return String.valueOf(uri);
+	}
+
+	public static Uri fromFile(File file) {
+		Uri ret = new Uri();
+		ret.uri = file.toURI();
+		return ret;
+	}
+
+	public String getLastPathSegment() {
+		String[] segments = uri.getPath().split("/");
+		return segments[segments.length - 1];
 	}
 }

@@ -207,4 +207,6 @@ public class TextView extends View {
 	public int getCompoundPaddingLeft() {return 0;}
 
 	public int getCompoundPaddingRight() {return 0;}
+
+	public void setHint(int resId) {}
 }

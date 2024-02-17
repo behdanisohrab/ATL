@@ -123,6 +123,12 @@ public class Dialog implements Window.Callback, DialogInterface {
 		throw new UnsupportedOperationException("Unimplemented method 'onPanelClosed'");
 	}
 
+	@Override
+	public boolean onMenuOpened(int featureId, Menu menu) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'onMenuOpened'");
+	}
+
 	protected void onCreate (Bundle savedInstanceState) {
 		System.out.println("- onCreate - Dialog!");
 	}

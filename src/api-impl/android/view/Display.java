@@ -59,4 +59,8 @@ public final class Display {
 	public void getSize(Point size) {
 		size.set(getWidth(), getHeight());
 	}
+
+	public void getRealSize(Point size) {
+		getSize(size);
+	}
 }

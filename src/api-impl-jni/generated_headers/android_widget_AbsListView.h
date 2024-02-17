@@ -225,14 +225,6 @@ JNIEXPORT void JNICALL Java_android_widget_AbsListView_setItemChecked
 
 /*
  * Class:     android_widget_AbsListView
- * Method:    setOnItemSelectedListener
- * Signature: (Landroid/widget/AdapterView/OnItemSelectedListener;)V
- */
-JNIEXPORT void JNICALL Java_android_widget_AbsListView_setOnItemSelectedListener
-  (JNIEnv *, jobject, jobject);
-
-/*
- * Class:     android_widget_AbsListView
  * Method:    setOnItemClickListener
  * Signature: (Landroid/widget/AdapterView/OnItemClickListener;)V
  */

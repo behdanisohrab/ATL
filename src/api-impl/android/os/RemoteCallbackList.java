@@ -7,4 +7,6 @@ public class RemoteCallbackList {
 	}
 
 	public void finishBroadcast() {}
+
+	public void kill() {}
 }

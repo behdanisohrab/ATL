@@ -412,6 +412,7 @@ hax_jar = jar('hax', [
               	'android/widget/EditText.java',
               	'android/widget/Filter.java',
               	'android/widget/FrameLayout.java',
+              	'android/widget/HeaderViewListAdapter.java',
               	'android/widget/HorizontalScrollView.java',
               	'android/widget/ImageButton.java',
               	'android/widget/ImageView.java',
