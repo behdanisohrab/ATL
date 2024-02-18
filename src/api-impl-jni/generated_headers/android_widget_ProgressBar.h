@@ -215,6 +215,14 @@ JNIEXPORT jlong JNICALL Java_android_widget_ProgressBar_native_1constructor
 JNIEXPORT void JNICALL Java_android_widget_ProgressBar_native_1setProgress
   (JNIEnv *, jobject, jlong, jfloat);
 
+/*
+ * Class:     android_widget_ProgressBar
+ * Method:    setIndeterminate
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_android_widget_ProgressBar_setIndeterminate
+  (JNIEnv *, jobject, jboolean);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,6 +1,7 @@
 package android.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -14,6 +15,9 @@ public class ProgressBar extends View {
 	public ProgressBar(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		haveComplexMeasure = true;
+		TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.ProgressBar, defStyle, 0);
+		setIndeterminate(a.getBoolean(com.android.internal.R.styleable.ProgressBar_indeterminate, false));
+		a.recycle();
 	}
 
 	public ProgressBar(Context context, AttributeSet attrs) {
@@ -28,7 +32,7 @@ public class ProgressBar extends View {
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	private native void native_setProgress(long widget, float fraction);
 
-	public synchronized void setIndeterminate(boolean indeterminate) {}
+	public native void setIndeterminate(boolean indeterminate);
 
 	public Drawable getProgressDrawable() {
 		return new Drawable() {
