@@ -404,7 +404,24 @@ public class Activity extends ContextWrapper implements Window.Callback {
 		return false;
 	}
 
+	public void recreate() {
+		try {
+			/* TODO: check if this is a toplevel activity */
+			Class<? extends Activity> cls = this.getClass();
+			Constructor<? extends Activity> constructor = cls.getConstructor();
+			Activity activity = constructor.newInstance();
+			activity.getWindow().native_window = getWindow().native_window;
+			System.out.println("activity.getWindow().native_window >"+activity.getWindow().native_window+"<");
+			nativeFinish(0);
+			nativeRecreateActivity(activity);
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			System.out.println("exception in Activity.recreate, this is kinda sus");
+			e.printStackTrace();
+		}
+	}
+
 	private native void nativeFinish(long native_window);
+	public static native void nativeRecreateActivity(Activity activity);
 	public static native void nativeStartActivity(Activity activity);
 	public static native void nativeOpenURI(String uri);
 	public static native void nativeShare(String text);
