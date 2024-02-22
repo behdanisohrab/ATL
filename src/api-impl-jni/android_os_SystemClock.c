@@ -8,12 +8,12 @@ JNIEXPORT jlong JNICALL Java_android_os_SystemClock_elapsedRealtime(JNIEnv *env,
 	struct timespec t;
 	clock_gettime(CLOCK_BOOTTIME, &t);
 	jlong ret = t.tv_sec * 1000 + lround(t.tv_nsec / 1e6);
-    return ret;
+	return ret;
 }
 
 JNIEXPORT jlong JNICALL Java_android_os_SystemClock_uptimeMillis(JNIEnv *env, jclass this)
 {
-    struct timespec t;
-    clock_gettime(CLOCK_REALTIME, &t);
-    return t.tv_sec * 1000 + lround(t.tv_nsec / 1e6);
+	struct timespec now;
+	clock_gettime(CLOCK_MONOTONIC, &now);
+	return now.tv_sec * 1000 + lround(now.tv_nsec / 1e6);
 }
