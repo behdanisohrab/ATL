@@ -21,11 +21,13 @@ build instructions:
 then, to run from builddir:  
 `cd builddir`  
 and  
-`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ./android-translation-layer ../test_apks/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity`  
+`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ./android-translation-layer /path/to/test_apks/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity`  
 (for an example of a full game working that can be distributed along this)
 or  
-`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ./android-translation-layer ../test_apks/gles3jni.apk -l com/android/gles3jni/GLES3JNIActivity`  
+`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ./android-translation-layer path/to/test_apks/gles3jni.apk -l com/android/gles3jni/GLES3JNIActivity`  
 (for a sample app using OpenGL from native code to do it's rendering)  
+
+the test apks are available at https://gitlab.com/android_translation_layer/atl_test_apks
 
 to install:  
 `meson install`  
