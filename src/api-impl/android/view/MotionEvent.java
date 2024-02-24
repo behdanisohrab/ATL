@@ -1547,6 +1547,9 @@ public final class MotionEvent extends InputEvent {
 //							 0, 0, xPrecision, yPrecision,
 //							 downTime * NS_PER_MS, eventTime * NS_PER_MS,
 //							 1, pp, pc);
+			ev.action = action;
+			ev.coord_x = x;
+			ev.coord_y = y;
 			return ev;
 		}
 	}
@@ -2693,7 +2696,8 @@ public final class MotionEvent extends InputEvent {
 	 * @see #EDGE_BOTTOM
 	 */
 	public final int getEdgeFlags() {
-		return nativeGetEdgeFlags(mNativePtr);
+		// return nativeGetEdgeFlags(mNativePtr);
+		return 0;
 	}
 
 	/**

@@ -1623,4 +1623,16 @@ public class View extends Object {
 	}
 
 	public void removeOnAttachStateChangeListener(OnAttachStateChangeListener listener) {}
+
+	public boolean onInterceptTouchEvent(MotionEvent event) {return false;}
+
+	public boolean dispatchTouchEvent(MotionEvent event) {return false;}
+
+	public boolean canScrollHorizontally(int direction) {return false;}
+
+	protected native boolean native_getGlobalVisibleRect(long widget, Rect visibleRect);
+
+	public boolean getGlobalVisibleRect(Rect visibleRect) {
+		return native_getGlobalVisibleRect(widget, visibleRect);
+	}
 }

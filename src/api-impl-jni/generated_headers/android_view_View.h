@@ -311,6 +311,14 @@ JNIEXPORT void JNICALL Java_android_view_View_setBackgroundColor
 JNIEXPORT void JNICALL Java_android_view_View_native_1setVisibility
   (JNIEnv *, jobject, jlong, jint, jfloat);
 
+/*
+ * Class:     android_view_View
+ * Method:    native_getGlobalVisibleRect
+ * Signature: (JLandroid/graphics/Rect;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_android_view_View_native_1getGlobalVisibleRect
+  (JNIEnv *, jobject, jlong, jobject);
+
 #ifdef __cplusplus
 }
 #endif

@@ -11,6 +11,7 @@ public class VelocityTracker {
 	public void recycle() {}
 
 	public void computeCurrentVelocity(int units, float maxVelocity) {}
+	public void computeCurrentVelocity(int units) {}
 
 	public float getXVelocity(int id) {return 0.f;}
 	public float getYVelocity(int id) {return 0.f;}
