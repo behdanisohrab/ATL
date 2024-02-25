@@ -1494,10 +1494,12 @@ public class View extends Object {
 	public boolean isLaidOut() {return true;}
 
 	public void postOnAnimation(Runnable action) {
-		post(action);
+		postDelayed(action, 1000 / 60);
 	}
 
 	public void postOnAnimationDelayed(Runnable action, long delayMillis) {
+		if (delayMillis < 1000 / 60)
+			delayMillis = 1000 / 60;
 		postDelayed(action, delayMillis);
 	}
 
