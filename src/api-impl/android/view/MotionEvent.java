@@ -1369,15 +1369,17 @@ public final class MotionEvent extends InputEvent {
 	int action;
 	float coord_x;
 	float coord_y;
+	long eventTime;
 
 	private MotionEvent() {
 	}
 
-	public MotionEvent(int source, int action, float coord_x, float coord_y) {
+	public MotionEvent(int source, int action, float coord_x, float coord_y, long eventTime) {
 		this.source = source;
 		this.action = action;
 		this.coord_x = coord_x;
 		this.coord_y = coord_y;
+		this.eventTime = eventTime;
 	}
 
 	@Override
@@ -1550,6 +1552,7 @@ public final class MotionEvent extends InputEvent {
 			ev.action = action;
 			ev.coord_x = x;
 			ev.coord_y = y;
+			ev.eventTime = eventTime;
 			return ev;
 		}
 	}
@@ -1816,7 +1819,7 @@ public final class MotionEvent extends InputEvent {
 	 */
 	@Override
 	public final long getEventTime() {
-		return System.currentTimeMillis();
+		return eventTime;
 	}
 
 	/**
@@ -1835,7 +1838,7 @@ public final class MotionEvent extends InputEvent {
 	 */
 	@Override
 	public final long getEventTimeNano() {
-		return System.currentTimeMillis() * 1000; // FIXME
+		return eventTime * 1000; // FIXME
 	}
 
 	/**
@@ -3030,7 +3033,7 @@ public final class MotionEvent extends InputEvent {
 		msg.append(", edgeFlags=0x").append(/*Integer.toHexString(getEdgeFlags())*/ "FIXME");
 		msg.append(", pointerCount=").append(pointerCount);
 		msg.append(", historySize=").append(/*getHistorySize()*/ "FIXME");
-		msg.append(", eventTime=").append(/*getEventTime()*/ "FIXME");
+		msg.append(", eventTime=").append(getEventTime());
 		msg.append(", downTime=").append(/*getDownTime()*/ "FIXME");
 		msg.append(", deviceId=").append(getDeviceId());
 		msg.append(", source=0x").append(Integer.toHexString(getSource()));

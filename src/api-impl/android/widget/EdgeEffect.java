@@ -19,5 +19,6 @@ public class EdgeEffect extends View {
 	public void onPull(float deltaDistance, float displacement) {}
 	public boolean isFinished() {return true;}
 	public void onRelease() {}
+	public void onAbsorb(int velocity) {}
 
 }

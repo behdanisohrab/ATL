@@ -13,13 +13,13 @@
 
 struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; bool intercepted; };
 
-static bool call_ontouch_callback(int action, double x, double y, struct touch_callback_data *d, GtkPropagationPhase phase)
+static bool call_ontouch_callback(int action, double x, double y, struct touch_callback_data *d, GtkPropagationPhase phase, guint32 timestamp)
 {
 	bool ret;
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_TOUCHSCREEN, action, (float)x, (float)y);
+	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_TOUCHSCREEN, action, (float)x, (float)y, (long)timestamp);
 
 	if (phase == GTK_PHASE_CAPTURE && !d->intercepted) {
 		d->intercepted = (*env)->CallBooleanMethod(env, d->this, handle_cache.view.onInterceptTouchEvent, motion_event);
@@ -56,25 +56,26 @@ static gboolean on_event(GtkEventControllerLegacy *event_controller, GdkEvent *e
 
 	GtkWidget *widget = gtk_event_controller_get_widget(GTK_EVENT_CONTROLLER(event_controller));
 	GtkPropagationPhase phase = gtk_event_controller_get_propagation_phase(GTK_EVENT_CONTROLLER(event_controller));
+	guint32 timestamp = gdk_event_get_time(event);
 
 	// TODO: this doesn't work for multitouch
 	switch(gdk_event_get_event_type(event)) {
 		case GDK_BUTTON_PRESS:
 		case GDK_TOUCH_BEGIN:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
-			return call_ontouch_callback(MOTION_EVENT_ACTION_DOWN, x, y, d, phase);
+			return call_ontouch_callback(MOTION_EVENT_ACTION_DOWN, x, y, d, phase, timestamp);
 			break;
 		case GDK_BUTTON_RELEASE:
 		case GDK_TOUCH_END:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
-			return call_ontouch_callback(MOTION_EVENT_ACTION_UP, x, y, d, phase);
+			return call_ontouch_callback(MOTION_EVENT_ACTION_UP, x, y, d, phase, timestamp);
 			break;
 		case GDK_MOTION_NOTIFY:
 			if (!(gdk_event_get_modifier_state(event) & GDK_BUTTON1_MASK))
 				break;
 		case GDK_TOUCH_UPDATE:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
-			return call_ontouch_callback(MOTION_EVENT_ACTION_MOVE, x, y, d, phase);
+			return call_ontouch_callback(MOTION_EVENT_ACTION_MOVE, x, y, d, phase, timestamp);
 			break;
 		default:
 			break;
@@ -107,7 +108,7 @@ static gboolean scroll_cb(GtkEventControllerScroll* self, gdouble dx, gdouble dy
 		dx /= MAGIC_SCROLL_FACTOR;
 		dy /= MAGIC_SCROLL_FACTOR;
 	}
-	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_CLASS_POINTER, MOTION_EVENT_ACTION_SCROLL, dx, -dy);
+	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_CLASS_POINTER, MOTION_EVENT_ACTION_SCROLL, dx, -dy, (long)0);
 
 	gboolean ret = (*env)->CallBooleanMethod(env, this, handle_cache.view.onGenericMotionEvent, motion_event);
 	if((*env)->ExceptionCheck(env))

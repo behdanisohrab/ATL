@@ -2,6 +2,9 @@ package android.view;
 
 import android.content.Context;
 
+/**
+ * default values are mainly based on AOSPs defaults. Does not account for scaling yet.
+ */
 public class ViewConfiguration {
 	
 	public static ViewConfiguration get(Context context) {
@@ -9,15 +12,15 @@ public class ViewConfiguration {
 	}
 
 	public int getScaledTouchSlop() {
-		return 0;
+		return 8;
 	}
 
 	public int getScaledMaximumFlingVelocity() {
-		return 0;
+		return 8000;
 	}
 
 	public int getScaledMinimumFlingVelocity() {
-		return 0;
+		return 50;
 	}
 
 	public static int getTapTimeout() {
@@ -29,7 +32,7 @@ public class ViewConfiguration {
 	}
 
 	public int getScaledPagingTouchSlop(){
-		return 0;
+		return 16;
 	}
 
 	public boolean hasPermanentMenuKey() {
@@ -45,6 +48,6 @@ public class ViewConfiguration {
 	}
 
 	public static float getScrollFriction() {
-		return 0.f;
+		return 0.015f;
 	}
 }

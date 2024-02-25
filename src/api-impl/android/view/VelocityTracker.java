@@ -6,15 +6,40 @@ public class VelocityTracker {
 		return new VelocityTracker();
 	}
 
-	public void addMovement(MotionEvent event) {}
+	private float startX;
+	private float startY;
+	private long startEventTime;
+	private float currentX;
+	private float currentY;
+	private long currentEventTime;
+
+	public void addMovement(MotionEvent event) {
+		if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+			startX = currentX = event.getX();
+			startY = currentY = event.getY();
+			startEventTime = currentEventTime = event.getEventTime();
+		} else {
+			currentX = event.getX();
+			currentY = event.getY();
+			currentEventTime = event.getEventTime();
+		}
+	}
 
 	public void recycle() {}
 
 	public void computeCurrentVelocity(int units, float maxVelocity) {}
 	public void computeCurrentVelocity(int units) {}
 
-	public float getXVelocity(int id) {return 0.f;}
-	public float getYVelocity(int id) {return 0.f;}
+	public float getXVelocity(int id) {
+		if (currentEventTime == startEventTime)
+			return 0.f;
+		return (currentX - startX) / (currentEventTime - startEventTime) * 1000;
+	}
+	public float getYVelocity(int id) {
+		if (currentEventTime == startEventTime)
+			return 0.f;
+		return (currentY - startY) / (currentEventTime - startEventTime) * 1000;
+	}
 
 	public void clear() {}
 }

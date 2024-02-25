@@ -83,7 +83,7 @@ void set_up_handle_cache(JNIEnv *env)
 	handle_cache.paint.getColor = _METHOD(handle_cache.paint.class, "getColor", "()I");
 
 	handle_cache.motion_event.class = _REF((*env)->FindClass(env, "android/view/MotionEvent"));
-	handle_cache.motion_event.constructor = _METHOD(handle_cache.motion_event.class, "<init>", "(IIFF)V");
+	handle_cache.motion_event.constructor = _METHOD(handle_cache.motion_event.class, "<init>", "(IIFFJ)V");
 
 	handle_cache.canvas.class = _REF((*env)->FindClass(env, "android/graphics/Canvas"));
 	handle_cache.canvas.constructor = _METHOD(handle_cache.canvas.class, "<init>", "(JJ)V");
