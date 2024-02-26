@@ -1534,7 +1534,7 @@ public class View extends Object {
 	public int getMinimumHeight() {return minHeight;}
 	public int getMinimumWidth() {return minWidth;}
 
-	public boolean isNestedScrollingEnabled() {return true;}
+	public boolean isNestedScrollingEnabled() {return false;}
 
 	public void setClipToOutline(boolean clipToOutline) {}
 
