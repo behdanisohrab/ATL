@@ -313,6 +313,14 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setVisibility
 
 /*
  * Class:     android_view_View
+ * Method:    setOnLongClickListener
+ * Signature: (Landroid/view/View/OnLongClickListener;)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_setOnLongClickListener
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     android_view_View
  * Method:    native_getGlobalVisibleRect
  * Signature: (JLandroid/graphics/Rect;)Z
  */

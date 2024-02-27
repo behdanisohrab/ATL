@@ -1137,7 +1137,7 @@ public class View extends Object {
 		return null;
 	}
 
-	public void setOnLongClickListener(OnLongClickListener listener) {}
+	public native void setOnLongClickListener(OnLongClickListener listener);
 
 	public void setLongClickable(boolean longClickable) {}
 

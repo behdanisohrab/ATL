@@ -463,3 +463,43 @@ JNIEXPORT jboolean JNICALL Java_android_view_View_native_1getGlobalVisibleRect(J
 	_SET_INT_FIELD(rect, "bottom", point_out.y - off_y);
 	return true;
 }
+
+static void on_long_click(GtkGestureLongPress *gesture, double x, double y, struct touch_callback_data *d)
+{
+	JNIEnv *env;
+	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
+
+	bool ret =(*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onLongClick", "(Landroid/view/View;)Z"), d->this);
+
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
+	if (ret)
+		gtk_gesture_set_state(GTK_GESTURE(gesture), GTK_EVENT_SEQUENCE_CLAIMED);
+}
+
+JNIEXPORT void JNICALL Java_android_view_View_setOnLongClickListener(JNIEnv *env, jobject this, jobject on_long_click_listener)
+{
+	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
+	if (!on_long_click_listener)
+		return;
+
+	JavaVM *jvm;
+	(*env)->GetJavaVM(env, &jvm);
+
+	struct touch_callback_data *callback_data = malloc(sizeof(struct touch_callback_data));
+	callback_data->jvm = jvm;
+	callback_data->this = _REF(this);
+ 	callback_data->on_touch_listener = _REF(on_long_click_listener);
+	callback_data->on_touch_listener_class = _REF(_CLASS(callback_data->on_touch_listener));
+
+	GtkEventController *old_controller = g_object_get_data(G_OBJECT(widget), "on_long_click_listener");
+	if(old_controller)
+		gtk_widget_remove_controller(widget, old_controller);
+
+	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_long_press_new());
+
+	g_signal_connect(controller, "pressed", G_CALLBACK(on_long_click), callback_data);
+	gtk_widget_add_controller(widget, controller);
+	g_object_set_data(G_OBJECT(widget), "on_long_click_listener", controller);
+}
