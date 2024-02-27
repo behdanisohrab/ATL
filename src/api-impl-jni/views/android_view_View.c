@@ -13,7 +13,9 @@
 
 struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; bool intercepted; };
 
-static bool call_ontouch_callback(int action, double x, double y, struct touch_callback_data *d, GtkPropagationPhase phase, guint32 timestamp)
+static GdkEvent *canceled_event = NULL;
+
+static bool call_ontouch_callback(int action, double x, double y, struct touch_callback_data *d, GtkPropagationPhase phase, guint32 timestamp, GdkEvent *event)
 {
 	bool ret;
 	JNIEnv *env;
@@ -23,7 +25,11 @@ static bool call_ontouch_callback(int action, double x, double y, struct touch_c
 
 	if (phase == GTK_PHASE_CAPTURE && !d->intercepted) {
 		d->intercepted = (*env)->CallBooleanMethod(env, d->this, handle_cache.view.onInterceptTouchEvent, motion_event);
-		ret = d->intercepted;
+		if (d->intercepted) {
+			// store the event that was canceled and let it propagate to the child widgets
+			canceled_event = event;
+		}
+		ret = false;
 	} else if(d->on_touch_listener) /* NULL listener means the callback was registered for onTouchEvent */
 		ret = (*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onTouch", "(Landroid/view/View;Landroid/view/MotionEvent;)Z"), d->this, motion_event);
 	else
@@ -59,23 +65,27 @@ static gboolean on_event(GtkEventControllerLegacy *event_controller, GdkEvent *e
 	guint32 timestamp = gdk_event_get_time(event);
 
 	// TODO: this doesn't work for multitouch
+	if (event == canceled_event) {
+		gdk_event_get_widget_relative_position(event, widget, &x, &y);
+		return call_ontouch_callback(MOTION_EVENT_ACTION_CANCEL, x, y, d, phase, timestamp, event);
+	}
 	switch(gdk_event_get_event_type(event)) {
 		case GDK_BUTTON_PRESS:
 		case GDK_TOUCH_BEGIN:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
-			return call_ontouch_callback(MOTION_EVENT_ACTION_DOWN, x, y, d, phase, timestamp);
+			return call_ontouch_callback(MOTION_EVENT_ACTION_DOWN, x, y, d, phase, timestamp, event);
 			break;
 		case GDK_BUTTON_RELEASE:
 		case GDK_TOUCH_END:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
-			return call_ontouch_callback(MOTION_EVENT_ACTION_UP, x, y, d, phase, timestamp);
+			return call_ontouch_callback(MOTION_EVENT_ACTION_UP, x, y, d, phase, timestamp, event);
 			break;
 		case GDK_MOTION_NOTIFY:
 			if (!(gdk_event_get_modifier_state(event) & GDK_BUTTON1_MASK))
 				break;
 		case GDK_TOUCH_UPDATE:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
-			return call_ontouch_callback(MOTION_EVENT_ACTION_MOVE, x, y, d, phase, timestamp);
+			return call_ontouch_callback(MOTION_EVENT_ACTION_MOVE, x, y, d, phase, timestamp, event);
 			break;
 		default:
 			break;
@@ -478,6 +488,14 @@ static void on_long_click(GtkGestureLongPress *gesture, double x, double y, stru
 		gtk_gesture_set_state(GTK_GESTURE(gesture), GTK_EVENT_SEQUENCE_CLAIMED);
 }
 
+static void on_long_click_update(GtkGesture *gesture, GdkEventSequence* sequence, struct touch_callback_data *d)
+{
+	GdkEvent *event = gtk_gesture_get_last_event(gesture, sequence);
+	if (event == canceled_event) {
+		gtk_event_controller_reset(GTK_EVENT_CONTROLLER(gesture));
+	}
+}
+
 JNIEXPORT void JNICALL Java_android_view_View_setOnLongClickListener(JNIEnv *env, jobject this, jobject on_long_click_listener)
 {
 	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
@@ -500,6 +518,7 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnLongClickListener(JNIEnv *env
 	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_long_press_new());
 
 	g_signal_connect(controller, "pressed", G_CALLBACK(on_long_click), callback_data);
+	g_signal_connect(controller, "update", G_CALLBACK(on_long_click_update), callback_data);
 	gtk_widget_add_controller(widget, controller);
 	g_object_set_data(G_OBJECT(widget), "on_long_click_listener", controller);
 }
