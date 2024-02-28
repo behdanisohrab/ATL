@@ -16,12 +16,14 @@ import android.text.method.MovementMethod;
 import android.text.method.TransformationMethod;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 
 public class TextView extends View {
 	public String text;
+	private ColorStateList colors = new ColorStateList(new int[][] {new int[0]}, new int[1]);
 
 	public TextView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -35,18 +37,29 @@ public class TextView extends View {
 		super(context, attrs, defStyleAttr);
 
 		TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.TextView, defStyleAttr, 0);
-		if (a.hasValue(com.android.internal.R.styleable.TextView_text)) {
-			setText(a.getText(com.android.internal.R.styleable.TextView_text));
-		}
-		int ap = a.getResourceId(com.android.internal.R.styleable.TextView_textAppearance, -1);
-		a.recycle();
-		if (ap != -1) {
-			a = context.obtainStyledAttributes(ap, com.android.internal.R.styleable.TextAppearance);
-			if (a.hasValue(com.android.internal.R.styleable.TextAppearance_textSize)) {
-				setTextSize(a.getDimensionPixelSize(com.android.internal.R.styleable.TextAppearance_textSize, 10));
+		try {
+			if (a.hasValue(com.android.internal.R.styleable.TextView_text)) {
+				setText(a.getText(com.android.internal.R.styleable.TextView_text));
 			}
-			a.recycle();
-		}
+			int ap = a.getResourceId(com.android.internal.R.styleable.TextView_textAppearance, -1);
+			if (ap != -1) {
+				TypedArray aa = context.obtainStyledAttributes(ap, com.android.internal.R.styleable.TextAppearance);
+				if (aa.hasValue(com.android.internal.R.styleable.TextAppearance_textColor)) {
+					setTextColor(aa.getColorStateList(com.android.internal.R.styleable.TextAppearance_textColor));
+				}
+				if (aa.hasValue(com.android.internal.R.styleable.TextAppearance_textSize)) {
+					setTextSize(aa.getDimensionPixelSize(com.android.internal.R.styleable.TextAppearance_textSize, 10));
+				}
+				aa.recycle();
+			}
+			if (a.hasValue(com.android.internal.R.styleable.TextView_textColor)) {
+				setTextColor(a.getColorStateList(com.android.internal.R.styleable.TextView_textColor));
+			}
+			if (a.hasValue(com.android.internal.R.styleable.TextView_textSize)) {
+				setTextSize(a.getDimensionPixelSize(com.android.internal.R.styleable.TextView_textSize, 10));
+			}
+		} catch(java.lang.Exception e) { System.out.println("exception while inflating TextView:"); e.printStackTrace(); }
+		a.recycle();
 		haveComplexMeasure = true;
 	}
 
@@ -73,6 +86,12 @@ public class TextView extends View {
 	private native final void native_set_markup(int bool);
 
 	public native final void native_setText(String text);
+
+	public void setTextSize(int unit, float size) {
+		if(unit != TypedValue.COMPLEX_UNIT_SP)
+			System.out.println("setTextSize called with non-SP unit ("+unit+"), we don't currently handle that");
+		setTextSize(size);
+	}
 	public native void setTextSize(float size);
 
 	public native final void native_setTextColor(int color);
@@ -80,10 +99,11 @@ public class TextView extends View {
 		native_setTextColor(color);
 	}
 	public void setTextColor(ColorStateList colors) {
-		if (colors != null)
+		if (colors != null) {
+			this.colors = colors;
 			setTextColor(colors.getDefaultColor()); // TODO: do this properly
+		}
 	}
-	public void setTextSize(int unit, float size) {}
 	public void setTypeface(Typeface tf, int style) {}
 	public void setTypeface(Typeface tf) {}
 	public void setLineSpacing(float add, float mult) {}
@@ -94,7 +114,7 @@ public class TextView extends View {
 	public void setCursorVisible(boolean visible) {}
 	public void setImeOptions(int imeOptions) {}
 
-	public final ColorStateList getTextColors() { return new ColorStateList(new int[][] {new int[0]}, new int[1]); }
+	public final ColorStateList getTextColors() { return colors; }
 	public static ColorStateList getTextColors(Context context, TypedArray attrs) { return new ColorStateList(new int[][] {new int[0]}, new int[1]); }
 
 	public TextPaint getPaint() {

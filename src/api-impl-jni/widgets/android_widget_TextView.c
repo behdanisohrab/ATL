@@ -35,18 +35,24 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setText(JNIEnv *env,
 	gtk_label_set_text(GTK_LABEL(_PTR(_GET_LONG_FIELD(this, "widget"))), _CSTRING(charseq));
 }
 
-// FIXME: this will probably behave unfortunately if called multiple times
 JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setTextColor(JNIEnv *env, jobject this, jint color)
 {
 	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
 
+	GtkStyleContext *style_context = gtk_widget_get_style_context(widget);
+
+	GtkCssProvider *old_provider = g_object_get_data(G_OBJECT(widget), "color_style_provider");
+	if(old_provider)
+		gtk_style_context_remove_provider(style_context, old_provider);
+
 	GtkCssProvider *css_provider = gtk_css_provider_new();
 
-	char *css_string = g_markup_printf_escaped("* { color: #%06x; }", color & 0xFFFFFF);
+	char *css_string = g_markup_printf_escaped("* { color: #%06x%02x; }", color & 0xFFFFFF, (color >> 24) & 0xFF);
 	gtk_css_provider_load_from_string(css_provider, css_string);
 	g_free(css_string);
 
-	gtk_style_context_add_provider(gtk_widget_get_style_context(widget), GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_style_context_add_provider(style_context, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	g_object_set_data(G_OBJECT(widget), "color_style_provider", css_provider);
 }
 
 JNIEXPORT void JNICALL Java_android_widget_TextView_setTextSize(JNIEnv *env, jobject this, jfloat size)
@@ -71,8 +77,5 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1set_1markup(JNIEnv *
 {
 	GtkLabel *label = GTK_LABEL(_PTR(_GET_LONG_FIELD(this, "widget")));
 
-	printf("weeeheee!\n");
-
 	gtk_label_set_use_markup(label, value);
-	printf("gtk_label_get_use_markup: %d, >%s<\n", gtk_label_get_use_markup(label), gtk_label_get_text(label));
 }
