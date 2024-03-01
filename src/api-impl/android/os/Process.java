@@ -676,6 +676,11 @@ public class Process {
 	 * other's processes.
 	 */
 	public static final void killProcess(int pid) {
+		if(pid == Process.myPid()) {
+			System.out.println("the app called killProcess on itself");
+			System.exit(0);
+		}
+
 		sendSignal(pid, SIGNAL_KILL);
 	}
 
