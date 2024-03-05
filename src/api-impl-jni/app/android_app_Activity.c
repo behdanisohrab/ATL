@@ -28,9 +28,11 @@ static void activity_close(JNIEnv *env, jobject activity)
 
 static void activity_unfocus(JNIEnv *env, jobject activity)
 {
-	(*env)->CallVoidMethod(env, activity, handle_cache.activity.onPause);
-	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);
+	if(!_GET_BOOL_FIELD(activity, "paused")) {
+		(*env)->CallVoidMethod(env, activity, handle_cache.activity.onPause);
+		if((*env)->ExceptionCheck(env))
+			(*env)->ExceptionDescribe(env);
+	}
 
 	(*env)->CallVoidMethod(env, activity, handle_cache.activity.onStop);
 	if((*env)->ExceptionCheck(env))

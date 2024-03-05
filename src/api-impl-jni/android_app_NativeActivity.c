@@ -381,7 +381,6 @@ void Java_android_app_NativeActivity_onStartNative(JNIEnv* env, jobject clazz, j
 
 void Java_android_app_NativeActivity_onResumeNative(JNIEnv* env, jobject clazz, jlong handle)
 {
-	printf("STUB - onResume_native\n");
 	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onResume != NULL) {
@@ -418,24 +417,22 @@ jbyteArray Java_android_app_NativeActivity_onSaveInstanceStateNative(JNIEnv* env
 
 void Java_android_app_NativeActivity_onPauseNative(JNIEnv* env, jobject clazz, jlong handle)
 {
-	printf("STUB - onPause_native\n");
-/*	if (handle != 0) {
+	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onPause != NULL) {
 			code->callbacks.onPause((ANativeActivity *)code);
 		}
-	}*/
+	}
 }
 
 void Java_android_app_NativeActivity_onStopNative(JNIEnv* env, jobject clazz, jlong handle)
 {
-	printf("STUB - onStop_native\n");
-/*	if (handle != 0) {
+	if (handle != 0) {
 		struct NativeCode* code = (struct NativeCode*)handle;
 		if (code->callbacks.onStop != NULL) {
 			code->callbacks.onStop((ANativeActivity *)code);
 		}
-	}*/
+	}
 }
 
 void Java_android_app_NativeActivity_onConfigurationChangedNative(JNIEnv* env, jobject clazz, jlong handle)

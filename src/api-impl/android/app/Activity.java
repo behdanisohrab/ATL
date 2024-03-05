@@ -38,6 +38,7 @@ public class Activity extends ContextWrapper implements Window.Callback {
 	private int pendingRequestCode;
 	private int pendingResultCode;
 	private Intent pendingData;
+	private boolean paused = false;
 	List<Fragment> fragments = new ArrayList<>();
 
 	/**
@@ -150,6 +151,7 @@ public class Activity extends ContextWrapper implements Window.Callback {
 			fragment.onResume();
 		}
 
+		paused = false;
 		return;
 	}
 
@@ -160,6 +162,7 @@ public class Activity extends ContextWrapper implements Window.Callback {
 			fragment.onPause();
 		}
 
+		paused = true;
 		return;
 	}
 
@@ -271,12 +274,17 @@ public class Activity extends ContextWrapper implements Window.Callback {
 			try {
 				Class<? extends Activity> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Activity.class);
 				Constructor<? extends Activity> constructor = cls.getConstructor();
-				Activity activity = constructor.newInstance();
+				final Activity activity = constructor.newInstance();
 				activity.intent = intent;
 				activity.getWindow().native_window = getWindow().native_window;
 				activity.resultRequestCode = requestCode;
 				activity.resultActivity = this;
-				nativeStartActivity(activity);
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						nativeStartActivity(activity);
+					}
+				});
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent()); // RESULT_CANCELED is the only pre-defined return value, so hopefully it works out for us
 			}
@@ -303,7 +311,12 @@ public class Activity extends ContextWrapper implements Window.Callback {
 	}
 
 	public void finish() {
-		nativeFinish(getWindow().native_window);
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				nativeFinish(getWindow().native_window);
+			}
+		});
 	}
 
 	public Object getLastNonConfigurationInstance() {

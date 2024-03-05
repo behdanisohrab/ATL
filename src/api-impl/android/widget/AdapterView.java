@@ -28,6 +28,9 @@ public abstract class AdapterView extends ViewGroup {
 		public void onItemClick(AdapterView parent, View view, int position, long id);
 	}
 
+	public interface OnItemLongClickListener {
+	}
+
 	public void setAdapter(Adapter adapter) {
 		this.adapter = adapter;
 	}
@@ -38,6 +41,8 @@ public abstract class AdapterView extends ViewGroup {
 	public void setOnItemSelectedListener(AdapterView.OnItemSelectedListener listener) {}
 
 	public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {}
+
+	public void setOnItemLongClickListener(AdapterView.OnItemLongClickListener listener) {}
 
 	public void setSelection(int position, boolean animate) {}
 

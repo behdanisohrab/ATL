@@ -76,10 +76,15 @@ public class Dialog implements Window.Callback, DialogInterface {
 	}
 
 	public void dismiss() {
-		System.out.println("dismissing the Dialog " + this);
-		nativeClose(nativePtr);
-		if (onDismissListener != null)
-			onDismissListener.onDismiss(this);
+		System.out.println("dismissing the Dialog " + Dialog.this);
+		new Handler(Looper.getMainLooper()).post(new Runnable() {
+			@Override
+			public void run() {
+				nativeClose(nativePtr);
+				if (onDismissListener != null)
+					onDismissListener.onDismiss(Dialog.this);
+			}
+		});
 	}
 
 	public Window getWindow() {

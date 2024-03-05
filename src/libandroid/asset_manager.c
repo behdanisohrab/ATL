@@ -1,5 +1,5 @@
-
 #define _LARGEFILE64_SOURCE
+#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdint.h>
@@ -18,6 +18,11 @@ struct AAssetManager dummy_asset_manager;
 struct AAsset{
 	int fd;
 	off64_t read;
+};
+
+struct AAssetDir {
+	DIR *dp;
+	const char *dirname;
 };
 
 typedef int64_t off64_t;
@@ -40,7 +45,7 @@ int AAsset_openFileDescriptor(struct AAsset *asset, off_t *out_start, off_t *out
 	if(ret)
 		printf("oopsie, fstat failed on fd: %d with errno: %d\n", fd, errno);
 
-	*out_start = 0; // on android, we would be returning the fd of the app's apk, and this would be the offet to a non-compressed archive member
+	*out_start = 0; // on android, we would be returning the fd of the app's apk, and this would be the offset to a non-compressed archive member
 	*out_length = statbuf.st_size; // similarly, this would be the size of the section of memory containing the non-compressed archive member
 
 	return fd;
@@ -72,6 +77,56 @@ struct AAsset* AAssetManager_open(struct AAssetManager *amgr, const char *file_n
 	asset->read = 0;
 
 	return asset;
+}
+
+struct AAssetDir * AAssetManager_openDir(struct AAssetManager *amgr, const char *dirname)
+{
+	char* app_data_dir = get_app_data_dir();
+	char* dirpath = malloc(strlen(app_data_dir) + strlen(ASSET_DIR) + strlen(dirname) + 1);
+	struct AAssetDir* dir = malloc(sizeof(struct AAssetDir));
+	dir->dirname = dirname;
+
+	strcpy(dirpath, app_data_dir);
+	strcat(dirpath, ASSET_DIR);
+	strcat(dirpath, dirname);
+	printf("open directory path %s\n", dirpath);
+
+	dir->dp = opendir(dirpath);
+	if (dir->dp < 0)
+	{
+		printf("failed to open directory %s: %d\n", dirpath, errno);
+		return NULL;
+	}
+
+	return dir;
+}
+
+const char * AAssetDir_getNextFileName(struct AAssetDir *dir)
+{
+	struct dirent *ep = readdir(dir->dp);
+	if (ep == NULL)
+		return NULL;
+
+	if (!strcmp(ep->d_name, ".") || !strcmp(ep->d_name, "..")) {
+		return AAssetDir_getNextFileName(dir);
+	}
+
+	// google claims to return full path, but it really doesn't seem so
+	return ep->d_name;
+/*	char *asset_root_path = malloc(strlen(dir->dirname) + 1 + strlen(ep->d_name) + 1);
+
+	sprintf(asset_root_path, "%s/%s", dir->dirname, ep->d_name);
+	printf("AAssetDir_getNextFileName: returning >%s<\n", asset_root_path);
+
+	return asset_root_path;*/
+
+}
+
+
+void AAssetDir_close(struct AAssetDir *dir)
+{
+	closedir(dir->dp);
+	free(dir);
 }
 
 const void * AAsset_getBuffer(struct AAsset *asset)
