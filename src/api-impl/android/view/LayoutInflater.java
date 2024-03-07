@@ -98,6 +98,7 @@ public class LayoutInflater {
 
 	public View inflate(int layoutResID, ViewGroup root, boolean attachToRoot) {
 
+		Slog.v(TAG, "inflating view from id: " + String.format("%x", layoutResID));
 		XmlResourceParser xpp = Context.this_application.getResources().getLayout(layoutResID);
 
 		try {

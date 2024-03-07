@@ -18,4 +18,6 @@ public class ListView extends AbsListView {
 
 	public Drawable getDivider() {return null;}
 
+	public void setTextFilterEnabled(boolean enabled) {}
+
 }
