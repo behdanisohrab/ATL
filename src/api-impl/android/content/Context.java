@@ -101,9 +101,10 @@ public class Context extends Object {
 		Application application;
 		ResXmlAttribute application_name = manifest.getApplicationElement().searchAttributeByResourceId(AndroidManifestBlock.ID_name);
 		String className = (application_name != null) ? application_name.getValueAsString() : "android.app.Application";
-		if (className.startsWith(".")) {
+		if(className.indexOf('.') == -1)
+			className = "." + className;
+		if (className.startsWith("."))
 			className = manifest.getPackageName() + className;
-		}
 		Class<? extends Application> cls = Class.forName(className).asSubclass(Application.class);
 		Constructor<? extends Application> constructor = cls.getConstructor();
 		application = constructor.newInstance();

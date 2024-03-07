@@ -52,9 +52,10 @@ public class Activity extends ContextWrapper implements Window.Callback {
 			InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
 			AndroidManifestBlock block = AndroidManifestBlock.load(inStream);
 			className = block.getMainActivity().searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString();
-			if (className.startsWith(".")) {
+			if(className.indexOf('.') == -1)
+				className = "." + className;
+			if (className.startsWith("."))
 				className = block.getPackageName() + className;
-			}
 		} else {
 			className = className.replace('/', '.');
 		}
@@ -206,30 +207,14 @@ public class Activity extends ContextWrapper implements Window.Callback {
 	public void setContentView(int layoutResID) throws Exception {
 		System.out.println("- setContentView - yay!");
 
-		XmlResourceParser xpp = Context.this_application.getResources().getLayout(layoutResID);
-
-		root_view = layout_inflater.inflate(xpp, null, false);
+		root_view = layout_inflater.inflate(layoutResID, null, false);
 
 		System.out.println("~~~~~~~~~~~");
 		System.out.println(root_view);
-		System.out.println(root_view.widget);
+		System.out.printf("%x\n", root_view.id);
 		System.out.println("~~~~~~~~~~~");
 
 		setContentView(root_view);
-
-/*		Window w = new Window();
-		w.setTitle(this.toString());
-		w.setDefaultSize(540, 960);
-		w.add(root_view.widget);
-		w.showAll();
-
-
-		w.connect(new Window.DeleteEvent() {
-			public boolean onDeleteEvent(Widget source, Event event) {
-				Gtk.mainQuit();
-				return false;
-			}
-		});*/
 	}
 
 	public void setContentView(View view, ViewGroup.LayoutParams layoutParams) {
@@ -238,10 +223,11 @@ public class Activity extends ContextWrapper implements Window.Callback {
 
 	public void setContentView(View view) {
 		window.setContentView(view);
+		onContentChanged();
 	}
 
 	public <T extends android.view.View> T findViewById(int id) {
-		System.out.println("- findViewById - asked for view with id: " + id);
+		System.out.printf("- findViewById - asked for view with id: %x\n", id);
 		View view = null;
 		if (window.contentView != null)
 			view = window.contentView.findViewById(id);
@@ -339,8 +325,7 @@ public class Activity extends ContextWrapper implements Window.Callback {
 
 	@Override
 	public void onContentChanged() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'onContentChanged'");
+		System.out.println("- onContentChanged - yay!");
 	}
 
 	public boolean onCreateOptionsMenu(Menu menu) {
