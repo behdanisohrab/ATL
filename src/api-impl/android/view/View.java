@@ -834,13 +834,8 @@ public class View extends Object {
 		widget = native_constructor(context, attrs);
 
 		if (attrs != null) {
-			int id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
-			if (id != 0) {
-				this.id = id;
-			}
-
-
 			TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.View, defStyle, 0);
+			this.id = a.getResourceId(com.android.internal.R.styleable.View_id, View.NO_ID);
 			if (a.hasValue(com.android.internal.R.styleable.View_background)) {
 				Drawable background = a.getDrawable(com.android.internal.R.styleable.View_background);
 
