@@ -74,6 +74,12 @@ void ALooper_wake(ALooper *looper)
 	_ZN7android6Looper4wakeEv(looper);
 }
 
+int _ZN7android6Looper8removeFdEi(ALooper* this, int fd);
+int ALooper_removeFd(ALooper* looper, int fd)
+{
+	return _ZN7android6Looper8removeFdEi(looper, fd);
+}
+
 /* this is not part of the android API, but we use it internally */
 
 bool _ZNK7android6Looper9isPollingEv(ALooper *this);
