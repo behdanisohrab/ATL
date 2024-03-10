@@ -1545,9 +1545,9 @@ public class PackageParser {
 			String tagname = parser.getName();
 			if (tagname.equals("publicKey")) {
 				final TypedArray sa = res.obtainAttributes(attrs,
-									   com.android.internal.R.styleable.PublicKey);
+									   com.android.internal.R.styleable.AndroidManifestPublicKey);
 				final String encodedKey = sa.getNonResourceString(
-				    com.android.internal.R.styleable.PublicKey_value);
+				    com.android.internal.R.styleable.AndroidManifestPublicKey_value);
 				currentKey = parsePublicKey(encodedKey);
 				if (currentKey == null) {
 					Slog.w(TAG, "No valid key in 'publicKey' tag at " + parser.getPositionDescription());
@@ -1563,9 +1563,9 @@ public class PackageParser {
 					continue;
 				}
 				final TypedArray sa = res.obtainAttributes(attrs,
-									   com.android.internal.R.styleable.KeySet);
+									   com.android.internal.R.styleable.AndroidManifestKeySet);
 				final String name = sa.getNonResourceString(
-				    com.android.internal.R.styleable.KeySet_name);
+				    com.android.internal.R.styleable.AndroidManifestKeySet_name);
 				definedKeySets.get(currentKey).add(name);
 				sa.recycle();
 			} else if (RIGID_PARSER) {
