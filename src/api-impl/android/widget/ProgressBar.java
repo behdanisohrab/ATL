@@ -9,8 +9,8 @@ import android.view.View;
 
 public class ProgressBar extends View {
 
-	private int max = 100;
-	private int progress = 0;
+	protected int max = 100;
+	protected int progress = 0;
 
 	public ProgressBar(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
@@ -30,7 +30,7 @@ public class ProgressBar extends View {
 
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
-	private native void native_setProgress(long widget, float fraction);
+	protected native void native_setProgress(long widget, float fraction);
 
 	public native void setIndeterminate(boolean indeterminate);
 
