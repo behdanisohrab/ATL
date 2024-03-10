@@ -63,7 +63,6 @@ public class Context extends Object {
 
 	static AssetManager assets;
 	static DisplayMetrics dm;
-	static Configuration config;
 	static Resources r;
 	static ApplicationInfo application_info;
 	static Resources.Theme theme;
@@ -82,7 +81,8 @@ public class Context extends Object {
 	static {
 		assets = new AssetManager();
 		dm = new DisplayMetrics();
-		config = new Configuration();
+		Configuration config = new Configuration();
+		native_updateConfig(config);
 		r = new Resources(assets, dm, config);
 		theme = r.newTheme();
 		application_info = new ApplicationInfo();
@@ -96,6 +96,8 @@ public class Context extends Object {
 			e.printStackTrace();
 		}
 	}
+
+	protected static native void native_updateConfig(Configuration config);
 
 	static Application createApplication(long native_window) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		Application application;

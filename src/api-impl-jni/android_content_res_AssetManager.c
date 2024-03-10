@@ -376,3 +376,31 @@ JNIEXPORT void JNICALL Java_android_content_res_AssetManager_copyTheme(JNIEnv *e
 {
 	Theme_setTo(_PTR(dest), _PTR(src));
 }
+
+JNIEXPORT void JNICALL Java_android_content_res_AssetManager_setConfiguration(
+    JNIEnv *env, jobject this, jint mcc, jint mnc, jstring locale,
+    jint orientation, jint touchscreen, jint density, jint keyboard,
+    jint keyboardHidden, jint navigation, jint screenWidth, jint screenHeight,
+    jint smallestScreenWidthDp, jint screenWidthDp, jint screenHeightDp,
+    jint screenLayout, jint uiMode, jint majorVersion)
+{
+	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
+	const struct ResTable_config config = {
+		.mcc = mcc,
+		.mnc = mnc,
+		.orientation = orientation,
+		.touchscreen = touchscreen,
+		.density = density,
+		.keyboard = keyboard,
+		.navigation = navigation,
+		.screenWidth = screenWidth,
+		.screenHeight = screenHeight,
+		.smallestScreenWidthDp = smallestScreenWidthDp,
+		.screenWidthDp = screenWidthDp,
+		.screenHeightDp = screenHeightDp,
+		.screenLayout = screenLayout,
+		.uiMode = uiMode,
+		.sdkVersion = majorVersion
+	};
+	AssetManager_setConfiguration(asset_manager, &config, NULL);
+}

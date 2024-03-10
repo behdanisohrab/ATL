@@ -83,6 +83,14 @@ JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getLocales
 
 /*
  * Class:     android_content_res_AssetManager
+ * Method:    setConfiguration
+ * Signature: (IILjava/lang/String;IIIIIIIIIIIIII)V
+ */
+JNIEXPORT void JNICALL Java_android_content_res_AssetManager_setConfiguration
+  (JNIEnv *, jobject, jint, jint, jstring, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint);
+
+/*
+ * Class:     android_content_res_AssetManager
  * Method:    getResourceIdentifier
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I
  */

@@ -701,11 +701,11 @@ public final class AssetManager {
 	 * applications.
 	 * {@hide}
 	 */
-	public /*native*/ final void setConfiguration(int mcc, int mnc, String locale,
+	public native final void setConfiguration(int mcc, int mnc, String locale,
 						  int orientation, int touchscreen, int density, int keyboard,
 						  int keyboardHidden, int navigation, int screenWidth, int screenHeight,
 						  int smallestScreenWidthDp, int screenWidthDp, int screenHeightDp,
-						  int screenLayout, int uiMode, int majorVersion) {}
+						  int screenLayout, int uiMode, int majorVersion);
 
 	/**
 	 * Retrieve the resource identifier for the given resource name.

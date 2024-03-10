@@ -208,7 +208,7 @@ public class Resources {
 			mCompatibilityInfo = compatInfo;
 		}
 		mToken = new WeakReference<IBinder>(token);
-		//        updateConfiguration(config, metrics);
+		updateConfiguration(config, metrics);
 		//        assets.ensureStringBlocks();
 	}
 

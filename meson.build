@@ -80,6 +80,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/android_graphics_Canvas.c',
                                                                   	'src/api-impl-jni/android_graphics_Paint.c',
                                                                   	'src/api-impl-jni/android_util_Log.c',
+                                                                  	'src/api-impl-jni/content/android_content_Context.c',
                                                                   	'src/api-impl-jni/database/android_database_SQLiteCommon.c',
                                                                   	'src/api-impl-jni/database/android_database_SQLiteConnection.c',
                                                                   	'src/api-impl-jni/graphics/android_graphics_BitmapFactory.c',
