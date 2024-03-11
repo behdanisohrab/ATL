@@ -79,7 +79,7 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 	JavaVMOption options[6];
 	args.version = JNI_VERSION_1_6;
 	args.nOptions = 4;
-	char jdwp_option_string[sizeof(JDWP_ARG) + 5] = JDWP_ARG;// 5 chars for port number, NULL byte is counted by sizeof
+	char jdwp_option_string[sizeof(JDWP_ARG) + 5] = JDWP_ARG; // 5 chars for port number, NULL byte is counted by sizeof
 
 	const char* jdwp_port = getenv("JDWP_LISTEN");
 	if(jdwp_port)
@@ -92,8 +92,6 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 		options[0].optionString = construct_classpath("-Djava.library.path=", (char *[]){api_impl_natives_dir, app_lib_dir}, 2);
 	}
 
-	// microg is purposefully after the apk, so that we get the correct resources.arsc
-	// TODO: request resources.arsc from concrete apk instead of taking the first one in classpath
 	options[1].optionString = construct_classpath("-Djava.class.path=", (char *[]){api_impl_jar, apk_classpath, microg_apk, framework_res_apk}, 4);
 	options[2].optionString = "-verbose:jni";
 	options[3].optionString = "-Xcheck:jni";
@@ -115,6 +113,15 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 	return env;
 }
 
+void icon_override(GtkWidget *window, GList *icon_list) {
+	GdkSurface *window_surface = gtk_native_get_surface(GTK_NATIVE(window));
+	gdk_toplevel_set_icon_list(GDK_TOPLEVEL(window_surface), icon_list);
+}
+
+/*
+ * There is no way to get a nice clean callback for when the window is ready to be used for stuff
+ * that requires non-zero dimensions, so we just check periodically
+ */
 gboolean hacky_on_window_focus_changed_callback(JNIEnv *env)
 {
 	if(gtk_widget_get_width(window) != 0) {
@@ -380,37 +387,30 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
-/*	const char *app_icon_path = _CSTRING((*env)->CallObjectMethod(env, application_object, handle_cache.application.get_app_icon_path));
+	const char *app_icon_path = _CSTRING((*env)->CallObjectMethod(env, application_object, handle_cache.application.get_app_icon_path));
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
-	char *tmp = strdup(app_icon_path);
-	const char *app_icon_dirname = dirname(tmp);
-	char *app_icon_basename = basename(app_icon_path);
-	*strrchr(app_icon_basename, '.') = '\0';
-	extract_from_apk(app_icon_path, app_icon_path);
-	char *app_icon_basedir_fullpath = malloc(strlen(app_data_dir) + strlen(app_icon_dirname) + strlen("/hicolor") + 1);
-	strcpy(app_icon_basedir_fullpath, app_data_dir);
-	strcat(app_icon_basedir_fullpath, app_icon_dirname);
-	strcat(app_icon_basedir_fullpath, "/hicolor");
-*/
 	gtk_window_set_title(GTK_WINDOW(window), package_name);
 	gtk_window_set_default_size(GTK_WINDOW(window), d->window_width, d->window_height);
 	g_signal_connect(window, "close-request", G_CALLBACK (app_exit), env);
-/*
-	GtkIconTheme *theme = gtk_icon_theme_get_for_display(gdk_display_get_default());
-	printf(">>%s<<\n", app_icon_basedir_fullpath);
-	printf(">%s<\n", app_icon_basename);
-	gtk_icon_theme_set_search_path(theme, (const char *const[]){app_icon_basedir_fullpath, NULL});
 
-	printf(">>>%d<<<\n", gtk_icon_theme_has_icon(theme, app_icon_basename));
+	if(app_icon_path) {
+		char *app_icon_path_full = malloc(strlen(app_data_dir) + 1 + strlen(app_icon_path) + 1);  // +1 for /, +1 for NULL
+		sprintf(app_icon_path_full, "%s/%s", app_data_dir, app_icon_path);
 
-	gtk_window_set_icon_name(GTK_WINDOW(window), app_icon_basename);
+		extract_from_apk(app_icon_path, app_icon_path);
 
-	exit(69);
-*/
-//	free(tmp);
-//	free(app_icon_basedir_fullpath);
+		GError *error = NULL;
+		GList *icon_list = g_list_append(NULL, gdk_texture_new_from_filename(app_icon_path_full, &error));
+		if(error) {
+			printf("gdk_texture_new_from_filename: %s\n", error->message);
+			g_clear_error(&error);
+		}
+		icon_override(window, icon_list);
+		/* if Gtk sets the icon list to NULL, override it again */
+		g_signal_connect_after(window, "realize", G_CALLBACK (icon_override), icon_list);
+	}
 
 	activity_start(env, activity_object);
 
@@ -429,7 +429,8 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 static void activate(GtkApplication *app, struct jni_callback_data *d)
 {
-	printf("error: usage: ./android-translation-layer [app.apk] -l [path/to/activity]\nyou can specify --help to see the list of options\n");
+	printf("error: usage: ./android-translation-layer [app.apk] -l [path/to/activity]\n"
+	       "you can specify --help to see the list of options\n");
 	exit(1);
 }
 
@@ -472,7 +473,7 @@ void init_cmd_parameters(GApplication *app, struct jni_callback_data *d)
 
 void init__r_debug();
 
-int main(int argc, char **argv/*, JNIEnv *env*/)
+int main(int argc, char **argv)
 {
 	GtkApplication *app;
 	int status;
