@@ -1632,4 +1632,6 @@ public class View extends Object {
 	public boolean getGlobalVisibleRect(Rect visibleRect) {
 		return native_getGlobalVisibleRect(widget, visibleRect);
 	}
+
+	public boolean onCheckIsTextEditor() {return false;}
 }
