@@ -14,6 +14,7 @@
 struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; bool intercepted; };
 
 static GdkEvent *canceled_event = NULL;
+static struct touch_callback_data *cancel_triggerer = NULL;
 
 static bool call_ontouch_callback(int action, double x, double y, struct touch_callback_data *d, GtkPropagationPhase phase, guint32 timestamp, GdkEvent *event)
 {
@@ -28,6 +29,7 @@ static bool call_ontouch_callback(int action, double x, double y, struct touch_c
 		if (d->intercepted) {
 			// store the event that was canceled and let it propagate to the child widgets
 			canceled_event = event;
+			cancel_triggerer = d;
 		}
 		ret = false;
 	} else if(d->on_touch_listener) /* NULL listener means the callback was registered for onTouchEvent */
@@ -65,7 +67,7 @@ static gboolean on_event(GtkEventControllerLegacy *event_controller, GdkEvent *e
 	guint32 timestamp = gdk_event_get_time(event);
 
 	// TODO: this doesn't work for multitouch
-	if (event == canceled_event) {
+	if (event == canceled_event && cancel_triggerer != d) {
 		gdk_event_get_widget_relative_position(event, widget, &x, &y);
 		return call_ontouch_callback(MOTION_EVENT_ACTION_CANCEL, x, y, d, phase, timestamp, event);
 	}
