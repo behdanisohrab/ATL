@@ -27,7 +27,6 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		super(context, attrs, defStyleAttr);
 
 		children = new ArrayList<View>();
-		haveComplexMeasure = true;
 	}
 
 	public void addView(View child) {

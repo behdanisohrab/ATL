@@ -813,8 +813,7 @@ public class View extends Object {
 	private boolean layoutRequested = true;
 	private int oldWidth;
 	private int oldHeight;
-	private boolean haveCustomMeasure;
-	protected boolean haveComplexMeasure = false;
+	protected boolean haveCustomMeasure = true;
 
 	private int visibility = View.VISIBLE;
 	private float alpha = 1.0f;
@@ -936,7 +935,7 @@ public class View extends Object {
 	 * We decide between simple widgets which handles MEASURE_SPEC_AT_MOST the same way as
 	 * MEASURE_SPEC_EXACTLY, and complex widgets which handles MEASURE_SPEC_AT_MOST by measuring the content
 	 */
-	protected native void native_measure(long widget, int widthMeasureSpec, int heightMeasureSpec, boolean isComplex);
+	protected native void native_measure(long widget, int widthMeasureSpec, int heightMeasureSpec);
 	protected native void native_layout(long widget, int l, int t, int r, int b);
 	protected native void native_requestLayout(long widget);
 	protected native void native_setBackgroundDrawable(long widget, long paintable);
@@ -976,7 +975,7 @@ public class View extends Object {
 		if (haveCustomMeasure) // calling native_measure here would create infinite loop
 			setMeasuredDimension(getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec), getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec));
 		else
-			native_measure(widget, widthMeasureSpec, heightMeasureSpec, haveComplexMeasure);
+			native_measure(widget, widthMeasureSpec, heightMeasureSpec);
 	}
 
 	public void setPressed(boolean pressed) {

@@ -14,7 +14,7 @@ public class ProgressBar extends View {
 
 	public ProgressBar(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		haveComplexMeasure = true;
+		haveCustomMeasure = false;
 		TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.ProgressBar, defStyle, 0);
 		setIndeterminate(a.getBoolean(com.android.internal.R.styleable.ProgressBar_indeterminate, false));
 		a.recycle();

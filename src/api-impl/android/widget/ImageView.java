@@ -27,7 +27,7 @@ public class ImageView extends View {
 	public ImageView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 
-		haveComplexMeasure = true;
+		haveCustomMeasure = false;
 		if (attrs != null) {
 			int resid = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "src", 0);
 			if (resid != 0 && !getResources().getString(resid).endsWith(".xml")) {

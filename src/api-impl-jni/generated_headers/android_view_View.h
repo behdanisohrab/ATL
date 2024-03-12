@@ -258,10 +258,10 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1destructor
 /*
  * Class:     android_view_View
  * Method:    native_measure
- * Signature: (JIIZ)V
+ * Signature: (JII)V
  */
 JNIEXPORT void JNICALL Java_android_view_View_native_1measure
-  (JNIEnv *, jobject, jlong, jint, jint, jboolean);
+  (JNIEnv *, jobject, jlong, jint, jint);
 
 /*
  * Class:     android_view_View

@@ -347,7 +347,6 @@ JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, 
 	jmethodID layout_method = _METHOD(class, "onLayout", "(ZIIII)V");
 	if (measure_method != handle_cache.view.onMeasure || layout_method != handle_cache.view.onLayout) {
 		gtk_widget_set_layout_manager(widget, android_layout_new(_REF(this)));
-		(*env)->SetBooleanField(env, this, _FIELD_ID(class, "haveCustomMeasure", "Z"), true);
 	}
 
 	if (_METHOD(_CLASS(this), "onGenericMotionEvent", "(Landroid/view/MotionEvent;)Z") != handle_cache.view.onGenericMotionEvent) {
@@ -376,7 +375,7 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1destructor(JNIEnv *env, jo
 #define MEASURE_SPEC_AT_MOST (2 << 30)
 #define MEASURE_SPEC_MASK (0x3 << 30)
 
-JNIEXPORT void JNICALL Java_android_view_View_native_1measure(JNIEnv *env, jobject this, jlong widget_ptr, jint width_spec, jint height_spec, jboolean is_complex) {
+JNIEXPORT void JNICALL Java_android_view_View_native_1measure(JNIEnv *env, jobject this, jlong widget_ptr, jint width_spec, jint height_spec) {
 	int width = -1;
 	int height = -1;
 	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget_ptr)));
@@ -386,11 +385,11 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1measure(JNIEnv *env, jobje
 	int height_spec_mode = height_spec & MEASURE_SPEC_MASK;
 	GtkSizeRequestMode request_mode;
 
-	if (width_spec_mode == MEASURE_SPEC_EXACTLY || (!is_complex && width_spec_mode == MEASURE_SPEC_AT_MOST)) {
+	if (width_spec_mode == MEASURE_SPEC_EXACTLY) {
 		width = width_spec_size;
 		request_mode = GTK_SIZE_REQUEST_HEIGHT_FOR_WIDTH;
 	}
-	if (height_spec_mode == MEASURE_SPEC_EXACTLY || (!is_complex && height_spec_mode == MEASURE_SPEC_AT_MOST)) {
+	if (height_spec_mode == MEASURE_SPEC_EXACTLY) {
 		height = height_spec_size;
 		request_mode = GTK_SIZE_REQUEST_WIDTH_FOR_HEIGHT;
 	}

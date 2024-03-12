@@ -13,7 +13,6 @@ JNIEXPORT jlong JNICALL Java_android_widget_ScrollView_native_1constructor(JNIEn
 	GtkWidget *scrolled_window = gtk_scrolled_window_new();
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), scrolled_window);
 	gtk_widget_set_name(scrolled_window, "ScrollView");
-	(*env)->SetBooleanField(env, this, _FIELD_ID(_CLASS(this), "haveCustomMeasure", "Z"), true);
 	return _INTPTR(scrolled_window);
 }
 

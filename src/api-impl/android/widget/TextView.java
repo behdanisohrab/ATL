@@ -60,7 +60,7 @@ public class TextView extends View {
 			}
 		} catch(java.lang.Exception e) { System.out.println("exception while inflating TextView:"); e.printStackTrace(); }
 		a.recycle();
-		haveComplexMeasure = true;
+		haveCustomMeasure = false;
 	}
 
 	@Override
