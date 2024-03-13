@@ -1374,7 +1374,13 @@ public class View extends Object {
 	public boolean onGenericMotionEvent(MotionEvent event) {return false;}
 
 	protected boolean awakenScrollBars() {return false;}
-	public Matrix getMatrix() {return new Matrix();}
+
+	protected native boolean native_getMatrix(long widget, long matrix);
+	public Matrix getMatrix() {
+		Matrix matrix = new Matrix();
+		native_getMatrix(widget, matrix.native_instance);
+		return matrix;
+	}
 
 	protected static final int[] EMPTY_STATE_SET = new int[0];
 

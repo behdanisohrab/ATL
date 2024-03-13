@@ -30,6 +30,8 @@
 #define _GET_INT_FIELD(object, field) ((*env)->GetIntField(env, object, _FIELD_ID(_CLASS(object), field, "I")))
 #define _SET_BOOL_FIELD(object, field, value) ((*env)->SetBooleanField(env, object, _FIELD_ID(_CLASS(object), field, "Z"), value))
 #define _GET_BOOL_FIELD(object, field) ((*env)->GetBooleanField(env, object, _FIELD_ID(_CLASS(object), field, "Z")))
+#define _GET_FLOAT_FIELD(object, field) ((*env)->GetFloatField(env, object, _FIELD_ID(_CLASS(object), field, "F")))
+#define _SET_FLOAT_FIELD(object, field, value) ((*env)->SetFloatField(env, object, _FIELD_ID(_CLASS(object), field, "F"), value))
 #define _SET_STATIC_INT_FIELD(class, field, value) ((*env)->SetStaticIntField(env, class, _STATIC_FIELD_ID(class, field, "I"), value))
 #define _SET_STATIC_OBJ_FIELD(class, field, type, value) ((*env)->SetStaticObjectField(env, class, _STATIC_FIELD_ID(class, field, type), value))
 #define _GET_STATIC_OBJ_FIELD(class, field, type) ((*env)->GetStaticObjectField(env, class, _STATIC_FIELD_ID(class, field, type)))

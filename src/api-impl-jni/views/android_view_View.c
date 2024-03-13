@@ -523,3 +523,9 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnLongClickListener(JNIEnv *env
 	gtk_widget_add_controller(widget, controller);
 	g_object_set_data(G_OBJECT(widget), "on_long_click_listener", controller);
 }
+
+JNIEXPORT jboolean JNICALL Java_android_view_View_native_1getMatrix(JNIEnv *env, jobject this, jlong widget_ptr, jlong matrix_ptr)
+{
+	GtkWidget *widget = GTK_WIDGET(_PTR(widget_ptr));
+	return gtk_widget_compute_transform(gtk_widget_get_parent(gtk_widget_get_parent(widget)), widget, _PTR(matrix_ptr));
+}

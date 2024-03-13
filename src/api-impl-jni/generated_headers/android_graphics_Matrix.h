@@ -27,323 +27,331 @@ extern "C" {
 #define android_graphics_Matrix_MPERSP_2 8L
 /*
  * Class:     android_graphics_Matrix
+ * Method:    native_create
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_android_graphics_Matrix_native_1create
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     android_graphics_Matrix
  * Method:    native_isIdentity
- * Signature: (I)Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1isIdentity
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_rectStaysRect
- * Signature: (I)Z
+ * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1rectStaysRect
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_reset
- * Signature: (I)V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1reset
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_set
- * Signature: (II)V
+ * Signature: (JJ)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1set
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jlong);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setTranslate
- * Signature: (IFF)V
+ * Signature: (JFF)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setTranslate
-  (JNIEnv *, jclass, jint, jfloat, jfloat);
+  (JNIEnv *, jclass, jlong, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setScale
- * Signature: (IFFFF)V
+ * Signature: (JFFFF)V
  */
-JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setScale__IFFFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat);
+JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setScale__JFFFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setScale
- * Signature: (IFF)V
+ * Signature: (JFF)V
  */
-JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setScale__IFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat);
+JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setScale__JFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setRotate
- * Signature: (IFFF)V
+ * Signature: (JFFF)V
  */
-JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setRotate__IFFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat);
+JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setRotate__JFFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setRotate
- * Signature: (IF)V
+ * Signature: (JF)V
  */
-JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setRotate__IF
-  (JNIEnv *, jclass, jint, jfloat);
+JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setRotate__JF
+  (JNIEnv *, jclass, jlong, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setSinCos
- * Signature: (IFFFF)V
+ * Signature: (JFFFF)V
  */
-JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setSinCos__IFFFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat);
+JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setSinCos__JFFFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setSinCos
- * Signature: (IFF)V
+ * Signature: (JFF)V
  */
-JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setSinCos__IFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat);
+JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setSinCos__JFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setSkew
- * Signature: (IFFFF)V
+ * Signature: (JFFFF)V
  */
-JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setSkew__IFFFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat);
+JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setSkew__JFFFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setSkew
- * Signature: (IFF)V
+ * Signature: (JFF)V
  */
-JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setSkew__IFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat);
+JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setSkew__JFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setConcat
- * Signature: (III)Z
+ * Signature: (JJJ)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1setConcat
-  (JNIEnv *, jclass, jint, jint, jint);
+  (JNIEnv *, jclass, jlong, jlong, jlong);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_preTranslate
- * Signature: (IFF)Z
+ * Signature: (JFF)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preTranslate
-  (JNIEnv *, jclass, jint, jfloat, jfloat);
+  (JNIEnv *, jclass, jlong, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_preScale
- * Signature: (IFFFF)Z
+ * Signature: (JFFFF)Z
  */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preScale__IFFFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat);
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preScale__JFFFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_preScale
- * Signature: (IFF)Z
+ * Signature: (JFF)Z
  */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preScale__IFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat);
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preScale__JFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_preRotate
- * Signature: (IFFF)Z
+ * Signature: (JFFF)Z
  */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preRotate__IFFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat);
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preRotate__JFFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_preRotate
- * Signature: (IF)Z
+ * Signature: (JF)Z
  */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preRotate__IF
-  (JNIEnv *, jclass, jint, jfloat);
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preRotate__JF
+  (JNIEnv *, jclass, jlong, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_preSkew
- * Signature: (IFFFF)Z
+ * Signature: (JFFFF)Z
  */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preSkew__IFFFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat);
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preSkew__JFFFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_preSkew
- * Signature: (IFF)Z
+ * Signature: (JFF)Z
  */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preSkew__IFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat);
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preSkew__JFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_preConcat
- * Signature: (II)Z
+ * Signature: (JJ)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preConcat
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jlong);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_postTranslate
- * Signature: (IFF)Z
+ * Signature: (JFF)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postTranslate
-  (JNIEnv *, jclass, jint, jfloat, jfloat);
+  (JNIEnv *, jclass, jlong, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_postScale
- * Signature: (IFFFF)Z
+ * Signature: (JFFFF)Z
  */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postScale__IFFFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat);
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postScale__JFFFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_postScale
- * Signature: (IFF)Z
+ * Signature: (JFF)Z
  */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postScale__IFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat);
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postScale__JFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_postRotate
- * Signature: (IFFF)Z
+ * Signature: (JFFF)Z
  */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postRotate__IFFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat);
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postRotate__JFFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_postRotate
- * Signature: (IF)Z
+ * Signature: (JF)Z
  */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postRotate__IF
-  (JNIEnv *, jclass, jint, jfloat);
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postRotate__JF
+  (JNIEnv *, jclass, jlong, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_postSkew
- * Signature: (IFFFF)Z
+ * Signature: (JFFFF)Z
  */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postSkew__IFFFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat, jfloat, jfloat);
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postSkew__JFFFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_postSkew
- * Signature: (IFF)Z
+ * Signature: (JFF)Z
  */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postSkew__IFF
-  (JNIEnv *, jclass, jint, jfloat, jfloat);
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postSkew__JFF
+  (JNIEnv *, jclass, jlong, jfloat, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_postConcat
- * Signature: (II)Z
+ * Signature: (JJ)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1postConcat
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jlong);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setRectToRect
- * Signature: (ILandroid/graphics/RectF;Landroid/graphics/RectF;I)Z
+ * Signature: (JLandroid/graphics/RectF;Landroid/graphics/RectF;I)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1setRectToRect
-  (JNIEnv *, jclass, jint, jobject, jobject, jint);
+  (JNIEnv *, jclass, jlong, jobject, jobject, jint);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setPolyToPoly
- * Signature: (I[FI[FII)Z
+ * Signature: (J[FI[FII)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1setPolyToPoly
-  (JNIEnv *, jclass, jint, jfloatArray, jint, jfloatArray, jint, jint);
+  (JNIEnv *, jclass, jlong, jfloatArray, jint, jfloatArray, jint, jint);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_invert
- * Signature: (II)Z
+ * Signature: (JJ)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1invert
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jlong);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_mapPoints
- * Signature: (I[FI[FIIZ)V
+ * Signature: (J[FI[FIIZ)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1mapPoints
-  (JNIEnv *, jclass, jint, jfloatArray, jint, jfloatArray, jint, jint, jboolean);
+  (JNIEnv *, jclass, jlong, jfloatArray, jint, jfloatArray, jint, jint, jboolean);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_mapRect
- * Signature: (ILandroid/graphics/RectF;Landroid/graphics/RectF;)Z
+ * Signature: (JLandroid/graphics/RectF;Landroid/graphics/RectF;)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1mapRect
-  (JNIEnv *, jclass, jint, jobject, jobject);
+  (JNIEnv *, jclass, jlong, jobject, jobject);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_mapRadius
- * Signature: (IF)F
+ * Signature: (JF)F
  */
 JNIEXPORT jfloat JNICALL Java_android_graphics_Matrix_native_1mapRadius
-  (JNIEnv *, jclass, jint, jfloat);
+  (JNIEnv *, jclass, jlong, jfloat);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_getValues
- * Signature: (I[F)V
+ * Signature: (J[F)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1getValues
-  (JNIEnv *, jclass, jint, jfloatArray);
+  (JNIEnv *, jclass, jlong, jfloatArray);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_setValues
- * Signature: (I[F)V
+ * Signature: (J[F)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setValues
-  (JNIEnv *, jclass, jint, jfloatArray);
+  (JNIEnv *, jclass, jlong, jfloatArray);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    native_equals
- * Signature: (II)Z
+ * Signature: (JJ)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1equals
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jlong);
 
 /*
  * Class:     android_graphics_Matrix
  * Method:    finalizer
- * Signature: (I)V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Matrix_finalizer
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }

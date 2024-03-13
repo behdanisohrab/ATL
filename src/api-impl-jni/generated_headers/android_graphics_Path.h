@@ -250,10 +250,10 @@ JNIEXPORT void JNICALL Java_android_graphics_Path_native_1addPath__II
 /*
  * Class:     android_graphics_Path
  * Method:    native_addPath
- * Signature: (III)V
+ * Signature: (IIJ)V
  */
-JNIEXPORT void JNICALL Java_android_graphics_Path_native_1addPath__III
-  (JNIEnv *, jclass, jint, jint, jint);
+JNIEXPORT void JNICALL Java_android_graphics_Path_native_1addPath__IIJ
+  (JNIEnv *, jclass, jint, jint, jlong);
 
 /*
  * Class:     android_graphics_Path
@@ -282,18 +282,18 @@ JNIEXPORT void JNICALL Java_android_graphics_Path_native_1setLastPoint
 /*
  * Class:     android_graphics_Path
  * Method:    native_transform
- * Signature: (III)V
+ * Signature: (IJI)V
  */
-JNIEXPORT void JNICALL Java_android_graphics_Path_native_1transform__III
-  (JNIEnv *, jclass, jint, jint, jint);
+JNIEXPORT void JNICALL Java_android_graphics_Path_native_1transform__IJI
+  (JNIEnv *, jclass, jint, jlong, jint);
 
 /*
  * Class:     android_graphics_Path
  * Method:    native_transform
- * Signature: (II)V
+ * Signature: (IJ)V
  */
-JNIEXPORT void JNICALL Java_android_graphics_Path_native_1transform__II
-  (JNIEnv *, jclass, jint, jint);
+JNIEXPORT void JNICALL Java_android_graphics_Path_native_1transform__IJ
+  (JNIEnv *, jclass, jint, jlong);
 
 /*
  * Class:     android_graphics_Path

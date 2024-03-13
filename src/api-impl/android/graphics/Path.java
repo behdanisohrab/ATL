@@ -709,12 +709,12 @@ mDetectSimplePaths = HardwareRenderer.isAvailable();
 	private static native void native_addRoundRect(int nPath, RectF r, float[] radii, int dir);
 	private static native void native_addPath(int nPath, int src, float dx, float dy);
 	private static native void native_addPath(int nPath, int src);
-	private static native void native_addPath(int nPath, int src, int matrix);
+	private static native void native_addPath(int nPath, int src, long matrix);
 	private static native void native_offset(int nPath, float dx, float dy, int dst_path);
 	private static native void native_offset(int nPath, float dx, float dy);
 	private static native void native_setLastPoint(int nPath, float dx, float dy);
-	private static native void native_transform(int nPath, int matrix, int dst_path);
-	private static native void native_transform(int nPath, int matrix);
+	private static native void native_transform(int nPath, long matrix, int dst_path);
+	private static native void native_transform(int nPath, long matrix);
 	private static native boolean native_op(int path1, int path2, int op, int result);
 	private static native void finalizer(int nPath);
 }

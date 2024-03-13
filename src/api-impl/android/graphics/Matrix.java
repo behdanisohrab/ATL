@@ -183,7 +183,7 @@ public class Matrix {
 	/**
 	 * @hide
 	 */
-	public int native_instance;
+	public long native_instance;
 	/**
 	 * Create an identity matrix
 	 */
@@ -202,8 +202,7 @@ public class Matrix {
 	 * This maybe faster than testing if (getType() == 0)
 	 */
 	public boolean isIdentity() {
-		return true;
-		// return native_isIdentity(native_instance);
+		return native_isIdentity(native_instance);
 	}
 	/**
 	 * Returns true if will map a rectangle to another rectangle. This can be
@@ -221,7 +220,7 @@ public class Matrix {
 		if (src == null) {
 			reset();
 		} else {
-			// native_set(native_instance, src.native_instance);
+			native_set(native_instance, src.native_instance);
 		}
 	}
 	/**
@@ -246,7 +245,7 @@ public class Matrix {
 	 * Set the matrix to identity
 	 */
 	public void reset() {
-		// native_reset(native_instance);
+		native_reset(native_instance);
 	}
 	/**
 	 * Set the matrix to translate by (dx, dy).
@@ -260,13 +259,13 @@ public class Matrix {
 	 * specified transformation.
 	 */
 	public void setScale(float sx, float sy, float px, float py) {
-		// native_setScale(native_instance, sx, sy, px, py);
+		native_setScale(native_instance, sx, sy, px, py);
 	}
 	/**
 	 * Set the matrix to scale by sx and sy.
 	 */
 	public void setScale(float sx, float sy) {
-		// native_setScale(native_instance, sx, sy);
+		native_setScale(native_instance, sx, sy);
 	}
 	/**
 	 * Set the matrix to rotate by the specified number of degrees, with a pivot
@@ -381,32 +380,28 @@ public class Matrix {
 	 * M' = T(dx, dy) * M
 	 */
 	public boolean postTranslate(float dx, float dy) {
-		// return native_postTranslate(native_instance, dx, dy);
-		return true;
+		return native_postTranslate(native_instance, dx, dy);
 	}
 	/**
 	 * Postconcats the matrix with the specified scale.
 	 * M' = S(sx, sy, px, py) * M
 	 */
 	public boolean postScale(float sx, float sy, float px, float py) {
-		// return native_postScale(native_instance, sx, sy, px, py);
-		return true;
+		return native_postScale(native_instance, sx, sy, px, py);
 	}
 	/**
 	 * Postconcats the matrix with the specified scale.
 	 * M' = S(sx, sy) * M
 	 */
 	public boolean postScale(float sx, float sy) {
-		// return native_postScale(native_instance, sx, sy);
-		return true;
+		return native_postScale(native_instance, sx, sy);
 	}
 	/**
 	 * Postconcats the matrix with the specified rotation.
 	 * M' = R(degrees, px, py) * M
 	 */
 	public boolean postRotate(float degrees, float px, float py) {
-		// return native_postRotate(native_instance, degrees, px, py);
-		return true;
+		return native_postRotate(native_instance, degrees, px, py);
 	}
 	/**
 	 * Postconcats the matrix with the specified rotation.
@@ -486,8 +481,7 @@ public class Matrix {
 		if (dst == null || src == null) {
 			throw new NullPointerException();
 		}
-		// return native_setRectToRect(native_instance, src, dst, stf.nativeInt);
-		return true;
+		return native_setRectToRect(native_instance, src, dst, stf.nativeInt);
 	}
 	// private helper to perform range checks on arrays of "points"
 	private static void checkPointArrays(float[] src, int srcIndex,
@@ -634,8 +628,7 @@ public class Matrix {
 		if (dst == null || src == null) {
 			throw new NullPointerException();
 		}
-		// return native_mapRect(native_instance, dst, src);
-		return false;
+		return native_mapRect(native_instance, dst, src);
 	}
 	/**
 	 * Apply this matrix to the rectangle, and write the transformed rectangle
@@ -747,89 +740,87 @@ public class Matrix {
 	@Override
 	protected void finalize() throws Throwable {
 		try {
-			// finalizer(native_instance);
+			finalizer(native_instance);
 		} finally {
 			super.finalize();
 		}
 	}
-	/*package*/ final int ni() {
+	/*package*/ final long ni() {
 		return native_instance;
 	}
-	private static /*native*/ int native_create(int native_src_or_zero) {
-		return 0;
-	}
-	private static native boolean native_isIdentity(int native_object);
-	private static native boolean native_rectStaysRect(int native_object);
-	private static native void native_reset(int native_object);
-	private static native void native_set(int native_object, int other);
-	private static native void native_setTranslate(int native_object,
+	private static native long native_create(long native_src_or_zero);
+	private static native boolean native_isIdentity(long native_object);
+	private static native boolean native_rectStaysRect(long native_object);
+	private static native void native_reset(long native_object);
+	private static native void native_set(long native_object, long other);
+	private static native void native_setTranslate(long native_object,
 						       float dx, float dy);
-	private static native void native_setScale(int native_object,
+	private static native void native_setScale(long native_object,
 						   float sx, float sy, float px, float py);
-	private static native void native_setScale(int native_object,
+	private static native void native_setScale(long native_object,
 						   float sx, float sy);
-	private static native void native_setRotate(int native_object,
+	private static native void native_setRotate(long native_object,
 						    float degrees, float px, float py);
-	private static native void native_setRotate(int native_object,
+	private static native void native_setRotate(long native_object,
 						    float degrees);
-	private static native void native_setSinCos(int native_object,
+	private static native void native_setSinCos(long native_object,
 						    float sinValue, float cosValue, float px, float py);
-	private static native void native_setSinCos(int native_object,
+	private static native void native_setSinCos(long native_object,
 						    float sinValue, float cosValue);
-	private static native void native_setSkew(int native_object,
+	private static native void native_setSkew(long native_object,
 						  float kx, float ky, float px, float py);
-	private static native void native_setSkew(int native_object,
+	private static native void native_setSkew(long native_object,
 						  float kx, float ky);
-	private static native boolean native_setConcat(int native_object,
-						       int a, int b);
-	private static native boolean native_preTranslate(int native_object,
+	private static native boolean native_setConcat(long native_object,
+						       long a, long b);
+	private static native boolean native_preTranslate(long native_object,
 							  float dx, float dy);
-	private static native boolean native_preScale(int native_object,
+	private static native boolean native_preScale(long native_object,
 						      float sx, float sy, float px, float py);
-	private static native boolean native_preScale(int native_object,
+	private static native boolean native_preScale(long native_object,
 						      float sx, float sy);
-	private static native boolean native_preRotate(int native_object,
+	private static native boolean native_preRotate(long native_object,
 						       float degrees, float px, float py);
-	private static native boolean native_preRotate(int native_object,
+	private static native boolean native_preRotate(long native_object,
 						       float degrees);
-	private static native boolean native_preSkew(int native_object,
+	private static native boolean native_preSkew(long native_object,
 						     float kx, float ky, float px, float py);
-	private static native boolean native_preSkew(int native_object,
+	private static native boolean native_preSkew(long native_object,
 						     float kx, float ky);
-	private static native boolean native_preConcat(int native_object,
-						       int other_matrix);
-	private static native boolean native_postTranslate(int native_object,
+	private static native boolean native_preConcat(long native_object,
+						       long other_matrix);
+	private static native boolean native_postTranslate(long native_object,
 							   float dx, float dy);
-	private static native boolean native_postScale(int native_object,
+	private static native boolean native_postScale(long native_object,
 						       float sx, float sy, float px, float py);
-	private static native boolean native_postScale(int native_object,
+	private static native boolean native_postScale(long native_object,
 						       float sx, float sy);
-	private static native boolean native_postRotate(int native_object,
+	private static native boolean native_postRotate(long native_object,
 							float degrees, float px, float py);
-	private static native boolean native_postRotate(int native_object,
+	private static native boolean native_postRotate(long native_object,
 							float degrees);
-	private static native boolean native_postSkew(int native_object,
+	private static native boolean native_postSkew(long native_object,
 						      float kx, float ky, float px, float py);
-	private static native boolean native_postSkew(int native_object,
+	private static native boolean native_postSkew(long native_object,
 						      float kx, float ky);
-	private static native boolean native_postConcat(int native_object,
-							int other_matrix);
-	private static native boolean native_setRectToRect(int native_object,
+	private static native boolean native_postConcat(long native_object,
+							long other_matrix);
+	private static native boolean native_setRectToRect(long native_object,
 							   RectF src, RectF dst, int stf);
-	private static native boolean native_setPolyToPoly(int native_object,
+	private static native boolean native_setPolyToPoly(long native_object,
 							   float[] src, int srcIndex, float[] dst, int dstIndex, int pointCount);
-	private static native boolean native_invert(int native_object, int inverse);
-	private static native void native_mapPoints(int native_object,
+	private static native boolean native_invert(long native_object, long inverse);
+	private static native void native_mapPoints(long native_object,
 						    float[] dst, int dstIndex, float[] src, int srcIndex,
 						    int ptCount, boolean isPts);
-	private static native boolean native_mapRect(int native_object,
+	private static native boolean native_mapRect(long native_object,
 						     RectF dst, RectF src);
-	private static native float native_mapRadius(int native_object,
+	private static native float native_mapRadius(long native_object,
 						     float radius);
-	private static native void native_getValues(int native_object,
+	private static native void native_getValues(long native_object,
 						    float[] values);
-	private static native void native_setValues(int native_object,
+	private static native void native_setValues(long native_object,
 						    float[] values);
-	private static native boolean native_equals(int native_a, int native_b);
-	private static native void finalizer(int native_instance);
+	private static native boolean native_equals(long native_a, long native_b);
+	private static native void finalizer(long native_instance);
 }

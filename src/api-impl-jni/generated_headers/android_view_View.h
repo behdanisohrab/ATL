@@ -321,6 +321,14 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnLongClickListener
 
 /*
  * Class:     android_view_View
+ * Method:    native_getMatrix
+ * Signature: (JJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_android_view_View_native_1getMatrix
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     android_view_View
  * Method:    native_getGlobalVisibleRect
  * Signature: (JLandroid/graphics/Rect;)Z
  */
