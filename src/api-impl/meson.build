@@ -399,6 +399,7 @@ hax_jar = jar('hax', [
               	'android/webkit/WebView.java',
               	'android/webkit/WebViewClient.java',
               	'android/widget/AbsListView.java',
+              	'android/widget/AbsoluteLayout.java',
               	'android/widget/AbsSeekBar.java',
               	'android/widget/AbsSpinner.java',
               	'android/widget/Adapter.java',
