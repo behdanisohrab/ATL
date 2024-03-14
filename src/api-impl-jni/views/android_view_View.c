@@ -19,10 +19,13 @@ static struct touch_callback_data *cancel_triggerer = NULL;
 static bool call_ontouch_callback(int action, double x, double y, struct touch_callback_data *d, GtkPropagationPhase phase, guint32 timestamp, GdkEvent *event)
 {
 	bool ret;
+	double raw_x;
+	double raw_y;
 	JNIEnv *env;
 	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
 
-	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_TOUCHSCREEN, action, (float)x, (float)y, (long)timestamp);
+	gdk_event_get_position(event, &raw_x, &raw_y);
+	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_TOUCHSCREEN, action, (float)x, (float)y, (long)timestamp, (float)raw_x, (float)raw_y);
 
 	if (phase == GTK_PHASE_CAPTURE && !d->intercepted) {
 		d->intercepted = (*env)->CallBooleanMethod(env, d->this, handle_cache.view.onInterceptTouchEvent, motion_event);
@@ -120,7 +123,7 @@ static gboolean scroll_cb(GtkEventControllerScroll* self, gdouble dx, gdouble dy
 		dx /= MAGIC_SCROLL_FACTOR;
 		dy /= MAGIC_SCROLL_FACTOR;
 	}
-	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_CLASS_POINTER, MOTION_EVENT_ACTION_SCROLL, dx, -dy, (long)0);
+	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_CLASS_POINTER, MOTION_EVENT_ACTION_SCROLL, dx, -dy, (long)0, 0.f, 0.f);
 
 	gboolean ret = (*env)->CallBooleanMethod(env, this, handle_cache.view.onGenericMotionEvent, motion_event);
 	if((*env)->ExceptionCheck(env))

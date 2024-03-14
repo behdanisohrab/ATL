@@ -1370,16 +1370,20 @@ public final class MotionEvent extends InputEvent {
 	float coord_x;
 	float coord_y;
 	long eventTime;
+	float raw_x;
+	float raw_y;
 
 	private MotionEvent() {
 	}
 
-	public MotionEvent(int source, int action, float coord_x, float coord_y, long eventTime) {
+	public MotionEvent(int source, int action, float coord_x, float coord_y, long eventTime, float raw_x, float raw_y) {
 		this.source = source;
 		this.action = action;
 		this.coord_x = coord_x;
 		this.coord_y = coord_y;
 		this.eventTime = eventTime;
+		this.raw_x = raw_x;
+		this.raw_y = raw_y;
 	}
 
 	@Override
@@ -2233,7 +2237,7 @@ public final class MotionEvent extends InputEvent {
 	 * @see #AXIS_X
 	 */
 	public final float getRawX() {
-		return coord_x;
+		return raw_x;
 	}
 
 	/**
@@ -2246,7 +2250,7 @@ public final class MotionEvent extends InputEvent {
 	 * @see #AXIS_Y
 	 */
 	public final float getRawY() {
-		return coord_y;
+		return raw_y;
 	}
 
 	/**
