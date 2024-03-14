@@ -158,7 +158,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		return true;
 	}
 
-	public LayoutTransition getLayoutTransition() {return null;}
+	public LayoutTransition getLayoutTransition() { return null; }
 
 	public static int getChildMeasureSpec(int spec, int padding, int childDimension) {
 		int specMode = MeasureSpec.getMode(spec);
@@ -167,98 +167,96 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		int resultSize = 0;
 		int resultMode = 0;
 		switch (specMode) {
-		// Parent has imposed an exact size on us
-		case MeasureSpec.EXACTLY:
-			if (childDimension >= 0) {
-				resultSize = childDimension;
-				resultMode = MeasureSpec.EXACTLY;
-			} else if (childDimension == LayoutParams.MATCH_PARENT) {
-				// Child wants to be our size. So be it.
-				resultSize = size;
-				resultMode = MeasureSpec.EXACTLY;
-			} else if (childDimension == LayoutParams.WRAP_CONTENT) {
-				// Child wants to determine its own size. It can't be
-				// bigger than us.
-				resultSize = size;
-				resultMode = MeasureSpec.AT_MOST;
-			}
-			break;
-		// Parent has imposed a maximum size on us
-		case MeasureSpec.AT_MOST:
-			if (childDimension >= 0) {
-				// Child wants a specific size... so be it
-				resultSize = childDimension;
-				resultMode = MeasureSpec.EXACTLY;
-			} else if (childDimension == LayoutParams.MATCH_PARENT) {
-				// Child wants to be our size, but our size is not fixed.
-				// Constrain child to not be bigger than us.
-				resultSize = size;
-				resultMode = MeasureSpec.AT_MOST;
-			} else if (childDimension == LayoutParams.WRAP_CONTENT) {
-				// Child wants to determine its own size. It can't be
-				// bigger than us.
-				resultSize = size;
-				resultMode = MeasureSpec.AT_MOST;
-			}
-			break;
-		// Parent asked to see how big we want to be
-		case MeasureSpec.UNSPECIFIED:
-			if (childDimension >= 0) {
-				// Child wants a specific size... let them have it
-				resultSize = childDimension;
-				resultMode = MeasureSpec.EXACTLY;
-			} else if (childDimension == LayoutParams.MATCH_PARENT) {
-				// Child wants to be our size... find out how big it should
-				// be
-				resultSize = 0; //View.sUseZeroUnspecifiedMeasureSpec ? 0 : size;
-				resultMode = MeasureSpec.UNSPECIFIED;
-			} else if (childDimension == LayoutParams.WRAP_CONTENT) {
-				// Child wants to determine its own size.... find out how
-				// big it should be
-				resultSize = 0; //View.sUseZeroUnspecifiedMeasureSpec ? 0 : size;
-				resultMode = MeasureSpec.UNSPECIFIED;
-			}
-			break;
+			// Parent has imposed an exact size on us
+			case MeasureSpec.EXACTLY:
+				if (childDimension >= 0) {
+					resultSize = childDimension;
+					resultMode = MeasureSpec.EXACTLY;
+				} else if (childDimension == LayoutParams.MATCH_PARENT) {
+					// Child wants to be our size. So be it.
+					resultSize = size;
+					resultMode = MeasureSpec.EXACTLY;
+				} else if (childDimension == LayoutParams.WRAP_CONTENT) {
+					// Child wants to determine its own size. It can't be
+					// bigger than us.
+					resultSize = size;
+					resultMode = MeasureSpec.AT_MOST;
+				}
+				break;
+			// Parent has imposed a maximum size on us
+			case MeasureSpec.AT_MOST:
+				if (childDimension >= 0) {
+					// Child wants a specific size... so be it
+					resultSize = childDimension;
+					resultMode = MeasureSpec.EXACTLY;
+				} else if (childDimension == LayoutParams.MATCH_PARENT) {
+					// Child wants to be our size, but our size is not fixed.
+					// Constrain child to not be bigger than us.
+					resultSize = size;
+					resultMode = MeasureSpec.AT_MOST;
+				} else if (childDimension == LayoutParams.WRAP_CONTENT) {
+					// Child wants to determine its own size. It can't be
+					// bigger than us.
+					resultSize = size;
+					resultMode = MeasureSpec.AT_MOST;
+				}
+				break;
+			// Parent asked to see how big we want to be
+			case MeasureSpec.UNSPECIFIED:
+				if (childDimension >= 0) {
+					// Child wants a specific size... let them have it
+					resultSize = childDimension;
+					resultMode = MeasureSpec.EXACTLY;
+				} else if (childDimension == LayoutParams.MATCH_PARENT) {
+					// Child wants to be our size... find out how big it should
+					// be
+					resultSize = 0; // View.sUseZeroUnspecifiedMeasureSpec ? 0 : size;
+					resultMode = MeasureSpec.UNSPECIFIED;
+				} else if (childDimension == LayoutParams.WRAP_CONTENT) {
+					// Child wants to determine its own size.... find out how
+					// big it should be
+					resultSize = 0; // View.sUseZeroUnspecifiedMeasureSpec ? 0 : size;
+					resultMode = MeasureSpec.UNSPECIFIED;
+				}
+				break;
 		}
-		//noinspection ResourceType
+		// noinspection ResourceType
 		return MeasureSpec.makeMeasureSpec(resultSize, resultMode);
 	}
 
 	protected void measureChildWithMargins(View child,
-			int parentWidthMeasureSpec, int widthUsed,
-			int parentHeightMeasureSpec, int heightUsed) {
-		final MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();
+					       int parentWidthMeasureSpec, int widthUsed,
+					       int parentHeightMeasureSpec, int heightUsed) {
+		final MarginLayoutParams lp = (MarginLayoutParams)child.getLayoutParams();
 		final int childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,
-				/*mPaddingLeft + mPaddingRight +*/ lp.leftMargin + lp.rightMargin
-						+ widthUsed, lp.width);
+								      /*mPaddingLeft + mPaddingRight +*/ lp.leftMargin + lp.rightMargin + widthUsed, lp.width);
 		final int childHeightMeasureSpec = getChildMeasureSpec(parentHeightMeasureSpec,
-				/*mPaddingTop + mPaddingBottom +*/ lp.topMargin + lp.bottomMargin
-						+ heightUsed, lp.height);
+								       /*mPaddingTop + mPaddingBottom +*/ lp.topMargin + lp.bottomMargin + heightUsed, lp.height);
 		child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 	}
 
 	protected void measureChild(View child, int parentWidthMeasureSpec,
-            int parentHeightMeasureSpec) {
-        final LayoutParams lp = child.getLayoutParams();
-        final int childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,
-                /*mPaddingLeft + mPaddingRight*/0, lp.width);
-        final int childHeightMeasureSpec = getChildMeasureSpec(parentHeightMeasureSpec,
-                /*mPaddingTop + mPaddingBottom*/0, lp.height);
-        child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-    }
+				    int parentHeightMeasureSpec) {
+		final LayoutParams lp = child.getLayoutParams();
+		final int childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,
+								      /*mPaddingLeft + mPaddingRight*/ 0, lp.width);
+		final int childHeightMeasureSpec = getChildMeasureSpec(parentHeightMeasureSpec,
+								       /*mPaddingTop + mPaddingBottom*/ 0, lp.height);
+		child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+	}
 
 	public void setAddStatesFromChildren(boolean addsStates) {}
 
-	public View getFocusedChild() {return null;}
+	public View getFocusedChild() { return null; }
 
-	public int getDescendantFocusability() {return 0;}
+	public int getDescendantFocusability() { return 0; }
 
 	public void startViewTransition(View view) {}
 	public void endViewTransition(View view) {}
 
 	protected LayoutParams generateDefaultLayoutParams() {
-        return new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    }
+		return new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	}
 
 	public void focusableViewAvailable(View v) {}
 
@@ -353,7 +351,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		/**
 		 * Used to animate layouts.
 		 */
-//		public LayoutAnimationController.AnimationParameters layoutAnimationParameters;
+		//public LayoutAnimationController.AnimationParameters layoutAnimationParameters;
 	}
 
 	public static class MarginLayoutParams extends ViewGroup.LayoutParams {
@@ -416,6 +414,5 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	public interface OnHierarchyChangeListener {
-
 	}
 }
