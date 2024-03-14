@@ -1,5 +1,5 @@
 package android.graphics.drawable;
 
-public class AnimationDrawable {
+public class AnimationDrawable extends Drawable {
 	public void addFrame(Drawable drawable, int dummy) {}
 }
