@@ -245,6 +245,12 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 	}
 
+	protected void measureChildren(int widthMeasureSpec, int heightMeasureSpec) {
+		for (View child: children) {
+			measureChild(child, widthMeasureSpec, heightMeasureSpec);
+		}
+	}
+
 	public void setAddStatesFromChildren(boolean addsStates) {}
 
 	public View getFocusedChild() { return null; }
