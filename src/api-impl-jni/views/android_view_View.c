@@ -456,7 +456,7 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setBackgroundDrawable(JNIE
 }
 
 JNIEXPORT jboolean JNICALL Java_android_view_View_native_1getGlobalVisibleRect(JNIEnv *env, jobject this, jlong widget_ptr, jobject rect) {
-	GtkWidget *widget = GTK_WIDGET(_PTR(widget_ptr));
+	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget_ptr)));
 	graphene_point_t point_in = {0, 0};
 	graphene_point_t point_out;
 	double off_x;
@@ -529,6 +529,6 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnLongClickListener(JNIEnv *env
 
 JNIEXPORT jboolean JNICALL Java_android_view_View_native_1getMatrix(JNIEnv *env, jobject this, jlong widget_ptr, jlong matrix_ptr)
 {
-	GtkWidget *widget = GTK_WIDGET(_PTR(widget_ptr));
-	return gtk_widget_compute_transform(gtk_widget_get_parent(gtk_widget_get_parent(widget)), widget, _PTR(matrix_ptr));
+	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget_ptr)));
+	return gtk_widget_compute_transform(gtk_widget_get_parent(widget), widget, _PTR(matrix_ptr));
 }
