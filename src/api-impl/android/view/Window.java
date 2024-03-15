@@ -98,4 +98,6 @@ public class Window {
 	public void setStatusBarColor(int color) {}
 
 	public void setNavigationBarColor(int color) {}
+
+	public void setFormat (int format) {}
 }
