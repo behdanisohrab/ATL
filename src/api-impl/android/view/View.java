@@ -1040,9 +1040,11 @@ public class View extends Object {
 
 	protected void onScrollChanged(int l, int t, int oldl, int oldt) {}
 
-	public void getLocationOnScreen(int[] location) { // FIXME: actually return the widget's location (and also have the onclick callback convert to window coordinates, because is seems that's what android deals in..)
-		location[0] = 0;
-		location[1] = 0;
+	public void getLocationOnScreen(int[] location) {
+		Rect rect = new Rect();
+		getGlobalVisibleRect(rect);
+		location[0] = rect.left;
+		location[1] = rect.top;
 	}
 
 	public boolean performHapticFeedback(int feedbackConstant) {
