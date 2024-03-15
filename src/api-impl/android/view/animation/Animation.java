@@ -10,4 +10,6 @@ public class Animation {
 
 	public void cancel() {}
 
+	public void setFillBefore(boolean dummy) {}
+	public void setFillAfter(boolean dummy) {}
 }
