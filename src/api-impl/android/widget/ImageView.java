@@ -13,7 +13,7 @@ import android.view.View;
 
 public class ImageView extends View {
 
-	private Bitmap bitmap;
+	private Bitmap bitmap = null;
 	private ScaleType scaleType = ScaleType.FIT_CENTER;
 
 	public ImageView(Context context, AttributeSet attrs) {
@@ -61,6 +61,9 @@ public class ImageView extends View {
 	}
 
 	public Drawable getDrawable() {
+		if(bitmap == null)
+			return null;
+
 		return new BitmapDrawable(getContext().getResources(), bitmap);
 	}
 

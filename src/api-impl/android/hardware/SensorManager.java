@@ -35,6 +35,10 @@ public class SensorManager {
 		}
 	}
 
+	public void unregisterListener(final SensorEventListener listener) {
+		unregisterListener(listener, null);
+	}
+
 	public void unregisterListener(final SensorEventListener listener, Sensor sensor) {
 		System.out.println("STUB: andoroid.hw.SensorManager.unregisterListener");
 	}
