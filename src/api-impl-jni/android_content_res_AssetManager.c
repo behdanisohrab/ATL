@@ -12,6 +12,9 @@
 #include "util.h"
 #include "generated_headers/android_content_res_AssetManager.h"
 
+#include <glib.h>
+#include <dirent.h>
+
 #define ASSET_DIR "assets/"
 char *get_app_data_dir();
 
@@ -403,4 +406,45 @@ JNIEXPORT void JNICALL Java_android_content_res_AssetManager_setConfiguration(
 		.sdkVersion = majorVersion
 	};
 	AssetManager_setConfiguration(asset_manager, &config, NULL);
+}
+
+JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_list(JNIEnv *env, jobject this, jstring _path)
+{
+	DIR *d;
+	int fd;
+	struct dirent *dir;
+
+	char* path_rel = _CSTRING(_path);
+	char *app_data_dir = get_app_data_dir();
+	char *path_abs = malloc(strlen(app_data_dir) + strlen(ASSET_DIR) + strlen(path_rel) + 1);
+
+	strcpy(path_abs, app_data_dir);
+	strcat(path_abs, ASSET_DIR);
+	strcat(path_abs, path_rel);
+
+	d = opendir(path_abs);
+	
+	GArray *assets = g_array_new(false, false, sizeof(const char *));
+	int i = 0;
+	if (d)
+	{
+		while ((dir = readdir(d)) != NULL)
+		{
+			char *asset_path = malloc (strlen(dir->d_name) + 1);
+			strcpy(asset_path, dir->d_name);
+			g_array_append_val (assets, asset_path);
+		}
+		closedir(d);
+	}
+	
+	jobjectArray array = (*env)->NewObjectArray(env, assets->len, (*env)->FindClass(env, "java/lang/String"), NULL);
+	for (i = 0; i < assets->len; i++)
+	{
+		const char *asset = g_array_index(assets, const char *, i);
+		(*env)->SetObjectArrayElement(env, array, i, (*env)->NewString(env, asset, strlen(asset)));
+	}
+
+	g_array_free(assets, TRUE);
+	
+	return array;
 }
