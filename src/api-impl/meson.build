@@ -25,6 +25,7 @@ hax_jar = jar('hax', [
               	'android/app/AlertDialog.java',
               	'android/app/AppOpsManager.java',
               	'android/app/Application.java',
+		'android/app/ApplicationErrorReport.java',
               	'android/app/Dialog.java',
               	'android/app/DownloadManager.java',
               	'android/app/Fragment.java',
