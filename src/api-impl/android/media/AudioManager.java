@@ -44,4 +44,8 @@ public class AudioManager {
 	public int abandonAudioFocus(OnAudioFocusChangeListener listener) {
 		return /*AUDIOFOCUS_REQUEST_GRANTED*/1;
 	}
+
+	public boolean isWiredHeadsetOn() {
+		return false;
+	}
 }
