@@ -141,9 +141,6 @@ public final class Bitmap {
 		this.pixbuf = pixbuf;
 	}
 
-	private native long native_bitmap_from_path(CharSequence path);
-	static native long native_copy(long src);
-
 	/**
 	 * Private constructor that must received an already allocated native bitmap
 	 * int (pointer).
@@ -790,7 +787,7 @@ public final class Bitmap {
 
 				       return bitmap;
 				   */
-		return new Bitmap(native_copy(source.pixbuf));
+		return new Bitmap(native_copy(native_subpixbuf(source.pixbuf, x, y, width, height)));
 	}
 
 	/**
@@ -859,7 +856,7 @@ public final class Bitmap {
 		if (width <= 0 || height <= 0) {
 			throw new IllegalArgumentException("width and height must be > 0");
 		}
-		Bitmap bm = nativeCreate(null, 0, width, width, height, config.nativeInt, true);
+		Bitmap bm = new Bitmap(native_create(/*null, 0, width, */width, height/*, config.nativeInt, true*/));
 		if (display != null) {
 			bm.mDensity = display.densityDpi;
 		}
@@ -932,8 +929,7 @@ public final class Bitmap {
 		if (width <= 0 || height <= 0) {
 			throw new IllegalArgumentException("width and height must be > 0");
 		}
-		Bitmap bm = nativeCreate(colors, offset, stride, width, height,
-					 config.nativeInt, false);
+		Bitmap bm = new Bitmap(native_create(/*colors, offset, stride, */width, height/*, config.nativeInt, false*/));
 		if (display != null) {
 			bm.mDensity = display.densityDpi;
 		}
@@ -1600,9 +1596,11 @@ public final class Bitmap {
 
 	//////////// native methods
 
-	private static /*native*/ Bitmap nativeCreate(int[] colors, int offset,
-						      int stride, int width, int height,
-						      int nativeConfig, boolean mutable) { return new Bitmap(); }
+	private native long native_bitmap_from_path(CharSequence path);
+	static native long native_copy(long src);
+	static native long native_subpixbuf(long src, int x, int y, int width, int height);
+	private static native long native_create(int width, int height);
+
 	private static native Bitmap nativeCopy(int srcBitmap, int nativeConfig,
 						boolean isMutable);
 	private static native void nativeDestructor(int nativeBitmap);

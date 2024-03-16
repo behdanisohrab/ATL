@@ -6,7 +6,10 @@ public class Canvas {
 
 	public Canvas() {}
 
-	public Canvas(Bitmap bmp) {}
+	public Canvas(Bitmap bmp) {
+		this.skia_canvas = native_canvas_from_bitmap(bmp.pixbuf);
+		this.widget = 0;
+	}
 
 	public Canvas(long skia_canvas, long widget) {
 		this.skia_canvas = skia_canvas;
@@ -22,9 +25,6 @@ public class Canvas {
 	public void restore() {
 		native_restore(skia_canvas, widget);
 	}
-
-	private static native void native_save(long skia_canvas, long widget);
-	private static native void native_restore(long skia_canvas, long widget);
 
 	// ---
 
@@ -222,10 +222,13 @@ public class Canvas {
 	 * @param paint  The paint used to draw the bitmap (may be null)
 	 */
 	public void drawBitmap(Bitmap bitmap, float left, float top, Paint paint) {
-		System.out.println("XXXXXXX bitmap(bitmap, left, top, paint)");
-	/*
-		 native_drawBitmap(mNativeCanvas, bitmap.ni(), left, top, paint != null ? paint.mNativePaint : 0, mDensity, mScreenDensity, bitmap.mDensity);
-	 */
+		if(skia_canvas == 0) {
+			System.out.println(this + " doesn't have a skia canvas");
+			return;
+		}
+		native_drawBitmap(skia_canvas, widget, bitmap.pixbuf, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
+		                                                      left, top, left + bitmap.getWidth(), top + bitmap.getHeight(),
+		                                                      (paint != null) ? paint.skia_paint : 0);
 	}
 
 	/**
@@ -254,7 +257,9 @@ public class Canvas {
 		if (dst == null) {
 			throw new NullPointerException();
 		}
-		native_drawBitmap(skia_canvas, widget, bitmap.pixbuf, src.left, src.top, dst.left, dst.top, dst.width(), dst.height(), (paint != null) ? paint.skia_paint : 0); // FIXME - ignores width/height of source
+		native_drawBitmap(skia_canvas, widget, bitmap.pixbuf, src.left, src.top, src.right, src.bottom,
+		                                                      dst.left, dst.top, dst.right, dst.bottom,
+		                                                      (paint != null) ? paint.skia_paint : 0);
 	}
 
 	/**
@@ -385,10 +390,15 @@ public class Canvas {
 
 	public void restoreToCount(int count) {}
 
+	private static native long native_canvas_from_bitmap(long pixbuf);
+
+	private static native void native_save(long skia_canvas, long widget);
+	private static native void native_restore(long skia_canvas, long widget);
+
 	private static native void native_drawText(long skia_canvas, CharSequence text, int start, int end, float x, float y, long skia_font, long skia_paint);
 	private static native void native_drawRect(long skia_canvas, float left, float top, float right, float bottom, long skia_paint);
 	private static native void native_drawLine(long skia_canvas, long widget, float startX, float startY, float stopX, float stopY, long skia_paint);
-	private static native void native_drawBitmap(long skia_canvas, long widget, long pixbuf, float src_x, float src_y, float dest_x, float dest_y, float dest_w, float dest_h, long skia_paint);
+	private static native void native_drawBitmap(long skia_canvas, long widget, long pixbuf, float src_left, float src_top, float src_right, float src_bottom, float dest_left, float dest_top, float dest_right, float dest_bottm, long skia_paint);
 	private static native void native_rotate(long skia_canvas, long widget, float angle);
 	private static native void native_rotate_and_translate(long skia_canvas, long widget, float angle, float tx, float ty);
 }

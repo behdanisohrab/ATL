@@ -10,6 +10,26 @@
 
 #include "generated_headers/android_graphics_Canvas.h"
 
+JNIEXPORT jlong JNICALL Java_android_graphics_Canvas_native_1canvas_1from_1bitmap(JNIEnv *env, jclass this, jlong _pixbuf)
+{
+	GdkPixbuf *pixbuf = (GdkPixbuf *)_PTR(_pixbuf);
+
+	/* - copied from bitmap (TODO: refactor) - */
+	sk_imageinfo_t info = {
+		.width = gdk_pixbuf_get_width(pixbuf),
+		.height = gdk_pixbuf_get_height(pixbuf),
+		.colorType = RGBA_8888_SK_COLORTYPE, // is this correct?
+		.alphaType = PREMUL_SK_ALPHATYPE,
+	};
+	void *pixbuf_pixels = gdk_pixbuf_get_pixels(pixbuf);
+	int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+//	size_t pixbuf_size = rowstride * (info.height - 1)
+//	                     + /* last row: */ info.width * ((gdk_pixbuf_get_n_channels(pixbuf) * gdk_pixbuf_get_bits_per_sample(pixbuf) + 7) / 8);
+	/* --------------------------------------- */
+
+	return _INTPTR(sk_canvas_new_from_raster(&info, pixbuf_pixels, /*pixbuf_size*/rowstride, NULL));
+}
+
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1save(JNIEnv *env, jclass this, jlong skia_canvas, jlong widget)
 {
 	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
@@ -32,7 +52,10 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawLine(JNIEnv *env
 	sk_canvas_draw_line(canvas, start_x, start_y, stop_x, stop_y, paint);
 }
 
-JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawBitmap(JNIEnv *env , jclass this_class, jlong skia_canvas, jlong widget, jlong _pixbuf, jfloat src_x, jfloat src_y, jfloat dest_x , jfloat dest_y, jfloat dest_w , jfloat dest_h, jlong skia_paint)
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawBitmap(JNIEnv *env , jclass this_class, jlong skia_canvas, jlong widget, jlong _pixbuf,
+                                                                       jfloat src_left, jfloat src_top, jfloat src_right, jfloat src_bottom,
+                                                                       jfloat dst_left, jfloat dst_top, jfloat dst_right, jfloat dst_bottom,
+                                                                       jlong skia_paint)
 {
 	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
 	GdkPixbuf *pixbuf = (GdkPixbuf *)_PTR(_pixbuf);
@@ -40,10 +63,11 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawBitmap(JNIEnv *e
 
 	sk_image_t *image = g_object_get_data(G_OBJECT(pixbuf), "sk_image");
 	if(!image) {
-		fprintf(stderr, "pixbuf doesn't have a skia image associated: %p\n", pixbuf);
+		fprintf(stderr, "drawBitmap: pixbuf doesn't have a skia image associated: %p\n", pixbuf);
 		return;
 	}
-	sk_canvas_draw_image(canvas, image, dest_x, dest_y, paint);
+	sk_canvas_draw_image_rect(canvas, image, &(sk_rect_t){src_left, src_top, src_right, src_bottom},
+	                                    &(sk_rect_t){dst_left, dst_top, dst_right, dst_bottom}, paint);
 }
 
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawRect(JNIEnv *env, jclass this, jlong skia_canvas, jfloat left, jfloat top, jfloat right, jfloat bottom, jlong skia_paint)

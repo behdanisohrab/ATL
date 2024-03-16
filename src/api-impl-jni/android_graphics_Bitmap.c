@@ -8,16 +8,8 @@
 
 #include "generated_headers/android_graphics_Bitmap.h"
 
-/*
- * We use a GdkPixbuf as the backing for a bitmap.
- * We additionally create a view into it as a skia image,
- * so we can pass it to skia functions.
- */
-JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1bitmap_1from_1path(JNIEnv *env, jobject this, jobject path)
+void attach_sk_image(GdkPixbuf *pixbuf)
 {
-	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(_CSTRING(path), NULL);
-	android_log_printf(ANDROID_LOG_VERBOSE, "["__FILE__"]", ">>> made pixbuf from path: >%s<, >%p<\n", _CSTRING(path), pixbuf);
-
 	sk_imageinfo_t info = {
 		.width = gdk_pixbuf_get_width(pixbuf),
 		.height = gdk_pixbuf_get_height(pixbuf),
@@ -34,8 +26,30 @@ JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1bitmap_1from_1path(
 
 	sk_image_t *image = sk_image_new_raster_data(&info, pixels, rowstride);
 	g_object_set_data(G_OBJECT(pixbuf), "sk_image", image);
+}
+
+/*
+ * We use a GdkPixbuf as the backing for a bitmap.
+ * We additionally create a view into it as a skia image,
+ * so we can pass it to skia functions.
+ */
+JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1bitmap_1from_1path(JNIEnv *env, jobject this, jobject path)
+{
+	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(_CSTRING(path), NULL);
+	android_log_printf(ANDROID_LOG_VERBOSE, "["__FILE__"]", ">>> made pixbuf from path: >%s<, >%p<\n", _CSTRING(path), pixbuf);
+
+	attach_sk_image(pixbuf);
 
 	g_object_ref(pixbuf);
+	return _INTPTR(pixbuf);
+}
+/* new empty bitmap */
+JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1create(JNIEnv *env, jclass this, jint width, jint height)
+{
+	GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, width, height);
+
+	attach_sk_image(pixbuf);
+
 	return _INTPTR(pixbuf);
 }
 
@@ -59,7 +73,8 @@ JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_getHeight(JNIEnv *env, jobje
 	return gdk_pixbuf_get_height(pixbuf);
 }
 
-JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeGetPixels(JNIEnv *env, jclass, jlong bitmapHandle, jintArray pixelArray, jint offset, jint stride, jint x, jint y, jint width, jint height, jboolean premultiplied) {
+JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeGetPixels(JNIEnv *env, jclass, jlong bitmapHandle, jintArray pixelArray, jint offset, jint stride, jint x, jint y, jint width, jint height, jboolean premultiplied)
+{
 	int i,j;
 	GdkPixbuf *pixbuf = _PTR(bitmapHandle);
 	g_assert(gdk_pixbuf_get_n_channels(pixbuf) == 4);
@@ -79,26 +94,41 @@ JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeGetPixels(JNIEnv *env,
 	(*env)->ReleaseIntArrayElements(env, pixelArray, dst, 0);
 }
 
-JNIEXPORT jboolean JNICALL Java_android_graphics_Bitmap_nativeRecycle(JNIEnv *env, jclass, jlong bitmapHandle) {
+JNIEXPORT jboolean JNICALL Java_android_graphics_Bitmap_nativeRecycle(JNIEnv *env, jclass, jlong bitmapHandle)
+{
 	GdkPixbuf *pixbuf = _PTR(bitmapHandle);
 	sk_image_t *image = g_object_get_data(G_OBJECT(pixbuf), "sk_image");
-	if(!image) {
-		fprintf(stderr, "pixbuf doesn't have a skia image associated: %p\n", pixbuf);
-		g_object_unref(pixbuf);
-		return true;
-	}
-	sk_image_unref(image);
+	if(image)
+		sk_image_unref(image);
+	else
+		fprintf(stderr, "nativeRecycle: pixbuf doesn't have a skia image associated: %p\n", pixbuf);
 	g_object_unref(pixbuf);
 	return true;
 }
 
-JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1copy(JNIEnv *env, jclass, jlong src_ptr) {
+JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1copy(JNIEnv *env, jclass, jlong src_ptr)
+{
 	GdkPixbuf *src = _PTR(src_ptr);
 	GdkPixbuf *copy = gdk_pixbuf_copy(src);
+	sk_image_t *image = g_object_get_data(G_OBJECT(src), "sk_image");
+	printf("native_copy: dbg: %p\n", image);
+	if(image)
+		g_object_set_data(G_OBJECT(copy), "sk_image", sk_image_make_raster_image(image)); // probably?
+	else
+		fprintf(stderr, "native_copy: pixbuf doesn't have a skia image associated: %p\n", src);
 	return _INTPTR(copy);
 }
 
-JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_nativeRowBytes(JNIEnv *env, jclass, jlong pixbuf_ptr) {
+JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1subpixbuf(JNIEnv *env, jclass, jlong _pixbuf, jint x, jint y, jint width, jint height)
+{
+	GdkPixbuf *pixbuf = _PTR(_pixbuf);
+	GdkPixbuf *subpixbuf = gdk_pixbuf_new_subpixbuf(pixbuf, x, y, width, height);
+	attach_sk_image(subpixbuf);
+	return _INTPTR(subpixbuf);
+}
+
+JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_nativeRowBytes(JNIEnv *env, jclass, jlong pixbuf_ptr)
+{
 	GdkPixbuf *pixbuf = _PTR(pixbuf_ptr);
 
 	return gdk_pixbuf_get_rowstride(pixbuf);

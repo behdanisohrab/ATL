@@ -54,21 +54,21 @@ viewporter = wl_mod.scan_xml(xml)
 
 # libandroid
 libandroid_so = shared_library('android', [
-                          	'src/libandroid/asset_manager.c',
-                          	'src/libandroid/bitmap.c',
-                          	'src/libandroid/configuration.c',
-                          	'src/libandroid/input.c',
-                          	'src/libandroid/looper.c',
-                          	'src/libandroid/media.c',
-                          	'src/libandroid/native_window.c',
-                          	'src/libandroid/sensor.c',
-                          	'src/libandroid/trace.c',
-                          ],
-                          install: true,
-                          soversion: 0,
-                          dependencies: [
-                          	dependency('gtk4'), dependency('jni'), dependency('vulkan')
-                          ])
+                                          	'src/libandroid/asset_manager.c',
+                                          	'src/libandroid/bitmap.c',
+                                          	'src/libandroid/configuration.c',
+                                          	'src/libandroid/input.c',
+                                          	'src/libandroid/looper.c',
+                                          	'src/libandroid/media.c',
+                                          	'src/libandroid/native_window.c',
+                                          	'src/libandroid/sensor.c',
+                                          	'src/libandroid/trace.c',
+                                          ],
+                                          install: true,
+                                          soversion: 0,
+                                          dependencies: [
+                                          	dependency('gtk4'), dependency('jni'), dependency('vulkan')
+                                         ])
 
 libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/android_app_NativeActivity.c',
@@ -97,6 +97,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/graphics/android_graphics_Matrix.c',
                                                                   	'src/api-impl-jni/graphics/android_graphics_Typeface.c',
                                                                   	'src/api-impl-jni/graphics/android_graphics_Typeface.c',
+                                                                  	'src/api-impl-jni/graphics/android_graphics_drawable_BitmapDrawable.c',
                                                                   	'src/api-impl-jni/graphics/android_graphics_drawable_Drawable.c',
                                                                   	'src/api-impl-jni/graphics/android_graphics_drawable_DrawableContainer.c',
                                                                   	'src/api-impl-jni/location/android_location_LocationManager.c',
@@ -130,25 +131,25 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   dependencies: [
                                                                   	dependency('gtk4', version: '>=4.8'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni'),
                                                                   	dependency('libportal'), dependency('sqlite3'), libskia_dep, dependency('libavcodec', version: '>=59'), dependency('libdrm'),
-																	libandroidfw_dep
+                                                                  	libandroidfw_dep
                                                                   ],
                                                                   link_with: [ libandroid_so ],
                                                                   link_args: [
                                                                   	'-lasound'
                                                                   ])
 
-executable('android-translation-layer', [ 
-                   	'src/main-executable/main.c',
-                   	'src/main-executable/r_debug.c'
-                   ],
-                   install: true,
-                   dependencies: [
-                   	dependency('gtk4'), dependency('jni'), declare_dependency(link_with: libtranslationlayer_so), libart_dep, dependency('dl'), libdl_bio_dep
-                   ],
-                   link_args: [
-                   	'-rdynamic'
-                   ],
-                   install_rpath: get_option('prefix') / get_option('libdir') / 'art:' + get_option('prefix') / get_option('libdir') / 'java/dex/android_translation_layer/natives')
+executable('android-translation-layer', [
+                                        	'src/main-executable/main.c',
+                                        	'src/main-executable/r_debug.c'
+                                        ],
+                                        install: true,
+                                        dependencies: [
+                                        	dependency('gtk4'), dependency('jni'), declare_dependency(link_with: libtranslationlayer_so), libart_dep, dependency('dl'), libdl_bio_dep
+                                        ],
+                                        link_args: [
+                                        	'-rdynamic'
+                                        ],
+                                        install_rpath: get_option('prefix') / get_option('libdir') / 'art:' + get_option('prefix') / get_option('libdir') / 'java/dex/android_translation_layer/natives')
 
 # hax_arsc_lib.dex (named as classes2.dex so it works inside a jar)
 subdir('src/ARSCLib')

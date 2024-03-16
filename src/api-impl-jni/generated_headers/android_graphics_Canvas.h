@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     android_graphics_Canvas
+ * Method:    native_canvas_from_bitmap
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_android_graphics_Canvas_native_1canvas_1from_1bitmap
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     android_graphics_Canvas
  * Method:    native_save
  * Signature: (JJ)V
  */
@@ -50,10 +58,10 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawLine
 /*
  * Class:     android_graphics_Canvas
  * Method:    native_drawBitmap
- * Signature: (JJJFFFFFFJ)V
+ * Signature: (JJJFFFFFFFFJ)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawBitmap
-  (JNIEnv *, jclass, jlong, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jlong);
+  (JNIEnv *, jclass, jlong, jlong, jlong, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jfloat, jlong);
 
 /*
  * Class:     android_graphics_Canvas

@@ -13,6 +13,22 @@ extern "C" {
 #define android_graphics_Bitmap_WORKING_COMPRESS_STORAGE 4096L
 /*
  * Class:     android_graphics_Bitmap
+ * Method:    getWidth
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_getWidth
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     android_graphics_Bitmap
+ * Method:    getHeight
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_getHeight
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     android_graphics_Bitmap
  * Method:    native_bitmap_from_path
  * Signature: (Ljava/lang/CharSequence;)J
  */
@@ -29,19 +45,19 @@ JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1copy
 
 /*
  * Class:     android_graphics_Bitmap
- * Method:    getWidth
- * Signature: ()I
+ * Method:    native_subpixbuf
+ * Signature: (JIIII)J
  */
-JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_getWidth
-  (JNIEnv *, jobject);
+JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1subpixbuf
+  (JNIEnv *, jclass, jlong, jint, jint, jint, jint);
 
 /*
  * Class:     android_graphics_Bitmap
- * Method:    getHeight
- * Signature: ()I
+ * Method:    native_create
+ * Signature: (II)J
  */
-JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_getHeight
-  (JNIEnv *, jobject);
+JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1create
+  (JNIEnv *, jclass, jint, jint);
 
 /*
  * Class:     android_graphics_Bitmap
