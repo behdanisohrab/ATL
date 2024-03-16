@@ -126,7 +126,10 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		return children.indexOf(child);
 	}
 
-	public void updateViewLayout(View view, ViewGroup.LayoutParams params) {}
+	public void updateViewLayout(View view, ViewGroup.LayoutParams params) {
+		/* FIXME */
+		view.requestLayout();
+	}
 
 	public LayoutParams generateLayoutParams(AttributeSet attrs) {
 		return new LayoutParams(getContext(), attrs);

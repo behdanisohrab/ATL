@@ -1,6 +1,7 @@
 package android.view;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.SurfaceHolder;
 
 public class Window {
@@ -82,6 +83,12 @@ public class Window {
 
 	public WindowManager.LayoutParams getAttributes() {
 		return new WindowManager.LayoutParams();
+	}
+
+	public void setBackgroundDrawable(Drawable drawable) {
+		/* TODO: should this be *under* the contentView background? */
+		if (contentView != null)
+			contentView.setBackgroundDrawable(drawable);
 	}
 
 	public void setAttributes(WindowManager.LayoutParams params) {}

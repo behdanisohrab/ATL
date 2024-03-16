@@ -33,6 +33,7 @@ public class MediaPlayer {
 	public void setOnSeekCompleteListener(MediaPlayer.OnSeekCompleteListener dummy) {}
 	public void setOnVideoSizeChangedListener(MediaPlayer.OnVideoSizeChangedListener dummy) {}
 	public void setAudioStreamType(int dummy) {}
+	public void start() {}
 	public void pause() {}
 	public void prepareAsync() {}
 	public void reset() {}
