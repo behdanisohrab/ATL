@@ -17,15 +17,18 @@ public class SensorManager {
 		return true; // we could try saying that the sensor doesn't exist and hope the app just doesn't use it then, but as long as we never call the handler the app should leave this alone
 	}
 
-	public boolean registerListener(final SensorEventListener listener, Sensor sensor, int samplingPeriodUs) {
+	public boolean registerListener(final SensorEventListener listener, final Sensor sensor, int samplingPeriodUs) {
 		switch(sensor.getType()) {
 			case Sensor.TYPE_ORIENTATION:
 				new LocationManager().requestLocationUpdates(null, 0, 0, new LocationListener() {
 					@Override
 					public void onLocationChanged(Location location) {
-						listener.onSensorChanged(new SensorEvent(new float[]{(float)location.getBearing()}));
+						listener.onSensorChanged(new SensorEvent(new float[]{(float)location.getBearing()}, sensor));
 					}
 				});
+				return true;
+			case Sensor.TYPE_ACCELEROMETER:
+				register_accelerometer_listener_native(listener, sensor);
 				return true;
 			default:
 				return false;
@@ -35,4 +38,6 @@ public class SensorManager {
 	public void unregisterListener(final SensorEventListener listener, Sensor sensor) {
 		System.out.println("STUB: andoroid.hw.SensorManager.unregisterListener");
 	}
+
+	native void register_accelerometer_listener_native(SensorEventListener listener, Sensor sensor);
 }

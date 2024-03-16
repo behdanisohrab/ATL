@@ -40,6 +40,10 @@ struct handle_cache {
 	struct {
 		jclass class;
 		jmethodID constructor;
+	} sensor_event;
+	struct {
+		jclass class;
+		jmethodID constructor;
 	} canvas;
 	struct {
 		jclass class;
