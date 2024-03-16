@@ -37,6 +37,11 @@ JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1bitmap_1from_1path(
 {
 	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(_CSTRING(path), NULL);
 	android_log_printf(ANDROID_LOG_VERBOSE, "["__FILE__"]", ">>> made pixbuf from path: >%s<, >%p<\n", _CSTRING(path), pixbuf);
+	if(gdk_pixbuf_get_n_channels(pixbuf) == 3) { // no alpha, add it (skia doesn't support 24bpp)
+		GdkPixbuf *old_pixbuf = pixbuf;
+		pixbuf = gdk_pixbuf_add_alpha(pixbuf, false, 0, 0, 0);
+		g_object_unref(old_pixbuf);
+	}
 
 	attach_sk_image(pixbuf);
 
