@@ -63,6 +63,7 @@ public class Context extends Object {
 	public static final String DISPLAY_SERVICE = "display";
 	public static final String MEDIA_ROUTER_SERVICE = "media_router";
 	public static final String WINDOW_SERVICE = "window";
+	public static final String INPUT_METHOD_SERVICE = "input";
 	public static AndroidManifestBlock manifest = null;
 
 	public static Vibrator vibrator;
