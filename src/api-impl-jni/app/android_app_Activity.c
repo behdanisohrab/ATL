@@ -177,3 +177,59 @@ JNIEXPORT void JNICALL Java_android_app_Activity_nativeOpenURI(JNIEnv *env, jcla
 }
 
 extern GtkWindow *window; // TODO: get this in a better way
+
+struct filechooser_callback_data { jobject activity; jint request_code; };
+
+#define RESULT_OK -1
+#define RESULT_CANCELED 0
+static void on_filechooser_response(GtkNativeDialog *native, int response, struct filechooser_callback_data *data)
+{
+	JNIEnv *env = get_jni_env();
+	jmethodID fileChooserResultCallback = _METHOD(handle_cache.activity.class, "fileChooserResultCallback", "(IIILjava/lang/String;)V");
+
+	GtkFileChooser *chooser = GTK_FILE_CHOOSER(native);
+	GtkFileChooserAction action = gtk_file_chooser_get_action(chooser);
+	if (response == GTK_RESPONSE_ACCEPT) {
+		GFile *file = gtk_file_chooser_get_file(chooser);
+		char *uri = g_file_get_uri(file);
+		
+		(*env)->CallVoidMethod(env, data->activity, fileChooserResultCallback, data->request_code, RESULT_OK, action, _JSTRING(uri));
+		if ((*env)->ExceptionCheck(env))
+			(*env)->ExceptionDescribe(env);
+
+		g_free(uri);
+		g_object_unref(file);
+	} else {
+		(*env)->CallVoidMethod(env, data->activity, fileChooserResultCallback, data->request_code, RESULT_CANCELED, action, NULL);
+	}
+
+	g_object_unref(native);
+	_UNREF(data->activity);
+	free(data);
+}
+
+JNIEXPORT void JNICALL Java_android_app_Activity_nativeFileChooser(JNIEnv *env, jobject this, jint action, jstring type_jstring, jstring filename_jstring, jint request_code)
+{
+	const char *chooser_title = ((char *[]){"Open File", "Save File", "Select Folder"})[action];
+	GtkFileChooserNative *native = gtk_file_chooser_native_new(chooser_title, window, action, NULL, NULL);
+
+	const char *type = type_jstring ? (*env)->GetStringUTFChars(env, type_jstring, NULL) : NULL;
+	if (type) {
+		GtkFileFilter *filter = gtk_file_filter_new();
+		gtk_file_filter_add_mime_type(filter, type);
+		gtk_file_filter_set_name(filter, type);
+		gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(native), filter);
+		(*env)->ReleaseStringUTFChars(env, type_jstring, type);
+	}
+	const char *filename = filename_jstring ? (*env)->GetStringUTFChars(env, filename_jstring, NULL) : NULL;
+	if (filename) {
+		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(native), filename);
+		(*env)->ReleaseStringUTFChars(env, filename_jstring, filename);
+	}
+
+	struct filechooser_callback_data *callback_data = malloc(sizeof(struct filechooser_callback_data));
+	callback_data->activity = _REF(this);
+	callback_data->request_code = request_code;
+	g_signal_connect (native, "response", G_CALLBACK(on_filechooser_response), callback_data);
+	gtk_native_dialog_show (GTK_NATIVE_DIALOG (native));
+}

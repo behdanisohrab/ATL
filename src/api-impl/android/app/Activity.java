@@ -8,6 +8,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.XmlResourceParser;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -26,6 +27,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Activity extends ContextWrapper implements Window.Callback {
@@ -254,8 +256,20 @@ public class Activity extends ContextWrapper implements Window.Callback {
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {}
 
+	// the order must match GtkFileChooserAction enum
+	private static final List<String> FILE_CHOOSER_ACTIONS = Arrays.asList(
+		"android.intent.action.OPEN_DOCUMENT",     // (0) GTK_FILE_CHOOSER_ACTION_OPEN
+		"android.intent.action.CREATE_DOCUMENT",   // (1) GTK_FILE_CHOOSER_ACTION_SAVE
+		"android.intent.action.OPEN_DOCUMENT_TREE" // (2) GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER
+	);
+
+	// callback from native code
+	protected void fileChooserResultCallback(int requestCode, int resultCode, int action, String uri) {
+		onActivityResult(requestCode, resultCode, new Intent(FILE_CHOOSER_ACTIONS.get(action), uri != null ? Uri.parse(uri) : null));
+	}
+
 	public void startActivityForResult(Intent intent, int requestCode, Bundle options) {
-		System.out.println("startActivityForResult(" + intent + ", " + requestCode + ") called, but we don't currently support multiple activities");
+		System.out.println("startActivityForResult(" + intent + ", " + requestCode + ") called");
 		if (intent.getComponent() != null) {
 			try {
 				Class<? extends Activity> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Activity.class);
@@ -272,12 +286,14 @@ public class Activity extends ContextWrapper implements Window.Callback {
 					}
 				});
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent()); // RESULT_CANCELED is the only pre-defined return value, so hopefully it works out for us
+				onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent());
 			}
+		} else if (FILE_CHOOSER_ACTIONS.contains(intent.getAction())) {
+			nativeFileChooser(FILE_CHOOSER_ACTIONS.indexOf(intent.getAction()), intent.getType(), intent.getStringExtra("android.intent.extra.TITLE"), requestCode);
 		}
 		else {
 			System.out.println("startActivityForResult: intent was not handled. Calling onActivityResult(RESULT_CANCELED).");
-			onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent()); // RESULT_CANCELED is the only pre-defined return value, so hopefully it works out for us
+			onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent());
 		}
 	}
 	public void startActivityForResult(Intent intent, int requestCode) {
@@ -426,4 +442,5 @@ public class Activity extends ContextWrapper implements Window.Callback {
 	public static native void nativeRecreateActivity(Activity activity);
 	public static native void nativeStartActivity(Activity activity);
 	public static native void nativeOpenURI(String uri);
+	public native void nativeFileChooser(int action, String type, String title, int requestCode);
 }

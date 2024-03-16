@@ -290,4 +290,8 @@ public class Intent {
 	public Parcelable[] getParcelableArrayExtra(String name) {
 		return extras.getParcelableArray(name);
 	}
+
+	public String getType() {
+		return type;
+	}
 }

@@ -13,7 +13,7 @@ public class Uri implements Parcelable {
 
 	public static final Uri EMPTY = new Uri();
 
-	private URI uri;
+	public URI uri;
 
 	public static Uri parse(String s) {
 		Uri ret = new Uri();
@@ -158,6 +158,10 @@ public class Uri implements Parcelable {
 
 	public String getPath() {
 		return uri.getPath();
+	}
+
+	public String getAuthority() {
+		return uri.getAuthority();
 	}
 
 	@Override

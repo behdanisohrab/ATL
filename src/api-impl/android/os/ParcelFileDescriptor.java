@@ -17,10 +17,21 @@
 package android.os;
 
 import static android.system.OsConstants.AF_UNIX;
+import static android.system.OsConstants.O_APPEND;
+import static android.system.OsConstants.O_CLOEXEC;
+import static android.system.OsConstants.O_CREAT;
+import static android.system.OsConstants.O_RDONLY;
+import static android.system.OsConstants.O_RDWR;
+import static android.system.OsConstants.O_TRUNC;
+import static android.system.OsConstants.O_WRONLY;
 import static android.system.OsConstants.SEEK_SET;
 import static android.system.OsConstants.SOCK_STREAM;
+import static android.system.OsConstants.S_IROTH;
+import static android.system.OsConstants.S_IRWXG;
+import static android.system.OsConstants.S_IRWXU;
 import static android.system.OsConstants.S_ISLNK;
 import static android.system.OsConstants.S_ISREG;
+import static android.system.OsConstants.S_IWOTH;
 
 import android.system.ErrnoException;
 import android.system.OsConstants;
@@ -246,15 +257,30 @@ public class ParcelFileDescriptor implements Closeable {
 		return pfd;
 	}
 
-	private static FileDescriptor openInternal(File file, int mode) throws FileNotFoundException { /*
-	     if ((mode & MODE_READ_WRITE) == 0) {
-		 throw new IllegalArgumentException(
-			 "Must specify MODE_READ_ONLY, MODE_WRITE_ONLY, or MODE_READ_WRITE");
-	     }
-
-	     final String path = file.getPath();
-	     return Parcel.openFileDescriptor(path, mode);*/
-		return null;
+	private static FileDescriptor openInternal(File file, int mode) throws FileNotFoundException {
+		int flags = O_CLOEXEC;
+		if ((mode & MODE_READ_WRITE) == MODE_READ_WRITE)
+			flags |= O_RDWR;
+		else if ((mode & MODE_WRITE_ONLY) == MODE_WRITE_ONLY)
+			flags |= O_WRONLY;
+		else if ((mode & MODE_READ_ONLY) == MODE_READ_ONLY)
+			flags |= O_RDONLY;
+		else
+			throw new IllegalArgumentException("Bad mode: " + mode);
+		if ((mode & MODE_CREATE) == MODE_CREATE)
+			flags |= O_CREAT;
+		if ((mode & MODE_TRUNCATE) == MODE_TRUNCATE)
+			flags |= O_TRUNC;
+		if ((mode & MODE_APPEND) == MODE_APPEND)
+			flags |= O_APPEND;
+		int realMode = S_IRWXU | S_IRWXG;
+		if ((mode & MODE_WORLD_READABLE) != 0) realMode |= S_IROTH;
+		if ((mode & MODE_WORLD_WRITEABLE) != 0) realMode |= S_IWOTH;
+		try {
+			return android.system.Os.open(file.getPath(), flags, realMode);
+		} catch (ErrnoException e) {
+			throw new FileNotFoundException(e.getMessage());
+		}
 	}
 
 	/**
