@@ -1,8 +1,12 @@
 package android.view;
 
+import android.graphics.drawable.Drawable;
+
 public interface MenuItem {
 
-	public interface OnMenuItemClickListener {}
+	public interface OnMenuItemClickListener {
+		public boolean onMenuItemClick(MenuItem item);
+	}
 
 	public MenuItem setIcon(int iconRes);
 
@@ -29,5 +33,11 @@ public interface MenuItem {
 	public MenuItem setOnMenuItemClickListener(OnMenuItemClickListener listener);
 
 	public MenuItem setTitle(int resId);
+
+	public boolean isVisible();
+
+	public Drawable getIcon();
+
+	public SubMenu getSubMenu();
 
 }

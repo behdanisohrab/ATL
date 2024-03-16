@@ -16,13 +16,21 @@ public abstract class CompoundButton extends Button implements Checkable {
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
 
-	public static interface OnCheckedChangeListener {}
+	public static interface OnCheckedChangeListener {
+		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked);
+	}
 
 	public native void setOnCheckedChangeListener(OnCheckedChangeListener listener);
 
+	@Override
 	public native void setChecked(boolean checked);
 
+	@Override
 	public native boolean isChecked();
+
+	public void toggle() {
+		setChecked(!isChecked());
+	}
 
 	// following methods are overridden to prevent calling incompatible methods from superclasses
 	@Override

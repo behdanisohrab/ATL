@@ -3,6 +3,7 @@ package android.widget;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.View;
 
 public class ListView extends AbsListView {
 
@@ -19,5 +20,7 @@ public class ListView extends AbsListView {
 	public Drawable getDivider() {return null;}
 
 	public void setTextFilterEnabled(boolean enabled) {}
+
+	public void addHeaderView(View v, Object data, boolean isSelectable) {}
 
 }

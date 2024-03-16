@@ -154,9 +154,7 @@ public class TextView extends View {
 	public int getCompoundPaddingTop() {return 0;}
 	public int getCompoundPaddingBottom() {return 0;}
 
-	public CharSequence getText() {
-		return "FIXME";
-	}
+	public native CharSequence getText();
 
 	public void setCompoundDrawablePadding(int pad) {}
 
@@ -229,4 +227,8 @@ public class TextView extends View {
 	public int getCompoundPaddingRight() {return 0;}
 
 	public void setHint(int resId) {}
+
+	public float getLetterSpacing() {return 0.f;}
+
+	public void setCompoundDrawablesRelativeWithIntrinsicBounds(int start, int top, int end, int bottom) {}
 }

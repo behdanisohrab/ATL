@@ -254,7 +254,7 @@ public class Activity extends ContextWrapper implements Window.Callback {
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {}
 
-	public void startActivityForResult(Intent intent, int requestCode) {
+	public void startActivityForResult(Intent intent, int requestCode, Bundle options) {
 		System.out.println("startActivityForResult(" + intent + ", " + requestCode + ") called, but we don't currently support multiple activities");
 		if (intent.getComponent() != null) {
 			try {
@@ -276,8 +276,12 @@ public class Activity extends ContextWrapper implements Window.Callback {
 			}
 		}
 		else {
+			System.out.println("startActivityForResult: intent was not handled. Calling onActivityResult(RESULT_CANCELED).");
 			onActivityResult(requestCode, 0 /*RESULT_CANCELED*/, new Intent()); // RESULT_CANCELED is the only pre-defined return value, so hopefully it works out for us
 		}
+	}
+	public void startActivityForResult(Intent intent, int requestCode) {
+		startActivityForResult(intent, requestCode, null);
 	}
 
 	public void setResult(int resultCode, Intent data) {
@@ -422,5 +426,4 @@ public class Activity extends ContextWrapper implements Window.Callback {
 	public static native void nativeRecreateActivity(Activity activity);
 	public static native void nativeStartActivity(Activity activity);
 	public static native void nativeOpenURI(String uri);
-	public static native void nativeShare(String text);
 }

@@ -17,4 +17,10 @@ public class Layout {
 	public TextPaint getPaint() {return new TextPaint();}
 
 	public int getEllipsisCount(int line) {return 0;}
+
+	public CharSequence getText() {return "FIXME Layout.getText";}
+
+	public int getWidth() {return 10;}
+
+	public int getHeight() {return 10;}
 }

@@ -6,7 +6,9 @@ import android.os.IBinder;
 
 public abstract class Service extends Context {
 
-	public abstract void onCreate();
+	public void onCreate() {
+		System.out.println("Service.onCreate() called");
+	}
 
 	public abstract IBinder onBind(Intent intent);
 
@@ -14,6 +16,10 @@ public abstract class Service extends Context {
 
 	public void startForeground(int id, Notification notification) {
 		System.out.println("startForeground(" + id + ", " + notification + ") called");
+	}
+
+	public void stopForeground(boolean remove) {
+		System.out.println("stopForeground(" + remove + ") called");
 	}
 
 }

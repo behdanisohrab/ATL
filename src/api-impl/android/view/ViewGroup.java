@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 public class ViewGroup extends View implements ViewParent, ViewManager {
 	public ArrayList<View> children;
+	private OnHierarchyChangeListener onHierarchyChangeListener;
 
 	public ViewGroup(Context context) {
 		this(context, null);
@@ -67,6 +68,9 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		if (isAttachedToWindow()) {
 			child.onAttachedToWindow();
 		}
+		if (onHierarchyChangeListener != null) {
+			onHierarchyChangeListener.onChildViewAdded(this, child);
+		}
 		requestLayout();
 	}
 
@@ -85,6 +89,9 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		child.parent = null;
 		children.remove(child);
 		native_removeView(widget, child.widget);
+		if (onHierarchyChangeListener != null) {
+			onHierarchyChangeListener.onChildViewRemoved(this, child);
+		}
 	}
 
 	public void removeViewAt(int index) {
@@ -97,6 +104,9 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 			child.parent = null;
 			it.remove();
 			native_removeView(widget, child.widget);
+			if (onHierarchyChangeListener != null) {
+				onHierarchyChangeListener.onChildViewRemoved(this, child);
+			}
 		}
 	}
 
@@ -154,7 +164,9 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 	public void setMotionEventSplittingEnabled(boolean enabled) {}
 
-	public void setOnHierarchyChangeListener(OnHierarchyChangeListener listener) {}
+	public void setOnHierarchyChangeListener(OnHierarchyChangeListener listener) {
+		this.onHierarchyChangeListener = listener;
+	}
 
 	protected boolean checkLayoutParams(LayoutParams params) {
 		return true;
@@ -422,5 +434,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	public interface OnHierarchyChangeListener {
+		public void onChildViewAdded(View parent, View child);
+		public void onChildViewRemoved(View parent, View child);
 	}
 }

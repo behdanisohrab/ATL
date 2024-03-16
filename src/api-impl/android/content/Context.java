@@ -24,6 +24,10 @@ import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaRouter;
 import android.net.ConnectivityManager;
+import android.net.Uri;
+import android.net.wifi.WifiManager;
+import android.os.Environment;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.Vibrator;
@@ -86,6 +90,7 @@ public class Context extends Object {
 		r = new Resources(assets, dm, config);
 		theme = r.newTheme();
 		application_info = new ApplicationInfo();
+		application_info.dataDir = Environment.getExternalStorageDirectory().getAbsolutePath();
 		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
 		try {
 			manifest = AndroidManifestBlock.load(inStream);
@@ -188,6 +193,8 @@ public class Context extends Object {
 				return new AccessibilityManager();
 			case "layout_inflater":
 				return new LayoutInflater();
+			case "wifi":
+				return new WifiManager();
 			default:
 				Slog.e(TAG, "!!!!!!! getSystemService: case >" + name + "< is not implemented yet");
 				return null;
@@ -374,24 +381,29 @@ public class Context extends Object {
 
 	public void registerComponentCallbacks(ComponentCallbacks callbacks) {}
 
-	public boolean bindService(Intent intent, ServiceConnection serviceConnection, int dummy3) {
-		try {
-			if(intent.getComponent() == null) {
-				Slog.w(TAG, "Context.bindService: intent.getComponent() is null");
-				return false; // maybe?
-			}
-
-			Class<? extends Service> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Service.class);
-			if (!runningServices.containsKey(cls)) {
-				Service service = cls.getConstructor().newInstance();
-				service.onCreate();
-				runningServices.put(cls, service);
-			}
-			serviceConnection.onServiceConnected(intent.getComponent(), runningServices.get(cls).onBind(intent));
-		} catch (ReflectiveOperationException e) {
-			e.printStackTrace();
+	public boolean bindService(final Intent intent, final ServiceConnection serviceConnection, int dummy3) {
+		if(intent.getComponent() == null) {
+			Slog.w(TAG, "Context.bindService: intent.getComponent() is null");
+			return false;
 		}
-		return false; // maybe?
+
+		new Handler().post(new Runnable() { // run this asynchron so the caller can finish its setup before onServiceConnected is called
+			@Override
+			public void run() {
+				try {
+					Class<? extends Service> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Service.class);
+					if (!runningServices.containsKey(cls)) {
+						Service service = cls.getConstructor().newInstance();
+						service.onCreate();
+						runningServices.put(cls, service);
+					}
+					serviceConnection.onServiceConnected(intent.getComponent(), runningServices.get(cls).onBind(intent));
+				} catch (ReflectiveOperationException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		return true;
 	}
 
 	public void startActivity(Intent intent) {
@@ -402,7 +414,7 @@ public class Context extends Object {
 		if (intent.getComponent() == null) {
 			if(intent.getAction() != null && intent.getAction().equals("android.intent.action.SEND")) {
 				Slog.i(TAG, "starting extern activity with intent: " + intent);
-				Activity.nativeShare((String) intent.getExtras().get("android.intent.extra.TEXT"));
+				ClipboardManager.native_set_clipboard(intent.getStringExtra("android.intent.extra.TEXT"));
 			} else if (intent.getData() != null) {
 				Slog.i(TAG, "starting extern activity with intent: " + intent);
 				Activity.nativeOpenURI(String.valueOf(intent.getData()));
@@ -465,5 +477,9 @@ public class Context extends Object {
 
 	public Context createPackageContext(String dummy, int dummy2) {
 		return this; // FIXME?
+	}
+
+	public void grantUriPermission(String dummy, Uri dummy2, int dummy3) {
+		System.out.println("grantUriPermission(" + dummy + ", " + dummy2 + ", " + dummy3 + ") called");
 	}
 }

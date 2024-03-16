@@ -3,7 +3,7 @@ package android.widget;
 import android.content.Context;
 import android.util.AttributeSet;
 
-public class AutoCompleteTextView extends TextView {
+public class AutoCompleteTextView extends EditText {
 
 	public interface OnDismissListener {
 	}

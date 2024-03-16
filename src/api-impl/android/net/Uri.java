@@ -7,7 +7,9 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-public class Uri {
+import android.os.Parcelable;
+
+public class Uri implements Parcelable {
 
 	public static final Uri EMPTY = new Uri();
 

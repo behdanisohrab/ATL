@@ -31,6 +31,9 @@ public class Button extends TextView {
 	}
 
 	@Override
+	public CharSequence getText() { return "FIXME Button.getText"; }
+
+	@Override
 	public void setTextSize(float size) {}
 
 	@Override

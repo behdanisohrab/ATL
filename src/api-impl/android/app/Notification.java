@@ -143,4 +143,13 @@ public class Notification {
 
 		public MediaStyle setMediaSession(MediaSession.Token token) {return this;}
 	}
+
+	public static class BigTextStyle extends Style {
+
+		public BigTextStyle(Notification.Builder builder) {}
+
+		public BigTextStyle setBigContentTitle(CharSequence title) {return this;}
+
+		public BigTextStyle bigText(CharSequence text) {return this;}
+	}
 }

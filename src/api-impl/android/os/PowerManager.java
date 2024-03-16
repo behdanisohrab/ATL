@@ -7,6 +7,8 @@ public final class PowerManager {
 		public void acquire() {}
 
 		public void release() {}
+
+		public boolean isHeld() { return false; }
 	}
 
 	public WakeLock newWakeLock(int levelAndFlags, String tag) {

@@ -79,3 +79,8 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1set_1markup(JNIEnv *
 
 	gtk_label_set_use_markup(label, value);
 }
+
+JNIEXPORT jobject JNICALL Java_android_widget_TextView_getText(JNIEnv *env, jobject this)
+{
+	return _JSTRING(gtk_label_get_text(GTK_LABEL(_PTR(_GET_LONG_FIELD(this, "widget")))));
+}

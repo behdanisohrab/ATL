@@ -17,4 +17,8 @@ public class NetworkInfo {
 	public int getType() {
 		return 0x8; // where did you even get a NetworkInfo object... there is no network
 	}
+
+	public boolean isConnected() {
+		return true;
+	}
 }

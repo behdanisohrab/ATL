@@ -9,6 +9,12 @@ public class ConnectivityManager {
 	}
 
 	public NetworkInfo getActiveNetworkInfo() {
-		return null; // there is no active network, because there isn't any network at all
+		return new NetworkInfo();
+	}
+
+	public void registerNetworkCallback(NetworkRequest request, NetworkCallback callback) {}
+
+	public boolean isActiveNetworkMetered() {
+		return false;
 	}
 }

@@ -278,4 +278,16 @@ public class Intent {
 		this.type = type;
 		return this;
 	}
+
+	public long getLongExtra(String name, long def) {
+		return extras.getLong(name, def);
+	}
+
+	public char getCharExtra(String name, char def) {
+		return extras.getChar(name, def);
+	}
+
+	public Parcelable[] getParcelableArrayExtra(String name) {
+		return extras.getParcelableArray(name);
+	}
 }

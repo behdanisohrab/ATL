@@ -18,6 +18,7 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.LayoutDirection;
+import android.util.Property;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.view.animation.Animation;
@@ -822,6 +823,13 @@ public class View extends Object {
 
 	private int minWidth = 0;
 	private int minHeight = 0;
+
+	public static final Property<View, Float> TRANSLATION_Z = new Property<View, Float>(Float.class, "translationZ") {
+		@Override
+		public Float get(View object) {
+			return 0.f;
+		}
+	};
 
 	public View(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -1641,4 +1649,8 @@ public class View extends Object {
 	}
 
 	public boolean onCheckIsTextEditor() {return false;}
+
+	public boolean hasOnClickListeners() {return false;}
+
+	public void setTextAlignment(int textAlignment) {}
 }

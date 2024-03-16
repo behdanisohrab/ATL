@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package android.content;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.IBinder;
@@ -22,7 +23,6 @@ import android.os.RemoteException;
 import android.util.Log;
 import java.util.ArrayList;
 
-class ClipData {}
 class ClipDescription {}
 
 /**
@@ -79,6 +79,8 @@ public class ClipboardManager extends android.text.ClipboardManager {
 	 * @param clip The clipped data item to set.
 	 */
 	public void setPrimaryClip(ClipData clip) {
+		// this is not the primary clipboard in UNIX sense (not middle click paste)
+		native_set_clipboard(clip.text);
 	}
 	/**
 	 * Returns the current primary clip on the clipboard.
@@ -125,4 +127,6 @@ public class ClipboardManager extends android.text.ClipboardManager {
 	}
 	void reportPrimaryClipChanged() {
 	}
+
+	public static native void native_set_clipboard(String text);
 }

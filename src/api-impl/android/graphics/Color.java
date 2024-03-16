@@ -127,4 +127,31 @@ public class Color {
 		sColorNameMap.put("silver", 0xC0C0C0);
 		sColorNameMap.put("teal", 0x008080);
 	}
+
+	public static void colorToHSV(int color, float[] hsv) {
+		float red = ((color >> 16) & 0xFF) / 255.0f;
+		float green = ((color >> 8) & 0xFF) / 255.0f;
+		float blue = (color & 0xFF) / 255.0f;
+		float min = Math.min(red, Math.min(green, blue));
+		float max = Math.max(red, Math.max(green, blue));
+		float delta = max - min;
+
+		if (delta == 0) {
+			hsv[0] = 6;
+		} else if (max == red) {
+			hsv[0] = (green - blue) / delta % 6;
+		} else if (max == green) {
+			hsv[0] = 2 + (blue - red) / delta + 2;
+		} else {
+			hsv[0] = 4 + (red - green) / delta + 4;
+		}
+		hsv[0] *= 60;
+
+		if (max == 0) {
+			hsv[1] = 0;
+		} else {
+			hsv[1] = delta / max;
+		}
+		hsv[2] = max;
+	}
 }

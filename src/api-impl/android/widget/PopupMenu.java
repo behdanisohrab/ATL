@@ -116,6 +116,25 @@ public class PopupMenu {
 	}
 
 	/**
+	 * Inflate a menu resource into this PopupMenu. This is equivalent to
+	 * calling {@code popupMenu.getMenuInflater().inflate(menuRes, popupMenu.getMenu())}.
+	 *
+	 * @param menuRes Menu resource to inflate
+	 */
+	public void inflate(int menuRes) {
+		System.out.println("PopupMenu.inflate(" + menuRes + ") called");
+	}
+
+	/**
+	* Show the menu popup anchored to the view specified during construction.
+	*
+	* @see #dismiss()
+	*/
+	public void show() {
+		System.out.println("PopupMenu.show() called");
+	}
+
+	/**
 	 * Interface responsible for receiving menu item click events if the items
 	 * themselves do not have individual item click listeners.
 	 */
