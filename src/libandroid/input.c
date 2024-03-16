@@ -254,3 +254,17 @@ void AInputQueue_finishEvent(AInputQueue* queue, struct AInputEvent* event, int 
 {
 	// should we do something here?
 }
+
+void AKeyEvent_getKeyCode (struct AInputEvent *event)
+{
+	/*
+	 * TODO: Minecraft PE misuses this function on an event
+	 * that is not an AINPUT_EVENT_TYPE_KEY, which would lead to
+	 * undefined behaviour, so we would need to check if the event
+	 * is of type AINPUT_EVENT_TYPE_KEY before casting it to anything
+	 * to not break Minecraft PE when we actually implement this function.
+	*/
+
+	printf("HACK: getKeyCode stubbed, returning 0!");
+	return 0;
+}
