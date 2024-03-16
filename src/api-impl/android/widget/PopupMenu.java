@@ -17,12 +17,19 @@
 package android.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.content.res.XmlResourceParser;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnTouchListener;
+
+import org.xmlpull.v1.XmlPullParser;
+
 import com.android.internal.R;
 
 /**
@@ -39,6 +46,8 @@ public class PopupMenu {
 	private OnMenuItemClickListener mMenuItemClickListener;
 	private OnDismissListener mOnDismissListener;
 	private OnTouchListener mDragListener;
+	private long popover;
+
 	/**
 	 * Constructor to create a new popup menu with an anchor view.
 	 *
@@ -115,14 +124,136 @@ public class PopupMenu {
 		mOnDismissListener = listener;
 	}
 
+	protected native long native_init();
+	protected native void native_appendItem(long menu, String item, int id);
+	protected native long native_buildPopover(long menu);
+	protected native void native_show(long popover, long anchor);
+
+	// callback from native code
+	protected void menuItemClickCallback(final int id) {
+		if (mMenuItemClickListener != null) {
+			mMenuItemClickListener.onMenuItemClick(new MenuItem() {
+
+				@Override
+				public MenuItem setIcon(int iconRes) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'setIcon'");
+				}
+
+				@Override
+				public MenuItem setVisible(boolean visible) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'setVisible'");
+				}
+
+				@Override
+				public MenuItem setChecked(boolean checked) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'setChecked'");
+				}
+
+				@Override
+				public MenuItem setEnabled(boolean enabled) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'setEnabled'");
+				}
+
+				@Override
+				public MenuItem setCheckable(boolean checkable) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'setCheckable'");
+				}
+
+				@Override
+				public MenuItem setTitleCondensed(CharSequence titleCondensed) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'setTitleCondensed'");
+				}
+
+				@Override
+				public MenuItem setTitle(CharSequence title) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'setTitle'");
+				}
+
+				@Override
+				public MenuItem setActionView(View actionView) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'setActionView'");
+				}
+
+				@Override
+				public void setShowAsAction(int action) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'setShowAsAction'");
+				}
+
+				@Override
+				public int getItemId() {
+					return id;
+				}
+
+				@Override
+				public int getGroupId() {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'getGroupId'");
+				}
+
+				@Override
+				public MenuItem setOnMenuItemClickListener(OnMenuItemClickListener listener) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'setOnMenuItemClickListener'");
+				}
+
+				@Override
+				public MenuItem setTitle(int resId) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'setTitle'");
+				}
+
+				@Override
+				public boolean isVisible() {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'isVisible'");
+				}
+
+				@Override
+				public Drawable getIcon() {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'getIcon'");
+				}
+
+				@Override
+				public SubMenu getSubMenu() {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'getSubMenu'");
+				}
+			});
+		}
+	}
+
 	/**
 	 * Inflate a menu resource into this PopupMenu. This is equivalent to
 	 * calling {@code popupMenu.getMenuInflater().inflate(menuRes, popupMenu.getMenu())}.
 	 *
 	 * @param menuRes Menu resource to inflate
+	 * @throws Exception 
 	 */
-	public void inflate(int menuRes) {
-		System.out.println("PopupMenu.inflate(" + menuRes + ") called");
+	public void inflate(int menuRes) throws Exception {
+		XmlResourceParser parser = mContext.getResources().getXml(menuRes);
+		int type;
+		while ((type=parser.next()) != XmlPullParser.START_TAG && type != XmlPullParser.END_DOCUMENT);
+		if (type == XmlPullParser.START_TAG && "menu".equals(parser.getName())) {
+			long menu = native_init();
+			while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
+				if (type == XmlPullParser.START_TAG && "item".equals(parser.getName())) {
+					final TypedArray a = mContext.getResources().obtainAttributes(parser, R.styleable.MenuItem);
+					native_appendItem(menu, a.getString(R.styleable.MenuItem_title), a.getResourceId(R.styleable.MenuItem_id, -1));
+					a.recycle();
+				}
+			}
+			popover = native_buildPopover(menu);
+		}
 	}
 
 	/**
@@ -132,6 +263,7 @@ public class PopupMenu {
 	*/
 	public void show() {
 		System.out.println("PopupMenu.show() called");
+		native_show(popover, mAnchor.widget);
 	}
 
 	/**
