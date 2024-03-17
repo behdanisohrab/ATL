@@ -13,8 +13,8 @@ void attach_sk_image(GdkPixbuf *pixbuf)
 	sk_imageinfo_t info = {
 		.width = gdk_pixbuf_get_width(pixbuf),
 		.height = gdk_pixbuf_get_height(pixbuf),
-		.colorType = RGBA_8888_SK_COLORTYPE, // is this correct?
-		.alphaType = PREMUL_SK_ALPHATYPE,
+		.colorType = RGBA_8888_SK_COLORTYPE,
+		.alphaType = UNPREMUL_SK_ALPHATYPE,
 	};
 
 	void *pixbuf_pixels = gdk_pixbuf_get_pixels(pixbuf);
@@ -116,7 +116,6 @@ JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1copy(JNIEnv *env, j
 	GdkPixbuf *src = _PTR(src_ptr);
 	GdkPixbuf *copy = gdk_pixbuf_copy(src);
 	sk_image_t *image = g_object_get_data(G_OBJECT(src), "sk_image");
-	printf("native_copy: dbg: %p\n", image);
 	if(image)
 		g_object_set_data(G_OBJECT(copy), "sk_image", sk_image_make_raster_image(image)); // probably?
 	else
