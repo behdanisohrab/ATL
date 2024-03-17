@@ -10,15 +10,21 @@ public class NetworkInfo {
 		UNKNOWN
 	}
 
+	private State state = State.DISCONNECTED;
+
+	public NetworkInfo(boolean available) {
+		state = available ? State.CONNECTED : State.DISCONNECTED;
+	}
+
 	public NetworkInfo.State getState() {
-		return State.DISCONNECTED;
+		return state;
 	}
 
 	public int getType() {
-		return 0x8; // where did you even get a NetworkInfo object... there is no network
+		return 0x8; // TYPE_DUMMY
 	}
 
 	public boolean isConnected() {
-		return true;
+		return state == State.CONNECTED;
 	}
 }
