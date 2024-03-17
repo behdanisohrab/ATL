@@ -21,6 +21,8 @@ gboolean on_accel_data(struct accel_callback_data *d)
 	jobject sensor_event = (*env)->NewObject(env, handle_cache.sensor_event.class, handle_cache.sensor_event.constructor, values, d->sensor);
 
 	(*env)->CallVoidMethod(env, d->listener, _METHOD(d->listener_class, "onSensorChanged", "(Landroid/hardware/SensorEvent;)V"), sensor_event);
+	(*env)->DeleteLocalRef(env, values);
+	(*env)->DeleteLocalRef(env, sensor_event);
 
 	return G_SOURCE_CONTINUE;
 }
