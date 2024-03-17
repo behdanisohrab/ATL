@@ -1,5 +1,8 @@
 package android.app;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.AudioAttributes;
@@ -44,8 +47,21 @@ public class Notification {
 
 	public Bundle extras;
 
+	String text;
+	String title;
+	List<Action> actions = new ArrayList<Action>();
+	PendingIntent intent;
+
+	public String toString() {
+		return "Notification [" + title + ", " + text + ", " + actions + "]";
+	}
+
 	public static class Builder {
-		public Builder(Context context) {}
+		private Notification notification;
+
+		public Builder(Context context) {
+			notification = new Notification();
+		}
 
 		public Builder setWhen(long when) {return this;}
 
@@ -67,13 +83,22 @@ public class Notification {
 
 		public Builder setDefaults(int defaults) {return this;}
 
-		public Builder setContentTitle(CharSequence title) {return this;}
+		public Builder setContentTitle(CharSequence title) {
+			notification.title = title != null ? title.toString() : null;
+			return this;
+		}
 
-		public Builder setContentText(CharSequence text) {return this;}
+		public Builder setContentText(CharSequence text) {
+			notification.text = text != null ? text.toString() : null;
+			return this;
+		}
 
 		public Builder setContentInfo(CharSequence info) {return this;}
 
-		public Builder setContentIntent(PendingIntent intent) {return this;}
+		public Builder setContentIntent(PendingIntent intent) {
+			notification.intent = intent;
+			return this;
+		}
 
 		public Builder setDeleteIntent(PendingIntent intent) {return this;}
 
@@ -111,26 +136,44 @@ public class Notification {
 
 		public Builder setSound(Uri sound, AudioAttributes audioAttributes) {return this;}
 
-		public Builder addAction(Action action) {return this;}
+		public Builder addAction(Action action) {
+			notification.actions.add(action);
+			return this;
+		}
 
 		public Builder setStyle(Style style) {return this;}
 
 		public Builder setExtras(Bundle extras) {return this;}
 
 		public Notification build() {
-			return new Notification();
+			return notification;
 		}
 	}
 
 	public static class Action {
+
+		int icon;
+		String title;
+		PendingIntent intent;
+
+		public String toString() {
+			return "Action [" + icon + ", " + title + ", " + intent + "]";
+		}
+
 		public static final class Builder {
 
-			public Builder(int icon, CharSequence title, PendingIntent intent) {}
+			private Action action;
+			public Builder(int icon, CharSequence title, PendingIntent intent) {
+				action = new Action();
+				action.icon = icon;
+				action.title = String.valueOf(title);
+				action.intent = intent;
+			}
 
 			public Builder addExtras(Bundle extras) {return this;}
 
 			public Action build() {
-				return new Action();
+				return action;
 			}
 		}
 	}

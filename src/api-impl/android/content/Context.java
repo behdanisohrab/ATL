@@ -82,6 +82,8 @@ public class Context extends Object {
 	File obb_dir = null;
 	File cache_dir = null;
 
+	private static Map<IntentFilter, BroadcastReceiver> receiverMap = new HashMap<IntentFilter, BroadcastReceiver>();
+
 	static {
 		assets = new AssetManager();
 		dm = new DisplayMetrics();
@@ -202,6 +204,7 @@ public class Context extends Object {
 	}
 
 	public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
+		receiverMap.put(filter, receiver);
 		return new Intent();
 	}
 
@@ -467,7 +470,13 @@ public class Context extends Object {
 		return new File(databaseDir, dbName);
 	}
 
-	public void sendBroadcast(Intent intent) {}
+	public void sendBroadcast(Intent intent) {
+		for (IntentFilter filter : receiverMap.keySet()) {
+			if (filter.matchAction(intent.getAction())) {
+				receiverMap.get(filter).onReceive(this, intent);
+			}
+		}
+	}
 
 	public boolean stopService(Intent intent) {return false;}
 
