@@ -117,6 +117,14 @@ JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowNotificati
 		g_hash_table_add(ongoing_notifications, GINT_TO_POINTER(id));
 }
 
+JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeCancel(JNIEnv *env, jobject this, jint id)
+{
+	char *id_string = g_strdup_printf("%d", id);
+	if (portal)
+		xdp_portal_remove_notification(portal, id_string);
+	g_free(id_string);
+}
+
 static void remove_ongoing_notification(gpointer key, gpointer value, gpointer user_data)
 {
 	char *id_string = g_strdup_printf("%d", GPOINTER_TO_INT(key));

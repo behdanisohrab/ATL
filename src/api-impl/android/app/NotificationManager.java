@@ -3,6 +3,7 @@ package android.app;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 
 public class NotificationManager {
 	public void cancelAll() {}
@@ -36,7 +37,20 @@ public class NotificationManager {
 		notify(null, id, notification);
 	}
 
-	public void cancel(String tag, int id) {}
+	public void cancel(String tag, final int id) {
+		// remove_notification doesn't work reliably when sent directly after add_notification in GNOME session.
+		// So we give some extra delay here.
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				nativeCancel(id);
+			}
+		}, 100);
+	}
+
+	public void cancel(int id) {
+		cancel(null, id);
+	}
 
 	protected static void notificationActionCallback(int id, int intentType, String action, String className) {
 		Context context = Context.this_application;
@@ -56,4 +70,5 @@ public class NotificationManager {
 	protected native long nativeInitBuilder();
 	protected native void nativeAddAction(long builder, String title, int intentType, String action, String className);
 	protected native void nativeShowNotification(long builder, int id, String title, String text, String iconPath, boolean ongoing, int intentType, String action, String className);
+	protected native void nativeCancel(int id);
 }

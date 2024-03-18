@@ -31,6 +31,14 @@ JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeAddAction
 JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowNotification
   (JNIEnv *, jobject, jlong, jint, jstring, jstring, jstring, jboolean, jint, jstring, jstring);
 
+/*
+ * Class:     android_app_NotificationManager
+ * Method:    nativeCancel
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeCancel
+  (JNIEnv *, jobject, jint);
+
 #ifdef __cplusplus
 }
 #endif
