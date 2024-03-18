@@ -6,6 +6,7 @@
 #include "../generated_headers/android_app_NotificationManager.h"
 
 static XdpPortal *portal = NULL;
+static GHashTable *ongoing_notifications = NULL;
 
 JNIEXPORT jlong JNICALL Java_android_app_NotificationManager_nativeInitBuilder(JNIEnv *env, jobject this)
 {
@@ -61,7 +62,7 @@ static void natification_callback(GObject* source_object, GAsyncResult* res, gpo
 	callback_pending = 0;
 }
 
-JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowNotification(JNIEnv *env, jobject this, jlong builder_ptr, jint id, jstring title_jstr, jstring text_jstr, jstring icon_jstr, jint type, jstring action, jstring className)
+JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowNotification(JNIEnv *env, jobject this, jlong builder_ptr, jint id, jstring title_jstr, jstring text_jstr, jstring icon_jstr, jboolean ongoing, jint type, jstring action, jstring className)
 {
 	if (callback_pending) {
 		return;
@@ -69,6 +70,7 @@ JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowNotificati
 	if (!portal) {
 		portal = xdp_portal_new();
 		g_signal_connect(portal, "notification-action-invoked", G_CALLBACK(notification_action_invoked), NULL);
+		ongoing_notifications = g_hash_table_new(NULL, NULL);
 	}
 
 	GVariantBuilder *builder = _PTR(builder_ptr);
@@ -111,4 +113,19 @@ JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowNotificati
 	callback_pending = 1;
 	xdp_portal_add_notification(portal, id_string, variant, XDP_NOTIFICATION_FLAG_NONE, NULL, natification_callback, NULL);
 	g_free(id_string);
+	if (ongoing)
+		g_hash_table_add(ongoing_notifications, GINT_TO_POINTER(id));
+}
+
+static void remove_ongoing_notification(gpointer key, gpointer value, gpointer user_data)
+{
+	char *id_string = g_strdup_printf("%d", GPOINTER_TO_INT(key));
+	xdp_portal_remove_notification(portal, id_string);
+	g_free(id_string);
+}
+
+void remove_ongoing_notifications()
+{
+	if (ongoing_notifications)
+		g_hash_table_foreach(ongoing_notifications, remove_ongoing_notification, NULL);
 }

@@ -52,6 +52,7 @@ public class Notification {
 	List<Action> actions = new ArrayList<Action>();
 	PendingIntent intent;
 	String iconPath;
+	boolean ongoing;
 
 	public String toString() {
 		return "Notification [" + title + ", " + text + ", " + actions + "]";
@@ -79,7 +80,10 @@ public class Notification {
 
 		public Builder setLights(int argb, int onMs, int offMs) {return this;}
 
-		public Builder setOngoing(boolean ongoing) {return this;}
+		public Builder setOngoing(boolean ongoing) {
+			notification.ongoing = ongoing;
+			return this;
+		}
 
 		public Builder setOnlyAlertOnce(boolean onlyAlertOnce) {return this;}
 
@@ -145,7 +149,12 @@ public class Notification {
 			return this;
 		}
 
-		public Builder setStyle(Style style) {return this;}
+		public Builder setStyle(Style style) {
+			if (style instanceof MediaStyle) {
+				notification.ongoing = true;
+			}
+			return this;
+		}
 
 		public Builder setExtras(Bundle extras) {return this;}
 

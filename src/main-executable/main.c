@@ -472,6 +472,7 @@ void init_cmd_parameters(GApplication *app, struct jni_callback_data *d)
 }
 
 void init__r_debug();
+void remove_ongoing_notifications();
 
 int main(int argc, char **argv)
 {
@@ -500,6 +501,7 @@ int main(int argc, char **argv)
 	g_signal_connect(app, "open", G_CALLBACK (open), callback_data);
 	status = g_application_run(G_APPLICATION(app), argc, argv);
 	g_object_unref(app);
+	remove_ongoing_notifications();
 
 	return status;
 }
