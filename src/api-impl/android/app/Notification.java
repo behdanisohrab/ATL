@@ -51,6 +51,7 @@ public class Notification {
 	String title;
 	List<Action> actions = new ArrayList<Action>();
 	PendingIntent intent;
+	String iconPath;
 
 	public String toString() {
 		return "Notification [" + title + ", " + text + ", " + actions + "]";
@@ -65,7 +66,10 @@ public class Notification {
 
 		public Builder setWhen(long when) {return this;}
 
-		public Builder setSmallIcon(int icon, int level) {return this;}
+		public Builder setSmallIcon(int icon, int level) {
+			notification.iconPath = Context.this_application.getString(icon);
+			return this;
+		}
 
 		public Builder setContent(RemoteViews contentView) {return this;}
 

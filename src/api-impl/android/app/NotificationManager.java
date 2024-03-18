@@ -29,7 +29,7 @@ public class NotificationManager {
 			actionName = notification.intent.intent.getAction();
 			className = notification.intent.intent.getComponent() != null ? notification.intent.intent.getComponent().getClassName() : null;
 		}
-		nativeShowNotification(builder, id, notification.title, notification.text, intentType, actionName, className);
+		nativeShowNotification(builder, id, notification.title, notification.text, notification.iconPath, intentType, actionName, className);
 	}
 
 	public void notify(int id, Notification notification) {
@@ -55,5 +55,5 @@ public class NotificationManager {
 
 	protected native long nativeInitBuilder();
 	protected native void nativeAddAction(long builder, String title, int intentType, String action, String className);
-	protected native void nativeShowNotification(long builder, int id, String title, String text, int intentType, String action, String className);
+	protected native void nativeShowNotification(long builder, int id, String title, String text, String iconPath, int intentType, String action, String className);
 }

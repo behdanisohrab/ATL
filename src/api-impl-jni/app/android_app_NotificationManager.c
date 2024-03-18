@@ -61,7 +61,7 @@ static void natification_callback(GObject* source_object, GAsyncResult* res, gpo
 	callback_pending = 0;
 }
 
-JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowNotification(JNIEnv *env, jobject this, jlong builder_ptr, jint id, jstring title_jstr, jstring text_jstr, jint type, jstring action, jstring className)
+JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowNotification(JNIEnv *env, jobject this, jlong builder_ptr, jint id, jstring title_jstr, jstring text_jstr, jstring icon_jstr, jint type, jstring action, jstring className)
 {
 	if (callback_pending) {
 		return;
@@ -84,6 +84,22 @@ JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowNotificati
 		const char *text = (*env)->GetStringUTFChars(env, text_jstr, NULL);
 		g_variant_builder_add(builder, "{sv}", "body", g_variant_new_string(text));
 		(*env)->ReleaseStringUTFChars(env, text_jstr, text);
+	}
+	if (icon_jstr) {
+		const char *icon_path = (*env)->GetStringUTFChars(env, icon_jstr, NULL);
+		extract_from_apk(icon_path, icon_path);
+		char *icon_path_full = g_strdup_printf("%s/%s", get_app_data_dir(), icon_path);
+		GMappedFile *icon_file = g_mapped_file_new(icon_path_full, FALSE, NULL);
+		GBytes *icon_bytes = g_mapped_file_get_bytes(icon_file);
+		GIcon *icon = g_bytes_icon_new(icon_bytes);
+		GVariant *icon_serialized = g_icon_serialize(icon);
+		g_variant_builder_add(builder, "{sv}", "icon", icon_serialized);
+		g_variant_unref(icon_serialized);
+		g_object_unref(icon);
+		g_bytes_unref(icon_bytes);
+		g_mapped_file_unref(icon_file);
+		g_free(icon_path_full);
+		(*env)->ReleaseStringUTFChars(env, icon_jstr, icon_path);
 	}
 	g_variant_builder_add(builder, "{sv}", "default-action", g_variant_new_string("default-action"));
 	g_variant_builder_add(builder, "{sv}", "default-action-target", serialize_intent(env, type, action, className));

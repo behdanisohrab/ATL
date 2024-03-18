@@ -110,6 +110,7 @@ const char * attribute_set_get_string(JNIEnv *env, jobject attrs, char *attribut
 int attribute_set_get_int(JNIEnv *env, jobject attrs, char *attribute, char *schema, int default_value);
 void set_up_handle_cache(JNIEnv *env);
 void extract_from_apk(const char *path, const char *target);
+char *get_app_data_dir();
 
 void prepare_main_looper(JNIEnv* env);
 
