@@ -494,6 +494,9 @@ public final class ViewTreeObserver {
 		}
 
 		mOnGlobalLayoutListeners.add(listener);
+		// hack: many Applications wait for the global layout before doing anything
+		// so we dispatch the event immediately
+		listener.onGlobalLayout();
 	}
 
 	/**
