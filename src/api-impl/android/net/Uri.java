@@ -1,6 +1,8 @@
 package android.net;
 
 import java.net.URI;
+import java.net.URISyntaxException;
+
 import libcore.net.UriCodec;
 
 import java.io.File;
@@ -147,8 +149,38 @@ public class Uri implements Parcelable {
 	}
 
 	public static final class Builder {
+		private String scheme;
+		private String authority;
+		private String path;
+
 		public Builder appendQueryParameter(String key, String value) {
 			return this;
+		}
+
+		public Builder scheme(String scheme) {
+			this.scheme = scheme;
+			return this;
+		}
+
+		public Builder authority(String authority) {
+			this.authority = authority;
+			return this;
+		}
+
+		public Builder encodedPath(String encodedPath) {
+			this.path = decode(encodedPath);
+			return this;
+		}
+
+		public Uri build() throws URISyntaxException {
+			if ("content".equals(scheme)) { // hack: content providers not yet supported
+				scheme = "file";
+				authority = null;
+				path = path.substring(path.indexOf("/"));
+			}
+			Uri ret = new Uri();
+			ret.uri = new URI(scheme, authority, path, null, null);
+			return ret;
 		}
 	}
 
