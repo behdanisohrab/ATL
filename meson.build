@@ -114,6 +114,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/widgets/WrapperWidget.c',
                                                                   	'src/api-impl-jni/widgets/android_view_SurfaceView.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_AbsListView.c',
+                                                                  	'src/api-impl-jni/widgets/android_widget_AbsSpinner.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_Button.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_CheckBox.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_CompoundButton.c',
