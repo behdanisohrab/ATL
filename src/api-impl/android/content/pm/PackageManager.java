@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
+import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
 import com.reandroid.arsc.chunk.xml.ResXmlElement;
 
 class IPackageInstallObserver {}
@@ -2421,9 +2422,23 @@ public class PackageManager {
 	 * @return ContentProviderInfo Information about the provider, if found,
 	 *         else null.
 	 */
-	public ProviderInfo resolveContentProvider(String name,
-						   int flags) {
-		return null;
+	public ProviderInfo resolveContentProvider(String authority, int flags) {
+		ProviderInfo providerInfo = new ProviderInfo();
+		List<ResXmlElement> providers = Context.manifest.getApplicationElement().listElements(AndroidManifestBlock.TAG_provider);
+		for (ResXmlElement providerElement : providers) {
+			String providerAuthority = providerElement.searchAttributeByResourceId(AndroidManifestBlock.ID_authorities).getValueAsString();
+			if (providerAuthority.startsWith("."))
+				providerAuthority = Context.manifest.getPackageName() + providerAuthority;
+			if (!providerAuthority.equals(authority))
+				continue;
+			for (ResXmlElement metaData : providerElement.listElements(AndroidManifestBlock.TAG_meta_data)) {
+				ResXmlAttribute metaName = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_name);
+				ResXmlAttribute metaRes = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_resource);
+				providerInfo.metaData.putInt(metaName.getValueAsString(), metaRes.getData());
+			}
+			break;
+		}
+		return providerInfo;
 	}
 
 	/**
@@ -2709,8 +2724,8 @@ public class PackageManager {
 	 * data.  Returns null if the xml resource could not be found for any
 	 * reason.
 	 */
-	public XmlResourceParser getXml(String packageName, int resid, ApplicationInfo appInfo) {
-		return null;
+	public XmlResourceParser getXml(String packageName, int resid, ApplicationInfo appInfo) throws Exception {
+		return Context.this_application.getResources().getXml(resid);
 	}
 
 	/**

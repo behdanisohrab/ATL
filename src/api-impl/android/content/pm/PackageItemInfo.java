@@ -210,7 +210,7 @@ public class PackageItemInfo {
 	 * assigned as the given meta-data.  If the meta-data name is not defined
 	 * or the XML resource could not be found, null is returned.
 	 */
-	public XmlResourceParser loadXmlMetaData(PackageManager pm, String name) {
+	public XmlResourceParser loadXmlMetaData(PackageManager pm, String name) throws Exception {
 		if (metaData != null) {
 			int resid = metaData.getInt(name);
 			if (resid != 0) {
