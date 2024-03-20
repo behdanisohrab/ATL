@@ -1661,4 +1661,8 @@ public class View extends Object {
 	public boolean hasOnClickListeners() {return false;}
 
 	public void setTextAlignment(int textAlignment) {}
+
+	public void setHapticFeedbackEnabled(boolean hapticFeedbackEnabled) {}
+
+	public StateListAnimator getStateListAnimator() {return null;}
 }

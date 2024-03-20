@@ -20,6 +20,7 @@ public class EditText extends TextView {
 	protected native String native_getText(long widget);
 	protected native void native_addTextChangedListener(long widget, TextWatcher watcher);
 	protected native void native_setOnEditorActionListener(long widget, OnEditorActionListener l);
+	protected native void native_setText(long widget, String text);
 
 	public Editable getText() {
 		return new SpannableStringBuilder(native_getText(widget));
@@ -30,7 +31,9 @@ public class EditText extends TextView {
 	}
 
 	@Override
-	public void setText(CharSequence text) {}
+	public void setText(CharSequence text) {
+		native_setText(widget, String.valueOf(text));
+	}
 	@Override
 	public void setTextSize(float size) {}
 

@@ -231,6 +231,14 @@ JNIEXPORT void JNICALL Java_android_widget_EditText_native_1addTextChangedListen
 JNIEXPORT void JNICALL Java_android_widget_EditText_native_1setOnEditorActionListener
   (JNIEnv *, jobject, jlong, jobject);
 
+/*
+ * Class:     android_widget_EditText
+ * Method:    native_setText
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_android_widget_EditText_native_1setText
+  (JNIEnv *, jobject, jlong, jstring);
+
 #ifdef __cplusplus
 }
 #endif

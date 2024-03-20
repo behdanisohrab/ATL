@@ -77,3 +77,11 @@ JNIEXPORT void JNICALL Java_android_widget_EditText_native_1setOnEditorActionLis
 
 	g_signal_connect(entry, "activate", G_CALLBACK(on_activate), callback_data);
 }
+
+JNIEXPORT void JNICALL Java_android_widget_EditText_native_1setText(JNIEnv *env, jobject this, jlong widget_ptr, jstring text_jstr)
+{
+	const char *text = (*env)->GetStringUTFChars(env, text_jstr, NULL);
+	jsize length = (*env)->GetStringUTFLength(env, text_jstr);
+	gtk_entry_buffer_set_text(gtk_entry_get_buffer(GTK_ENTRY(_PTR(widget_ptr))), text, length);
+	(*env)->ReleaseStringUTFChars(env, text_jstr, text);
+}

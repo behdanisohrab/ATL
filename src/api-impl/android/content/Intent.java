@@ -294,4 +294,9 @@ public class Intent {
 	public String getType() {
 		return type;
 	}
+
+	public Intent setData(Uri uri) {
+		this.data = uri;
+		return this;
+	}
 }

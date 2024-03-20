@@ -419,7 +419,11 @@ public class Context extends Object {
 		if (intent.getComponent() == null) {
 			if(intent.getAction() != null && intent.getAction().equals("android.intent.action.SEND")) {
 				Slog.i(TAG, "starting extern activity with intent: " + intent);
-				ClipboardManager.native_set_clipboard(intent.getStringExtra("android.intent.extra.TEXT"));
+				String text = intent.getStringExtra("android.intent.extra.TEXT");
+				if (text == null)
+					text = String.valueOf(intent.getExtras().get("android.intent.extra.STREAM"));
+				if (text != null)
+					ClipboardManager.native_set_clipboard(text);
 			} else if (intent.getData() != null) {
 				Slog.i(TAG, "starting extern activity with intent: " + intent);
 				Activity.nativeOpenURI(String.valueOf(intent.getData()));

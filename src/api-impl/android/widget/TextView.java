@@ -231,4 +231,6 @@ public class TextView extends View {
 	public float getLetterSpacing() {return 0.f;}
 
 	public void setCompoundDrawablesRelativeWithIntrinsicBounds(int start, int top, int end, int bottom) {}
+
+	public boolean getLinksClickable() {return true;}
 }

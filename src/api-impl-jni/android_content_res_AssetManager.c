@@ -170,12 +170,12 @@ JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getArrayStr
 	for (i = 0; i < bag_count; i++) {
 		struct Res_value value = bag[i].map.value;
 		ssize_t block = ResTable_resolveReference(res_table, &value, bag[i].stringBlock, NULL, NULL, NULL);
-		if (bag[i].map.value.dataType == TYPE_STRING) {
+		if (value.dataType == TYPE_STRING) {
 			const struct ResStringPool *string_pool = ResTable_getTableStringBlock(res_table, block);
 			if (string_pool == NULL)
 				continue;
 			size_t len;
-			const char16_t *string = ResStringPool_stringAt(string_pool, bag[i].map.value.data, &len);
+			const char16_t *string = ResStringPool_stringAt(string_pool, value.data, &len);
 			(*env)->SetObjectArrayElement(env, array, i, (*env)->NewString(env, string, len));
 		}
 	}

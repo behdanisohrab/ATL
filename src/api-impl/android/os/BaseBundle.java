@@ -156,4 +156,36 @@ public class BaseBundle {
 	public int size() {
 		return mMap.size();
 	}
+
+	/**
+	 * Returns the value associated with the given key, or defaultValue if
+	 * no mapping of the desired type exists for the given key.
+	 *
+	 * @param key a String
+	 * @param defaultValue Value to return if key does not exist
+	 * @return an int value
+	 */
+	public int getInt(String key, int defaultValue) {
+		Object o = mMap.get(key);
+		if (o == null) {
+			return defaultValue;
+		}
+		try {
+			return (Integer)o;
+		} catch (ClassCastException e) {
+			typeWarning(key, o, "Integer", defaultValue, e);
+			return defaultValue;
+		}
+	}
+
+	/**
+	 * Returns the value associated with the given key, or 0 if
+	 * no mapping of the desired type exists for the given key.
+	 *
+	 * @param key a String
+	 * @return an int value
+	 */
+	public int getInt(String key) {
+		return getInt(key, 0);
+	}
 }
