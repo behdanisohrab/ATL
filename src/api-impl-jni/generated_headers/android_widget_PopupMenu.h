@@ -17,11 +17,27 @@ JNIEXPORT jlong JNICALL Java_android_widget_PopupMenu_native_1init
 
 /*
  * Class:     android_widget_PopupMenu
- * Method:    native_appendItem
- * Signature: (JLjava/lang/String;I)V
+ * Method:    native_insertItem
+ * Signature: (JILjava/lang/String;I)V
  */
-JNIEXPORT void JNICALL Java_android_widget_PopupMenu_native_1appendItem
-  (JNIEnv *, jobject, jlong, jstring, jint);
+JNIEXPORT void JNICALL Java_android_widget_PopupMenu_native_1insertItem
+  (JNIEnv *, jobject, jlong, jint, jstring, jint);
+
+/*
+ * Class:     android_widget_PopupMenu
+ * Method:    native_insertSubmenu
+ * Signature: (JILjava/lang/String;J)V
+ */
+JNIEXPORT void JNICALL Java_android_widget_PopupMenu_native_1insertSubmenu
+  (JNIEnv *, jobject, jlong, jint, jstring, jlong);
+
+/*
+ * Class:     android_widget_PopupMenu
+ * Method:    native_removeItem
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_android_widget_PopupMenu_native_1removeItem
+  (JNIEnv *, jobject, jlong, jint);
 
 /*
  * Class:     android_widget_PopupMenu

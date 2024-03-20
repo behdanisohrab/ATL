@@ -10,13 +10,30 @@ JNIEXPORT jlong JNICALL Java_android_widget_PopupMenu_native_1init(JNIEnv *env, 
 	return _INTPTR(g_menu_new());
 }
 
-JNIEXPORT void JNICALL Java_android_widget_PopupMenu_native_1appendItem(JNIEnv *env, jobject this, jlong menu_ptr, jstring title_jstr, jint id)
+JNIEXPORT void JNICALL Java_android_widget_PopupMenu_native_1insertItem(JNIEnv *env, jobject this, jlong menu_ptr, jint position, jstring title_jstr, jint id)
 {
 	const gchar *title = (*env)->GetStringUTFChars(env, title_jstr, NULL);
+	printf("insertItem position: %d title: %s\n", position, title);
 	GMenuItem *item = g_menu_item_new(title, NULL);
 	(*env)->ReleaseStringUTFChars(env, title_jstr, title);
 	g_menu_item_set_action_and_target(item, "popupmenu.clicked", "i", id);
-	g_menu_append_item(G_MENU(_PTR(menu_ptr)), item);
+	g_menu_insert_item(G_MENU(_PTR(menu_ptr)), position, item);
+	g_object_unref(item);
+}
+
+JNIEXPORT void JNICALL Java_android_widget_PopupMenu_native_1insertSubmenu(JNIEnv *env, jobject this, jlong menu_ptr, jint position, jstring title_jstr, jlong submenu_ptr)
+{
+	const gchar *title = (*env)->GetStringUTFChars(env, title_jstr, NULL);
+	printf("insertSubmenu position: %d title: %s\n", position, title);
+	GMenuItem *item = g_menu_item_new_submenu(title, G_MENU_MODEL(_PTR(submenu_ptr)));
+	(*env)->ReleaseStringUTFChars(env, title_jstr, title);
+	g_menu_insert_item(G_MENU(_PTR(menu_ptr)), position, item);
+	g_object_unref(item);
+}
+
+JNIEXPORT void JNICALL Java_android_widget_PopupMenu_native_1removeItem(JNIEnv *env, jobject this, jlong menu_ptr, jint position)
+{
+	g_menu_remove(G_MENU(_PTR(menu_ptr)), position);
 }
 
 static void popupmenu_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
