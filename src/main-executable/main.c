@@ -350,6 +350,9 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	if(getenv("ATL_DISABLE_WINDOW_DECORATIONS"))
 		gtk_window_set_decorated(GTK_WINDOW(window), 0);
 
+        if(getenv("ATL_FORCE_FULLSCREEN"))
+                gtk_window_fullscreen(GTK_WINDOW(window));
+
 	gtk_window_present(GTK_WINDOW(window));
 
 	// construct Application
