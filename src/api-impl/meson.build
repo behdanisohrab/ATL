@@ -441,6 +441,8 @@ hax_jar = jar('hax', [
               	'android/widget/Spinner.java',
               	'android/widget/SpinnerAdapter.java',
               	'android/widget/Switch.java',
+              	'android/widget/TableLayout.java',
+              	'android/widget/TableRow.java',
               	'android/widget/TextView.java',
               	'android/widget/Toast.java',
               	'android/widget/Toolbar.java',

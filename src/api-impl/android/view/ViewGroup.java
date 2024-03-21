@@ -360,10 +360,14 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 		public LayoutParams(Context context, AttributeSet attrs) {
 			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ViewGroup_Layout);
-			width = a.getLayoutDimension(R.styleable.ViewGroup_Layout_layout_width, "layout_width");
-			height = a.getLayoutDimension(R.styleable.ViewGroup_Layout_layout_height, "layout_height");
+			setBaseAttributes(a, R.styleable.ViewGroup_Layout_layout_width, R.styleable.ViewGroup_Layout_layout_height);
 			this.gravity = attrs.getAttributeIntValue("http://schemas.android.com/apk/res/android", "layout_gravity", -1);
 			a.recycle();
+		}
+
+		protected void setBaseAttributes(TypedArray a, int widthAttr, int heightAttr) {
+			width = a.getLayoutDimension(widthAttr, "layout_width");
+			height = a.getLayoutDimension(heightAttr, "layout_height");
 		}
 
 		public void resolveLayoutDirection(int layoutDirection) {}
