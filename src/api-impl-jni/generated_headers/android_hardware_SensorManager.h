@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     android_hardware_SensorManager
  * Method:    register_accelerometer_listener_native
- * Signature: (Landroid/hardware/SensorEventListener;Landroid/hardware/Sensor;)V
+ * Signature: (Landroid/hardware/SensorEventListener;Landroid/hardware/Sensor;I)V
  */
 JNIEXPORT void JNICALL Java_android_hardware_SensorManager_register_1accelerometer_1listener_1native
-  (JNIEnv *, jobject, jobject, jobject);
+  (JNIEnv *, jobject, jobject, jobject, jint);
 
 #ifdef __cplusplus
 }

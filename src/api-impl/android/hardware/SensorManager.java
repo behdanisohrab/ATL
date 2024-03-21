@@ -28,7 +28,7 @@ public class SensorManager {
 				});
 				return true;
 			case Sensor.TYPE_ACCELEROMETER:
-				register_accelerometer_listener_native(listener, sensor);
+				register_accelerometer_listener_native(listener, sensor, samplingPeriodUs);
 				return true;
 			default:
 				return false;
@@ -43,5 +43,5 @@ public class SensorManager {
 		System.out.println("STUB: andoroid.hw.SensorManager.unregisterListener");
 	}
 
-	native void register_accelerometer_listener_native(SensorEventListener listener, Sensor sensor);
+	native void register_accelerometer_listener_native(SensorEventListener listener, Sensor sensor, int sampling_period);
 }
