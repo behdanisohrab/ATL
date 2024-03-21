@@ -1631,7 +1631,12 @@ public class View extends Object {
 	}
 
 	public void forceLayout() {
-		requestLayout();
+		new Handler(Looper.getMainLooper()).post(new Runnable() {
+			@Override
+			public void run() {
+				requestLayout();
+			}
+		});
 	}
 
 	public void removeOnAttachStateChangeListener(OnAttachStateChangeListener listener) {}
