@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcelable;
+import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.LayoutDirection;
 import android.util.Property;
@@ -1060,7 +1061,9 @@ public class View extends Object {
 	}
 
 	public boolean performHapticFeedback(int feedbackConstant, int flags) {
-		Slog.v(TAG, "vibration motor go burrrr");
+		// arbitrary; TODO: better mimic what AOSP does
+		Vibrator vibrator = (Vibrator)getContext().getSystemService("vibrator");
+		vibrator.vibrate(10);
 		return true; // FIXME why is it not void
 	}
 

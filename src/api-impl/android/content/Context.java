@@ -65,6 +65,8 @@ public class Context extends Object {
 	public static final String WINDOW_SERVICE = "window";
 	public static AndroidManifestBlock manifest = null;
 
+	public static Vibrator vibrator;
+
 	static AssetManager assets;
 	static DisplayMetrics dm;
 	static Resources r;
@@ -172,7 +174,7 @@ public class Context extends Object {
 			case "usb":
 				return new UsbManager();
 			case "vibrator":
-				return new Vibrator();
+				return (vibrator != null) ? vibrator : (vibrator = new Vibrator());
 			case "power":
 				return new PowerManager();
 			case "display":
