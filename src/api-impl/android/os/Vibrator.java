@@ -3,9 +3,19 @@ package android.os;
 import android.util.Slog;
 
 public class Vibrator {
-	public void vibrate(long millis) {
-		Slog.v("Vibrator", "vibration motor go burrrr for "+millis+"ms");
+	int fd; // vibrator /dev/input/eventX
+
+	public Vibrator() {
+		fd = native_constructor();
 	}
+
+	public void vibrate(long millis) {
+		if(fd != -1)
+			native_vibrate(fd, millis);
+		else
+			Slog.v("Vibrator", "vibration motor go burrrr for "+millis+"ms");
+	}
+
 	public void vibrate (final long[] pattern, int repeat) {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
@@ -19,4 +29,7 @@ public class Vibrator {
 		});
 		t.start();
 	}
+
+	private native void native_vibrate(int fd, long millis);
+	private native int native_constructor();
 }
