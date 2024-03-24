@@ -18,9 +18,9 @@ package android.util;
 
 public interface AttributeSet {
     public int getAttributeCount();
-    default String getAttributeNamespace (int index) {
+    /*default*/ String getAttributeNamespace (int index); /* {
         return null;
-    }
+    }*/
     public String getAttributeName(int index);
     public String getAttributeValue(int index);
     public String getAttributeValue(String namespace, String name);

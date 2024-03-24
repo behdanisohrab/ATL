@@ -489,6 +489,6 @@ hax_jar = jar('hax', [
               ],
               java_args: [
               	'-bootclasspath', bootclasspath,
-              	'-source', '1.7', '-target', '1.7',
+              	'-source', '1.8', '-target', '1.8',
               	'-h', join_paths(dir_base, 'src/api-impl-jni/generated_headers')
               ])
