@@ -134,6 +134,10 @@ public class Drawable {
 		} else if ("ripple".equals(parser.getName())) {
 			// FIXME: the non-pressed state of RippleDrawable should be equivalent to this
 			return new ColorDrawable(0);
+		} else if ("vector".equals(parser.getName())) {
+			VectorDrawable drawable = new VectorDrawable();
+			drawable.inflate(resources, parser, parser, null);
+			return drawable;
 		}
 		return null;
 	}

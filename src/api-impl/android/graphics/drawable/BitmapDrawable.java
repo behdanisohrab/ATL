@@ -41,5 +41,5 @@ public class BitmapDrawable extends Drawable {
 		a.recycle();
 	}
 
-	private static native long native_paintable_from_pixbuf(long pixbuf);
+	static native long native_paintable_from_pixbuf(long pixbuf);
 }

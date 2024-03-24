@@ -187,6 +187,7 @@ hax_jar = jar('hax', [
               	'android/graphics/drawable/ScaleDrawable.java',
               	'android/graphics/drawable/ShapeDrawable.java',
               	'android/graphics/drawable/StateListDrawable.java',
+              	'android/graphics/drawable/VectorDrawable.java',
               	'android/graphics/drawable/shapes/OvalShape.java',
               	'android/graphics/drawable/shapes/Shape.java',
               	'android/hardware/ConsumerIrManager.java',
