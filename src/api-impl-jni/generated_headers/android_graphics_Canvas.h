@@ -79,6 +79,14 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate_1and_1translate
   (JNIEnv *, jclass, jlong, jlong, jfloat, jfloat, jfloat);
 
+/*
+ * Class:     android_graphics_Canvas
+ * Method:    native_drawPath
+ * Signature: (JJJ)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawPath
+  (JNIEnv *, jclass, jlong, jlong, jlong);
+
 #ifdef __cplusplus
 }
 #endif

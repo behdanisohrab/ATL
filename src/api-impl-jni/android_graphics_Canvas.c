@@ -7,6 +7,7 @@
 #include "../sk_area/include/c/sk_font.h"
 #include "../sk_area/include/c/sk_image.h"
 #include "../sk_area/include/c/sk_typeface.h"
+#include "../sk_area/include/c/sk_types.h"
 
 #include "generated_headers/android_graphics_Canvas.h"
 
@@ -104,4 +105,13 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate_1and_1transla
 	sk_canvas_rotate_degrees(canvas, angle);
 	sk_canvas_translate(canvas, -tx, -ty);
 
+}
+
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawPath(JNIEnv *env, jclass class, jlong skia_canvas, jlong path_ptr, long skia_paint)
+{
+	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
+	sk_path_t *path = (sk_path_t *)_PTR(path_ptr);
+	sk_paint_t *paint = (sk_paint_t *)_PTR(skia_paint);
+
+	sk_canvas_draw_path(canvas, path, paint);
 }

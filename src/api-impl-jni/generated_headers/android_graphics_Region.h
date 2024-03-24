@@ -116,10 +116,10 @@ JNIEXPORT jboolean JNICALL Java_android_graphics_Region_nativeSetRect
 /*
  * Class:     android_graphics_Region
  * Method:    nativeSetPath
- * Signature: (III)Z
+ * Signature: (IJI)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Region_nativeSetPath
-  (JNIEnv *, jclass, jint, jint, jint);
+  (JNIEnv *, jclass, jint, jlong, jint);
 
 /*
  * Class:     android_graphics_Region
@@ -132,10 +132,10 @@ JNIEXPORT jboolean JNICALL Java_android_graphics_Region_nativeGetBounds
 /*
  * Class:     android_graphics_Region
  * Method:    nativeGetBoundaryPath
- * Signature: (II)Z
+ * Signature: (IJ)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Region_nativeGetBoundaryPath
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jint, jlong);
 
 /*
  * Class:     android_graphics_Region

@@ -335,11 +335,11 @@ public class Region {
 	private static native void nativeSetRegion(int native_dst, int native_src);
 	private static native boolean nativeSetRect(int native_dst, int left,
 						    int top, int right, int bottom);
-	private static native boolean nativeSetPath(int native_dst, int native_path,
+	private static native boolean nativeSetPath(int native_dst, long native_path,
 						    int native_clip);
 	private static native boolean nativeGetBounds(int native_region, Rect rect);
 	private static native boolean nativeGetBoundaryPath(int native_region,
-							    int native_path);
+							    long native_path);
 	private static native boolean nativeOp(int native_dst, int left, int top,
 					       int right, int bottom, int op);
 	private static native boolean nativeOp(int native_dst, Rect rect,

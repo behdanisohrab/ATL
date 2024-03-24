@@ -382,7 +382,9 @@ public class Canvas {
 
 	public void setBitmap(Bitmap bitmap) {}
 
-	public void drawPath(Path path, Paint paint) {}
+	public void drawPath(Path path, Paint paint) {
+		native_drawPath(skia_canvas, path.mNativePath, paint.skia_paint);
+	}
 
 	public boolean clipPath(Path path) {
 		return false;
@@ -401,4 +403,5 @@ public class Canvas {
 	private static native void native_drawBitmap(long skia_canvas, long widget, long pixbuf, float src_left, float src_top, float src_right, float src_bottom, float dest_left, float dest_top, float dest_right, float dest_bottm, long skia_paint);
 	private static native void native_rotate(long skia_canvas, long widget, float angle);
 	private static native void native_rotate_and_translate(long skia_canvas, long widget, float angle, float tx, float ty);
+	private static native void native_drawPath(long skia_canvas, long path, long skia_paint);
 }
