@@ -146,3 +146,16 @@ JNIEXPORT jboolean JNICALL Java_android_graphics_Path_native_1op(JNIEnv *env, jc
 	sk_path_t *result = (sk_path_t *)_PTR(result_ptr);
 	return sk_pathop_op(path, other, (sk_pathop_t)op, result);
 }
+
+JNIEXPORT void JNICALL Java_android_graphics_Path_native_1quadTo(JNIEnv *env, jclass class, jlong path_ptr, jfloat x1, jfloat y1, jfloat x2, jfloat y2)
+{
+	sk_path_t *path = (sk_path_t *)_PTR(path_ptr);
+	sk_path_quad_to(path, x1, y1, x2, y2);
+}
+
+JNIEXPORT void JNICALL Java_android_graphics_Path_native_1rQuadTo(JNIEnv *env, jclass class, jlong path_ptr, jfloat dx1, jfloat dy1, jfloat dx2, jfloat dy2)
+{
+	sk_path_t *path = (sk_path_t *)_PTR(path_ptr);
+	sk_path_rquad_to(path, dx1, dy1, dx2, dy2);
+}
+
