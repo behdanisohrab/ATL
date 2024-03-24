@@ -44,7 +44,7 @@ JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preConcat(JNIEnv
 {
 	graphene_matrix_t *matrix = (graphene_matrix_t *)_PTR(matrix_ptr);
 	graphene_matrix_t *other = (graphene_matrix_t *)_PTR(other_ptr);
-	graphene_matrix_multiply(matrix, other, matrix);
+	graphene_matrix_multiply(other, matrix, matrix);
 
 	return true;
 }
@@ -164,4 +164,52 @@ JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1setRectToRect(JN
 	}
 	graphene_matrix_translate(matrix, &translation);
 	return true;
+}
+
+JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1mapPoints(JNIEnv *env, jclass class, jlong matrix_ptr, jfloatArray dst_ref, jint dst_idx, jfloatArray src_ref, jint src_idx, jint count, jboolean is_pts)
+{
+	graphene_matrix_t *matrix = (graphene_matrix_t *)_PTR(matrix_ptr);
+	graphene_matrix_t matrix_cpy;
+	if (!is_pts) {
+		// remove translation
+		graphene_matrix_init_from_matrix(&matrix_cpy, matrix);
+		graphene_point3d_t translation = GRAPHENE_POINT3D_INIT(
+			-graphene_matrix_get_x_translation(matrix),
+			-graphene_matrix_get_y_translation(matrix),
+			-graphene_matrix_get_z_translation(matrix));
+		graphene_matrix_translate(&matrix_cpy, &translation);
+		matrix = &matrix_cpy;
+	}
+	jfloat *src = (*env)->GetFloatArrayElements(env, src_ref, NULL);
+	jfloat *dst = (*env)->GetFloatArrayElements(env, dst_ref, NULL);
+	graphene_point_t p;
+	graphene_point_t res;
+	for (int i = 0; i < count; i++) {
+		p = GRAPHENE_POINT_INIT(src[src_idx + i * 2], src[src_idx + i * 2 + 1]);
+		graphene_matrix_transform_point(matrix, &p, &res);
+		dst[dst_idx + i * 2] = res.x;
+		dst[dst_idx + i * 2 + 1] = res.y;
+	}
+}
+
+JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setTranslate(JNIEnv *env, jclass class, jlong matrix_ptr, jfloat x, jfloat y)
+{
+	graphene_matrix_t *matrix = (graphene_matrix_t *)_PTR(matrix_ptr);
+	graphene_matrix_init_translate(matrix, &GRAPHENE_POINT3D_INIT(x, y, 0));
+}
+
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preRotate__JF(JNIEnv *env, jclass class, jlong matrix_ptr, jfloat degrees)
+{
+	graphene_matrix_t *matrix = (graphene_matrix_t *)_PTR(matrix_ptr);
+	graphene_matrix_t rotation;
+	graphene_vec3_t rotation_axis;
+	graphene_vec3_init(&rotation_axis, 0, 0, 1);
+	graphene_matrix_init_rotate(&rotation, degrees, &rotation_axis);
+	graphene_matrix_multiply(&rotation, matrix, matrix);
+	return true;
+}
+
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1invert(JNIEnv *env, jclass class, jlong matrix_ptr, jlong inverse_ptr)
+{
+	return graphene_matrix_inverse((graphene_matrix_t *)_PTR(matrix_ptr), (graphene_matrix_t *)_PTR(inverse_ptr));
 }
