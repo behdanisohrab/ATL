@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jlong JNICALL Java_android_graphics_drawable_Drawable_native_1paintable_1from_1path
   (JNIEnv *, jclass, jstring);
 
+/*
+ * Class:     android_graphics_drawable_Drawable
+ * Method:    native_constructor
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_android_graphics_drawable_Drawable_native_1constructor
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

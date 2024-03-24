@@ -144,6 +144,10 @@ void set_up_handle_cache(JNIEnv *env)
 
 	handle_cache.key_event.class = _REF((*env)->FindClass(env, "android/view/KeyEvent"));
 	handle_cache.key_event.constructor = _METHOD(handle_cache.key_event.class, "<init>", "(II)V");
+
+	handle_cache.drawable.class = _REF((*env)->FindClass(env, "android/graphics/drawable/Drawable"));
+	handle_cache.drawable.draw = _METHOD(handle_cache.drawable.class, "draw", "(Landroid/graphics/Canvas;)V");
+	handle_cache.drawable.setBounds = _METHOD(handle_cache.drawable.class, "setBounds", "(IIII)V");
 }
 
 void extract_from_apk(const char *path, const char *target) {

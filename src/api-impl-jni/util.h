@@ -100,6 +100,11 @@ struct handle_cache {
 		jclass class;
 		jmethodID constructor;
 	} key_event;
+	struct {
+		jclass class;
+		jmethodID draw;
+		jmethodID setBounds;
+	} drawable;
 };
 
 extern struct handle_cache handle_cache;

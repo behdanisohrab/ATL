@@ -161,6 +161,7 @@ hax_jar = jar('hax', [
               	'android/graphics/Canvas.java',
               	'android/graphics/Color.java',
               	'android/graphics/ColorFilter.java',
+              	'android/graphics/GskCanvas.java',
               	'android/graphics/Matrix.java',
               	'android/graphics/Paint.java',
               	'android/graphics/Path.java',

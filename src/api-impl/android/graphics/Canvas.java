@@ -81,7 +81,7 @@ public class Canvas {
 	 * @param px The x-coord for the pivot point (unchanged by the rotation)
 	 * @param py The y-coord for the pivot point (unchanged by the rotation)
 	 */
-	public final void rotate(float degrees, float px, float py) {
+	public void rotate(float degrees, float px, float py) {
 		native_rotate_and_translate(skia_canvas, widget, degrees, px, py);
 	}
 	// ---

@@ -28,7 +28,9 @@ public class Drawable {
 	private int[] mStateSet = new int[0];
 	public long paintable;
 
-	public Drawable() {}
+	public Drawable() {
+		this.paintable = native_constructor();
+	}
 
 	public Drawable(long paintable) {
 		this.paintable = paintable;
@@ -180,4 +182,5 @@ public class Drawable {
 	}
 
 	protected static native long native_paintable_from_path(String path);
+	protected native long native_constructor();
 }
