@@ -92,6 +92,10 @@ public class PorterDuff {
 		ADD(16),
 		OVERLAY(17);
 
-		Mode(int nativeInt) {}
+		public int nativeInt;
+
+		Mode(int nativeInt) {
+			this.nativeInt = nativeInt;
+		}
 	}
 }

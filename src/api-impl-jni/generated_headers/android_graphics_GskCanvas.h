@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     android_graphics_GskCanvas
  * Method:    native_drawBitmap
- * Signature: (JJIIII)V
+ * Signature: (JJIIIII)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1drawBitmap
-  (JNIEnv *, jobject, jlong, jlong, jint, jint, jint, jint);
+  (JNIEnv *, jobject, jlong, jlong, jint, jint, jint, jint, jint);
 
 #ifdef __cplusplus
 }

@@ -4,6 +4,7 @@ public class Paint {
 	public long skia_paint = 0;
 	private Typeface typeface = null;
 	public long skia_font = 0;
+	ColorFilter colorFilter = null;
 
 	public Paint() {
 		skia_paint = native_constructor();
@@ -63,6 +64,11 @@ public class Paint {
 		return native_measure_text(skia_font, text, 0, text.length(), skia_paint);
 	}
 	public float measureText(CharSequence text, int start, int end) { return 10; }
+
+	public ColorFilter setColorFilter(ColorFilter colorFilter) {
+		this.colorFilter = colorFilter;
+		return colorFilter;
+	}
 
 	public Shader setShader(Shader shader) { return shader; } 
 
