@@ -217,6 +217,14 @@ JNIEXPORT void JNICALL Java_android_widget_ImageButton_native_1setPixbuf
 
 /*
  * Class:     android_widget_ImageButton
+ * Method:    native_setDrawable
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_android_widget_ImageButton_native_1setDrawable
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     android_widget_ImageButton
  * Method:    native_setOnClickListener
  * Signature: (JLandroid/view/View/OnClickListener;)V
  */

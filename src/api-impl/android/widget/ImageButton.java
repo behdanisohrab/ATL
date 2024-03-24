@@ -21,6 +21,8 @@ public class ImageButton extends ImageView {
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	@Override
 	protected native void native_setPixbuf(long pixbuf);
+	@Override
+	protected native void native_setDrawable(long widget, long paintable);
 	protected native void native_setOnClickListener(long widget, OnClickListener l);
 
 	@Override

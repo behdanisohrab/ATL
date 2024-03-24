@@ -62,3 +62,11 @@ JNIEXPORT void JNICALL Java_android_widget_ImageButton_native_1setOnClickListene
 
 	g_signal_connect(button, "clicked", G_CALLBACK(clicked_cb), callback_data);
 }
+
+JNIEXPORT void JNICALL Java_android_widget_ImageButton_native_1setDrawable(JNIEnv *env, jobject this, jlong widget_ptr, jlong paintable_ptr)
+{
+	GtkButton *button = _PTR(_GET_LONG_FIELD(this, "widget"));
+	GtkPicture *picture = GTK_PICTURE(gtk_button_get_child(GTK_BUTTON(button)));
+	GdkPaintable *paintable = _PTR(paintable_ptr);
+	gtk_picture_set_paintable(picture, paintable);
+}

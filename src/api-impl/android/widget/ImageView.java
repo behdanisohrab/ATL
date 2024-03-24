@@ -33,6 +33,8 @@ public class ImageView extends View {
 			if (resid != 0 && !getResources().getString(resid).endsWith(".xml")) {
 				bitmap = BitmapFactory.decodeResource(getResources(), resid);
 				native_setPixbuf(bitmap.pixbuf);
+			} else if (resid != 0) {
+				setImageDrawable(getResources().getDrawable(resid));
 			}
 		}
 	}
