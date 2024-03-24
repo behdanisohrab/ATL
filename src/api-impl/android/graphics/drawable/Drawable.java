@@ -90,7 +90,9 @@ public class Drawable {
 	public final int getLevel() {return 0;}
 	public final boolean setLevel(int level) {return false;}
 
-	public void setBounds(Rect bounds) {}
+	public void setBounds(Rect bounds) {
+		setBounds(bounds.left, bounds.top, bounds.right, bounds.bottom);
+	}
 
 	public void setColorFilter(int color, PorterDuff.Mode mode) {}
 	public void setColorFilter(ColorFilter filter) {}
@@ -171,6 +173,10 @@ public class Drawable {
 
 	public boolean getPadding(Rect padding) {
 		return false;
+	}
+
+	public void copyBounds(Rect bounds) {
+		bounds.set(mBounds);
 	}
 
 	protected static native long native_paintable_from_path(String path);

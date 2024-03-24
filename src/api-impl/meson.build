@@ -172,6 +172,7 @@ hax_jar = jar('hax', [
               	'android/graphics/Rect.java',
               	'android/graphics/RectF.java',
               	'android/graphics/Region.java',
+              	'android/graphics/Shader.java',
               	'android/graphics/Typeface.java',
               	'android/graphics/Xfermode.java',
               	'android/graphics/drawable/Animatable.java',

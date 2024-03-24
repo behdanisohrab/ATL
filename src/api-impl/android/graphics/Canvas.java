@@ -392,6 +392,16 @@ public class Canvas {
 
 	public void restoreToCount(int count) {}
 
+	public void drawRoundRect(RectF rect, float rx, float ry, Paint paint) {}
+
+	public void getMatrix(Matrix matrix) {
+		matrix.reset();
+	}
+
+	public void translate(float dx, float dy) {}
+
+	public void drawCircle(float cx, float cy, float radius, Paint paint) {}
+
 	private static native long native_canvas_from_bitmap(long pixbuf);
 
 	private static native void native_save(long skia_canvas, long widget);

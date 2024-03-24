@@ -64,6 +64,8 @@ public class Paint {
 	}
 	public float measureText(CharSequence text, int start, int end) { return 10; }
 
+	public Shader setShader(Shader shader) { return shader; } 
+
 	public enum Style {
 		/**
 		 * Geometry and text drawn with this style will be filled, ignoring all
