@@ -7,6 +7,7 @@ public class GestureOverlayView extends ViewGroup {
 
 	public GestureOverlayView(Context context) {
 		super(context);
+		haveCustomMeasure = false;  // hack: let it measure 0x0, as GTK doesn't allow events to go through it
 	}
 
 	public void setGestureStrokeType(int type) {
