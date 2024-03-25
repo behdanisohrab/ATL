@@ -170,8 +170,7 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 
 	jmethodID ontouchevent_method = _METHOD(_CLASS(jobj), "onTouchEvent", "(Landroid/view/MotionEvent;)Z");
 	if (ontouchevent_method != handle_cache.view.onTouchEvent) {
-		/* use wrapper->child since the jobject may not have the "widget" variable set yet */
-		_setOnTouchListener(env, jobj, wrapper->child, NULL);
+		_setOnTouchListener(env, jobj, GTK_WIDGET(wrapper), NULL);
 	}
 
 	jmethodID computeScroll_method = _METHOD(_CLASS(jobj), "computeScroll", "()V");

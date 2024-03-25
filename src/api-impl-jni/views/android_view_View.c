@@ -171,7 +171,7 @@ void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject o
 
 JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener(JNIEnv *env, jobject this, jobject on_touch_listener)
 {
-	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
+	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget"))));
 
 	_setOnTouchListener(env, this, widget, on_touch_listener);
 }
