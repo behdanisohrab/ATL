@@ -83,7 +83,10 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		return true;
 	}
 
-	public void removeView(View child) {
+	// This internal method is used to share code between removeView and removeViewInLayout.
+	// Reusing removeView in removeViewInLayout is not possible, because e.g.
+	// ViewPager overrides removeView to call removeViewInLayout
+	protected void removeViewInternal(View child) {
 		if (child.parent != this)
 			return;
 		child.parent = null;
@@ -92,6 +95,14 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		if (onHierarchyChangeListener != null) {
 			onHierarchyChangeListener.onChildViewRemoved(this, child);
 		}
+	}
+
+	public void removeView(View child) {
+		removeViewInternal(child);
+	}
+
+	public void removeViewInLayout(View child) {
+		removeViewInternal(child);
 	}
 
 	public void removeViewAt(int index) {
