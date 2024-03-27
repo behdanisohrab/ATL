@@ -1636,6 +1636,8 @@ public final class MotionEvent extends InputEvent {
 		ev.action = other.action;
 		ev.coord_x = other.coord_x;
 		ev.coord_y = other.coord_y;
+		ev.raw_x = other.raw_x;
+		ev.raw_y = other.raw_y;
 		return ev;
 	}
 
@@ -2731,7 +2733,9 @@ public final class MotionEvent extends InputEvent {
 	 */
 	public final void offsetLocation(float deltaX, float deltaY) {
 		if (deltaX != 0.0f || deltaY != 0.0f) {
-			nativeOffsetLocation(mNativePtr, deltaX, deltaY);
+			// nativeOffsetLocation(mNativePtr, deltaX, deltaY);
+			this.coord_x += deltaX;
+			this.coord_y += deltaY;
 		}
 	}
 

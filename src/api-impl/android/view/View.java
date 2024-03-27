@@ -1115,7 +1115,9 @@ public class View extends Object {
 		return new IBinder();
 	}
 
-	public void getLocationInWindow(int[] xxx) {}
+	public void getLocationInWindow(int[] location) {
+		getLocationOnScreen(location);
+	}
 
 	public void addOnAttachStateChangeListener(OnAttachStateChangeListener l) {}
 
