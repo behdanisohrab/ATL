@@ -70,9 +70,13 @@ static gboolean on_event(GtkEventControllerLegacy *event_controller, GdkEvent *e
 	guint32 timestamp = gdk_event_get_time(event);
 
 	// TODO: this doesn't work for multitouch
-	if (event == canceled_event && cancel_triggerer != d) {
+	if (cancel_triggerer == d) { // cancel done
+		canceled_event = NULL;
+		cancel_triggerer = NULL;
+	} else if (event == canceled_event) {
 		gdk_event_get_widget_relative_position(event, widget, &x, &y);
-		return call_ontouch_callback(MOTION_EVENT_ACTION_CANCEL, x, y, d, phase, timestamp, event);
+		call_ontouch_callback(MOTION_EVENT_ACTION_CANCEL, x, y, d, phase, timestamp, event);
+		return false;
 	}
 	switch(gdk_event_get_event_type(event)) {
 		case GDK_BUTTON_PRESS:
