@@ -536,3 +536,8 @@ JNIEXPORT jboolean JNICALL Java_android_view_View_native_1getMatrix(JNIEnv *env,
 	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget_ptr)));
 	return gtk_widget_compute_transform(gtk_widget_get_parent(widget), widget, _PTR(matrix_ptr));
 }
+
+JNIEXPORT void JNICALL Java_android_view_View_native_1queueAllocate(JNIEnv *env, jobject this, jlong widget_ptr)
+{
+	gtk_widget_queue_allocate(GTK_WIDGET(_PTR(widget_ptr)));
+}

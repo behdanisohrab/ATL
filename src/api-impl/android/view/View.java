@@ -948,6 +948,7 @@ public class View extends Object {
 	protected native void native_layout(long widget, int l, int t, int r, int b);
 	protected native void native_requestLayout(long widget);
 	protected native void native_setBackgroundDrawable(long widget, long paintable);
+	protected native void native_queueAllocate(long widget);
 
 	// --- stubs
 
@@ -1379,7 +1380,11 @@ public class View extends Object {
 	public float getTranslationX() {return 0.f;}
 	public float getTranslationY() {return 0.f;}
 	public void setTranslationX(float translationX) {}
-	public void setTranslationY(float translationY) {}
+	public void setTranslationY(float translationY) {
+		// CoordinatorLayout abuses this method to trigger a layout pass
+		if (getClass().getName().equals("androidx.coordinatorlayout.widget.CoordinatorLayout"))
+			native_queueAllocate(widget);
+	}
 
 	public void setAlpha(float alpha) {
 		native_setVisibility(widget, visibility, alpha);

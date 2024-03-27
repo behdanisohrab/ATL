@@ -289,6 +289,14 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setBackgroundDrawable
 
 /*
  * Class:     android_view_View
+ * Method:    native_queueAllocate
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_native_1queueAllocate
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     android_view_View
  * Method:    nativeInvalidate
  * Signature: (J)V
  */
