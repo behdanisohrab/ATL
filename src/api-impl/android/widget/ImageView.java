@@ -2,6 +2,7 @@ package android.widget;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -28,15 +29,9 @@ public class ImageView extends View {
 		super(context, attrs, defStyleAttr);
 
 		haveCustomMeasure = false;
-		if (attrs != null) {
-			int resid = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "src", 0);
-			if (resid != 0 && !getResources().getString(resid).endsWith(".xml")) {
-				bitmap = BitmapFactory.decodeResource(getResources(), resid);
-				native_setPixbuf(bitmap.pixbuf);
-			} else if (resid != 0) {
-				setImageDrawable(getResources().getDrawable(resid));
-			}
-		}
+		TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.ImageView, defStyleAttr, 0);
+		setImageDrawable(a.getDrawable(com.android.internal.R.styleable.ImageView_src));
+		a.recycle();
 	}
 
 	@Override
