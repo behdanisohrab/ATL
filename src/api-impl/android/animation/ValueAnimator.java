@@ -12,6 +12,10 @@ public class ValueAnimator extends Animator {
 		return new ValueAnimator();
 	}
 
+	public static ValueAnimator ofInt(int... values) {
+		return new ValueAnimator();
+	}
+
 	public ValueAnimator setDuration(long duration) {
 		return this;
 	}
@@ -38,6 +42,7 @@ public class ValueAnimator extends Animator {
 	public void setRepeatCount(int value) {}
 	public void setRepeatMode(int value) {}
 	public void cancel() {}
+	public void setEvaluator(TypeEvaluator evaluator) {}
 
 	/**
 	 * Implementors of this interface can add themselves as update listeners

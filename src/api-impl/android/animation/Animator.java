@@ -18,5 +18,13 @@ public class Animator {
 	public void addListener(AnimatorListener listener) {
 		this.listener = listener;
 	}
-	
+
+	public void cancel() {}
+
+	public long getStartDelay() { return 0; }
+
+	public long getDuration() { return 0; }
+
+	public Animator setDuration(long duration) { return this; }
+
 }

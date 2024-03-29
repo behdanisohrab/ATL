@@ -23,4 +23,12 @@ public interface Menu {
 	public void setGroupCheckable(int group, boolean checkable, boolean exclusive);
 
 	public SubMenu addSubMenu(int groupId, int itemId, int order, CharSequence title);
+
+	public void setGroupVisible(int group, boolean visible);
+
+	public void removeItem(int id);
+
+	public int size();
+
+	public boolean hasVisibleItems();
 }

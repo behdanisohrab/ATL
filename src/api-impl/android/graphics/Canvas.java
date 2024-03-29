@@ -402,6 +402,20 @@ public class Canvas {
 
 	public void drawCircle(float cx, float cy, float radius, Paint paint) {}
 
+	public Rect getClipBounds() {
+		return new Rect(0, 0, 10, 10);
+	}
+
+	public boolean clipRect(Rect rect, Region.Op op) {
+		return false;
+	}
+
+	public void concat(Matrix matrix) {}
+
+	public boolean clipPath(Path path, Region.Op op) {
+		return false;
+	}
+
 	private static native long native_canvas_from_bitmap(long pixbuf);
 
 	private static native void native_save(long skia_canvas, long widget);

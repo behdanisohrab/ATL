@@ -209,12 +209,24 @@ public class Paint {
 		private Join(int nativeInt) {}
 	}
 
+	public enum Align {
+		CENTER,
+		LEFT,
+		RIGHT,
+	}
+
 	public void setStrokeCap(Cap cap) {}
 
 	public void setStrokeJoin(Join join) {}
 
 	public Typeface getTypeface() {
 		return new Typeface();
+	}
+
+	public void setTextAlign(Align align) {}
+
+	public Shader getShader() {
+		return new Shader();
 	}
 
 	private native long native_constructor();

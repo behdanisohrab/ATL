@@ -11,6 +11,7 @@ public class ProgressBar extends View {
 
 	protected int max = 100;
 	protected int progress = 0;
+	private Drawable indeterminateDrawable;
 
 	public ProgressBar(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
@@ -45,13 +46,7 @@ public class ProgressBar extends View {
 	}
 
 	public Drawable getIndeterminateDrawable() {
-		return new Drawable() {
-			@Override
-			public void draw(Canvas canvas) {
-				// TODO Auto-generated method stub
-				throw new UnsupportedOperationException("Unimplemented method 'draw'");
-			}
-		};
+		return indeterminateDrawable;
 	}
 
 	public void setMax(int max) {
@@ -72,5 +67,9 @@ public class ProgressBar extends View {
 
 	public int getProgress() {
 		return progress;
+	}
+
+	public void setIndeterminateDrawable(Drawable indeterminateDrawable) {
+		this.indeterminateDrawable = indeterminateDrawable;
 	}
 }

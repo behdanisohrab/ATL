@@ -826,7 +826,28 @@ public class View implements Drawable.Callback {
 	private int minWidth = 0;
 	private int minHeight = 0;
 
+	public static final Property<View, Float> TRANSLATION_X = new Property<View, Float>(Float.class, "translationX") {
+		@Override
+		public Float get(View object) {
+			return 0.f;
+		}
+	};
+
+	public static final Property<View, Float> TRANSLATION_Y = new Property<View, Float>(Float.class, "translationY") {
+		@Override
+		public Float get(View object) {
+			return 0.f;
+		}
+	};
+
 	public static final Property<View, Float> TRANSLATION_Z = new Property<View, Float>(Float.class, "translationZ") {
+		@Override
+		public Float get(View object) {
+			return 0.f;
+		}
+	};
+
+	public static final Property<View, Float> ALPHA = new Property<View, Float>(Float.class, "alpha") {
 		@Override
 		public Float get(View object) {
 			return 0.f;
@@ -953,9 +974,7 @@ public class View implements Drawable.Callback {
 
 	// --- stubs
 
-	public void setContentDescription(CharSequence contentDescription) {
-		Slog.w(TAG, "setContentDescription called with: >" + contentDescription + "<");
-	}
+	public void setContentDescription(CharSequence contentDescription) {}
 
 	public void setId(int id) {
 		this.id = id;
@@ -998,9 +1017,7 @@ public class View implements Drawable.Callback {
 		}
 	}
 
-	public void setSelected(boolean selected) {
-		Slog.w(TAG, "calling setSelected on " + this + " with value: " + selected);
-	}
+	public void setSelected(boolean selected) {}
 
 	public ViewTreeObserver getViewTreeObserver() {
 		return new ViewTreeObserver();
@@ -1146,7 +1163,9 @@ public class View implements Drawable.Callback {
 
 	public void setAccessibilityDelegate(AccessibilityDelegate delegate) {}
 
-	public static class AccessibilityDelegate {}
+	public static class AccessibilityDelegate {
+		public void sendAccessibilityEvent(View view, int eventType) {}
+	}
 
 	public Drawable getBackground() {
 		return background;
@@ -1419,6 +1438,10 @@ public class View implements Drawable.Callback {
 
 	protected static final int[] EMPTY_STATE_SET = new int[0];
 
+	protected static final int[] PRESSED_ENABLED_STATE_SET = new int[]{R.attr.state_pressed, R.attr.state_enabled};
+
+	protected static final int[] SELECTED_STATE_SET = new int[]{R.attr.state_selected};
+
 	/**
 	 * Utility to return a default size. Uses the supplied size if the
 	 * MeasureSpec imposed no constraints. Will get larger if allowed
@@ -1687,4 +1710,8 @@ public class View implements Drawable.Callback {
 	public void setHapticFeedbackEnabled(boolean hapticFeedbackEnabled) {}
 
 	public StateListAnimator getStateListAnimator() {return null;}
+
+	public void requestFitSystemWindows() {}
+
+	public boolean isPressed() {return false;}
 }

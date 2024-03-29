@@ -1,5 +1,7 @@
 package android.animation;
 
+import java.util.Collection;
+
 public class AnimatorSet extends Animator {
 
 	public class Builder {
@@ -16,5 +18,15 @@ public class AnimatorSet extends Animator {
 	public void setInterpolator(TimeInterpolator value) {}
 
 	public void playSequentially(Animator[] animators) {}
+
+	public boolean isStarted() {
+		return false;
+	}
+
+	public void playTogether(Collection<Animator> animators) {}
+
+	public AnimatorSet setDuration(long duration) { return this; }
+
+	public void playTogether(Animator[] animators) {}
 
 }

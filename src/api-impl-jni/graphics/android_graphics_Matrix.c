@@ -190,6 +190,8 @@ JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1mapPoints(JNIEnv *en
 		dst[dst_idx + i * 2] = res.x;
 		dst[dst_idx + i * 2 + 1] = res.y;
 	}
+	(*env)->ReleaseFloatArrayElements(env, src_ref, src, 0);
+	(*env)->ReleaseFloatArrayElements(env, dst_ref, dst, 0);
 }
 
 JNIEXPORT void JNICALL Java_android_graphics_Matrix_native_1setTranslate(JNIEnv *env, jclass class, jlong matrix_ptr, jfloat x, jfloat y)
@@ -212,4 +214,13 @@ JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preRotate__JF(JN
 JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1invert(JNIEnv *env, jclass class, jlong matrix_ptr, jlong inverse_ptr)
 {
 	return graphene_matrix_inverse((graphene_matrix_t *)_PTR(matrix_ptr), (graphene_matrix_t *)_PTR(inverse_ptr));
+}
+
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preScale__JFF(JNIEnv *env, jclass class, jlong matrix_ptr, jfloat x, jfloat y)
+{
+	graphene_matrix_t *matrix = (graphene_matrix_t *)_PTR(matrix_ptr);
+	graphene_matrix_t scale;
+	graphene_matrix_init_scale(&scale, x, y, 1);
+	graphene_matrix_multiply(&scale, matrix, matrix);
+	return true;
 }

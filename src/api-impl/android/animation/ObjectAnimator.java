@@ -16,6 +16,10 @@ public class ObjectAnimator extends ValueAnimator {
 		return new ObjectAnimator();
 	}
 
+	public static <T> ObjectAnimator ofInt(T target, String propertyName, int... values) {
+		return new ObjectAnimator();
+	}
+
 	public ObjectAnimator setDuration(long duration) {return this;}
 
 	public void setAutoCancel(boolean autoCancel) {}

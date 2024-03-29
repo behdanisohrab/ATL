@@ -233,4 +233,10 @@ public class TextView extends View {
 	public void setCompoundDrawablesRelativeWithIntrinsicBounds(int start, int top, int end, int bottom) {}
 
 	public boolean getLinksClickable() {return true;}
+
+	public boolean isTextSelectable() {return true;}
+
+	public void setCompoundDrawablesWithIntrinsicBounds(int left, int top, int right, int bottom) {}
+
+	public void setCompoundDrawablesWithIntrinsicBounds(Drawable left, Drawable top, Drawable right, Drawable bottom) {}
 }

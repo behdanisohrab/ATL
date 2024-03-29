@@ -35,6 +35,7 @@ import android.util.DisplayMetrics;
 import android.util.Slog;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
@@ -2226,7 +2227,9 @@ public class PackageManager {
 	 */
 	public List<ResolveInfo> queryIntentActivities(Intent intent,
 						       int flags) {
-		return new ArrayList<ResolveInfo>();
+		ResolveInfo info = new ResolveInfo();
+		info.activityInfo.exported = true;
+		return Arrays.asList(info);
 	}
 
 	/**

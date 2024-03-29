@@ -26,6 +26,7 @@ import android.media.MediaRouter;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -441,6 +442,10 @@ public class Context extends Object {
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void startActivity(Intent intent, Bundle options) {
+		startActivity(intent);
 	}
 
 	public final TypedArray obtainStyledAttributes(AttributeSet set, int[] attrs) {

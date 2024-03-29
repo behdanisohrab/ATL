@@ -20,7 +20,7 @@ public class Uri implements Parcelable {
 	public static Uri parse(String s) {
 		Uri ret = new Uri();
 		try {
-			ret.uri = URI.create(s);
+			ret.uri = URI.create(s.trim());
 		} catch (IllegalArgumentException e) {
 		}
 		return ret;
@@ -145,15 +145,22 @@ public class Uri implements Parcelable {
 	}
 
 	public Builder buildUpon() {
-		return new Builder();
+		Builder builder = new Builder();
+		builder.scheme = getScheme();
+		builder.authority = getAuthority();
+		builder.path = getPath();
+		builder.query = uri.getQuery();
+		return builder;
 	}
 
 	public static final class Builder {
 		private String scheme;
 		private String authority;
 		private String path;
+		private String query;
 
 		public Builder appendQueryParameter(String key, String value) {
+			this.query = (this.query != null ? this.query + "&" : "") + key + "=" + value;
 			return this;
 		}
 
@@ -172,6 +179,11 @@ public class Uri implements Parcelable {
 			return this;
 		}
 
+		public Builder appendPath(String path) {
+			this.path = (this.path != null ? this.path : "") + "/" + path;
+			return this;
+		}
+
 		public Uri build() throws URISyntaxException {
 			if ("content".equals(scheme)) { // hack: content providers not yet supported
 				scheme = "file";
@@ -179,8 +191,16 @@ public class Uri implements Parcelable {
 				path = path.substring(path.indexOf("/"));
 			}
 			Uri ret = new Uri();
-			ret.uri = new URI(scheme, authority, path, null, null);
+			ret.uri = new URI(scheme, authority, path, query, null);
 			return ret;
+		}
+
+		public String toString() {
+			try {
+				return build().toString();
+			} catch (URISyntaxException e) {
+				return super.toString();
+			}
 		}
 	}
 
@@ -210,5 +230,14 @@ public class Uri implements Parcelable {
 	public String getLastPathSegment() {
 		String[] segments = uri.getPath().split("/");
 		return segments[segments.length - 1];
+	}
+
+	public String getQueryParameter(String key) {
+		for (String pair : uri.getQuery().split("&")) {
+			if (pair.startsWith(key + "=")) {
+				return pair.substring(key.length() + 1);
+			}
+		}
+		return null;
 	}
 }

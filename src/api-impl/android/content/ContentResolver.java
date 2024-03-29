@@ -7,6 +7,7 @@ import android.database.AbstractCursor;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 
 public class ContentResolver {
@@ -38,5 +39,9 @@ public class ContentResolver {
 			public double getDouble(int column) { throw new IndexOutOfBoundsException(); }
 			public boolean isNull(int column) { throw new IndexOutOfBoundsException(); }
 		};
+	}
+
+	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder, CancellationSignal cancellationSignal) {
+		return query(uri, projection, selection, selectionArgs, sortOrder);
 	}
 }

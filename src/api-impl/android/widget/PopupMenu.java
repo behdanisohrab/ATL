@@ -280,6 +280,30 @@ public class PopupMenu {
 			submenu.item.setVisible(true);
 			return submenu;
 		}
+
+		@Override
+		public void setGroupVisible(int group, boolean visible) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'setGroupVisible'");
+		}
+
+		@Override
+		public void removeItem(int id) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'removeItem'");
+		}
+
+		@Override
+		public int size() {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'size'");
+		}
+
+		@Override
+		public boolean hasVisibleItems() {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'hasVisibleItems'");
+		}
 	}
 
 	private class SubMenuImpl extends MenuImpl implements SubMenu {
@@ -422,6 +446,30 @@ public class PopupMenu {
 		@Override
 		public SubMenu getSubMenu() {
 			return subMenu;
+		}
+
+		@Override
+		public MenuItem setActionView(int resId) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'setActionView'");
+		}
+
+		@Override
+		public View getActionView() {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'getActionView'");
+		}
+
+		@Override
+		public boolean hasSubMenu() {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'hasSubMenu'");
+		}
+
+		@Override
+		public MenuItem setOnActionExpandListener(OnActionExpandListener listener) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'setOnActionExpandListener'");
 		}
 	}
 

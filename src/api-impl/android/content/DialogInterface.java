@@ -10,6 +10,8 @@ public interface DialogInterface {
 
 	public void dismiss();
 
+	public void cancel();
+
 	public interface OnDismissListener {
 		void onDismiss(DialogInterface dialog);
 	}

@@ -60,7 +60,10 @@ public class Drawable {
 	}
 
 	public void setBounds(int left, int top, int right, int bottom) {
+		boolean changed = left != mBounds.left || top != mBounds.top || right != mBounds.right || bottom != mBounds.bottom;
 		mBounds.set(left, top, right, bottom);
+		if (changed)
+			onBoundsChange(mBounds);
 	}
 
 	public final Rect getBounds() {
@@ -205,6 +208,8 @@ public class Drawable {
 	public void copyBounds(Rect bounds) {
 		bounds.set(mBounds);
 	}
+
+	protected void onBoundsChange(Rect bounds) {}
 
 	protected static native long native_paintable_from_path(String path);
 	protected native long native_constructor();

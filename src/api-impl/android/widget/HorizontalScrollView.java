@@ -15,4 +15,6 @@ public class HorizontalScrollView extends FrameLayout {
 
 	public void setHorizontalScrollBarEnabled(boolean enabled) {}
 
+	public void smoothScrollTo(int x, int y) {}
+
 }

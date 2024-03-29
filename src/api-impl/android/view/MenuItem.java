@@ -8,6 +8,8 @@ public interface MenuItem {
 		public boolean onMenuItemClick(MenuItem item);
 	}
 
+	public interface OnActionExpandListener {}
+
 	public MenuItem setIcon(int iconRes);
 
 	public MenuItem setVisible(boolean visible);
@@ -39,5 +41,13 @@ public interface MenuItem {
 	public Drawable getIcon();
 
 	public SubMenu getSubMenu();
+
+	public MenuItem setActionView(int resId);
+
+	public View getActionView();
+
+	public boolean hasSubMenu();
+
+	public MenuItem setOnActionExpandListener(OnActionExpandListener listener);
 
 }

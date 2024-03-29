@@ -62,13 +62,18 @@ public class Dialog implements Window.Callback, DialogInterface {
 
 	public void show() {
 		System.out.println("showing the Dialog " + this);
-		new Handler(Looper.getMainLooper()).post(new Runnable() {
+		Runnable action = new Runnable() {
 			@Override
 			public void run() {
 				onCreate(null);
 				nativeShow(nativePtr);
 			}
-		});
+		};
+		if(Looper.myLooper() == Looper.getMainLooper()) {
+			action.run();
+		} else {
+			new Handler(Looper.getMainLooper()).post(action);
+		}
 	}
 
 	public boolean isShowing() {
@@ -141,5 +146,10 @@ public class Dialog implements Window.Callback, DialogInterface {
 	public void hide() {
 		System.out.println("hiding the Dialog " + this);
 		nativeClose(nativePtr);
+	}
+
+	@Override
+	public void cancel() {
+		dismiss();
 	}
 }

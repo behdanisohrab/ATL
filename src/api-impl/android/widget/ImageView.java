@@ -153,4 +153,6 @@ public class ImageView extends View {
 	public void setMaxWidth(int width) {}
 
 	public void setMaxHeight(int height) {}
+
+	public void setImageState(int[] state, boolean merge) {}
 }
