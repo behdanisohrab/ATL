@@ -43,6 +43,22 @@ static void java_paintable_snapshot(GdkPaintable *gdk_paintable, GdkSnapshot *sn
 	(*env)->DeleteLocalRef(env, canvas_class);
 }
 
+static int java_paintable_get_intrinsic_width(GdkPaintable *gdk_paintable)
+{
+	JNIEnv *env = get_jni_env();
+	JavaPaintable *paintable = JAVA_PAINTABLE(gdk_paintable);
+	jmethodID getIntrinsicWidth = _METHOD(handle_cache.drawable.class, "getIntrinsicWidth", "()I");
+	return (*env)->CallIntMethod(env, paintable->drawable, getIntrinsicWidth);
+}
+
+static int java_paintable_get_intrinsic_height(GdkPaintable *gdk_paintable)
+{
+	JNIEnv *env = get_jni_env();
+	JavaPaintable *paintable = JAVA_PAINTABLE(gdk_paintable);
+	jmethodID getIntrinsicHeight = _METHOD(handle_cache.drawable.class, "getIntrinsicHeight", "()I");
+	return (*env)->CallIntMethod(env, paintable->drawable, getIntrinsicHeight);
+}
+
 static void java_paintable_init(JavaPaintable *java_paintable)
 {
 }
@@ -50,6 +66,8 @@ static void java_paintable_init(JavaPaintable *java_paintable)
 static void java_paintable_paintable_init(GdkPaintableInterface *iface)
 {
 	iface->snapshot = java_paintable_snapshot;
+	iface->get_intrinsic_height = java_paintable_get_intrinsic_height;
+	iface->get_intrinsic_width = java_paintable_get_intrinsic_width;
 }
 
 static void java_paintable_class_init(JavaPaintableClass *class)
