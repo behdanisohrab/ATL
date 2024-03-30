@@ -9,7 +9,7 @@
 
 JNIEXPORT jlong JNICALL Java_android_widget_Button_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
-	const char *text = attribute_set_get_string(env, attrs, "text", NULL) ?: "FIXME";
+	const char *text = attribute_set_get_string(env, attrs, "text", NULL);
 
 	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	GtkWidget *label = gtk_button_new_with_label(text);

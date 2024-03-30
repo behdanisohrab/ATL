@@ -159,3 +159,8 @@ JNIEXPORT void JNICALL Java_android_graphics_Path_native_1rQuadTo(JNIEnv *env, j
 	sk_path_rquad_to(path, dx1, dy1, dx2, dy2);
 }
 
+JNIEXPORT void JNICALL Java_android_graphics_Path_native_1rMoveTo(JNIEnv *env, jclass class, jlong path_ptr, jfloat dx, jfloat dy)
+{
+	sk_path_t *path = (sk_path_t *)_PTR(path_ptr);
+	sk_path_rmove_to(path, dx, dy);
+}

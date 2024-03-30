@@ -67,16 +67,12 @@ public class TextView extends View {
 	protected native long native_constructor(Context context, AttributeSet attrs);
 
 	public void setText(CharSequence text) {
-		if (text == null) {
-			native_setText("NULL");
-			return;
-		}
-
-		native_setText(text.toString());
+		native_setText(text != null ? text.toString() : null);
 
 		if (text instanceof android.text.Spanned)
 			native_set_markup(1);
-		requestLayout();
+		if (!isLayoutRequested())
+			requestLayout();
 	}
 
 	public void setText(int resId) {
@@ -158,7 +154,15 @@ public class TextView extends View {
 
 	public void setCompoundDrawablePadding(int pad) {}
 
-	public void setCompoundDrawables(Drawable left, Drawable top, Drawable right, Drawable bottom) {}
+	protected native void native_setCompoundDrawables(long widget, long left, long top, long right, long bottom);
+
+	public void setCompoundDrawables(Drawable left, Drawable top, Drawable right, Drawable bottom) {
+		native_setCompoundDrawables(widget,
+				left != null ? left.paintable : 0,
+				top != null ? top.paintable : 0,
+				right != null ? right.paintable : 0,
+				bottom != null ? bottom.paintable : 0);
+	}
 
 	public void setAllCaps(boolean allCaps) {}
 
@@ -178,7 +182,9 @@ public class TextView extends View {
 
 	public int getMaxLines() {return -1;}
 
-	public void setCompoundDrawablesRelative(Drawable start, Drawable top, Drawable end, Drawable bottom) {}
+	public void setCompoundDrawablesRelative(Drawable start, Drawable top, Drawable end, Drawable bottom) {
+		setCompoundDrawables(start, top, end, bottom);
+	}
 
 	public int getLineCount() {return 1;}
 

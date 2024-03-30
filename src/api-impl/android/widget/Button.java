@@ -2,6 +2,7 @@ package android.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
 public class Button extends TextView {
@@ -40,5 +41,8 @@ public class Button extends TextView {
 	public void setOnClickListener(final OnClickListener l) {
 		native_setOnClickListener(widget, l);
 	}
+
+	@Override
+	public void setCompoundDrawables(Drawable left, Drawable top, Drawable right, Drawable bottom) {}
 
 }

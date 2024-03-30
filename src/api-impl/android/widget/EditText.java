@@ -1,6 +1,7 @@
 package android.widget;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
@@ -46,4 +47,7 @@ public class EditText extends TextView {
 	public void setOnEditorActionListener(OnEditorActionListener l) {
 		native_setOnEditorActionListener(widget, l);
 	}
+
+	@Override
+	public void setCompoundDrawables(Drawable left, Drawable top, Drawable right, Drawable bottom) {}
 }

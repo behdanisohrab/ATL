@@ -247,6 +247,14 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setTextColor
 JNIEXPORT jobject JNICALL Java_android_widget_TextView_getText
   (JNIEnv *, jobject);
 
+/*
+ * Class:     android_widget_TextView
+ * Method:    native_setCompoundDrawables
+ * Signature: (JJJJJ)V
+ */
+JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setCompoundDrawables
+  (JNIEnv *, jobject, jlong, jlong, jlong, jlong, jlong);
+
 #ifdef __cplusplus
 }
 #endif
