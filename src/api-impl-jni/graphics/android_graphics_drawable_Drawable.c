@@ -85,3 +85,7 @@ JNIEXPORT jlong JNICALL Java_android_graphics_drawable_Drawable_native_1construc
 	}
 	return _INTPTR(paintable);
 }
+
+JNIEXPORT void JNICALL Java_android_graphics_drawable_Drawable_native_1invalidate(JNIEnv *env, jobject this, jlong paintable_ptr) {
+	gdk_paintable_invalidate_contents(GDK_PAINTABLE(_PTR(paintable_ptr)));
+}

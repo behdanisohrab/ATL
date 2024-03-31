@@ -89,6 +89,8 @@ public class Drawable {
 	}
 
 	public void invalidateSelf() {
+		native_invalidate(paintable);
+	
 		/* this shouldn't ever be needed with Gtk, but let's play it safe for now */
 		if (this.callback != null) {
 			callback.invalidateDrawable(this);
@@ -213,4 +215,5 @@ public class Drawable {
 
 	protected static native long native_paintable_from_path(String path);
 	protected native long native_constructor();
+	protected native void native_invalidate(long paintable);
 }
