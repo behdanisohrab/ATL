@@ -56,21 +56,20 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	protected void addViewInternal(View child, int index, LayoutParams params) {
 		if (child.parent == this)
 			return;
-		if (!checkLayoutParams(params)) {
+		if (!checkLayoutParams(params))
 			params = generateLayoutParams(params);
-		}
+
 		child.parent = this;
 		child.setLayoutParams(params);
 		if (index < 0)
 			index = children.size();
 		children.add(index, child);
 		native_addView(widget, child.widget, index, params);
-		if (isAttachedToWindow()) {
+		if (isAttachedToWindow())
 			child.onAttachedToWindow();
-		}
-		if (onHierarchyChangeListener != null) {
+		if (onHierarchyChangeListener != null)
 			onHierarchyChangeListener.onChildViewAdded(this, child);
-		}
+
 		requestLayout();
 	}
 
@@ -148,7 +147,7 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 	}
 
 	public void updateViewLayout(View view, ViewGroup.LayoutParams params) {
-		/* FIXME */
+		view.setLayoutParams(params);
 		view.requestLayout();
 	}
 
