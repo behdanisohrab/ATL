@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.LayoutDirection;
@@ -29,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class View extends Object {
+public class View implements Drawable.Callback {
 
 	// --- constants from android source
 
@@ -1007,6 +1008,18 @@ public class View extends Object {
 
 	protected void onFinishInflate() {}
 
+	public void invalidateDrawable(Drawable drawable) {
+		nativeInvalidate(widget);
+	}
+
+	public void scheduleDrawable(Drawable drawable, Runnable runnable, long time) {
+		postDelayed(runnable, time - SystemClock.uptimeMillis());
+	}
+
+	public void unscheduleDrawable(Drawable drawable, Runnable runnable) {
+		/* TODO */
+	}
+
 	public void invalidate(Rect dirty) {
 		nativeInvalidate(widget);
 	}
@@ -1271,6 +1284,8 @@ public class View extends Object {
 
 	public void setBackgroundDrawable(Drawable backgroundDrawable) {
 		this.background = backgroundDrawable;
+		if(backgroundDrawable != null)
+			backgroundDrawable.setCallback(this);
 		native_setBackgroundDrawable(widget, backgroundDrawable != null ? backgroundDrawable.paintable : 0);
 	}
 

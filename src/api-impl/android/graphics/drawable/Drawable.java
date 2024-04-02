@@ -22,11 +22,17 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 
 public class Drawable {
-	public static interface Callback {}
+	public static interface Callback {
+		public void invalidateDrawable(Drawable drawable);
+		public void scheduleDrawable(Drawable drawable, Runnable runnable, long time);
+		public void unscheduleDrawable(Drawable drawable, Runnable runnable);
+	}
 
 	private Rect mBounds = new Rect();
 	private int[] mStateSet = new int[0];
 	public long paintable;
+
+	private Callback callback = null;
 
 	public Drawable() {
 		this.paintable = native_constructor();
@@ -75,9 +81,28 @@ public class Drawable {
 		return mStateSet;
 	}
 
-	public void invalidateSelf() {}
+	public void setCallback(Callback callback) {
+		this.callback = callback;
+	}
 
-	public void setCallback(Callback callback) {}
+	public void invalidateSelf() {
+		/* this shouldn't ever be needed with Gtk, but let's play it safe for now */
+		if (this.callback != null) {
+			callback.invalidateDrawable(this);
+		}
+	}
+
+	public void scheduleSelf(Runnable runnable, long time) {
+		if (this.callback != null) {
+			callback.scheduleDrawable(this, runnable, time);
+		}
+	}
+
+	public void unscheduleSelf(Runnable runnable) {
+		if (this.callback != null) {
+			callback.unscheduleDrawable(this, runnable);
+		}
+	}
 
 	public boolean isVisible() {
 		return false;

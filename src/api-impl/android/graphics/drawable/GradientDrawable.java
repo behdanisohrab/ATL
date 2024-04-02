@@ -7,5 +7,4 @@ public class GradientDrawable extends Drawable {
 	public void setCornerRadius(float cornerRadius) {}
 
 	public void setShape(int shape) {}
-	
 }

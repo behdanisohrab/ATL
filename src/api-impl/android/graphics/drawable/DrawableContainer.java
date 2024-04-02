@@ -18,6 +18,7 @@ public class DrawableContainer extends Drawable {
 		if (idx >= 0 && idx < state.childCount && idx != curIndex && state.drawables[idx] != null) {
 			curIndex = idx;
 			native_selectChild(paintable, state.drawables[idx].paintable);
+			invalidateSelf();
 			return true;
 		}
 		return false;
@@ -34,13 +35,17 @@ public class DrawableContainer extends Drawable {
 
 		public DrawableContainerState(DrawableContainerState orig, DrawableContainer owner, Resources res) {
 		}
-		
+
 		public int getCapacity() {
 			return drawables.length;
 		}
 
 		public int getChildCount() {
 			return childCount;
+		}
+
+		public Drawable getChild(int idx) {
+			return drawables[idx];
 		}
 
 		public int addChild(Drawable dr) {
@@ -57,5 +62,5 @@ public class DrawableContainer extends Drawable {
 				drawables = newDrawables;
 		}
 	}
-	
+
 }
