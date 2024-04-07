@@ -49,7 +49,7 @@ public class GskCanvas extends Canvas {
 
 	@Override
 	public void drawRect(float left, float top, float right, float bottom, Paint paint) {
-		System.out.println("GskCanvas.drawRect(" + left + ", " + top + ", " + right + ", " + bottom + ", " + paint + ")");
+		native_drawRect(snapshot, left, top, right, bottom, paint.getColor());
 	}
 
 	@Override
@@ -75,4 +75,5 @@ public class GskCanvas extends Canvas {
 	}
 
 	protected native void native_drawBitmap(long snapshot, long pixbuf, int x, int y, int width, int height, int color);
+	protected native void native_drawRect(long snapshot, float left, float top, float right, float bottom, int color);
 }

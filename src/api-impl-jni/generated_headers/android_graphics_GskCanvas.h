@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1drawBitmap
   (JNIEnv *, jobject, jlong, jlong, jint, jint, jint, jint, jint);
 
+/*
+ * Class:     android_graphics_GskCanvas
+ * Method:    native_drawRect
+ * Signature: (JFFFFI)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1drawRect
+  (JNIEnv *, jobject, jlong, jfloat, jfloat, jfloat, jfloat, jint);
+
 #ifdef __cplusplus
 }
 #endif

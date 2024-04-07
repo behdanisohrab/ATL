@@ -28,3 +28,16 @@ JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1drawBitmap(JNIEnv
 		gtk_snapshot_pop(snapshot);
 	g_object_unref(texture);
 }
+
+JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1drawRect(JNIEnv *env, jclass this_class, jlong snapshot_ptr, jfloat left, jfloat top, jfloat right, jfloat bottom, jint color)
+{
+	GdkSnapshot *snapshot = (GdkSnapshot *)_PTR(snapshot_ptr);
+	GdkRGBA gdk_color = {
+		(float)((color >> 16) & 0xff) / 0xff,
+		(float)((color >> 8)  & 0xff) / 0xff,
+		(float)((color >> 0)  & 0xff) / 0xff,
+		(float)((color >> 24) & 0xff) / 0xff,
+	};
+	graphene_rect_t bounds = GRAPHENE_RECT_INIT(left, top, right - left, bottom - top);
+	gtk_snapshot_append_color(snapshot, &gdk_color, &bounds);
+}
