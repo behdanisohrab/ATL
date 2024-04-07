@@ -1379,7 +1379,7 @@ public class Resources {
 				set, attrs, array.mData, array.mIndices);
 			array.mRsrcs = attrs;
 			array.mXml = parser;
-			if (false) {
+			if (false && set != null) { // TODO: set should probably never be null...?
 				int[] data = array.mData;
 
 				System.out.println("Attributes:");
@@ -1394,7 +1394,7 @@ public class Resources {
 					s = s + "=" + set.getAttributeValue(i);
 				}
 				System.out.println(s);
-				s = "  Found:";
+				s = "  Found: \n";
 				TypedValue value = new TypedValue();
 				for (i=0; i<attrs.length; i++) {
 					int d = i*AssetManager.STYLE_NUM_ENTRIES;
@@ -1402,8 +1402,10 @@ public class Resources {
 					value.data = data[d+AssetManager.STYLE_DATA];
 					value.assetCookie = data[d+AssetManager.STYLE_ASSET_COOKIE];
 					value.resourceId = data[d+AssetManager.STYLE_RESOURCE_ID];
-					s = s + " 0x" + Integer.toHexString(attrs[i])
-						+ "=" + value;
+					String name;
+					try { name = getResourceEntryName(attrs[i]); } catch (Exception e) { name = "???"; }
+					s = s + "         ["+i+"] 0x" + Integer.toHexString(attrs[i]) + " (" + name + ")"
+					      + " = " + value + "\n";
 				}
 				System.out.println(s);
 			}
