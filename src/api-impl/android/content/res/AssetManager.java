@@ -767,11 +767,22 @@ public final class AssetManager {
 		TypedValue value = new TypedValue();
 		if (defStyleRes == 0 && theme != 0 && loadThemeAttributeValue(theme, defStyleAttr, value, true) >= 0)
 			defStyleRes = value.data;
-		if (defStyleRes == 0 && set != null)
-			defStyleRes = set.getAttributeResourceValue(null, "style", 0);
+		if (defStyleRes == 0 && set != null) {
+			int styleVal = set.getAttributeResourceValue(null, "style", 0);
+			if(((styleVal >> 16) & 0xff) == 0x3) { // attribute
+				if (theme != 0 && loadThemeAttributeValue(theme, styleVal, value, true) >= 0)
+					defStyleRes = value.data;
+			}
+			else {
+				defStyleRes = styleVal;
+			}
+		}
 		long defStyle = 0;
 		if (defStyleRes != 0) {
 			defStyle = newTheme();
+			if(theme != 0)
+				copyTheme(defStyle, theme);
+
 			applyThemeStyle(defStyle, defStyleRes, true);
 		}
 
