@@ -164,6 +164,14 @@ public class AndroidManifestBlock extends ResXmlDocument {
         }
         return null;
     }
+    public ResXmlElement getActivityByName(String name){
+        for(ResXmlElement activity:listActivities()){
+	    ResXmlAttribute attribute = activity.searchAttributeByResourceId(AndroidManifestBlock.ID_name);
+            if(name != null && attribute != null && name.equals(attribute.getValueAsString()))
+                return activity;
+        }
+        return null;
+    }
     public List<ResXmlElement> listActivities(){
         return listActivities(true);
     }

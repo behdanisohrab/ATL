@@ -22,6 +22,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
 import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
+import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -41,6 +42,7 @@ public class Activity extends ContextWrapper implements Window.Callback {
 	private int pendingResultCode;
 	private Intent pendingData;
 	private boolean paused = false;
+	private CharSequence title = null;
 	List<Fragment> fragments = new ArrayList<>();
 
 	/**
@@ -72,6 +74,15 @@ public class Activity extends ContextWrapper implements Window.Callback {
 		super(null);
 		layout_inflater = new LayoutInflater();
 		intent = new Intent();
+
+		ResXmlAttribute label;
+		if((label = manifest.getActivityByName(getClass().getName()).searchAttributeByResourceId(AndroidManifestBlock.ID_label)) != null
+		   || (label = manifest.getApplicationElement().searchAttributeByResourceId(AndroidManifestBlock.ID_label)) != null) {
+			if(label.getValueType() == com.reandroid.arsc.value.ValueType.STRING)
+				setTitle(label.getValueAsString());
+			else
+				setTitle(getString(label.getData()));
+		}
 	}
 
 	public View root_view;
@@ -337,10 +348,6 @@ public class Activity extends ContextWrapper implements Window.Callback {
 		return layout_inflater;
 	}
 
-	public CharSequence getTitle() {
-		return "Title";
-	}
-
 	public boolean isChangingConfigurations() {return false;}
 
 	@Override
@@ -402,7 +409,13 @@ public class Activity extends ContextWrapper implements Window.Callback {
 		}
 	}
 
-	public void setTitle(CharSequence title) {}
+	public void setTitle(CharSequence title) {
+		this.title = title;
+	}
+
+	public CharSequence getTitle() {
+		return title;
+	}
 
 	public void onBackPressed() {
 		finish();
