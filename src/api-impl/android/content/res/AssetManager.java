@@ -777,14 +777,6 @@ public final class AssetManager {
 				defStyleRes = styleVal;
 			}
 		}
-		long defStyle = 0;
-		if (defStyleRes != 0) {
-			defStyle = newTheme();
-			if(theme != 0)
-				copyTheme(defStyle, theme);
-
-			applyThemeStyle(defStyle, defStyleRes, true);
-		}
 
 		ResXmlPullParser parser = (ResXmlPullParser)set;
 		outIndices[0] = 0;
@@ -823,8 +815,8 @@ public final class AssetManager {
 					int block = -1;
 					if (theme != 0 && (value.type == TypedValue.TYPE_ATTRIBUTE || value.type == -1))
 						block = loadThemeAttributeValue(theme, resId, value, true);
-					if (block < 0 && defStyle != 0 && (value.type == TypedValue.TYPE_ATTRIBUTE || value.type == -1))
-						block = loadThemeAttributeValue(defStyle, resId, value, true);
+					if (block < 0 && defStyleRes != 0 && (value.type == TypedValue.TYPE_ATTRIBUTE || value.type == -1))
+						block = loadResourceBagValue(defStyleRes, resId, value, true);
 					if (block < 0 && value.type == TypedValue.TYPE_REFERENCE)
 						block = loadResourceValue(resId, (short)0, value, true);
 					if (block >= 0) {
@@ -857,9 +849,6 @@ public final class AssetManager {
 				outValues[d+AssetManager.STYLE_DATA] = 0;
 				outValues[d+AssetManager.STYLE_ASSET_COOKIE] = -1;
 			}
-		}
-		if (defStyle != 0) {
-			deleteTheme(defStyle);
 		}
 		return true;
 	}
