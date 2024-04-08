@@ -30,7 +30,9 @@ public class Paint {
 	}
 
 	public void setAntiAlias(boolean aa) {}
-	public void setStrokeWidth(float width) {}
+	public void setStrokeWidth(float width) {
+		native_set_stroke_width(skia_paint, width);
+	}
 	public void setTextSize(float size) {
 		if(skia_font == 0)
 			skia_font = native_create_font();
@@ -51,7 +53,9 @@ public class Paint {
 	public void getTextBounds(char[] text, int index, int count, Rect bounds) {}
 	public void setFlags(int flags) {}
 	public void setFilterBitmap(boolean filter) {}
-	public void setStyle(Style style) {}
+	public void setStyle(Style style) {
+		native_set_style(skia_paint, style.nativeInt);
+	}
 	public float ascent() {
 		if(skia_font == 0)
 			return 0;
@@ -237,4 +241,6 @@ public class Paint {
 	private static native void native_set_typeface(long skia_font, long skia_typeface);
 	private static native void native_set_text_size(long skia_font, float size);
 	private static native float native_measure_text(long skia_font, CharSequence text, int start, int end, long skia_paint);
+	private static native void native_set_stroke_width(long skia_font, float width);
+	private static native void native_set_style(long skia_paint, int style);
 }

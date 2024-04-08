@@ -67,3 +67,13 @@ JNIEXPORT jfloat JNICALL Java_android_graphics_Paint_native_1measure_1text(JNIEn
 
 	return sk_font_measure_text(font, text + start, end - start, UTF8_SK_TEXT_ENCODING, NULL, paint);
 }
+
+JNIEXPORT void JNICALL Java_android_graphics_Paint_native_1set_1stroke_1width(JNIEnv *env, jclass this, jlong skia_paint, jfloat width)
+{
+	sk_paint_set_stroke_width(_PTR(skia_paint), width);
+}
+
+JNIEXPORT void JNICALL Java_android_graphics_Paint_native_1set_1style(JNIEnv *env, jclass this, jlong skia_paint, jint style)
+{
+	sk_paint_set_style(_PTR(skia_paint), (sk_paint_style_t)style);
+}

@@ -135,7 +135,9 @@ JNIEXPORT void JNICALL Java_android_graphics_Path_native_1transform__JJ(JNIEnv *
 	graphene_matrix_t *matrix = (graphene_matrix_t *)_PTR(matrix_ptr);
 	float v[16];
 	graphene_matrix_to_float(matrix, v);
-	sk_matrix_t m = {v[0], v[1], v[3], v[4], v[5], v[7], v[12], v[13], v[15]};
+	sk_matrix_t m = {v[0], v[4], v[12],
+	                 v[1], v[5], v[13],
+	                 v[3], v[7], v[15]};
 	sk_path_transform(path, &m);
 }
 

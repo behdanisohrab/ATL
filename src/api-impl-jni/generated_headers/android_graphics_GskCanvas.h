@@ -23,6 +23,46 @@ JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1drawBitmap
 JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1drawRect
   (JNIEnv *, jobject, jlong, jfloat, jfloat, jfloat, jfloat, jint);
 
+/*
+ * Class:     android_graphics_GskCanvas
+ * Method:    native_drawPath
+ * Signature: (JJJ)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1drawPath
+  (JNIEnv *, jobject, jlong, jlong, jlong);
+
+/*
+ * Class:     android_graphics_GskCanvas
+ * Method:    native_translate
+ * Signature: (JFF)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1translate
+  (JNIEnv *, jobject, jlong, jfloat, jfloat);
+
+/*
+ * Class:     android_graphics_GskCanvas
+ * Method:    native_rotate
+ * Signature: (JF)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1rotate
+  (JNIEnv *, jobject, jlong, jfloat);
+
+/*
+ * Class:     android_graphics_GskCanvas
+ * Method:    native_save
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1save
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     android_graphics_GskCanvas
+ * Method:    native_restore
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1restore
+  (JNIEnv *, jobject, jlong);
+
 #ifdef __cplusplus
 }
 #endif

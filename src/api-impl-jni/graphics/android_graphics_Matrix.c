@@ -224,3 +224,12 @@ JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preScale__JFF(JN
 	graphene_matrix_multiply(&scale, matrix, matrix);
 	return true;
 }
+
+JNIEXPORT jboolean JNICALL Java_android_graphics_Matrix_native_1preTranslate(JNIEnv *env, jclass class, jlong matrix_ptr, jfloat x, jfloat y)
+{
+	graphene_matrix_t *matrix = (graphene_matrix_t *)_PTR(matrix_ptr);
+	graphene_matrix_t translation;
+	graphene_matrix_init_translate(&translation, &GRAPHENE_POINT3D_INIT(x, y, 0));
+	graphene_matrix_multiply(&translation, matrix, matrix);
+	return true;
+}

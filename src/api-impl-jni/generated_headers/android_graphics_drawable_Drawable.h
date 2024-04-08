@@ -23,6 +23,14 @@ JNIEXPORT jlong JNICALL Java_android_graphics_drawable_Drawable_native_1paintabl
 JNIEXPORT jlong JNICALL Java_android_graphics_drawable_Drawable_native_1constructor
   (JNIEnv *, jobject);
 
+/*
+ * Class:     android_graphics_drawable_Drawable
+ * Method:    native_invalidate
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_drawable_Drawable_native_1invalidate
+  (JNIEnv *, jobject, jlong);
+
 #ifdef __cplusplus
 }
 #endif

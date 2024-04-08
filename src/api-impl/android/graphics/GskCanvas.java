@@ -6,31 +6,39 @@ package android.graphics;
  */
 public class GskCanvas extends Canvas {
 	private long snapshot;
+	private int save_count = 0;
 
 	public GskCanvas(long snapshot) {
-		System.out.println("GskCanvas(" + snapshot + ")");
 		this.snapshot = snapshot;
 	}
 
 	@Override
 	public int save() {
-		System.out.println("GskCanvas.save()");
-		return -1;
+		native_save(snapshot);
+		return save_count++;
 	}
 
 	@Override
 	public void restore() {
-		System.out.println("GskCanvas.restore()");
+		save_count--;
+		native_restore(snapshot);
+	}
+
+	@Override
+	public void restoreToCount(int count) {
+		while (save_count > count) {
+			restore();
+		}
 	}
 
 	@Override
 	public void translate(float dx, float dy) {
-		System.out.println("GskCanvas.translate(" + dx + ", " + dy + ")");
+		native_translate(snapshot, dx, dy);
 	}
 
 	@Override
 	public void rotate(float degrees) {
-		System.out.println("GskCanvas.rotate(" + degrees + ")");
+		native_rotate(snapshot, degrees);
 	}
 
 	@Override
@@ -44,7 +52,7 @@ public class GskCanvas extends Canvas {
 
 	@Override
 	public void drawPath(Path path, Paint paint) {
-		System.out.println("GskCanvas.drawPath(" + path + ", " + paint + ")");
+		native_drawPath(snapshot, path.mNativePath, paint.skia_paint);
 	}
 
 	@Override
@@ -76,4 +84,9 @@ public class GskCanvas extends Canvas {
 
 	protected native void native_drawBitmap(long snapshot, long pixbuf, int x, int y, int width, int height, int color);
 	protected native void native_drawRect(long snapshot, float left, float top, float right, float bottom, int color);
+	protected native void native_drawPath(long snapshot, long path, long paint);
+	protected native void native_translate(long snapshot, float dx, float dy);
+	protected native void native_rotate(long snapshot, float degrees);
+	protected native void native_save(long snapshot);
+	protected native void native_restore(long snapshot);
 }

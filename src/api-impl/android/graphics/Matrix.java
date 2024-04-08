@@ -323,8 +323,7 @@ public class Matrix {
 	 * M' = M * T(dx, dy)
 	 */
 	public boolean preTranslate(float dx, float dy) {
-		// return native_preTranslate(native_instance, dx, dy);
-		return false;
+		return native_preTranslate(native_instance, dx, dy);
 	}
 	/**
 	 * Preconcats the matrix with the specified scale.
