@@ -7,6 +7,32 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef android_graphics_Paint_ANTI_ALIAS_FLAG
+#define android_graphics_Paint_ANTI_ALIAS_FLAG 1L
+#undef android_graphics_Paint_FILTER_BITMAP_FLAG
+#define android_graphics_Paint_FILTER_BITMAP_FLAG 2L
+#undef android_graphics_Paint_DITHER_FLAG
+#define android_graphics_Paint_DITHER_FLAG 4L
+#undef android_graphics_Paint_UNDERLINE_TEXT_FLAG
+#define android_graphics_Paint_UNDERLINE_TEXT_FLAG 8L
+#undef android_graphics_Paint_STRIKE_THRU_TEXT_FLAG
+#define android_graphics_Paint_STRIKE_THRU_TEXT_FLAG 16L
+#undef android_graphics_Paint_FAKE_BOLD_TEXT_FLAG
+#define android_graphics_Paint_FAKE_BOLD_TEXT_FLAG 32L
+#undef android_graphics_Paint_LINEAR_TEXT_FLAG
+#define android_graphics_Paint_LINEAR_TEXT_FLAG 64L
+#undef android_graphics_Paint_SUBPIXEL_TEXT_FLAG
+#define android_graphics_Paint_SUBPIXEL_TEXT_FLAG 128L
+#undef android_graphics_Paint_DEV_KERN_TEXT_FLAG
+#define android_graphics_Paint_DEV_KERN_TEXT_FLAG 256L
+#undef android_graphics_Paint_LCD_RENDER_TEXT_FLAG
+#define android_graphics_Paint_LCD_RENDER_TEXT_FLAG 512L
+#undef android_graphics_Paint_EMBEDDED_BITMAP_TEXT_FLAG
+#define android_graphics_Paint_EMBEDDED_BITMAP_TEXT_FLAG 1024L
+#undef android_graphics_Paint_AUTO_HINTING_TEXT_FLAG
+#define android_graphics_Paint_AUTO_HINTING_TEXT_FLAG 2048L
+#undef android_graphics_Paint_VERTICAL_TEXT_FLAG
+#define android_graphics_Paint_VERTICAL_TEXT_FLAG 4096L
 /*
  * Class:     android_graphics_Paint
  * Method:    native_constructor
@@ -14,6 +40,14 @@ extern "C" {
  */
 JNIEXPORT jlong JNICALL Java_android_graphics_Paint_native_1constructor
   (JNIEnv *, jobject);
+
+/*
+ * Class:     android_graphics_Paint
+ * Method:    native_set_antialias
+ * Signature: (JZ)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Paint_native_1set_1antialias
+  (JNIEnv *, jobject, jlong, jboolean);
 
 /*
  * Class:     android_graphics_Paint

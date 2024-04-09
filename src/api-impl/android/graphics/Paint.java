@@ -1,6 +1,20 @@
 package android.graphics;
 
 public class Paint {
+	public static final int ANTI_ALIAS_FLAG           = (1 << 0);
+	public static final int FILTER_BITMAP_FLAG        = (1 << 1);
+	public static final int DITHER_FLAG               = (1 << 2);
+	public static final int UNDERLINE_TEXT_FLAG       = (1 << 3);
+	public static final int STRIKE_THRU_TEXT_FLAG     = (1 << 4);
+	public static final int FAKE_BOLD_TEXT_FLAG       = (1 << 5);
+	public static final int LINEAR_TEXT_FLAG          = (1 << 6);
+	public static final int SUBPIXEL_TEXT_FLAG        = (1 << 7);
+	public static final int DEV_KERN_TEXT_FLAG        = (1 << 8);
+	public static final int LCD_RENDER_TEXT_FLAG      = (1 << 9);
+	public static final int EMBEDDED_BITMAP_TEXT_FLAG = (1 << 10);
+	public static final int AUTO_HINTING_TEXT_FLAG    = (1 << 11);
+	public static final int VERTICAL_TEXT_FLAG        = (1 << 12);
+
 	public long skia_paint = 0;
 	private Typeface typeface = null;
 	public long skia_font = 0;
@@ -29,7 +43,10 @@ public class Paint {
 		return native_get_color(skia_paint);
 	}
 
-	public void setAntiAlias(boolean aa) {}
+	public void setAntiAlias(boolean aa) {
+		native_set_antialias(skia_paint, aa);
+	}
+
 	public void setStrokeWidth(float width) {
 		native_set_stroke_width(skia_paint, width);
 	}
@@ -51,11 +68,17 @@ public class Paint {
 	}
 	public void getTextBounds(String text, int start, int end, Rect bounds) {}
 	public void getTextBounds(char[] text, int index, int count, Rect bounds) {}
-	public void setFlags(int flags) {}
 	public void setFilterBitmap(boolean filter) {}
+
+	public void setFlags(int flags) {
+		if((flags & ANTI_ALIAS_FLAG) != 0)
+			setAntiAlias(true);
+	}
+
 	public void setStyle(Style style) {
 		native_set_style(skia_paint, style.nativeInt);
 	}
+
 	public float ascent() {
 		if(skia_font == 0)
 			return 0;
@@ -234,6 +257,7 @@ public class Paint {
 	}
 
 	private native long native_constructor();
+	private native void native_set_antialias(long skia_paint, boolean aa);
 	private native void native_set_color(long skia_paint, int color);
 	private native int native_get_color(long skia_paint);
 	private static native long native_create_font();

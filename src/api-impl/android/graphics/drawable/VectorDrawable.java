@@ -15,7 +15,7 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
 public class VectorDrawable extends Drawable {
-	
+
 	public VectorDrawable() {
 		super();
 	}
@@ -52,5 +52,5 @@ public class VectorDrawable extends Drawable {
 		Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 		this.paintable = BitmapDrawable.native_paintable_from_pixbuf(bm.pixbuf);
 	}
-	
+
 }

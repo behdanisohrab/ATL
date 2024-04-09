@@ -13,6 +13,13 @@ JNIEXPORT jlong JNICALL Java_android_graphics_Paint_native_1constructor(JNIEnv *
 	return _INTPTR(sk_paint_new());
 }
 
+JNIEXPORT void JNICALL Java_android_graphics_Paint_native_1set_1antialias(JNIEnv *env, jobject this, jlong skia_paint, jboolean aa)
+{
+	sk_paint_t *paint = (sk_paint_t *)_PTR(skia_paint);
+
+	sk_paint_set_antialias(paint, aa);
+}
+
 /* NOTE: sk_color_t seems to have the same internal representation as android uses for color, so we just pass that directly */
 JNIEXPORT void JNICALL Java_android_graphics_Paint_native_1set_1color(JNIEnv *env, jobject this, jlong skia_paint, jint color)
 {
