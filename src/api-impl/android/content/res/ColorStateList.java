@@ -16,6 +16,7 @@
 
 package android.content.res;
 
+import android.content.Context;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.StateSet;
@@ -186,25 +187,20 @@ public class ColorStateList {
 				continue;
 			}
 
-			int colorRes = 0;
 			int color = 0xffff0000;
-			boolean haveColor = false;
 
 			int i;
 			int j = 0;
 			final int numAttrs = attrs.getAttributeCount();
 			int[] stateSpec = new int[numAttrs];
+			TypedArray a = Context.this_application.obtainStyledAttributes(attrs, com.android.internal.R.styleable.ColorStateListItem);
+			color = a.getColor(com.android.internal.R.styleable.ColorStateListItem_color, color);
+			a.recycle();
 			for (i = 0; i < numAttrs; i++) {
 				final int stateResId = attrs.getAttributeNameResource(i);
 				if (stateResId == 0)
 					break;
 				if (stateResId == com.android.internal.R.attr.color) {
-					colorRes = attrs.getAttributeResourceValue(i, 0);
-
-					if (colorRes == 0) {
-						color = attrs.getAttributeIntValue(i, color);
-						haveColor = true;
-					}
 				} else {
 					stateSpec[j++] = attrs.getAttributeBooleanValue(i, false)
 							     ? stateResId
@@ -212,13 +208,6 @@ public class ColorStateList {
 				}
 			}
 			stateSpec = StateSet.trimStateSet(stateSpec, j);
-
-			if (colorRes != 0) {
-				color = r.getColor(colorRes);
-			} else if (!haveColor) {
-				throw new XmlPullParserException(
-				    parser.getPositionDescription() + ": <item> tag requires a 'android:color' attribute.");
-			}
 
 			if (listSize == 0 || stateSpec.length == 0) {
 				mDefaultColor = color;
