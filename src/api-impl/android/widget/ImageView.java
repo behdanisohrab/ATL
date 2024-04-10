@@ -31,15 +31,11 @@ public class ImageView extends View {
 		haveCustomMeasure = false;
 		TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.ImageView, defStyleAttr, 0);
 		setImageDrawable(a.getDrawable(com.android.internal.R.styleable.ImageView_src));
+		setScaleType(scaletype_from_int[a.getInt(com.android.internal.R.styleable.ImageView_scaleType, 3 /*CENTER*/)]);
 		a.recycle();
 	}
 
-	@Override
-	protected native long native_constructor(Context context, AttributeSet attrs);
-	protected native void native_setPixbuf(long pixbuf);
-	protected native void native_setDrawable(long widget, long paintable);
-
-	public /*native*/ void setImageResource(final int resid) {
+	public void setImageResource(final int resid) {
 		if (Context.this_application.getResources().getString(resid).endsWith(".xml")) {
 			setImageDrawable(getResources().getDrawable(resid));
 			return;
@@ -51,6 +47,7 @@ public class ImageView extends View {
 
 	public void setScaleType(ScaleType scaleType) {
 		this.scaleType = scaleType;
+		native_setScaleType(widget, scaleType.nativeInt);
 	}
 
 	public ScaleType getScaleType() {
@@ -138,6 +135,16 @@ public class ImageView extends View {
 		}
 		final int nativeInt;
 	}
+	private final ScaleType[] scaletype_from_int = {
+		ScaleType.MATRIX,
+		ScaleType.FIT_XY,
+		ScaleType.FIT_START,
+		ScaleType.FIT_CENTER,
+		ScaleType.FIT_END,
+		ScaleType.CENTER,
+		ScaleType.CENTER_CROP,
+		ScaleType.CENTER_INSIDE,
+	};
 
 	public final void setColorFilter(int color, PorterDuff.Mode mode) {}
 
@@ -150,4 +157,10 @@ public class ImageView extends View {
 	public void setMaxHeight(int height) {}
 
 	public void setImageState(int[] state, boolean merge) {}
+
+	@Override
+	protected native long native_constructor(Context context, AttributeSet attrs);
+	protected native void native_setPixbuf(long pixbuf);
+	protected native void native_setDrawable(long widget, long paintable);
+	protected native void native_setScaleType(long widget, int scale_type);
 }

@@ -223,6 +223,14 @@ JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1setPixbuf
 JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1setDrawable
   (JNIEnv *, jobject, jlong, jlong);
 
+/*
+ * Class:     android_widget_ImageView
+ * Method:    native_setScaleType
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1setScaleType
+  (JNIEnv *, jobject, jlong, jint);
+
 #ifdef __cplusplus
 }
 #endif
