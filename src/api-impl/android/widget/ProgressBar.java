@@ -18,6 +18,16 @@ public class ProgressBar extends View {
 		haveCustomMeasure = false;
 		TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.ProgressBar, defStyle, 0);
 		setIndeterminate(a.getBoolean(com.android.internal.R.styleable.ProgressBar_indeterminate, false));
+		setIndeterminateDrawable(a.getDrawable(com.android.internal.R.styleable.ProgressBar_indeterminateDrawable));
+		/* FIXME hack: NewPipe expects this to not be null, but for some reason it is */
+		if(indeterminateDrawable == null)
+			indeterminateDrawable = new Drawable() {
+				@Override
+				public void draw(Canvas canvas) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'draw'");
+				}
+			};
 		a.recycle();
 	}
 
