@@ -135,7 +135,6 @@ gboolean hacky_on_window_focus_changed_callback(JNIEnv *env)
 // this is exported by the shim bionic linker
 void dl_parse_library_path(const char *path, char *delim);
 
-#define DOT_LOCAL_DATA_PATH "/.local/share/android_translation_layer"
 #define REL_DEX_INSTALL_PATH "/../java/dex"
 
 #define REL_API_IMPL_JAR_INSTALL_PATH "/android_translation_layer/api-impl.jar"
@@ -200,11 +199,9 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	char* app_data_dir_base = getenv("ANDROID_APP_DATA_DIR");
 	if(!app_data_dir_base) {
-		const char* home_dir = getenv("HOME");
-		if(home_dir) {
-			app_data_dir_base = malloc(strlen(home_dir) + strlen(DOT_LOCAL_DATA_PATH) + 1); // +1 for NULL
-			strcpy(app_data_dir_base, home_dir);
-			strcat(app_data_dir_base, DOT_LOCAL_DATA_PATH);
+		const char* user_data_dir = g_get_user_data_dir();
+		if(user_data_dir) {
+			app_data_dir_base = g_strdup_printf("%s/android_translation_layer", user_data_dir);
 			ret = mkdir(app_data_dir_base, DEFFILEMODE | S_IXUSR | S_IXGRP | S_IXOTH);
 			if (ret) {
 				if(errno != EEXIST) {
