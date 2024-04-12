@@ -257,6 +257,9 @@ public class Canvas {
 		if (dst == null) {
 			throw new NullPointerException();
 		}
+		if(src == null) {
+			src = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+		}
 		native_drawBitmap(skia_canvas, widget, bitmap.pixbuf, src.left, src.top, src.right, src.bottom,
 		                                                      dst.left, dst.top, dst.right, dst.bottom,
 		                                                      (paint != null) ? paint.skia_paint : 0);
@@ -415,6 +418,16 @@ public class Canvas {
 	public boolean clipPath(Path path, Region.Op op) {
 		return false;
 	}
+
+	public int getWidth() {
+		return 10; //FIXME
+	}
+
+	public int getHeight() {
+		return 10; //FIXME
+	}
+
+	public void drawColor(int dummy) {}
 
 	private static native long native_canvas_from_bitmap(long pixbuf);
 

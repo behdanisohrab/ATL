@@ -4,6 +4,10 @@ import android.content.Context;
 
 public class Toast {
 
+	public Toast(Context context) {
+		/* TODO */
+	}
+
 	private String text;
 
 	public static Toast makeText(Context context, int resId, int duration) {
@@ -11,7 +15,7 @@ public class Toast {
 	}
 
 	public static Toast makeText(Context context, CharSequence text, int duration) {
-		Toast toast = new Toast();
+		Toast toast = new Toast(context);
 		toast.text = String.valueOf(text);
 		return toast;
 	}

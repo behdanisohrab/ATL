@@ -217,10 +217,10 @@ JNIEXPORT void JNICALL Java_android_widget_ProgressBar_native_1setProgress
 
 /*
  * Class:     android_widget_ProgressBar
- * Method:    setIndeterminate
+ * Method:    native_setIndeterminate
  * Signature: (Z)V
  */
-JNIEXPORT void JNICALL Java_android_widget_ProgressBar_setIndeterminate
+JNIEXPORT void JNICALL Java_android_widget_ProgressBar_native_1setIndeterminate
   (JNIEnv *, jobject, jboolean);
 
 #ifdef __cplusplus

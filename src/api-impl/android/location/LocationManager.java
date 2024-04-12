@@ -1,5 +1,7 @@
 package android.location;
 
+import android.os.Bundle;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,5 +29,11 @@ public class LocationManager {
 			locationListener.onLocationChanged(new Location(latitude, longitude, heading));
 		}
 	}
-	
+
+	public boolean sendExtraCommand(String provider, String command, Bundle extras) {
+		return true;
+	}
+
+	public void removeUpdates(LocationListener listener) {
+	}
 }

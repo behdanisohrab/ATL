@@ -867,16 +867,18 @@ public class View implements Drawable.Callback {
 			TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.View, defStyle, 0);
 			this.id = a.getResourceId(com.android.internal.R.styleable.View_id, View.NO_ID);
 			if (a.hasValue(com.android.internal.R.styleable.View_background)) {
-				Drawable background = a.getDrawable(com.android.internal.R.styleable.View_background);
+				try {
+					Drawable background = a.getDrawable(com.android.internal.R.styleable.View_background);
 
-				if(background != null) {
-					if(background instanceof ColorDrawable) {
-						System.out.printf("__background__: >%x<\n", ((ColorDrawable)background).getColor());
-						setBackgroundColor(((ColorDrawable)background).getColor());
-					} else {
-						setBackgroundDrawable(background);
+					if(background != null) {
+						if(background instanceof ColorDrawable) {
+							System.out.printf("__background__: >%x<\n", ((ColorDrawable)background).getColor());
+							setBackgroundColor(((ColorDrawable)background).getColor());
+						} else {
+							setBackgroundDrawable(background);
+						}
 					}
-				}
+				} catch (Exception e) { e.printStackTrace(); }
 			}
 			if (a.hasValue(com.android.internal.R.styleable.View_visibility)) {
 				setVisibility(VISIBILITY_FLAGS[a.getInt(com.android.internal.R.styleable.View_visibility, 0)]);
@@ -1714,4 +1716,10 @@ public class View implements Drawable.Callback {
 	public void requestFitSystemWindows() {}
 
 	public boolean isPressed() {return false;}
+
+	public void getWindowVisibleDisplayFrame(Rect rect) {}
+
+	public void setRotationX(float deg) {}
+
+	public void setRotationY(float deg) {}
 }

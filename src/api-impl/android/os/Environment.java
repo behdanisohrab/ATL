@@ -93,6 +93,10 @@ public class Environment {
 		}
 	}
 
+	public static boolean isExternalStorageRemovable(File file) {
+		return true;
+	}
+
 	/**
 	 * {@hide}
 	 */

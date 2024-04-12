@@ -256,6 +256,16 @@ public class Paint {
 		return new Shader();
 	}
 
+	public PathEffect setPathEffect(PathEffect effect) {
+		return effect;
+	}
+
+	public int breakText(char[] text, int index, int count, float maxWidth, float[] measuredWidth) { return 10; }
+	public int breakText(String text, boolean measureForwards, float maxWidth, float[] measuredWidth) { return 10; }
+	public int breakText(CharSequence text, int start, int end, boolean measureForwards, float maxWidth, float[] measuredWidth) { return 10; }
+
+	public void clearShadowLayer() {}
+
 	private native long native_constructor();
 	private native void native_set_antialias(long skia_paint, boolean aa);
 	private native void native_set_color(long skia_paint, int color);

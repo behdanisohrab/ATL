@@ -178,20 +178,30 @@ public class Intent {
 		return this;
 	}
 
-	public Intent putExtras (Intent src) {
+	public Intent putExtras(Intent src) {
 		// FIXME HACK
 		this.extras = src.getExtras();
 		return this;
 	}
 
-	public Intent putExtras (Bundle extras) {
+	public Intent putExtras(Bundle extras) {
 		// FIXME HACK
+		this.extras = extras;
+		return this;
+	}
+
+	public Intent replaceExtras(Bundle extras) {
 		this.extras = extras;
 		return this;
 	}
 
 	public Intent setClass(Context packageContext, Class<?> cls) {
 		setComponent(new ComponentName(packageContext, cls));
+		return this;
+	}
+
+	public Intent setClassName(String packageName, String className) {
+		setComponent(new ComponentName(packageName, className));
 		return this;
 	}
 

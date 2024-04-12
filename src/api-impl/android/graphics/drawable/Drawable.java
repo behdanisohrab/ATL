@@ -52,7 +52,7 @@ public class Drawable {
 		return null;
 	}
 
-	public abstract class ConstantState {
+	public static abstract class ConstantState {
 
 		public abstract Drawable newDrawable(Resources res);
 
@@ -86,6 +86,10 @@ public class Drawable {
 
 	public void setCallback(Callback callback) {
 		this.callback = callback;
+	}
+
+	public Callback getCallback() {
+		return this.callback;
 	}
 
 	public void invalidateSelf() {
@@ -172,8 +176,14 @@ public class Drawable {
 			VectorDrawable drawable = new VectorDrawable();
 			drawable.inflate(resources, parser, parser, null);
 			return drawable;
+		} else if ("layer-list".equals(parser.getName())) {
+			return new LayerDrawable();
 		}
 		return null;
+	}
+
+	public static Drawable createFromXmlInner(Resources resources, XmlPullParser parser, AttributeSet attrs) {
+		return createFromXmlInner(resources, parser, attrs, null);
 	}
 
 	public static Drawable createFromXmlInner(Resources resources, XmlPullParser parser, AttributeSet attrs, Theme theme) {
@@ -209,6 +219,13 @@ public class Drawable {
 
 	public void copyBounds(Rect bounds) {
 		bounds.set(mBounds);
+	}
+
+	public int getMinimumWidth() {
+		return 10; // FIXME
+	}
+	public int getMinimumHeight() {
+		return 10; // FIXME
 	}
 
 	protected void onBoundsChange(Rect bounds) {}

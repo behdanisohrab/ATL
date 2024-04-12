@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.XmlResourceParser;
 import android.net.Uri;
@@ -449,6 +450,20 @@ public class Activity extends ContextWrapper implements Window.Callback {
 			System.out.println("exception in Activity.recreate, this is kinda sus");
 			e.printStackTrace();
 		}
+	}
+
+	public String getLocalClassName() {
+		final String pkg = getPackageName();
+		final String cls = this.getClass().getName();
+		int packageLen = pkg.length();
+		if (!cls.startsWith(pkg) || cls.length() <= packageLen || cls.charAt(packageLen) != '.') {
+			return cls;
+		}
+		return cls.substring(packageLen+1);
+	}
+
+	public SharedPreferences getPreferences(int mode) {
+		return getSharedPreferences(getLocalClassName(), mode);
 	}
 
 	private native void nativeFinish(long native_window);

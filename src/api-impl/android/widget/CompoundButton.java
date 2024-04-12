@@ -1,14 +1,16 @@
 package android.widget;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
 public abstract class CompoundButton extends Button implements Checkable {
+	Drawable button_drawable = null;
 
 	public CompoundButton(Context context) {
 		super(context);
 	}
-	
+
 	public CompoundButton(Context context, AttributeSet attributeSet) {
 		super(context, attributeSet);
 	}
@@ -41,4 +43,12 @@ public abstract class CompoundButton extends Button implements Checkable {
 	public void setTextColor(int color) {}
 	@Override
 	public void setTextSize(float size) {}
+
+	public void setButtonDrawable(Drawable drawable) {
+		button_drawable = drawable;
+	}
+
+	public Drawable getButtonDrawable() {
+		return button_drawable;
+	}
 }

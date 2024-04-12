@@ -9,6 +9,7 @@ import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
 import java.io.InputStream;
 import java.io.IOException;
 
+import android.content.Context;
 import android.content.ContextWrapper;
 
 public class Application extends ContextWrapper {
@@ -44,13 +45,13 @@ public class Application extends ContextWrapper {
 	}
 
 	public Application() {
-		super(null);
+		super(new Context());
 		/* TODO: is this the right place to put this? */
 		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
 		try {
 			AndroidManifestBlock manifest = AndroidManifestBlock.load(inStream);
 			int app_icon_resid = manifest.getIconResourceId();
-			app_icon_path = this.getResources().getString(app_icon_resid);
+			app_icon_path = r.getString(app_icon_resid);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

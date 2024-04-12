@@ -23,4 +23,19 @@ public class ListView extends AbsListView {
 
 	public void addHeaderView(View v, Object data, boolean isSelectable) {}
 
+	public void setDrawSelectorOnTop(boolean dummy) {}
+
+	public void addHeaderView(View view) {}
+
+	public boolean removeHeaderView(View view) { return true; }
+
+	public int getHeaderViewsCount() {
+		return 0;
+	}
+
+	public int getFooterViewsCount() {
+		return 0;
+	}
+
+	public void setDivider(Drawable drawable) {}
 }

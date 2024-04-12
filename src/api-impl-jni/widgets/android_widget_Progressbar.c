@@ -29,7 +29,7 @@ JNIEXPORT void JNICALL Java_android_widget_ProgressBar_native_1setProgress(JNIEn
 	gtk_progress_bar_set_fraction(progress_bar, progress);
 }
 
-JNIEXPORT void JNICALL Java_android_widget_ProgressBar_setIndeterminate(JNIEnv *env, jobject this, jboolean indeterminate)
+JNIEXPORT void JNICALL Java_android_widget_ProgressBar_native_1setIndeterminate(JNIEnv *env, jobject this, jboolean indeterminate)
 {
 	GtkWidget *box = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
 	GtkProgressBar *progress_bar = GTK_PROGRESS_BAR(gtk_widget_get_first_child(box));

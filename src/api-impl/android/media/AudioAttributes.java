@@ -8,6 +8,10 @@ public class AudioAttributes {
 
 	public class Builder {
 
+		public Builder setContentType(int content_type) {
+			return this;
+		}
+
 		public Builder setUsage(int usage) {
 			return this;
 		}

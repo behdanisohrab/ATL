@@ -10,6 +10,7 @@ public interface WindowManager {
 		public int softInputMode;
 		public int x;
 		public int y;
+		public int windowAnimations;
 
 		public LayoutParams(int w, int h, int type, int flags, int format) {
 			super(w, h);

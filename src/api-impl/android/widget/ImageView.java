@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
@@ -55,8 +56,15 @@ public class ImageView extends View {
 	}
 
 	public Drawable getDrawable() {
-		if(bitmap == null)
-			return null;
+		if(bitmap == null) {
+			return new Drawable() {
+				@Override
+				public void draw(Canvas canvas) {
+					// TODO Auto-generated method stub
+					throw new UnsupportedOperationException("Unimplemented method 'draw'");
+				}
+			};
+		}
 
 		return new BitmapDrawable(getContext().getResources(), bitmap);
 	}

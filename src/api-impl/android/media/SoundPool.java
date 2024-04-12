@@ -36,6 +36,20 @@ public class SoundPool {
 		return nativePlay(nativePool, soundID);
 	}
 
+	public class Builder {
+		public Builder setAudioAttributes(AudioAttributes attributes) {
+			return this;
+		}
+
+		public Builder setMaxStreams(int maxStreams) {
+			return this;
+		}
+
+		public SoundPool build() {
+			return new SoundPool(0, 0, 0); // FIXME
+		}
+	}
+
 	private static native long native_constructor();
 	private static native int nativeLoad(long nativePool, String path);
 	public static native int nativePlay(long nativePool, int soundID);

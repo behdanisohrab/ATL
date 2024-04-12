@@ -15,6 +15,8 @@ import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.hardware.input.InputManager;
 import android.hardware.SensorManager;
@@ -71,7 +73,7 @@ public class Context extends Object {
 
 	static AssetManager assets;
 	static DisplayMetrics dm;
-	static Resources r;
+	protected static Resources r;
 	static ApplicationInfo application_info;
 	static Resources.Theme theme;
 	private static Map<Class<? extends Service>,Service> runningServices = new HashMap<>();
@@ -85,6 +87,7 @@ public class Context extends Object {
 	File files_dir = null;
 	File obb_dir = null;
 	File cache_dir = null;
+	File nobackup_dir = null;
 
 	private static Map<IntentFilter, BroadcastReceiver> receiverMap = new HashMap<IntentFilter, BroadcastReceiver>();
 
@@ -231,6 +234,10 @@ public class Context extends Object {
 		return apk_path;
 	}
 
+	public int getColor(int resId) {
+		return r.getColor(resId);
+	}
+
 	public final String getString(int resId) {
 		return r.getString(resId);
 	}
@@ -324,11 +331,32 @@ public class Context extends Object {
 		return getCacheDir();
 	}
 
+	public File getNoBackupFilesDir() {
+		if (nobackup_dir == null) {
+			nobackup_dir = new File(getDataDirFile(), "no_backup/" + getPackageName());
+		}
+		if (!nobackup_dir.exists()) {
+			if (!nobackup_dir.mkdirs()) {
+				if (nobackup_dir.exists()) {
+					// spurious failure; probably racing with another process for this app
+					return nobackup_dir;
+				}
+				Slog.w(TAG, "Unable to create obb directory >" + nobackup_dir.getPath() + "<");
+				return null;
+			}
+		}
+		return nobackup_dir;
+	}
+
 	private File getPreferencesDir() {
 		if (prefs_dir == null) {
 			prefs_dir = new File(getDataDirFile(), "shared_prefs");
 		}
 		return prefs_dir;
+	}
+
+	public File getFileStreamPath(String name) {
+		return makeFilename(getFilesDir(), name);
 	}
 
 	public File getSharedPrefsFile(String name) {
@@ -502,5 +530,22 @@ public class Context extends Object {
 
 	public void grantUriPermission(String dummy, Uri dummy2, int dummy3) {
 		System.out.println("grantUriPermission(" + dummy + ", " + dummy2 + ", " + dummy3 + ") called");
+	}
+
+	public SQLiteDatabase openOrCreateDatabase(String name, int mode, SQLiteDatabase.CursorFactory factory) {
+		return openOrCreateDatabase(name, mode, factory, null);
+	}
+
+	public SQLiteDatabase openOrCreateDatabase(String filename, int mode, SQLiteDatabase.CursorFactory factory, DatabaseErrorHandler errorHandler) {
+		int flags = SQLiteDatabase.CREATE_IF_NECESSARY;
+		if ((mode & (1 <<3) /*MODE_ENABLE_WRITE_AHEAD_LOGGING*/) != 0) {
+			flags |= SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING;
+		}
+		SQLiteDatabase db = SQLiteDatabase.openDatabase(filename, factory, flags, errorHandler);
+		return db;
+	}
+
+	public Context createConfigurationContext(Configuration configuration) {
+		return this;
 	}
 }

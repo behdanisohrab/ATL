@@ -851,23 +851,28 @@ public class Resources {
 	 * solid color or multiple colors that can be selected based on a state.
 	 */
 	public ColorStateList getColorStateList(int id) throws NotFoundException {
-	     TypedValue value;
-	     synchronized (mAccessLock) {
-		 value = mTmpValue;
-		 if (value == null) {
-		     value = new TypedValue();
-		 } else {
-		     mTmpValue = null;
-		 }
-		 getValue(id, value, true);
-	     }
-	     ColorStateList res = loadColorStateList(value, id);
-	     synchronized (mAccessLock) {
-		 if (mTmpValue == null) {
-		     mTmpValue = value;
-		 }
-	     }
-	     return res;
+		return getColorStateList(id, null);
+	}
+
+	/* FIXME use the theme */
+	public ColorStateList getColorStateList(int id, Theme theme) throws NotFoundException {
+		TypedValue value;
+		synchronized (mAccessLock) {
+			value = mTmpValue;
+			if (value == null) {
+				value = new TypedValue();
+			} else {
+				mTmpValue = null;
+			}
+			getValue(id, value, true);
+		}
+		ColorStateList res = loadColorStateList(value, id);
+		synchronized (mAccessLock) {
+			if (mTmpValue == null) {
+				mTmpValue = value;
+			}
+		}
+		return res;
 	}
 
 	/**

@@ -37,6 +37,10 @@ public class Color {
 		return (alpha << 24) | (red << 16) | (green << 8) | (blue << 0);
 	}
 
+	public static int rgb(int red, int green, int blue) {
+		return argb(0xff, red, green, blue);
+	}
+
 	/**
 	 * Return the alpha component of a color int. This is the same as saying
 	 * color >>> 24

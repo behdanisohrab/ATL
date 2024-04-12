@@ -11,6 +11,7 @@ public class ProgressBar extends View {
 
 	protected int max = 100;
 	protected int progress = 0;
+	private boolean indeterminate = false;
 	private Drawable indeterminateDrawable;
 
 	public ProgressBar(Context context, AttributeSet attrs, int defStyle) {
@@ -43,7 +44,15 @@ public class ProgressBar extends View {
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	protected native void native_setProgress(long widget, float fraction);
 
-	public native void setIndeterminate(boolean indeterminate);
+	public boolean isIndeterminate() {
+		return indeterminate;
+	}
+
+	public void setIndeterminate(boolean indeterminate) {
+		native_setIndeterminate(indeterminate);
+		indeterminate = true;
+	}
+
 
 	public Drawable getProgressDrawable() {
 		return new Drawable() {
@@ -82,4 +91,9 @@ public class ProgressBar extends View {
 	public void setIndeterminateDrawable(Drawable indeterminateDrawable) {
 		this.indeterminateDrawable = indeterminateDrawable;
 	}
+
+	public void setProgressDrawable(Drawable indeterminateDrawable) {
+	}
+
+	public native void native_setIndeterminate(boolean indeterminate);
 }
