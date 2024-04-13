@@ -149,7 +149,7 @@ executable('android-translation-layer', [
                                         ],
                                         install: true,
                                         dependencies: [
-                                        	dependency('gtk4'), dependency('jni'), declare_dependency(link_with: libtranslationlayer_so), libart_dep, dependency('dl'), libdl_bio_dep
+                                        	dependency('gtk4'), dependency('jni'), declare_dependency(link_with: libtranslationlayer_so), libart_dep, dependency('dl'), libdl_bio_dep, dependency('libportal')
                                         ],
                                         link_args: [
                                         	'-rdynamic'

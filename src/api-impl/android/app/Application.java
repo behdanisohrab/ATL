@@ -20,6 +20,11 @@ public class Application extends ContextWrapper {
 		return app_icon_path;
 	}
 
+	private String get_app_label() {
+		int app_label_resid = manifest.getApplicationElement().searchAttributeByResourceId(AndroidManifestBlock.ID_label).getData();
+		return getResources().getString(app_label_resid);
+	}
+
 	public interface ActivityLifecycleCallbacks {
 		void onActivityCreated(Activity activity, Bundle savedInstanceState);
 		void onActivityStarted(Activity activity);

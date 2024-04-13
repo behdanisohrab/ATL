@@ -3,6 +3,7 @@
 
 #include <gtk/gtk.h>
 #include <gdk/wayland/gdkwayland.h>
+#include <libportal/portal.h>
 
 #include "../api-impl-jni/defines.h"
 #include "../api-impl-jni/util.h"
@@ -133,6 +134,28 @@ gboolean hacky_on_window_focus_changed_callback(JNIEnv *env)
 	return G_SOURCE_CONTINUE;
 }
 
+struct dynamic_launcher_callback_data {char *desktop_file_id; char *desktop_entry;};
+static void dynamic_launcher_ready_callback(GObject *portal, GAsyncResult *res, gpointer user_data) {
+	struct dynamic_launcher_callback_data *data = user_data;
+	GVariant *result = xdp_portal_dynamic_launcher_prepare_install_finish(XDP_PORTAL(portal), res, NULL);
+	if (!result) {
+		printf("cancelled\n");
+		exit(0);
+	}
+	const char *token;
+	g_variant_lookup(result, "token", "s", &token);
+	GError *err = NULL;
+	xdp_portal_dynamic_launcher_install(XDP_PORTAL(portal), token, data->desktop_file_id, data->desktop_entry, &err);
+	g_free(data->desktop_file_id);
+	g_free(data->desktop_entry);
+	g_free(data);
+	if (err) {
+		printf("failed to install dynamic launcher: %s\n", err->message);
+		exit(1);
+	}
+	exit(0);
+}
+
 // this is exported by the shim bionic linker
 void dl_parse_library_path(const char *path, char *delim);
 
@@ -147,7 +170,7 @@ void dl_parse_library_path(const char *path, char *delim);
 #define MICROG_APK_PATH_LOCAL "./com.google.android.gms.apk"
 #define FRAMEWORK_RES_PATH_LOCAL "./res/framework-res.apk"
 
-struct jni_callback_data { char *apk_main_activity_class; uint32_t window_width; uint32_t window_height;};
+struct jni_callback_data { char *apk_main_activity_class; uint32_t window_width; uint32_t window_height; gboolean install; char *prgname; };
 static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* hint, struct jni_callback_data *d)
 {
 //TODO: pass all files to classpath
@@ -351,8 +374,6 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
         if(getenv("ATL_FORCE_FULLSCREEN"))
                 gtk_window_fullscreen(GTK_WINDOW(window));
 
-	gtk_window_present(GTK_WINDOW(window));
-
 	// construct Application
 	application_object = (*env)->CallStaticObjectMethod(env, handle_cache.context.class,
 		_STATIC_METHOD(handle_cache.context.class, "createApplication", "(J)Landroid/app/Application;"), window);
@@ -392,9 +413,63 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
+	if (d->install) {
+		XdpPortal *portal = xdp_portal_new();
+
+		const char *app_label = _CSTRING((*env)->CallObjectMethod(env, application_object, _METHOD(handle_cache.application.class, "get_app_label", "()Ljava/lang/String;")));
+		if((*env)->ExceptionCheck(env))
+			(*env)->ExceptionDescribe(env);
+
+		GVariant *icon_serialized = NULL;
+		if (app_icon_path) {
+			extract_from_apk(app_icon_path, app_icon_path);
+			char *app_icon_path_full = g_strdup_printf("%s/%s", app_data_dir, app_icon_path);
+			GMappedFile *icon_file = g_mapped_file_new(app_icon_path_full, FALSE, NULL);
+			GBytes *icon_bytes = g_mapped_file_get_bytes(icon_file);
+			GIcon *icon = g_bytes_icon_new(icon_bytes);
+			icon_serialized = g_icon_serialize(icon);
+			g_object_unref(icon);
+			g_bytes_unref(icon_bytes);
+			g_mapped_file_unref(icon_file);
+			g_free(app_icon_path_full);
+		}
+
+		GString *desktop_entry = g_string_new(
+				"[Desktop Entry]\n"
+				"Type=Application\n"
+				"Exec=env ");
+		if (getenv("RUN_FROM_BUILDDIR")) {
+			printf("WARNING: RUN_FROM_BUILDDIR set and --install given: using current directory in desktop entry\n");
+			g_string_append_printf(desktop_entry, "-C %s ", g_get_current_dir());
+		}
+		char *envs[] = {"RUN_FROM_BUILDDIR", "LD_LIBRARY_PATH", "ANDROID_APP_DATA_DIR", "ATL_DISABLE_WINDOW_DECORATIONS", "UGLY_HACK_FOR_VR", "ATL_FORCE_FULLSCREEN"};
+		for (int i = 0; i < sizeof(envs)/sizeof(envs[0]); i++) {
+			if (getenv(envs[i])) {
+				g_string_append_printf(desktop_entry, "%s=%s ", envs[i], getenv(envs[i]));
+			}
+		}
+		g_string_append_printf(desktop_entry, "%s ", d->prgname);
+		g_string_append_printf(desktop_entry, "--gapplication-app-id %s ", package_name);
+		if (d->apk_main_activity_class)
+			g_string_append_printf(desktop_entry, "-l %s ", d->apk_main_activity_class);
+		if (d->window_width)
+			g_string_append_printf(desktop_entry, "-w %d ", d->window_width);
+		if (d->window_height)
+			g_string_append_printf(desktop_entry, "-h %d ", d->window_height);
+		g_string_append_printf(desktop_entry, "%s\n", apk_classpath);
+		struct dynamic_launcher_callback_data *cb_data = g_new(struct dynamic_launcher_callback_data, 1);
+		cb_data->desktop_file_id = g_strdup_printf("%s.desktop", package_name);
+		cb_data->desktop_entry = g_string_free(desktop_entry, FALSE);
+		printf("installing %s\n\n%s\n", cb_data->desktop_file_id, cb_data->desktop_entry);
+		xdp_portal_dynamic_launcher_prepare_install(portal, NULL, app_label, icon_serialized, XDP_LAUNCHER_APPLICATION, NULL, TRUE, TRUE, NULL, dynamic_launcher_ready_callback, cb_data);
+		return;
+	}
+
 	gtk_window_set_title(GTK_WINDOW(window), package_name);
 	gtk_window_set_default_size(GTK_WINDOW(window), d->window_width, d->window_height);
 	g_signal_connect(window, "close-request", G_CALLBACK (app_exit), env);
+
+	gtk_window_present(GTK_WINDOW(window));
 
 	// set package name as application id for window icon on Wayland. Needs a {package_name}.desktop file defining the icon
 	GdkToplevel *toplevel = GDK_TOPLEVEL(gtk_native_get_surface(GTK_NATIVE(window)));
@@ -472,6 +547,14 @@ void init_cmd_parameters(GApplication *app, struct jni_callback_data *d)
       .description = "window height to launch with (some apps react poorly to runtime window size adjustments)",
       .arg_description = NULL,
     },
+    {
+      .long_name = "install",
+      .short_name = 'i',
+      .flags = 0,
+      .arg = G_OPTION_ARG_NONE,
+      .arg_data = &d->install,
+      .description = "install .desktop file for the given apk",
+    },
     {NULL}
   };
 
@@ -497,8 +580,10 @@ int main(int argc, char **argv)
 	callback_data->apk_main_activity_class = NULL;
 	callback_data->window_width = 960;
 	callback_data->window_height = 540;
+	callback_data->install = FALSE;
+	callback_data->prgname = argv[0];
 
-	app = gtk_application_new("com.example.demo_application", G_APPLICATION_NON_UNIQUE | G_APPLICATION_HANDLES_OPEN);
+	app = gtk_application_new("com.example.demo_application", G_APPLICATION_NON_UNIQUE | G_APPLICATION_HANDLES_OPEN | G_APPLICATION_CAN_OVERRIDE_APP_ID);
 
 	// cmdline related setup
 	init_cmd_parameters(G_APPLICATION(app), callback_data);
