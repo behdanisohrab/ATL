@@ -40,6 +40,9 @@ static guint signals[LAST_SIGNAL] = { 0, };
 static void surface_view_widget_size_allocate(GtkWidget *widget, int width, int height, int baseline)
 {
 	g_signal_emit(widget, signals[RESIZE], 0, width, height);
+	for (GtkWidget *child = gtk_widget_get_first_child(widget); child; child = gtk_widget_get_next_sibling(child)) {
+		gtk_widget_size_allocate(child, &(GtkAllocation){.x=0, .y=0, .width=width, .height=height}, baseline);
+	}
 }
 
 static void surface_view_widget_class_init(SurfaceViewWidgetClass *class)

@@ -19,9 +19,11 @@
 #include <libswresample/swresample.h>
 
 #include <stdlib.h>
+#if !GTK_CHECK_VERSION(4, 14, 0)
 #include <wayland-client.h>
 #include "linux-dmabuf-unstable-v1-client-protocol.h"
 #include "viewporter-client-protocol.h"
+#endif
 
 #include "jni.h"
 #include "../generated_headers/android_media_MediaCodec.h"
@@ -36,12 +38,16 @@ struct ATL_codec_context {
 			SwrContext *swr;
 		} audio;
 		struct {
+#if GTK_CHECK_VERSION(4, 14, 0)
+			GtkPicture *gtk_picture;
+#else
 			struct zwp_linux_dmabuf_v1 *zwp_linux_dmabuf_v1;
 			struct wp_viewporter *wp_viewporter;
 			struct wp_viewport *viewport;
 			struct ANativeWindow *native_window;
 			int surface_width;
 			int surface_height;
+#endif
 		} video;
 	};
 };
@@ -145,6 +151,62 @@ static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,
 	return AV_PIX_FMT_NONE;
 }
 
+struct render_frame_data {AVFrame *frame; struct ATL_codec_context *ctx; AVFrame *drm_frame;};
+
+#if GTK_CHECK_VERSION(4, 14, 0)
+static void handle_dmabuftexture_destroy(void *data)
+{
+	struct render_frame_data *d = data;
+	AVFrame *frame = d->frame;
+	av_frame_free(&frame);
+	AVFrame *drm_frame = d->drm_frame;
+	av_frame_free(&drm_frame);
+	free(d);
+}
+
+static GdkTexture *import_drm_frame_desc_as_texture(const AVDRMFrameDescriptor *drm_frame_desc, int width, int height, struct render_frame_data *d)
+{
+	// VA-API drivers may use separate layers with one plane each, or a single
+	// layer with multiple planes. We need to handle both.
+	uint32_t drm_format = get_drm_frame_format(drm_frame_desc);
+	if (drm_format == DRM_FORMAT_INVALID) {
+		fprintf(stderr, "Failed to get DRM frame format\n");
+		return NULL;
+	}
+	GdkDmabufTextureBuilder* builder = gdk_dmabuf_texture_builder_new();
+	gdk_dmabuf_texture_builder_set_display(builder, gdk_display_get_default());
+	int k = 0;
+	for (int i = 0; i < drm_frame_desc->nb_layers; i++) {
+		const AVDRMLayerDescriptor *drm_layer = &drm_frame_desc->layers[i];
+
+		for (int j = 0; j < drm_layer->nb_planes; j++) {
+			const AVDRMPlaneDescriptor *drm_plane = &drm_layer->planes[j];
+			const AVDRMObjectDescriptor *drm_object =
+				&drm_frame_desc->objects[drm_plane->object_index];
+
+			gdk_dmabuf_texture_builder_set_modifier(builder, drm_object->format_modifier);
+			gdk_dmabuf_texture_builder_set_offset(builder, k, drm_plane->offset);
+			gdk_dmabuf_texture_builder_set_stride(builder, k, drm_plane->pitch);
+			gdk_dmabuf_texture_builder_set_fd(builder, k, drm_object->fd);
+			k++;
+		}
+	}
+	gdk_dmabuf_texture_builder_set_n_planes(builder, k);
+	gdk_dmabuf_texture_builder_set_width(builder, width);
+	gdk_dmabuf_texture_builder_set_height(builder, height);
+	gdk_dmabuf_texture_builder_set_fourcc(builder, drm_format);
+	GError *error = NULL;
+	GdkTexture *texture = gdk_dmabuf_texture_builder_build(builder, handle_dmabuftexture_destroy, d, &error);
+	if (error) {
+		fprintf(stderr, "Failed to build texture: %s\n", error->message);
+		exit(1);
+	}
+	g_object_unref(builder);
+	return texture;
+}
+
+#else // GTK_CHECK_VERSION(4, 14, 0)
+
 static void handle_global(void *data, struct wl_registry *registry,
 		uint32_t name, const char *interface, uint32_t version)
 {
@@ -224,6 +286,8 @@ static void on_resize(GtkWidget* widget, gint width, gint height, struct ATL_cod
 	wp_viewport_set_destination(ctx->video.viewport, ctx->video.surface_width, ctx->video.surface_height);
 }
 
+#endif // GTK_CHECK_VERSION(4, 14, 0)
+
 JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JNIEnv *env, jobject this, jlong codec, jobject csd0, jobject csd1, jobject surface_obj)
 {
 	struct ATL_codec_context *ctx = _PTR(codec);
@@ -290,10 +354,20 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JN
 	}
 	fprintf(stderr, "Selected pixel format %s\n", av_get_pix_fmt_name(hw_pix_fmt));
 
+#if GTK_CHECK_VERSION(4, 14, 0)
+	GtkWidget *surface_view_widget = _PTR(_GET_LONG_FIELD(surface_obj, "widget"));
+	GtkWidget *graphics_offload = gtk_widget_get_first_child(surface_view_widget);
+	if (!GTK_IS_GRAPHICS_OFFLOAD(graphics_offload)) {
+		graphics_offload = gtk_graphics_offload_new(gtk_picture_new());
+		gtk_widget_insert_after(graphics_offload, surface_view_widget, NULL);
+	}
+	ctx->video.gtk_picture = GTK_PICTURE(gtk_graphics_offload_get_child(GTK_GRAPHICS_OFFLOAD(graphics_offload)));
+#else
 	struct ANativeWindow *native_window = ANativeWindow_fromSurface(env, surface_obj);
 	ctx->video.native_window = native_window;
 	ctx->video.surface_width = gtk_widget_get_width(native_window->surface_view_widget);
 	ctx->video.surface_height = gtk_widget_get_height(native_window->surface_view_widget);
+#endif
 }
 
 JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1start(JNIEnv *env, jobject this, jlong codec)
@@ -335,6 +409,7 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1start(JNIEnv *env, 
 		}
 		codec_ctx->hw_device_ctx = av_buffer_ref(hw_device_ctx);
 
+#if !GTK_CHECK_VERSION(4, 14, 0)
 		struct ANativeWindow *native_window = ctx->video.native_window;
 		struct wl_registry *registry = wl_display_get_registry(native_window->wayland_display);
 		wl_registry_add_listener(registry, &registry_listener, ctx);
@@ -349,6 +424,7 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1start(JNIEnv *env, 
 		ctx->video.viewport = wp_viewporter_get_viewport(ctx->video.wp_viewporter, native_window->wayland_surface);
 		wp_viewport_set_destination(ctx->video.viewport, ctx->video.surface_width, ctx->video.surface_height);
 		g_signal_connect(native_window->surface_view_widget, "resize", G_CALLBACK(on_resize), ctx);
+#endif
 	}
 }
 
@@ -415,8 +491,6 @@ JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1dequeueOutputBuffer
 }
 
 // callback to perform wayland stuff on main thread
-struct render_frame_data {AVFrame *frame; struct ATL_codec_context *ctx;};
-
 static gboolean render_frame(void *data)
 {
 	struct render_frame_data *d = (struct render_frame_data *)data;
@@ -424,7 +498,7 @@ static gboolean render_frame(void *data)
 	struct ATL_codec_context *ctx = d->ctx;
 	int ret;
 
-	AVFrame *drm_frame = av_frame_alloc();
+	AVFrame *drm_frame = d->drm_frame = av_frame_alloc();
 	drm_frame->format = AV_PIX_FMT_DRM_PRIME;
 	drm_frame->hw_frames_ctx = av_buffer_ref(frame->hw_frames_ctx);
 
@@ -437,6 +511,11 @@ static gboolean render_frame(void *data)
 
 	AVDRMFrameDescriptor *drm_frame_desc = (void *)drm_frame->data[0];
 
+#if GTK_CHECK_VERSION(4, 14, 0)
+	GdkTexture *texture = import_drm_frame_desc_as_texture(drm_frame_desc, drm_frame->width, drm_frame->height, d);
+	gtk_picture_set_paintable(ctx->video.gtk_picture, GDK_PAINTABLE(texture));
+	g_object_unref(texture);
+#else
 	struct wl_buffer *wl_buffer = import_drm_frame_desc(ctx->video.zwp_linux_dmabuf_v1,
 		drm_frame_desc, drm_frame->width, drm_frame->height);
 	if (!wl_buffer) {
@@ -453,6 +532,7 @@ static gboolean render_frame(void *data)
 	// actual frame will be freed in handle_buffer_release callback
 	av_frame_free(&drm_frame);
 	free(d);
+#endif
 
 	return G_SOURCE_REMOVE;
 }
