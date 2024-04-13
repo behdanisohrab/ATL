@@ -2,6 +2,7 @@
 #define _GNU_SOURCE
 
 #include <gtk/gtk.h>
+#include <gdk/wayland/gdkwayland.h>
 
 #include "../api-impl-jni/defines.h"
 #include "../api-impl-jni/util.h"
@@ -394,6 +395,12 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	gtk_window_set_title(GTK_WINDOW(window), package_name);
 	gtk_window_set_default_size(GTK_WINDOW(window), d->window_width, d->window_height);
 	g_signal_connect(window, "close-request", G_CALLBACK (app_exit), env);
+
+	// set package name as application id for window icon on Wayland. Needs a {package_name}.desktop file defining the icon
+	GdkToplevel *toplevel = GDK_TOPLEVEL(gtk_native_get_surface(GTK_NATIVE(window)));
+	if (GDK_IS_WAYLAND_TOPLEVEL(toplevel)) {
+		gdk_wayland_toplevel_set_application_id(GDK_WAYLAND_TOPLEVEL(toplevel), package_name);
+	}
 
 	if(app_icon_path) {
 		char *app_icon_path_full = malloc(strlen(app_data_dir) + 1 + strlen(app_icon_path) + 1);  // +1 for /, +1 for NULL
