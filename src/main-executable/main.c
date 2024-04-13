@@ -433,6 +433,10 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 			g_mapped_file_unref(icon_file);
 			g_free(app_icon_path_full);
 		}
+		GFile *dest = g_file_new_build_filename(app_data_dir_base, "_installed_apks_", apk_name, NULL);
+		printf("installing %s to %s\n", apk_name, g_file_get_path(dest));
+		g_file_make_directory(g_file_get_parent(dest), NULL, NULL);
+		g_file_copy(files[0], dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
 
 		GString *desktop_entry = g_string_new(
 				"[Desktop Entry]\n"
@@ -456,7 +460,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 			g_string_append_printf(desktop_entry, "-w %d ", d->window_width);
 		if (d->window_height)
 			g_string_append_printf(desktop_entry, "-h %d ", d->window_height);
-		g_string_append_printf(desktop_entry, "%s\n", apk_classpath);
+		g_string_append_printf(desktop_entry, "%s\n", g_file_get_path(dest));
 		struct dynamic_launcher_callback_data *cb_data = g_new(struct dynamic_launcher_callback_data, 1);
 		cb_data->desktop_file_id = g_strdup_printf("%s.desktop", package_name);
 		cb_data->desktop_entry = g_string_free(desktop_entry, FALSE);
