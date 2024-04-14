@@ -1,5 +1,6 @@
 package android.app;
 
+import android.content.pm.ConfigurationInfo;
 import java.util.List;
 
 public class ActivityManager {
@@ -17,8 +18,12 @@ public class ActivityManager {
 		public long availMem = 10000;
 	}
 
-	public void getMemoryInfo (MemoryInfo outInfo)
+	public void getMemoryInfo(MemoryInfo outInfo)
 	{
 		outInfo = new MemoryInfo();
+	}
+
+	public ConfigurationInfo getDeviceConfigurationInfo() {
+		return new ConfigurationInfo();
 	}
 }

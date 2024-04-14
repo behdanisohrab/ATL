@@ -78,6 +78,7 @@ public class ConfigurationInfo {
 	public int reqGlEsVersion;
 
 	public ConfigurationInfo() {
+		reqGlEsVersion = 0x00030000;
 	}
 
 	public ConfigurationInfo(ConfigurationInfo orig) {
