@@ -23,7 +23,6 @@ public class Window {
 		public boolean onMenuOpened(int featureId, Menu menu);
 	}
 
-	// FIXME private
 	public long native_window;
 	public View contentView;
 
@@ -99,5 +98,7 @@ public class Window {
 
 	public void setNavigationBarColor(int color) {}
 
-	public void setFormat (int format) {}
+	public void setFormat(int format) {}
+
+	public void setLayout(int dummy, int dummy2) {}
 }

@@ -1261,7 +1261,7 @@ public final class Bitmap {
 	 * it will return true by default.
 	 */
 	public final boolean hasAlpha() {
-		return nativeHasAlpha(mNativeBitmap);
+		return true; // we only support ARGB_8888
 	}
 
 	/**
@@ -1637,7 +1637,6 @@ public final class Bitmap {
 							int[] offsetXY);
 
 	private static native void nativePrepareToDraw(int nativeBitmap);
-	private static native boolean nativeHasAlpha(int nativeBitmap);
 	private static native void nativeSetAlphaAndPremultiplied(int nBitmap, boolean hasAlpha,
 								  boolean isPremul);
 	private static native boolean nativeHasMipMap(int nativeBitmap);

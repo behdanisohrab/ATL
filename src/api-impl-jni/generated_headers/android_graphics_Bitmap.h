@@ -197,14 +197,6 @@ JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativePrepareToDraw
 
 /*
  * Class:     android_graphics_Bitmap
- * Method:    nativeHasAlpha
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_android_graphics_Bitmap_nativeHasAlpha
-  (JNIEnv *, jclass, jint);
-
-/*
- * Class:     android_graphics_Bitmap
  * Method:    nativeSetAlphaAndPremultiplied
  * Signature: (IZZ)V
  */
