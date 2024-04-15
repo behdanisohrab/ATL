@@ -7,14 +7,8 @@
 
 #include <glib.h>
 
+#include "../libandroid/looper.h"
 #include "generated_headers/android_os_MessageQueue.h"
-
-/* TODO put these in a header */
-typedef void ALooper;
-ALooper * ALooper_prepare(void);
-void ALooper_wake(ALooper *looper);
-bool ALooper_isPolling(ALooper *looper);
-int ALooper_pollOnce(int timeoutMillis, int* outFd, int* outEvents, void** outData);
 
 struct native_message_queue {
 	ALooper *looper;
@@ -40,7 +34,7 @@ JNIEXPORT jlong JNICALL Java_android_os_MessageQueue_nativeInit(JNIEnv *env, jcl
 	struct native_message_queue *message_queue = malloc(sizeof(struct native_message_queue));
 
 	message_queue->in_callback = false;
-	message_queue->looper = ALooper_prepare();
+	message_queue->looper = ALooper_prepare(0);
 	message_queue->is_main_thread = g_thread_self() == main_thread_id;
 
 	return _INTPTR(message_queue);

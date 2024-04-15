@@ -2,7 +2,8 @@
 #include <stddef.h>
 #include <stdio.h>
 
-typedef void ALooper;
+#include "looper.h"
+
 typedef int (*Looper_callbackFunc)(int fd, int events, void* data);
 
 // dummy strong pointer class
