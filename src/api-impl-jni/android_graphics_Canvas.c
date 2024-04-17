@@ -107,7 +107,7 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate_1and_1transla
 
 }
 
-JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawPath(JNIEnv *env, jclass class, jlong skia_canvas, jlong path_ptr, long skia_paint)
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawPath(JNIEnv *env, jclass class, jlong skia_canvas, jlong path_ptr, jlong skia_paint)
 {
 	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
 	sk_path_t *path = (sk_path_t *)_PTR(path_ptr);
