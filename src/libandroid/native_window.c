@@ -245,6 +245,7 @@ static void on_resize(GtkWidget* self, gint width, gint height, EGLNativeWindowT
 	}
 }
 
+extern GThread *main_thread_id;
 ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 {
 	int width;
@@ -265,6 +266,8 @@ ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 	GtkWidget *window = GTK_WIDGET(gtk_widget_get_native(surface_view_widget));
 	while( (width = gtk_widget_get_width(surface_view_widget)) == 0 ) {
 		// FIXME: UGLY: this loop waits until the SurfaceView widget gets mapped
+		if(g_thread_self() == main_thread_id)
+			g_main_context_iteration(g_main_context_default(), false);
 	}
 	height = gtk_widget_get_height(surface_view_widget);
 

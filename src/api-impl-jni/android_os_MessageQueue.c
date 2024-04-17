@@ -16,7 +16,7 @@ struct native_message_queue {
 	bool is_main_thread;
 };
 
-static GThread *main_thread_id;
+GThread *main_thread_id;
 
 void prepare_main_looper(JNIEnv* env) {
 	main_thread_id = g_thread_self();
