@@ -42,7 +42,7 @@ public class ImageView extends View {
 			return;
 		}
 		bitmap = BitmapFactory.decodeResource(Context.this_application.getResources(), resid);
-		native_setPixbuf(bitmap.pixbuf);
+		native_setPixbuf(widget, bitmap.pixbuf);
 	}
 	public void setAdjustViewBounds(boolean adjustViewBounds) {}
 
@@ -82,7 +82,7 @@ public class ImageView extends View {
 
 	public void setImageBitmap(Bitmap bitmap) {
 		if (bitmap != null)
-			native_setPixbuf(bitmap.pixbuf);
+			native_setPixbuf(widget, bitmap.pixbuf);
 	}
 
 	/**
@@ -168,7 +168,7 @@ public class ImageView extends View {
 
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
-	protected native void native_setPixbuf(long pixbuf);
+	protected native void native_setPixbuf(long widget, long pixbuf);
 	protected native void native_setDrawable(long widget, long paintable);
 	protected native void native_setScaleType(long widget, int scale_type);
 }

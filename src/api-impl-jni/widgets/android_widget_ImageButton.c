@@ -19,12 +19,10 @@ JNIEXPORT jlong JNICALL Java_android_widget_ImageButton_native_1constructor(JNIE
 	return _INTPTR(button);
 }
 
-JNIEXPORT void JNICALL Java_android_widget_ImageButton_native_1setPixbuf(JNIEnv *env, jobject this, jlong pixbuf_ptr)
+JNIEXPORT void JNICALL Java_android_widget_ImageButton_native_1setPixbuf(JNIEnv *env, jobject this, jlong widget_ptr, jlong pixbuf_ptr)
 {
-	GtkButton *button = _PTR(_GET_LONG_FIELD(this, "widget"));
-	GtkWidget *image = gtk_button_get_child(GTK_BUTTON(button));
-	GdkPixbuf *pixbuf = _PTR(pixbuf_ptr);
-	gtk_picture_set_pixbuf(GTK_PICTURE(image), pixbuf);
+	GdkPaintable *paintable = GDK_PAINTABLE(gdk_texture_new_for_pixbuf(_PTR(pixbuf_ptr)));
+	Java_android_widget_ImageButton_native_1setDrawable(env, this, widget_ptr, _INTPTR(paintable));
 }
 
 struct touch_callback_data {
@@ -65,7 +63,7 @@ JNIEXPORT void JNICALL Java_android_widget_ImageButton_native_1setOnClickListene
 
 JNIEXPORT void JNICALL Java_android_widget_ImageButton_native_1setDrawable(JNIEnv *env, jobject this, jlong widget_ptr, jlong paintable_ptr)
 {
-	GtkButton *button = _PTR(_GET_LONG_FIELD(this, "widget"));
+	GtkButton *button = _PTR(widget_ptr);
 	GtkPicture *picture = GTK_PICTURE(gtk_button_get_child(GTK_BUTTON(button)));
 	GdkPaintable *paintable = _PTR(paintable_ptr);
 	gtk_picture_set_paintable(picture, paintable);

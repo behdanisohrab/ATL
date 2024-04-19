@@ -210,10 +210,10 @@ JNIEXPORT jlong JNICALL Java_android_widget_ImageView_native_1constructor
 /*
  * Class:     android_widget_ImageView
  * Method:    native_setPixbuf
- * Signature: (J)V
+ * Signature: (JJ)V
  */
 JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1setPixbuf
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jobject, jlong, jlong);
 
 /*
  * Class:     android_widget_ImageView
