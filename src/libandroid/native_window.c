@@ -578,7 +578,7 @@ struct XrGraphicsBindingOpenGLESAndroidKHR {
 
 XrResult bionic_xrCreateSession(XrInstance instance, XrSessionCreateInfo *createInfo, XrSession *session)
 {
-	struct XrGraphicsBindingOpenGLESAndroidKHR *android_bind = createInfo->next;
+	struct XrGraphicsBindingOpenGLESAndroidKHR *android_bind = (struct XrGraphicsBindingOpenGLESAndroidKHR *)createInfo->next;
 	XrGraphicsBindingEGLMNDX egl_bind = {XR_TYPE_GRAPHICS_BINDING_EGL_MNDX};
 
 	if (android_bind->type == XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR) {
@@ -602,7 +602,7 @@ XrResult bionic_xrGetInstanceProperties(XrInstance instance, XrInstancePropertie
 	XrResult ret = xr_lazy_call("xrGetInstanceProperties", instance, instanceProperties);
 
 	strncat(instanceProperties->runtimeName, " (With ATL meta-layer)",
-		XR_MAX_RUNTIME_NAME_SIZE - 1 - strlen(instanceProperties->runtimeName));
+	        XR_MAX_RUNTIME_NAME_SIZE - 1 - strlen(instanceProperties->runtimeName));
 
 	return ret;
 }
@@ -620,10 +620,9 @@ XrResult bionic_xrCreateInstance(XrInstanceCreateInfo *createInfo, XrInstance *i
 		"XR_EXT_local_floor",
 	};
 
-	char **old_names = createInfo->enabledExtensionNames, **new_names;
+	const char * const*old_names = createInfo->enabledExtensionNames;
+	const char **new_names;
 	int new_count = createInfo->enabledExtensionCount + ARRRAY_SIZE(extra_exts);
-
-	printf("eee xrCreateInstance\n");
 
 	//FIXME: Leak?
 	new_names = malloc(sizeof(*new_names) * new_count);
@@ -647,12 +646,9 @@ XrResult bionic_xrCreateInstance(XrInstanceCreateInfo *createInfo, XrInstance *i
 	return xr_lazy_call("xrCreateInstance", createInfo, instance);
 }
 
-XrResult bionic_xrCreateReferenceSpace(
-    XrSession                                   session,
-    const XrReferenceSpaceCreateInfo*           createInfo,
-    XrSpace*                                    space)
+XrResult bionic_xrCreateReferenceSpace(XrSession session, const XrReferenceSpaceCreateInfo *createInfo, XrSpace *space)
 {
-	fprintf(stderr, "xrCreateReferenceSpace(s=0x%x, info={rs_type=%d})\n", session, createInfo->referenceSpaceType);
+	fprintf(stderr, "xrCreateReferenceSpace(s=0x%w64x, info={rs_type=%d})\n", (uint64_t)session, createInfo->referenceSpaceType);
 
 	//FIXME: this is sad for oculus refspace extension it assumes we have...
 	if (createInfo->referenceSpaceType > 100)
@@ -684,7 +680,7 @@ struct xr_proc_override {
 	PFN_xrVoidFunction *func;
 };
 
-#define XR_PROC_BIONIC(name) {#name, bionic_ ## name }
+#define XR_PROC_BIONIC(name) {#name, (void (**)(void))bionic_ ## name }
 
 /* Please keep the alphabetical order */
 static const struct xr_proc_override xr_proc_override_tbl[] = {
@@ -700,10 +696,12 @@ XrResult bionic_xrGetInstanceProcAddr(XrInstance instance, const char *name, PFN
 	printf("xrGetInstanceProcAddr(%s)\n", name);
 
 	struct xr_proc_override *match = bsearch(name, xr_proc_override_tbl,
-			ARRRAY_SIZE(xr_proc_override_tbl), sizeof(xr_proc_override_tbl[0]), strcmp);
+	                                         ARRRAY_SIZE(xr_proc_override_tbl),
+	                                         sizeof(xr_proc_override_tbl[0]),
+	                                         (int (*)(const void *, const void *))strcmp);
 
 	if (match) {
-		*func = match->func;
+		*func = (PFN_xrVoidFunction)match->func;
 		return XR_SUCCESS;
 	}
 

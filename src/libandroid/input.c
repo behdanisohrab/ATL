@@ -5,6 +5,8 @@
 
 #include <gtk/gtk.h>
 
+#include "looper.h"
+
 enum {
 	AINPUT_EVENT_TYPE_KEY = 1,
 	AINPUT_EVENT_TYPE_MOTION = 2,
@@ -162,7 +164,7 @@ struct AInputEvent fixme_ugly_current_event;
 
 static inline void make_touch_event(GdkEvent* event, GtkEventControllerLegacy* event_controller, struct AInputEvent *ainput_event)
 {
-	GtkWidget *window = gtk_event_controller_get_widget(event_controller);
+	GtkWidget *window = gtk_event_controller_get_widget(GTK_EVENT_CONTROLLER(event_controller));
 	GtkWidget *child;
 
 	gdk_event_get_position(event, &ainput_event->x, &ainput_event->y);
@@ -210,7 +212,12 @@ static gboolean on_event(GtkEventControllerLegacy* self, GdkEvent* event, int in
 			make_touch_event(event, self, &ainput_event);
 			write(input_queue_pipe_fd, &ainput_event, sizeof(struct AInputEvent));
 			break;
+		default:
+			return false;
+			break;
 	}
+
+	return true;
 }
 
 // FIXME put this in a header file
@@ -222,8 +229,9 @@ struct input_queue {
 void AInputQueue_attachLooper(struct input_queue* queue, struct ALooper* looper, int ident, Looper_callbackFunc callback, void* data)
 {
 	struct android_poll_source *poll_source = (struct android_poll_source *)data;
-	printf("AInputQueue_attachLooper called: queue: %p, looper: %p, ident: %d, callback %p, data: %p, process_func: %p\n", queue, looper, ident, callback, poll_source, poll_source->process);
-
+	//printf("AInputQueue_attachLooper called: queue: %p, looper: %p, ident: %d, callback %p, data: %p, process_func: %p\n", queue, looper, ident, callback, poll_source, poll_source ? poll_source->process : 0);
+	if (poll_source == NULL)
+		return;
 	int input_queue_pipe[2];
 	if (pipe(input_queue_pipe)) {
 		fprintf(stderr, "could not create pipe: %s", strerror(errno));
@@ -231,7 +239,7 @@ void AInputQueue_attachLooper(struct input_queue* queue, struct ALooper* looper,
 	}
 	fcntl(input_queue_pipe[0], F_SETFL, O_NONBLOCK);
 	ALooper_addFd(looper, input_queue_pipe[0], ident, (1 << 0)/*? ALOOPER_EVENT_INPUT*/, callback, data);
-	g_signal_connect(queue->controller, "event", G_CALLBACK(on_event), (gpointer)input_queue_pipe[1]);
+	g_signal_connect(queue->controller, "event", G_CALLBACK(on_event), GINT_TO_POINTER(input_queue_pipe[1]));
 	queue->fd = input_queue_pipe[0];
 }
 
@@ -255,7 +263,7 @@ void AInputQueue_finishEvent(AInputQueue* queue, struct AInputEvent* event, int 
 	// should we do something here?
 }
 
-void AKeyEvent_getKeyCode (struct AInputEvent *event)
+int32_t AKeyEvent_getKeyCode(struct AInputEvent *event)
 {
 	/*
 	 * TODO: Minecraft PE misuses this function on an event

@@ -411,10 +411,9 @@ JNIEXPORT void JNICALL Java_android_content_res_AssetManager_setConfiguration(
 JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_list(JNIEnv *env, jobject this, jstring _path)
 {
 	DIR *d;
-	int fd;
 	struct dirent *dir;
 
-	char* path_rel = _CSTRING(_path);
+	const char* path_rel = _CSTRING(_path);
 	char *app_data_dir = get_app_data_dir();
 	char *path_abs = malloc(strlen(app_data_dir) + strlen(ASSET_DIR) + strlen(path_rel) + 1);
 
@@ -423,7 +422,7 @@ JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_list(JNIEnv
 	strcat(path_abs, path_rel);
 
 	d = opendir(path_abs);
-	
+
 	GArray *assets = g_array_new(false, false, sizeof(const char *));
 	int i = 0;
 	if (d)
@@ -436,15 +435,15 @@ JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_list(JNIEnv
 		}
 		closedir(d);
 	}
-	
+
 	jobjectArray array = (*env)->NewObjectArray(env, assets->len, (*env)->FindClass(env, "java/lang/String"), NULL);
 	for (i = 0; i < assets->len; i++)
 	{
 		const char *asset = g_array_index(assets, const char *, i);
-		(*env)->SetObjectArrayElement(env, array, i, (*env)->NewString(env, asset, strlen(asset)));
+		(*env)->SetObjectArrayElement(env, array, i, (*env)->NewStringUTF(env, asset));
 	}
 
 	g_array_free(assets, TRUE);
-	
+
 	return array;
 }
