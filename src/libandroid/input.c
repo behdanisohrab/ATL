@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -173,8 +174,15 @@ static inline void make_touch_event(GdkEvent* event, GtkEventControllerLegacy* e
 	// apps expect it to start at the top left of the area where child widgets get placed, so that
 	// the top left of the window is the same as the top left of a single widget filling the entire window
 	// while it's quite hacky, the following should realistically work for most if not all cases
-	if(child = gtk_window_get_child(GTK_WINDOW(window)))
-		gtk_widget_translate_coordinates(window, child, ainput_event->x, ainput_event->y, &ainput_event->x, &ainput_event->y);
+	if((child = gtk_window_get_child(GTK_WINDOW(window)))) {
+		int ret;
+		graphene_point_t p;
+		ret = gtk_widget_compute_point(window, child, &GRAPHENE_POINT_INIT(ainput_event->x, ainput_event->y), &p);
+		assert(ret);
+
+		ainput_event->x = p.x;
+		ainput_event->y = p.y;
+	}
 
 	switch(gdk_event_get_event_type(event)) {
 		case GDK_BUTTON_PRESS:

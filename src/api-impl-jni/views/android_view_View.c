@@ -1,5 +1,7 @@
-#include <gtk/gtk.h>
+#include <assert.h>
 #include <stdio.h>
+
+#include <gtk/gtk.h>
 
 #include "../defines.h"
 #include "../util.h"
@@ -51,12 +53,20 @@ static bool call_ontouch_callback(int action, double x, double y, struct touch_c
 }
 static void gdk_event_get_widget_relative_position(GdkEvent *event, GtkWidget *widget, double *x, double *y)
 {
+	int ret;
+
+	graphene_point_t p;
 	double off_x;
 	double off_y;
+
 	gdk_event_get_position(event, x, y);
 	GtkWidget *window = GTK_WIDGET(gtk_widget_get_native(widget));
 	gtk_native_get_surface_transform(GTK_NATIVE(window), &off_x, &off_y);
-	gtk_widget_translate_coordinates(window, widget, *x - off_x, *y - off_y, x, y);
+	ret = gtk_widget_compute_point(window, widget, &GRAPHENE_POINT_INIT(*x - off_x, *y - off_y), &p);
+	assert(ret);
+
+	*x = p.x;
+	*y = p.y;
 }
 
 // TODO: find a way to reconcile this with libandroid/input.c?
@@ -439,10 +449,18 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1requestLayout(JNIEnv *env,
 	gtk_widget_queue_resize(widget);
 }
 
-// FIXME: this will probably behave unfortunately if called multiple times
+/* we kinda need per-widget css */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 JNIEXPORT void JNICALL Java_android_view_View_setBackgroundColor(JNIEnv *env, jobject this, jint color)
 {
 	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
+
+	GtkStyleContext *style_context = gtk_widget_get_style_context(widget);
+
+	GtkCssProvider *old_provider = g_object_get_data(G_OBJECT(widget), "background_color_style_provider");
+	if(old_provider)
+		gtk_style_context_remove_provider(style_context, GTK_STYLE_PROVIDER(old_provider));
 
 	GtkCssProvider *css_provider = gtk_css_provider_new();
 
@@ -450,8 +468,10 @@ JNIEXPORT void JNICALL Java_android_view_View_setBackgroundColor(JNIEnv *env, jo
 	gtk_css_provider_load_from_string(css_provider, css_string);
 	g_free(css_string);
 
-	gtk_style_context_add_provider(gtk_widget_get_style_context(widget), GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_style_context_add_provider(style_context, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	g_object_set_data(G_OBJECT(widget), "background_color_style_provider", css_provider);
 }
+#pragma GCC diagnostic pop
 
 JNIEXPORT void JNICALL Java_android_view_View_native_1setBackgroundDrawable(JNIEnv *env, jobject this, jlong widget_ptr, jlong paintable_ptr) {
 	GtkWidget *widget = GTK_WIDGET(_PTR(widget_ptr));

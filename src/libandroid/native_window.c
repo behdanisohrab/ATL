@@ -44,6 +44,7 @@
 #define XR_USE_PLATFORM_EGL
 #include <openxr/openxr_platform.h>
 
+#include <assert.h>
 #include <dlfcn.h>
 
 #include <jni.h>
@@ -251,8 +252,9 @@ ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 	int width;
 	int height;
 
-	double pos_x;
-	double pos_y;
+	int ret;
+
+	graphene_point_t pos;
 	double off_x;
 	double off_y;
 
@@ -273,14 +275,15 @@ ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 
 
 	// get position of the SurfaceView widget wrt the toplevel window
-	gtk_widget_translate_coordinates(surface_view_widget, window, 0, 0, &pos_x, &pos_y);
+	ret = gtk_widget_compute_point(surface_view_widget, window, &GRAPHENE_POINT_INIT(0, 0), &pos);
+	assert(ret);
 	// compensate for offset between the widget coordinates and the surface coordinates
 	gtk_native_get_surface_transform(GTK_NATIVE(window), &off_x, &off_y);
-	pos_x += off_x;
-	pos_y += off_y;
+	pos.x += off_x;
+	pos.y += off_y;
 
 	printf("XXXXX: SurfaceView widget: %p (%s), width: %d, height: %d\n", surface_view_widget, gtk_widget_get_name(surface_view_widget), width, height);
-	printf("XXXXX: SurfaceView widget: x: %lf, y: %lf\n", pos_x, pos_y);
+	printf("XXXXX: SurfaceView widget: x: %lf, y: %lf\n", pos.x, pos.y);
 	printf("XXXXX: native offset: x: %lf, y: %lf\n", off_x, off_y);
 
 	struct ANativeWindow *native_window = calloc(1, sizeof(struct ANativeWindow));
@@ -306,7 +309,7 @@ ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 
 		struct wl_subsurface *subsurface = wl_subcompositor_get_subsurface(wl_subcompositor, wayland_surface, toplevel_surface);
 		wl_subsurface_set_desync(subsurface);
-		wl_subsurface_set_position(subsurface, pos_x, pos_y);
+		wl_subsurface_set_position(subsurface, pos.x, pos.y);
 
 		struct wl_region *empty_region = wl_compositor_create_region(wl_compositor);
 		wl_surface_set_input_region(wayland_surface, empty_region);

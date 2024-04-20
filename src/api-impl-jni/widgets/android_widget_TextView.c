@@ -47,6 +47,9 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setText(JNIEnv *env,
 		(*env)->ReleaseStringUTFChars(env, charseq, text);
 }
 
+/* we kinda need per-widget css */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setTextColor(JNIEnv *env, jobject this, jint color)
 {
 	GtkWidget *widget = GTK_WIDGET(box_get_label(env, _PTR(_GET_LONG_FIELD(this, "widget"))));
@@ -66,6 +69,7 @@ JNIEXPORT void JNICALL Java_android_widget_TextView_native_1setTextColor(JNIEnv 
 	gtk_style_context_add_provider(style_context, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	g_object_set_data(G_OBJECT(widget), "color_style_provider", css_provider);
 }
+#pragma GCC diagnostic pop
 
 JNIEXPORT void JNICALL Java_android_widget_TextView_setTextSize(JNIEnv *env, jobject this, jfloat size)
 {
