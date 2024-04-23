@@ -7,6 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef android_graphics_GskCanvas_HAS_ALPHA_LAYER_SAVE_FLAG
+#define android_graphics_GskCanvas_HAS_ALPHA_LAYER_SAVE_FLAG 4L
 /*
  * Class:     android_graphics_GskCanvas
  * Method:    native_drawBitmap

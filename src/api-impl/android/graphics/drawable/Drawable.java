@@ -15,8 +15,10 @@ import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.content.res.Resources.Theme;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -27,6 +29,8 @@ public class Drawable {
 		public void scheduleDrawable(Drawable drawable, Runnable runnable, long time);
 		public void unscheduleDrawable(Drawable drawable, Runnable runnable);
 	}
+
+	static final PorterDuff.Mode DEFAULT_TINT_MODE = PorterDuff.Mode.SRC_IN;
 
 	private Rect mBounds = new Rect();
 	private int[] mStateSet = new int[0];
@@ -140,9 +144,24 @@ public class Drawable {
 	public int getIntrinsicWidth() {return 0;}
 	public int getIntrinsicHeight() {return 0;}
 
-	public void setTintList (ColorStateList tint) {}
+	public void setTintList(ColorStateList tint) {}
 
-	public void setTint(int tint) {}
+	public void setTint(int tint) {
+		System.out.println("setTint("+tint+")");
+		setTintList(ColorStateList.valueOf(tint));
+	}
+
+	PorterDuffColorFilter updateTintFilter(PorterDuffColorFilter tintFilter, ColorStateList tint, PorterDuff.Mode tintMode) {
+		System.out.println("updateTintFilter("+tintFilter+", "+tint+", "+tintMode+")");
+		if (tint == null || tintMode == null) {
+			return null;
+		}
+		final int color = tint.getColorForState(getState(), Color.TRANSPARENT);
+		if (tintFilter == null || tintFilter.getColor() != color || tintFilter.getMode() != tintMode) {
+			return new PorterDuffColorFilter(color, tintMode);
+		}
+		return tintFilter;
+	}
 
 	public boolean isStateful() {
 		return false;

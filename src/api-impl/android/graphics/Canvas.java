@@ -1,6 +1,8 @@
 package android.graphics;
 
 public class Canvas {
+	public static final int HAS_ALPHA_LAYER_SAVE_FLAG = (1 << 2);
+
 	public long skia_canvas;
 	public long widget;
 
