@@ -16,9 +16,13 @@
 
 package android.content.pm;
 
+import android.content.Context;
+import android.util.TypedValue;
+
 import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
 import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
 import com.reandroid.arsc.chunk.xml.ResXmlElement;
+
 import java.io.InputStream;
 import java.io.IOException;
 
@@ -264,8 +268,32 @@ public class PackageInfo {
 				continue;
 			}
 
-			System.out.println("PackageInfo(): applicationInfo.metaData.putString("+name.getValueAsString()+", "+value.getValueAsString()+")");
-			applicationInfo.metaData.putString(name.getValueAsString(), value.getValueAsString());
+			String metadata_name = name.getValueAsString();
+			TypedValue metadata_value = new TypedValue();
+			int data = value.getData();
+			if(data == -1)
+				continue;
+
+			Context.r.getValue(data, metadata_value, true);
+
+			switch(metadata_value.type) {
+				case TypedValue.TYPE_STRING:
+					System.out.println("PackageInfo(): applicationInfo.metaData.putString("+metadata_name+", "+metadata_value.string+")");
+					applicationInfo.metaData.putString(metadata_name, value.getValueAsString());
+					break;
+				case TypedValue.TYPE_INT_BOOLEAN:
+					System.out.println("PackageInfo(): applicationInfo.metaData.putBoolean("+metadata_name+", "+metadata_value.data != 0+")");
+					applicationInfo.metaData.putBoolean(metadata_name, metadata_value.data != 0);
+					break;
+				case TypedValue.TYPE_INT_DEC:
+				case TypedValue.TYPE_INT_HEX:
+					System.out.println("PackageInfo(): applicationInfo.metaData.putInt("+metadata_name+", "+metadata_value.data+")");
+					applicationInfo.metaData.putInt(metadata_name, metadata_value.data);
+					break;
+				default:
+					System.out.println("PackageInfo(): metaData: "+metadata_name+": type "+metadata_value.type+" not handled!");
+					break;
+			}
 		}
  
 		System.out.println("PackageInfo(): packageName: >"+packageName+"<, versionCode: >"+versionCode+"<, versionName: >"+versionName+"<");
