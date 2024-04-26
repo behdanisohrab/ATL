@@ -22,8 +22,7 @@ import android.icu.text.PluralRules;
 import android.graphics.drawable.ColorDrawable;
 // import android.graphics.Movie;
 import android.graphics.drawable.Drawable;
-// import android.graphics.drawable.ColorDrawable;
-// import android.graphics.drawable.Drawable.ConstantState;
+import android.graphics.drawable.Drawable.ConstantState;
 import android.os.Build;
 import android.os.Bundle;
 // import android.os.IBinder;
@@ -50,8 +49,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 class Movie {}
-
-class ConstantState {}
 
 class IBinder {}
 

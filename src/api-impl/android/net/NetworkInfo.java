@@ -27,4 +27,8 @@ public class NetworkInfo {
 	public boolean isConnected() {
 		return state == State.CONNECTED;
 	}
+
+	public boolean isConnectedOrConnecting() {
+		return false;
+	}
 }

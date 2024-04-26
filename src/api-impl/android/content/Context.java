@@ -67,13 +67,14 @@ public class Context extends Object {
 	public static final String MEDIA_ROUTER_SERVICE = "media_router";
 	public static final String WINDOW_SERVICE = "window";
 	public static final String INPUT_METHOD_SERVICE = "input";
+        public static final String POWER_SERVICE = "power";
 	public static AndroidManifestBlock manifest = null;
 
 	public static Vibrator vibrator;
 
 	static AssetManager assets;
 	static DisplayMetrics dm;
-	protected static Resources r;
+	public static Resources r;
 	static ApplicationInfo application_info;
 	static Resources.Theme theme;
 	private static Map<Class<? extends Service>,Service> runningServices = new HashMap<>();
@@ -353,6 +354,21 @@ public class Context extends Object {
 			prefs_dir = new File(getDataDirFile(), "shared_prefs");
 		}
 		return prefs_dir;
+	}
+
+	public File getDir(String name, int mode) {
+		File dir = new File(getFilesDir(), name);
+		if (!dir.exists()) {
+			if (!dir.mkdirs()) {
+				if (dir.exists()) {
+					// spurious failure; probably racing with another process for this app
+					return dir;
+				}
+				Slog.w(TAG, "Unable to create directory >" + dir.getPath() + "<");
+				return null;
+			}
+		}
+		return dir;
 	}
 
 	public File getFileStreamPath(String name) {

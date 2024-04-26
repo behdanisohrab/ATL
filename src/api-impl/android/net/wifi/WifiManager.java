@@ -16,4 +16,8 @@ public class WifiManager {
 	public WifiLock createWifiLock(int lockType, String tag) {
 		return new WifiLock();
 	}
+
+	public WifiInfo getConnectionInfo() {
+		return new WifiInfo();
+	}
 }

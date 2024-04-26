@@ -13,12 +13,23 @@ public class WebView extends View {
 		return new WebSettings();
 	}
 
-	public void setDownloadListener(DownloadListener downloadListener) {
-	}
+	public void setDownloadListener(DownloadListener downloadListener) {}
 
-	public void setScrollBarStyle(int scrollBarStyle) {
-	}
+	public void setScrollBarStyle(int scrollBarStyle) {}
 
-	public void setWebViewClient(WebViewClient webViewClient) {
-	}
+	public void setWebViewClient(WebViewClient webViewClient) {}
+
+	public void setVerticalScrollBarEnabled(boolean enabled) {}
+
+	public void addJavascriptInterface(Object dummy, String dummy2) {}
+
+	public void setWebChromeClient(WebChromeClient dummy) {}
+
+	public void removeAllViews() {}
+
+	public void destroy() {}
+
+	public void loadUrl(String url) {}
+
+	public void stopLoading() {}
 }

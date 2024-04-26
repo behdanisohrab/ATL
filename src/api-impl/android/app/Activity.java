@@ -466,6 +466,16 @@ public class Activity extends ContextWrapper implements Window.Callback {
 		return getSharedPreferences(getLocalClassName(), mode);
 	}
 
+	protected void onNewIntent(Intent intent) {}
+
+	public final Activity getParent() {
+		return null;
+	}
+
+	public boolean hasWindowFocus() {
+		return true; // FIXME?
+	}
+
 	private native void nativeFinish(long native_window);
 	public static native void nativeRecreateActivity(Activity activity);
 	public static native void nativeStartActivity(Activity activity);
