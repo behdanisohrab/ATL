@@ -271,10 +271,14 @@ public class PackageInfo {
 			String metadata_name = name.getValueAsString();
 			TypedValue metadata_value = new TypedValue();
 			int data = value.getData();
-			if(data == -1)
-				continue;
 
-			Context.r.getValue(data, metadata_value, true);
+			try {
+				Context.r.getValue(data, metadata_value, true);
+			} catch (android.content.res.Resources.NotFoundException e) {
+				System.out.println("PackageInfo(): error getting value for '"+metadata_name+"'");
+				e.printStackTrace();
+				continue;
+			}
 
 			switch(metadata_value.type) {
 				case TypedValue.TYPE_STRING:
