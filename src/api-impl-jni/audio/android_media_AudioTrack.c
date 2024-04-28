@@ -217,7 +217,7 @@ JNIEXPORT void JNICALL Java_android_media_AudioTrack_native_1play(JNIEnv *env, j
 /*--↑*/
 }
 
-JNIEXPORT jint JNICALL Java_android_media_AudioTrack_native_1write(JNIEnv *env, jobject this, jbyteArray audioData, jint offsetInBytes, jint frames_to_write)
+JNIEXPORT jint JNICALL Java_android_media_AudioTrack_native_1write(JNIEnv *env, jobject this, jbyteArray audio_data, jint offset_in_bytes, jint frames_to_write)
 {
 	int ret;
 
@@ -225,9 +225,9 @@ JNIEXPORT jint JNICALL Java_android_media_AudioTrack_native_1write(JNIEnv *env, 
 
 	snd_pcm_sframes_t frames_written;
 
-	jbyte *buffer = _GET_BYTE_ARRAY_ELEMENTS(audioData);
+	jbyte *buffer = _GET_BYTE_ARRAY_ELEMENTS(audio_data);
 
-	ret = frames_written = snd_pcm_writei(pcm_handle, buffer, frames_to_write);
+	ret = frames_written = snd_pcm_writei(pcm_handle, buffer + offset_in_bytes, frames_to_write);
 	if (ret < 0) {
 		if (ret == -EPIPE) {
 			printf("XRUN.\n");
@@ -239,7 +239,7 @@ JNIEXPORT jint JNICALL Java_android_media_AudioTrack_native_1write(JNIEnv *env, 
 
 //	printf("::::> tried to write %d frames, actually wrote %d frames.\n", frames_to_write, frames_written);
 
-	_RELEASE_BYTE_ARRAY_ELEMENTS(audioData, buffer);
+	_RELEASE_BYTE_ARRAY_ELEMENTS(audio_data, buffer);
 	return frames_written;
 }
 
@@ -253,4 +253,13 @@ JNIEXPORT void JNICALL Java_android_media_AudioTrack_native_1release(JNIEnv *env
 {
 	snd_pcm_t *pcm_handle = _PTR(_GET_LONG_FIELD(this, "pcm_handle"));
 	snd_pcm_close(pcm_handle);
+}
+
+JNIEXPORT jint JNICALL Java_android_media_AudioTrack_native_1getPlaybackHeadPosition(JNIEnv *env, jobject this)
+{
+	snd_pcm_t *pcm_handle = _PTR(_GET_LONG_FIELD(this, "pcm_handle"));
+	snd_pcm_sframes_t delay;
+	snd_pcm_delay(pcm_handle, &delay);
+
+	return delay;
 }

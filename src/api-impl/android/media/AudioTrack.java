@@ -6,6 +6,8 @@ public class AudioTrack {
 		void onPeriodicNotification(AudioTrack track);
 	}
 
+	public static final int ERROR_BAD_VALUE = -2; // basically EINVAL
+
 	public static final int PLAYSTATE_STOPPED = 1;
 	public static final int PLAYSTATE_PAUSED  = 2;
 	public static final int PLAYSTATE_PLAYING = 3;
@@ -67,7 +69,7 @@ public class AudioTrack {
 	}
 
 	public int setPositionNotificationPeriod(int periodInFrames) {
-		System.out.println("\n\n\nsetPositionNotificationPeriod(" + periodInFrames + "); called\n\n\n\n");
+		System.out.println("\n\nAudioTrack.nsetPositionNotificationPeriod(" + periodInFrames + "); called\n\n\n\n");
 		return 0; // SUCCESS
 	}
 
@@ -82,16 +84,16 @@ public class AudioTrack {
 	}
 
 	public void stop() {
-		System.out.println("calling stop(), how did this not get reported before DIDREEEEEEEEEEEEEEEEEEEEEEEEE\n");
+		System.out.println("STUB: AudioTrack.stop()\n");
 		playbackState = PLAYSTATE_STOPPED;
 	}
 
 	public void flush() {
-		System.out.println("calling flush(), how did this not get reported before DIDREEEEEEEEEEEEEEEEEEEEEEEEE\n");
+		System.out.println("STUB: AudioTrack.flush()\n");
 	}
 
 	public void release() {
-		System.out.println("calling release(), how did this not get reported before DIDREEEEEEEEEEEEEEEEEEEEEEEEE\n");
+		System.out.println("calling AudioTrack.release()\n");
 		native_release();
 	}
 
@@ -100,6 +102,14 @@ public class AudioTrack {
 	}
 
 	public int write(byte[] audioData, int offsetInBytes, int sizeInBytes) {
+		/* sanity check the parameters before calling native_write */
+		if ((audioData == null)
+		    || (offsetInBytes < 0) || (sizeInBytes < 0)
+		    || (offsetInBytes + sizeInBytes < 0)
+		    || (offsetInBytes + sizeInBytes > audioData.length)) {
+			return ERROR_BAD_VALUE;
+		}
+
 		int framesToWrite = sizeInBytes / channels / 2;  // 2 means PCM16
 		int ret = native_write(audioData, offsetInBytes, framesToWrite);
 		if (ret > 0) {
@@ -131,9 +141,10 @@ public class AudioTrack {
 	}
 
 	public int getPlaybackHeadPosition() {
-		return playbackHeadPosition;
+		return playbackHeadPosition - native_getPlaybackHeadPosition();
 	}
 
+	private native int native_getPlaybackHeadPosition();
 	public native void native_play();
 	public native void native_pause();
 	private native int native_write(byte[] audioData, int offsetInBytes, int sizeInBytes);

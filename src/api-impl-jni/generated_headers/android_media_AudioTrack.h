@@ -7,6 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef android_media_AudioTrack_ERROR_BAD_VALUE
+#define android_media_AudioTrack_ERROR_BAD_VALUE -2L
 #undef android_media_AudioTrack_PLAYSTATE_STOPPED
 #define android_media_AudioTrack_PLAYSTATE_STOPPED 1L
 #undef android_media_AudioTrack_PLAYSTATE_PAUSED
@@ -28,6 +30,14 @@ JNIEXPORT void JNICALL Java_android_media_AudioTrack_native_1constructor
  */
 JNIEXPORT jint JNICALL Java_android_media_AudioTrack_getMinBufferSize
   (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     android_media_AudioTrack
+ * Method:    native_getPlaybackHeadPosition
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_android_media_AudioTrack_native_1getPlaybackHeadPosition
+  (JNIEnv *, jobject);
 
 /*
  * Class:     android_media_AudioTrack
