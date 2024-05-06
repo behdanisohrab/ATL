@@ -43,6 +43,9 @@
 #include <openxr/openxr.h>
 #define XR_USE_PLATFORM_EGL
 #include <openxr/openxr_platform.h>
+#ifndef XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR_EXT
+#define XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR_EXT 1000426000
+#endif
 
 #include <assert.h>
 #include <dlfcn.h>
