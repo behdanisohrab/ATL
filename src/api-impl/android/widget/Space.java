@@ -8,12 +8,10 @@ public class Space extends View {
 
 	public Space(Context context) {
 		super(context);
-		haveCustomMeasure = false;
 	}
 
 	public Space(Context context, AttributeSet attributeSet) {
 		super(context, attributeSet);
-		haveCustomMeasure = false;
 	}
 
 }

@@ -10,12 +10,10 @@ public class ViewStub extends View {
 
 	public ViewStub(Context context) {
 		this(context, null, 0);
-		haveCustomMeasure = false;
 	}
 
 	public ViewStub(Context context, AttributeSet attributeSet) {
 		this(context, attributeSet, 0);
-		haveCustomMeasure = false;
 	}
 
 	public ViewStub(Context context, AttributeSet attributeSet, int defStyle) {

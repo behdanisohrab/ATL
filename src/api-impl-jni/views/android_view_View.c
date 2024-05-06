@@ -360,6 +360,7 @@ JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, 
 {
 	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 	GtkWidget *widget = g_object_new(java_widget_get_type(), NULL);
+	gtk_widget_set_layout_manager(widget, android_layout_new(_REF(this)));
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), widget);
 	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 
@@ -372,12 +373,6 @@ JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, 
 
 	/* this should better match default android behavior */
 	gtk_widget_set_overflow(wrapper, GTK_OVERFLOW_VISIBLE);
-
-	jmethodID measure_method = _METHOD(class, "onMeasure", "(II)V");
-	jmethodID layout_method = _METHOD(class, "onLayout", "(ZIIII)V");
-	if (measure_method != handle_cache.view.onMeasure || layout_method != handle_cache.view.onLayout) {
-		gtk_widget_set_layout_manager(widget, android_layout_new(_REF(this)));
-	}
 
 	if (_METHOD(_CLASS(this), "onGenericMotionEvent", "(Landroid/view/MotionEvent;)Z") != handle_cache.view.onGenericMotionEvent) {
 		GtkEventController *controller = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
