@@ -1638,6 +1638,7 @@ public final class MotionEvent extends InputEvent {
 		ev.coord_y = other.coord_y;
 		ev.raw_x = other.raw_x;
 		ev.raw_y = other.raw_y;
+		ev.eventTime = other.eventTime;
 		return ev;
 	}
 

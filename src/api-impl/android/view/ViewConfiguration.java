@@ -24,11 +24,11 @@ public class ViewConfiguration {
 	}
 
 	public static int getTapTimeout() {
-		return 0;
+		return 100;
 	}
 
 	public static int getLongPressTimeout() {
-		return 0;
+		return 400;
 	}
 
 	public int getScaledPagingTouchSlop(){
@@ -40,7 +40,7 @@ public class ViewConfiguration {
 	}
 
 	public static int getDoubleTapTimeout() {
-		return 0;
+		return 300;
 	}
 
 	public int getScaledDoubleTapSlop() {
