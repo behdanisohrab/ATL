@@ -19,9 +19,14 @@ struct _AndroidLayout {
 	jobject view;
 	int width;
 	int height;
+	int real_width;
+	int real_height;
+	gboolean needs_allocation;
 };
 
 GtkLayoutManager *android_layout_new(jobject view);
 void android_layout_set_params(AndroidLayout *layout, int width, int height);
+
+void widget_set_needs_allocation(GtkWidget *widget);
 
 #endif  // ANDROID_LAYOUT_H

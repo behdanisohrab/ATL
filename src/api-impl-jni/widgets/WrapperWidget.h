@@ -20,6 +20,9 @@ struct _WrapperWidget
 	jmethodID computeScroll_method;
 	int layout_width;
 	int layout_height;
+	int real_width;
+	int real_height;
+	gboolean needs_allocation;
 };
 
 struct _WrapperWidgetClass

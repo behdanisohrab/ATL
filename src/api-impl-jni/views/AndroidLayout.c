@@ -64,6 +64,10 @@ static void android_layout_allocate(GtkLayoutManager *layout_manager, GtkWidget 
 {
 	AndroidLayout *layout = ATL_ANDROID_LAYOUT(layout_manager);
 	JNIEnv *env = get_jni_env();
+	if (!width && !height) {
+		width = layout->real_width;
+		height = layout->real_height;
+	}
 
 	(*env)->CallVoidMethod(env, layout->view, handle_cache.view.layoutInternal, width, height);
 	if((*env)->ExceptionCheck(env))
@@ -107,4 +111,13 @@ void android_layout_set_params(AndroidLayout *layout, int width, int height)
 {
 	layout->width = width;
 	layout->height = height;
+}
+
+void widget_set_needs_allocation(GtkWidget *widget) {
+	if (ATL_IS_ANDROID_LAYOUT(gtk_widget_get_layout_manager(widget))) {
+		AndroidLayout *layout = ATL_ANDROID_LAYOUT(gtk_widget_get_layout_manager(widget));
+		if (!layout->needs_allocation && (layout->real_width || layout->real_height))
+			gtk_widget_size_allocate(widget, &(GtkAllocation){.x = 0, .y = 0, .width = layout->real_width, .height = layout->real_height}, 0);
+		layout->needs_allocation = true;
+	}
 }

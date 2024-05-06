@@ -8,6 +8,7 @@
 #include "../generated_headers/android_view_View.h"
 
 #include "WrapperWidget.h"
+#include "src/api-impl-jni/views/AndroidLayout.h"
 
 G_DEFINE_TYPE(WrapperWidget, wrapper_widget, GTK_TYPE_WIDGET)
 
@@ -68,6 +69,10 @@ void wrapper_widget_measure(GtkWidget *widget, GtkOrientation orientation, int f
 void wrapper_widget_allocate(GtkWidget *widget, int width, int height, int baseline)
 {
 	WrapperWidget *wrapper = WRAPPER_WIDGET(widget);
+	if (!width && !height) {
+		width = wrapper->real_width;
+		height = wrapper->real_height;
+	}
 	GtkAllocation allocation = {
 		.x = 0,
 		.y = 0,
@@ -89,7 +94,21 @@ void wrapper_widget_allocate(GtkWidget *widget, int width, int height, int basel
 		allocation.y = -(*env)->CallIntMethod(env, wrapper->jobj, handle_cache.view.getScrollY);
 	}
 
-	gtk_widget_size_allocate(wrapper->child, &allocation, baseline);
+	if (ATL_IS_ANDROID_LAYOUT(gtk_widget_get_layout_manager(wrapper->child))) {
+		AndroidLayout *layout = ATL_ANDROID_LAYOUT(gtk_widget_get_layout_manager(wrapper->child));
+		if (layout->real_width != width || layout->real_height != height) {
+			layout->real_width = width;
+			layout->real_height = height;
+			if (!layout->needs_allocation)
+				gtk_widget_queue_allocate(wrapper->child);
+		}
+		if (layout->needs_allocation)
+			gtk_widget_size_allocate(wrapper->child, &allocation, baseline);
+		else
+			gtk_widget_size_allocate(wrapper->child, &(GtkAllocation){.x = allocation.x, .y = allocation.y}, baseline);
+	} else {
+		gtk_widget_size_allocate(wrapper->child, &allocation, baseline);
+	}
 	if (wrapper->sk_area)
 		gtk_widget_size_allocate(wrapper->sk_area, &allocation, baseline);
 	if (wrapper->background)
@@ -184,6 +203,7 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 
 		g_signal_connect(controller, "released", G_CALLBACK(on_click), _REF(jobj));
 		gtk_widget_add_controller(wrapper->child, controller);
+		widget_set_needs_allocation(wrapper->child);
 	}
 }
 

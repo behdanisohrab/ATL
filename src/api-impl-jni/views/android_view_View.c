@@ -181,6 +181,10 @@ void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject o
 		gtk_widget_add_controller(widget, controller);
 		g_object_set_data(G_OBJECT(widget), "on_intercept_touch_listener", controller);
 	}
+	WrapperWidget *wrapper = WRAPPER_WIDGET(widget);
+	if (!wrapper->needs_allocation && (wrapper->layout_width || wrapper->layout_height))
+		gtk_widget_size_allocate(GTK_WIDGET(wrapper), &(GtkAllocation){.x = 0, .y = 0, .width = wrapper->layout_width, .height = wrapper->layout_height}, 0);
+	wrapper->needs_allocation = true;
 }
 
 JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener(JNIEnv *env, jobject this, jobject on_touch_listener)
@@ -214,6 +218,7 @@ JNIEXPORT void JNICALL Java_android_view_View_setOnClickListener(JNIEnv *env, jo
 	g_signal_connect(controller, "released", G_CALLBACK(on_click), callback_data); // the release completes the click, I guess?
 	gtk_widget_add_controller(widget, controller);
 	g_object_set_data(G_OBJECT(widget), "on_click_listener", controller);
+	widget_set_needs_allocation(widget);
 }
 
 JNIEXPORT jint JNICALL Java_android_view_View_getWidth(JNIEnv *env, jobject this)
@@ -225,6 +230,10 @@ JNIEXPORT jint JNICALL Java_android_view_View_getWidth(JNIEnv *env, jobject this
 	gtk_widget_get_allocation(widget, &alloc);
 	printf("widget size is currently %dx%d\n", alloc.width, alloc.height);
 */
+	if (ATL_IS_ANDROID_LAYOUT(gtk_widget_get_layout_manager(widget))) {
+		AndroidLayout *layout = ATL_ANDROID_LAYOUT(gtk_widget_get_layout_manager(widget));
+		return layout->real_width;
+	}
 	return gtk_widget_get_width(widget);
 }
 
@@ -232,6 +241,10 @@ JNIEXPORT jint JNICALL Java_android_view_View_getHeight(JNIEnv *env, jobject thi
 {
 	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
 
+	if (ATL_IS_ANDROID_LAYOUT(gtk_widget_get_layout_manager(widget))) {
+		AndroidLayout *layout = ATL_ANDROID_LAYOUT(gtk_widget_get_layout_manager(widget));
+		return layout->real_height;
+	}
 	return gtk_widget_get_height(widget);
 }
 
@@ -358,7 +371,7 @@ JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, 
 	(*env)->ReleaseStringUTFChars(env, nameObj, name);
 
 	/* this should better match default android behavior */
-	gtk_widget_set_overflow(wrapper, GTK_OVERFLOW_HIDDEN);
+	gtk_widget_set_overflow(wrapper, GTK_OVERFLOW_VISIBLE);
 
 	jmethodID measure_method = _METHOD(class, "onMeasure", "(II)V");
 	jmethodID layout_method = _METHOD(class, "onLayout", "(ZIIII)V");
@@ -437,9 +450,20 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1layout(JNIEnv *env, jobjec
 	GtkAllocation allocation = {
 		.x=l,
 		.y=t,
-		.width=r-l,
-		.height=b-t,
 	};
+	int width = r-l;
+	int height = b-t;
+	WrapperWidget *wrapper = WRAPPER_WIDGET(widget);
+	if (wrapper->real_width != width || wrapper->real_height != height) {
+		wrapper->real_width = width;
+		wrapper->real_height = height;
+		if (!wrapper->needs_allocation)
+			gtk_widget_queue_allocate(widget);
+	}
+	if (wrapper->needs_allocation) {
+		allocation.width = width;
+		allocation.height = height;
+	}
 	gtk_widget_size_allocate(widget, &allocation, -1);
 }
 
@@ -474,6 +498,7 @@ JNIEXPORT void JNICALL Java_android_view_View_setBackgroundColor(JNIEnv *env, jo
 
 	gtk_style_context_add_provider(style_context, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	g_object_set_data(G_OBJECT(widget), "background_color_style_provider", css_provider);
+	widget_set_needs_allocation(widget);
 }
 #pragma GCC diagnostic pop
 
