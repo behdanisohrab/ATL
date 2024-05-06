@@ -2,10 +2,14 @@ package android.view;
 
 import android.animation.Animator;
 import android.animation.TimeInterpolator;
+import android.os.Handler;
 
 public class ViewPropertyAnimator {
 
 	private View view;
+	private Animator.AnimatorListener listener;
+	private long startDelay;
+	private long duration;
 
 	public ViewPropertyAnimator(View view) {
 		this.view = view;
@@ -18,8 +22,7 @@ public class ViewPropertyAnimator {
 	}
 
 	public ViewPropertyAnimator setListener(Animator.AnimatorListener listener) {
-		if (listener != null)
-			listener.onAnimationEnd(new Animator());
+		this.listener = listener;
 		return this;
 	}
 
@@ -29,10 +32,12 @@ public class ViewPropertyAnimator {
 	}
 
 	public ViewPropertyAnimator setDuration(long duration) {
+		this.duration = duration;
 		return this;
 	}
 
-	public ViewPropertyAnimator setStartDelay(long duration) {
+	public ViewPropertyAnimator setStartDelay(long startDelay) {
+		this.startDelay = startDelay;
 		return this;
 	}
 
@@ -56,5 +61,14 @@ public class ViewPropertyAnimator {
 		return this;
 	}
 
-	public void start() {}
+	public void start() {
+		new Handler().postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				if (listener != null)
+					listener.onAnimationEnd(new Animator());
+			}
+		}, startDelay+duration);
+	}
 }
