@@ -117,6 +117,7 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 
 void icon_override(GtkWidget *window, GList *icon_list) {
 	GdkSurface *window_surface = gtk_native_get_surface(GTK_NATIVE(window));
+	// set app icon as window icon; this is a noop on Wayland because there is currently no way to set a window icon on Wayland
 	gdk_toplevel_set_icon_list(GDK_TOPLEVEL(window_surface), icon_list);
 }
 
@@ -382,7 +383,8 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	extract_from_apk("assets/", "assets/");
 	/* extract native libraries from apk*/
-	extract_from_apk("lib/" NATIVE_ARCH "/", "lib/");
+	if(!getenv("ATL_SKIP_NATIVES_EXTRACTION"))
+		extract_from_apk("lib/" NATIVE_ARCH "/", "lib/");
 
 	prepare_main_looper(env);
 
