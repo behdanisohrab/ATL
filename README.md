@@ -3,7 +3,7 @@
 ---
 
 dependencies on debian:
-`sudo apt install libglib2.0-dev libgtk-4-dev libasound2-dev libopenxr-dev libportal-dev libsqlite3-dev`
+`sudo apt install libglib2.0-dev libgtk-4-dev libasound2-dev libopenxr-dev libportal-dev libsqlite3-dev libcap-dev libavcodec-dev libdrm-dev libgudev-1.0-dev`
 
 dependencies you might have to build from source:
 - https://github.com/Mis012/skia/tree/with-patches-applied  
