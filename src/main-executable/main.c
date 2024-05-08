@@ -74,44 +74,57 @@ char *construct_classpath(char *prefix, char **cp_array, size_t len)
 
 #define JDWP_ARG "-XjdwpOptions:transport=dt_socket,server=y,suspend=y,address="
 
-JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, char *framework_res_apk, char *api_impl_natives_dir, char *app_lib_dir) {
+JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, char *framework_res_apk, char *api_impl_natives_dir, char *app_lib_dir, char **extra_jvm_options) {
 	JavaVM* jvm;
 	JNIEnv* env;
-	JavaVMInitArgs args;
-	JavaVMOption options[6];
-	args.version = JNI_VERSION_1_6;
-	args.nOptions = 4;
+	JavaVMInitArgs args = {
+		.version = JNI_VERSION_1_6,
+		.nOptions = 3,
+	};
+	JavaVMOption *options;
+
+	int option_counter = args.nOptions;
+
 	char jdwp_option_string[sizeof(JDWP_ARG) + 5] = JDWP_ARG; // 5 chars for port number, NULL byte is counted by sizeof
 
 	const char* jdwp_port = getenv("JDWP_LISTEN");
+
 	if(jdwp_port)
 		args.nOptions += 2;
+	if(extra_jvm_options)
+		args.nOptions += g_strv_length(extra_jvm_options);
+	options = malloc(sizeof(JavaVMOption) * args.nOptions);
+
 
 	if(getenv("RUN_FROM_BUILDDIR")) {
 		options[0].optionString = construct_classpath("-Djava.library.path=", (char *[]){"./", app_lib_dir}, 2);
 	} else {
-		printf(">>%s<<\n", api_impl_natives_dir);
 		options[0].optionString = construct_classpath("-Djava.library.path=", (char *[]){api_impl_natives_dir, app_lib_dir}, 2);
 	}
 
 	options[1].optionString = construct_classpath("-Djava.class.path=", (char *[]){api_impl_jar, apk_classpath, microg_apk, framework_res_apk}, 4);
-	options[2].optionString = "-verbose:jni";
-	options[3].optionString = "-Xcheck:jni";
+	options[2].optionString = "-Xcheck:jni";
 	if(jdwp_port) {
 		strncat(jdwp_option_string, jdwp_port, 5); // 5 chars is enough for a port number, and won't overflow our array
-		options[4].optionString = "-XjdwpProvider:internal";
-		options[5].optionString = jdwp_option_string;
+		options[option_counter++].optionString = "-XjdwpProvider:internal";
+		options[option_counter++].optionString = jdwp_option_string;
+	}
+
+	while(extra_jvm_options && *extra_jvm_options) {
+		options[option_counter++].optionString = *(extra_jvm_options++);
 	}
 
 	args.options = options;
 	args.ignoreUnrecognized = JNI_FALSE;
 
 	int ret = JNI_CreateJavaVM(&jvm, (void **)&env, &args);
-	if (ret<0){
+	if(ret < 0) {
 		printf("Unable to Launch JVM\n");
-    } else {
+	} else {
 		printf("JVM launched successfully\n");
 	}
+
+	free(options);
 	return env;
 }
 
@@ -171,7 +184,15 @@ void dl_parse_library_path(const char *path, char *delim);
 #define MICROG_APK_PATH_LOCAL "./com.google.android.gms.apk"
 #define FRAMEWORK_RES_PATH_LOCAL "./res/framework-res.apk"
 
-struct jni_callback_data { char *apk_main_activity_class; uint32_t window_width; uint32_t window_height; gboolean install; char *prgname; };
+struct jni_callback_data {
+	char *apk_main_activity_class;
+	uint32_t window_width;
+	uint32_t window_height;
+	gboolean install;
+	char *prgname;
+	char **extra_jvm_options;
+};
+
 static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* hint, struct jni_callback_data *d)
 {
 //TODO: pass all files to classpath
@@ -336,7 +357,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	// calling directly into the shim bionic linker to whitelist the app's lib dir as containing bionic-linked libraries
 	dl_parse_library_path(app_lib_dir, ":");
 
-	JNIEnv* env = create_vm(api_impl_jar, apk_classpath, microg_apk, framework_res_apk, api_impl_natives_dir, app_lib_dir);
+	JNIEnv* env = create_vm(api_impl_jar, apk_classpath, microg_apk, framework_res_apk, api_impl_natives_dir, app_lib_dir, d->extra_jvm_options);
 
 	free(app_lib_dir);
 
@@ -561,6 +582,14 @@ void init_cmd_parameters(GApplication *app, struct jni_callback_data *d)
       .arg_data = &d->install,
       .description = "install .desktop file for the given apk",
     },
+    {
+      .long_name = "extra-jvm-option",
+      .short_name = 'X',
+      .flags = 0,
+      .arg = G_OPTION_ARG_STRING_ARRAY,
+      .arg_data = &d->extra_jvm_options,
+      .description = "install .desktop file for the given apk",
+    },
     {NULL}
   };
 
@@ -588,6 +617,7 @@ int main(int argc, char **argv)
 	callback_data->window_height = 540;
 	callback_data->install = FALSE;
 	callback_data->prgname = argv[0];
+	callback_data->extra_jvm_options = NULL;
 
 	app = gtk_application_new("com.example.demo_application", G_APPLICATION_NON_UNIQUE | G_APPLICATION_HANDLES_OPEN | G_APPLICATION_CAN_OVERRIDE_APP_ID);
 
