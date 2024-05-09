@@ -62,8 +62,8 @@ libandroid_so = shared_library('android', [
                                           install: true,
                                           soversion: 0,
                                           dependencies: [
-                                          	dependency('gtk4'), dependency('jni'), dependency('vulkan')
-                                         ])
+                                          	dependency('gtk4'), dependency('jni'), dependency('vulkan'), dependency('openxr').partial_dependency(includes: true)
+                                          ])
 
 libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/android_app_NativeActivity.c',
