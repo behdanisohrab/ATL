@@ -1,52 +1,53 @@
-### A translation layer that allows running android apps on a Linux system
+A translation layer that allows running Android apps on a Linux system
 
----
+![Angry Birds 3.2.0, Worms 2 Armageddon, and Gravity Defied running side by side by side](https://gitlab.com/android_translation_layer/android_translation_layer/-/raw/master/screenshot_2.png)
 
-dependencies on debian:
-`sudo apt install libglib2.0-dev libgtk-4-dev libasound2-dev libopenxr-dev libportal-dev libsqlite3-dev libcap-dev libavcodec-dev libdrm-dev libgudev-1.0-dev`
+### Build
+see [build documentation](https://gitlab.com/android_translation_layer/android_translation_layer/-/blob/master/doc/Build.md)
 
-dependencies you might have to build from source:
-- https://github.com/Mis012/skia/tree/with-patches-applied  
-(can also use the prebuilt in https://www.nuget.org/api/v2/package/SkiaSharp.NativeAssets.Linux/2.88.5 if it's compatible with your distro)
+### Run in builddir
+```sh
+cd builddir
+```
+For an example of a full game working that can be distributed along this:
+```sh
+RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ./android-translation-layer /path/to/test_apks/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity
+```
+Or for a sample app using OpenGL from native code to do it's rendering:
+```sh
+RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ./android-translation-layer path/to/test_apks/gles3jni.apk -l com/android/gles3jni/GLES3JNIActivity
+```
+Note: the test apks are available at https://gitlab.com/android_translation_layer/atl_test_apks.
 
-some apps depend on the following (though the translation layer itself currently does not):
-- https://gitlab.com/android_translation_layer/libopensles-standalone/
+### Run after installation
+```sh
+cd builddir
+meson install
+```
 
-build instructions:  
-1. compile and install https://gitlab.com/android_translation_layer/dalvik_standalone (art branch) (you can run it from builddir, but it requires some additional env variables)
-2. `mkdir builddir`
-3. `meson builddir`
-4. `ninja -C builddir`
+To run with the default data dir `~/.local/share/android_translation_layer/`:
+```sh
+android-translation-layer [path to apk] [-l activity to launch]
+```
+For custom data dir:
+```sh
+ANDROID_APP_DATA_DIR=[data dir] android-translation-layer [path to apk] [-l activity to launch]
+```
 
-then, to run from builddir:  
-`cd builddir`  
-and  
-`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ./android-translation-layer /path/to/test_apks/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity`  
-(for an example of a full game working that can be distributed along this)
-or  
-`RUN_FROM_BUILDDIR= LD_LIBRARY_PATH=./ ./android-translation-layer path/to/test_apks/gles3jni.apk -l com/android/gles3jni/GLES3JNIActivity`  
-(for a sample app using OpenGL from native code to do it's rendering)  
+### Tweaks
+##### Resolution Changes
+Some apps don't like runtime changes to resolution. To sidestep this, we allow for specifying the initial resolution.
+example with custom width/height:
+```sh
+android-translation-layer path/to/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity -w 540 -h 960
+```
 
-the test apks are available at https://gitlab.com/android_translation_layer/atl_test_apks
-
-to install:  
-`meson install`  
-
-to run after installataion:  
-`ANDROID_APP_DATA_DIR=[data dir] android-translation-layer [path to apk] [-l activity to launch]`  
-or just  
-`android-translation-layer [path to apk] [-l activity to launch]`  
-to use the default data dir of `~/.local/share/android_translation_layer/`
-
-NOTE: some apps don't like runtime changes to resolution.  
-to sidestep this, we allow for specifying the initial resolution.
-example with custom width/height: `android-translation-layer path/to/org.happysanta.gd_29.apk -l org/happysanta/gd/GDActivity -w 540 -h 960`
-
-NOTE: on X11, Gtk might decide to use GLX, which completely messes up our EGL-dependent code.
+#### GLX on X11
+On X11, Gtk might decide to use GLX, which completely messes up our EGL-dependent code.
 Use GDK_DEBUG=gl-egl to force the use of EGL.  
 
-when it doesn't work:  
-if you are trying to launch a random app, chances are that we are missing implementations for some  
+### Contribute
+If you are trying to launch a random app, chances are that we are missing implementations for some  
 stuff that it needs, and we also don't have (sufficiently real looking) stubs for the stuff it says  
 it needs but doesn't really.  
 the workflow is basically to see where it fails (usually a Class or Method was not found) and to create  
@@ -62,11 +63,7 @@ for general description of the architecure, see `doc/Architecture.md`
 if you want to contribute, and find the codebase overwhelming, don't hesitate to open an issue
 so we can help you out and possibly write more documentation.
 
-screenshot:
-
-![angry birds 3.2.0, Worms 2 Armageddon, and gravity defied running side by side by side](https://gitlab.com/android_translation_layer/android_translation_layer/-/raw/master/screenshot_2.png)
-
-##### Roadmap:
+### Roadmap
 
 - fix issues mentioned above
 
@@ -76,7 +73,7 @@ screenshot:
 
 - explore using bubblewrap to enforce the security policies that google helpfully forces apps to comply with (and our own security policies, like no internet access for apps which really shouldn't need it and are not scummy enough to refuse to launch without it)
 
-##### Tips:
+### Tips
 
 - the correct format for changing verbosity of messages going through android's logging library is `ANDROID_LOG_TAGS=*:v` (where `*` is "all tags" and `v` is "verbosity `verbose` or lesser"  
 (note that specifying anything other than `*` as the tag will not work with the host version of liblog)
