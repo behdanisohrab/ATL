@@ -185,6 +185,7 @@ void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject o
 	if (!wrapper->needs_allocation && (wrapper->layout_width || wrapper->layout_height))
 		gtk_widget_size_allocate(GTK_WIDGET(wrapper), &(GtkAllocation){.x = 0, .y = 0, .width = wrapper->layout_width, .height = wrapper->layout_height}, 0);
 	wrapper->needs_allocation = true;
+	gtk_widget_set_overflow(GTK_WIDGET(wrapper), GTK_OVERFLOW_HIDDEN);
 }
 
 JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener(JNIEnv *env, jobject this, jobject on_touch_listener)
@@ -370,9 +371,6 @@ JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, 
 	const char *name = (*env)->GetStringUTFChars(env, nameObj, NULL);
 	gtk_widget_set_name(widget, name);
 	(*env)->ReleaseStringUTFChars(env, nameObj, name);
-
-	/* this should better match default android behavior */
-	gtk_widget_set_overflow(wrapper, GTK_OVERFLOW_VISIBLE);
 
 	if (_METHOD(_CLASS(this), "onGenericMotionEvent", "(Landroid/view/MotionEvent;)Z") != handle_cache.view.onGenericMotionEvent) {
 		GtkEventController *controller = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
