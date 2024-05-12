@@ -129,4 +129,8 @@ public class TextUtils {
 				dest[destoff++] = s.charAt(i);
 		}
 	}
+
+	public static int getCapsMode(CharSequence cs, int off, int reqModes) {
+		return 0;
+	}
 }
