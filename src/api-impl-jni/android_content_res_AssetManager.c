@@ -447,3 +447,16 @@ JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_list(JNIEnv
 
 	return array;
 }
+
+JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_openXmlAssetNative(JNIEnv *env, jobject this, jint cookie, jstring _file_name)
+{
+	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
+	const char *file_name = (*env)->GetStringUTFChars(env, _file_name, NULL);
+	struct Asset *asset = AssetManager_openNonAsset(asset_manager, file_name, ACCESS_BUFFER);
+	(*env)->ReleaseStringUTFChars(env, _file_name, file_name);
+
+	struct ResXMLTree *res_xml = ResXMLTree_new();
+	ResXMLTree_setTo(res_xml, Asset_getBuffer(asset, true), Asset_getLength(asset), true);
+	Asset_delete(asset);
+	return _INTPTR(res_xml);
+}

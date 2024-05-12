@@ -1376,7 +1376,7 @@ public class Resources {
 			// To support generic XML files we will need to manually parse
 			// out the attributes from the XML file (applying type information
 			// contained in the resources and such).
-			ResXmlPullParser parser = (ResXmlPullParser)set;
+			XmlResourceParser parser = (XmlResourceParser)set;
 			mAssets.applyStyle(theme, defStyleAttr, defStyleRes,
 				set, attrs, array.mData, array.mIndices);
 			array.mRsrcs = attrs;
@@ -1495,7 +1495,7 @@ public class Resources {
 		// To support generic XML files we will need to manually parse
 		// out the attributes from the XML file (applying type information
 		// contained in the resources and such).
-		ResXmlPullParser parser = (ResXmlPullParser)set;
+		XmlResourceParser parser = (XmlResourceParser)set;
 		mAssets.applyStyle(0, 0, 0,
 				set, attrs, array.mData, array.mIndices);
 

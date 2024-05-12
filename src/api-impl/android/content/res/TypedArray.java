@@ -39,7 +39,7 @@ import java.util.Arrays;
  */
 public class TypedArray {
 	private final Resources mResources;
-	/*package*/ ResXmlPullParser mXml;
+	/*package*/ XmlResourceParser mXml;
 	/*package*/ int[] mRsrcs;
 	/*package*/ int[] mData;
 	/*package*/ int[] mIndices;
@@ -156,7 +156,12 @@ public class TypedArray {
 		if (type == TypedValue.TYPE_STRING) {
 			final int cookie = data[index + AssetManager.STYLE_ASSET_COOKIE];
 			if (cookie < 0) {
-				return mXml.getResXmlDocument().getStringPool().get(data[index + AssetManager.STYLE_DATA]).get();
+				if (mXml instanceof ResXmlPullParser)
+					return ((ResXmlPullParser )mXml).getResXmlDocument().getStringPool().get(data[index + AssetManager.STYLE_DATA]).get();
+				else {
+					Thread.dumpStack();
+					System.exit(-1);
+				}
 			}
 		}
 		return null;
@@ -695,9 +700,15 @@ public class TypedArray {
 		final int cookie = data[index + AssetManager.STYLE_ASSET_COOKIE];
 		if (cookie < 0) {
 			if (mXml != null) {
-				ResXmlString xmlString = mXml.getResXmlDocument().getStringPool().get(data[index + AssetManager.STYLE_DATA]);
-				if (xmlString != null)
-					return xmlString.get();
+				if (mXml instanceof ResXmlPullParser) {
+					ResXmlString xmlString = ((ResXmlPullParser)mXml).getResXmlDocument().getStringPool().get(data[index + AssetManager.STYLE_DATA]);
+					if (xmlString != null)
+						return xmlString.get();
+				} else {
+					CharSequence string = ((XmlBlock.Parser)mXml).getPooledString(data[index + AssetManager.STYLE_DATA]);
+					if (string != null)
+						return string;
+				}
 			}
 			if (data[index + AssetManager.STYLE_RESOURCE_ID] != 0) {
 				return mResources.mAssets.getResourceText(data[index + AssetManager.STYLE_RESOURCE_ID]);

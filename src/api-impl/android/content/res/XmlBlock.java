@@ -72,7 +72,7 @@ final class XmlBlock {
 	}
 
 	/*package*/ final class Parser implements XmlResourceParser {
-		Parser(int parseState, XmlBlock block) {
+		Parser(long parseState, XmlBlock block) {
 			mParseState = parseState;
 			mBlock = block;
 			block.mOpenCount++;
@@ -168,8 +168,7 @@ final class XmlBlock {
 			return id >= 0 ? mStrings.get(id).toString() : "";
 		}
 		public String getName() {
-			int id = nativeGetName(mParseState);
-			return id >= 0 ? mStrings.get(id).toString() : null;
+			return nativeGetName(mParseState);
 		}
 		public String getAttributeNamespace(int index) {
 			int id = nativeGetAttributeNamespace(mParseState, index);
@@ -200,11 +199,9 @@ final class XmlBlock {
 			return mEventType == START_TAG ? nativeGetAttributeCount(mParseState) : -1;
 		}
 		public String getAttributeValue(int index) {
-			int id = nativeGetAttributeStringValue(mParseState, index);
-			if (DEBUG)
-				System.out.println("getAttributeValue of " + index + " = " + id);
-			if (id >= 0)
-				return mStrings.get(id).toString();
+			String value = nativeGetAttributeStringValue(mParseState, index);
+			if (value != null)
+				return value;
 
 			// May be some other type...  check and try to convert if so.
 			int t = nativeGetAttributeDataType(mParseState, index);
@@ -423,8 +420,7 @@ final class XmlBlock {
 			return id >= 0 ? mStrings.get(id).toString() : null;
 		}
 		public String getClassAttribute() {
-			int id = nativeGetClassAttribute(mParseState);
-			return id >= 0 ? mStrings.get(id).toString() : null;
+			return nativeGetClassAttribute(mParseState);
 		}
 
 		public int getIdAttributeResourceValue(int defaultValue) {
@@ -451,10 +447,12 @@ final class XmlBlock {
 		}
 
 		/*package*/ final CharSequence getPooledString(int id) {
-			return mStrings.get(id);
+			if (id < 0)
+				return null;
+			return nativeGetPooledString(mParseState, id);
 		}
 
-		/*package*/ int mParseState;
+		/*package*/ long mParseState;
 		private final XmlBlock mBlock;
 		private boolean mStarted = false;
 		private boolean mDecNextDepth = false;
@@ -472,14 +470,15 @@ final class XmlBlock {
 	 *  are doing!  The given native object must exist for the entire lifetime
 	 *  of this newly creating XmlBlock.
 	 */
-	XmlBlock(AssetManager assets, int xmlBlock) {
+	XmlBlock(AssetManager assets, long xmlBlock) {
 		mAssets = assets;
 		mNative = xmlBlock;
-		mStrings = new StringBlock(nativeGetStringBlock(xmlBlock), false);
+		// mStrings = new StringBlock(nativeGetStringBlock(xmlBlock), false);
+		mStrings = null;
 	}
 
 	private final AssetManager mAssets;
-	private final int mNative;
+	private final long mNative;
 	/*package*/ final StringBlock mStrings;
 	private boolean mOpen = true;
 	private int mOpenCount = 1;
@@ -487,26 +486,27 @@ final class XmlBlock {
 	private static final native int nativeCreate(byte[] data,
 						     int offset,
 						     int size);
-	private static final native int nativeGetStringBlock(int obj);
+	private static final native int nativeGetStringBlock(long obj);
 
-	private static final native int nativeCreateParseState(int obj);
-	/*package*/ static final native int nativeNext(int state);
-	private static final native int nativeGetNamespace(int state);
-	/*package*/ static final native int nativeGetName(int state);
-	private static final native int nativeGetText(int state);
-	private static final native int nativeGetLineNumber(int state);
-	private static final native int nativeGetAttributeCount(int state);
-	private static final native int nativeGetAttributeNamespace(int state, int idx);
-	private static final native int nativeGetAttributeName(int state, int idx);
-	private static final native int nativeGetAttributeResource(int state, int idx);
-	private static final native int nativeGetAttributeDataType(int state, int idx);
-	private static final native int nativeGetAttributeData(int state, int idx);
-	private static final native int nativeGetAttributeStringValue(int state, int idx);
-	private static final native int nativeGetIdAttribute(int state);
-	private static final native int nativeGetClassAttribute(int state);
-	private static final native int nativeGetStyleAttribute(int state);
-	private static final native int nativeGetAttributeIndex(int state, String namespace, String name);
-	private static final native void nativeDestroyParseState(int state);
+	private static final native long nativeCreateParseState(long obj);
+	/*package*/ static final native int nativeNext(long state);
+	private static final native int nativeGetNamespace(long state);
+	/*package*/ static final native String nativeGetName(long state);
+	private static final native int nativeGetText(long state);
+	private static final native int nativeGetLineNumber(long state);
+	private static final native int nativeGetAttributeCount(long state);
+	private static final native int nativeGetAttributeNamespace(long state, int idx);
+	private static final native int nativeGetAttributeName(long state, int idx);
+	private static final native int nativeGetAttributeResource(long state, int idx);
+	static final native int nativeGetAttributeDataType(long state, int idx);
+	static final native int nativeGetAttributeData(long state, int idx);
+	private static final native String nativeGetAttributeStringValue(long state, int idx);
+	private static final native int nativeGetIdAttribute(long state);
+	private static final native String nativeGetClassAttribute(long state);
+	private static final native int nativeGetStyleAttribute(long state);
+	private static final native int nativeGetAttributeIndex(long state, String namespace, String name);
+	private static final native void nativeDestroyParseState(long state);
+	private static final native String nativeGetPooledString(long state, int id);
 
-	private static final native void nativeDestroy(int obj);
+	private static final native void nativeDestroy(long obj);
 }

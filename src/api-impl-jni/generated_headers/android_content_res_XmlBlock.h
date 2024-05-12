@@ -20,162 +20,170 @@ JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeCreate
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetStringBlock
- * Signature: (I)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetStringBlock
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeCreateParseState
- * Signature: (I)I
+ * Signature: (J)J
  */
-JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeCreateParseState
-  (JNIEnv *, jclass, jint);
+JNIEXPORT jlong JNICALL Java_android_content_res_XmlBlock_nativeCreateParseState
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeNext
- * Signature: (I)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeNext
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetNamespace
- * Signature: (I)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetNamespace
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetName
- * Signature: (I)I
+ * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetName
-  (JNIEnv *, jclass, jint);
+JNIEXPORT jstring JNICALL Java_android_content_res_XmlBlock_nativeGetName
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetText
- * Signature: (I)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetText
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetLineNumber
- * Signature: (I)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetLineNumber
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetAttributeCount
- * Signature: (I)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetAttributeCount
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetAttributeNamespace
- * Signature: (II)I
+ * Signature: (JI)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetAttributeNamespace
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetAttributeName
- * Signature: (II)I
+ * Signature: (JI)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetAttributeName
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetAttributeResource
- * Signature: (II)I
+ * Signature: (JI)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetAttributeResource
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetAttributeDataType
- * Signature: (II)I
+ * Signature: (JI)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetAttributeDataType
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetAttributeData
- * Signature: (II)I
+ * Signature: (JI)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetAttributeData
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetAttributeStringValue
- * Signature: (II)I
+ * Signature: (JI)Ljava/lang/String;
  */
-JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetAttributeStringValue
-  (JNIEnv *, jclass, jint, jint);
+JNIEXPORT jstring JNICALL Java_android_content_res_XmlBlock_nativeGetAttributeStringValue
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetIdAttribute
- * Signature: (I)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetIdAttribute
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetClassAttribute
- * Signature: (I)I
+ * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetClassAttribute
-  (JNIEnv *, jclass, jint);
+JNIEXPORT jstring JNICALL Java_android_content_res_XmlBlock_nativeGetClassAttribute
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetStyleAttribute
- * Signature: (I)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetStyleAttribute
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeGetAttributeIndex
- * Signature: (ILjava/lang/String;Ljava/lang/String;)I
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_XmlBlock_nativeGetAttributeIndex
-  (JNIEnv *, jclass, jint, jstring, jstring);
+  (JNIEnv *, jclass, jlong, jstring, jstring);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeDestroyParseState
- * Signature: (I)V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_android_content_res_XmlBlock_nativeDestroyParseState
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     android_content_res_XmlBlock
+ * Method:    nativeGetPooledString
+ * Signature: (JI)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_android_content_res_XmlBlock_nativeGetPooledString
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     android_content_res_XmlBlock
  * Method:    nativeDestroy
- * Signature: (I)V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_android_content_res_XmlBlock_nativeDestroy
-  (JNIEnv *, jclass, jint);
+  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }

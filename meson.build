@@ -86,6 +86,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/audio/android_media_SoundPool.c',
                                                                   	'src/api-impl-jni/content/android_content_ClipboardManager.c',
                                                                   	'src/api-impl-jni/content/android_content_Context.c',
+                                                                  	'src/api-impl-jni/content/android_content_res_XmlBlock.c',
                                                                   	'src/api-impl-jni/database/android_database_SQLiteCommon.c',
                                                                   	'src/api-impl-jni/database/android_database_SQLiteConnection.c',
                                                                   	'src/api-impl-jni/egl/com_google_android_gles_jni_EGLImpl.c',

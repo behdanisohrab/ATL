@@ -466,20 +466,10 @@ public final class AssetManager {
 	 */
 	public final XmlResourceParser openXmlResourceParser(int cookie,
 							     String fileName) throws IOException {
-		/*        XmlBlock block = openXmlBlockAsset(cookie, fileName);
-			XmlResourceParser rp = block.newParser();
-			block.close();
-			return rp;*/
-
-		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName);
-		if (inStream == null) {
-			return null;
-		}
-		ResXmlDocument resXmlDocument = new ResXmlDocument();
-		resXmlDocument.readBytes(inStream);
-		ResXmlPullParser xpp = new ResXmlPullParser();
-		xpp.setResXmlDocument(resXmlDocument);
-		return xpp;
+		XmlBlock block = openXmlBlockAsset(cookie, fileName);
+		XmlResourceParser rp = block.newParser();
+		block.close();
+		return rp;
 	}
 
 	/**
@@ -503,7 +493,7 @@ public final class AssetManager {
 	 * @param fileName Name of the asset to retrieve.
 	 */
 	/*package*/ final XmlBlock openXmlBlockAsset(int cookie, String fileName) throws IOException {
-		int xmlBlock;
+		long xmlBlock;
 		synchronized (this) {
 			if (!mOpen) {
 				throw new RuntimeException("Assetmanager has been closed");
@@ -765,17 +755,21 @@ public final class AssetManager {
 							   int defStyleAttr, int defStyleRes, AttributeSet set,
 							   int[] inAttrs, int[] outValues, int[] outIndices) {
 		TypedValue value = new TypedValue();
-		ResXmlPullParser parser = (ResXmlPullParser)set;
+		XmlResourceParser parser = (XmlResourceParser)set;
 		if (defStyleRes == 0 && theme != 0 && loadThemeAttributeValue(theme, defStyleAttr, value, true) >= 0)
 			defStyleRes = value.data;
 		if (defStyleRes == 0 && set != null) {
-			ValueItem valueItem = parser.getAttribute(null, "style");
-			if (valueItem != null) {
-				value.type = valueItem.getType();
-				value.data = valueItem.getData();
-				if (theme != 0 && (value.type == TypedValue.TYPE_ATTRIBUTE))
-					loadThemeAttributeValue(theme, value.data, value, true);
-				defStyleRes = value.data;
+			if (parser instanceof ResXmlPullParser) {
+				ValueItem valueItem = ((ResXmlPullParser)parser).getAttribute(null, "style");
+				if (valueItem != null) {
+					value.type = valueItem.getType();
+					value.data = valueItem.getData();
+					if (theme != 0 && (value.type == TypedValue.TYPE_ATTRIBUTE))
+						loadThemeAttributeValue(theme, value.data, value, true);
+					defStyleRes = value.data;
+				}
+			} else {
+				defStyleRes = parser.getStyleAttribute();
 			}
 		}
 
@@ -804,9 +798,14 @@ public final class AssetManager {
 					value.assetCookie = -1;
 					found = true;
 				} else if (xmlCache.containsKey(resId)) {
-					ValueItem valueItem = parser.getResXmlAttributeAt(xmlCache.get(resId));
-					value.type = valueItem.getType();
-					value.data = valueItem.getData();
+					if (parser instanceof ResXmlPullParser) {
+						ValueItem valueItem = ((ResXmlPullParser)parser).getResXmlAttributeAt(xmlCache.get(resId));
+						value.type = valueItem.getType();
+						value.data = valueItem.getData();
+					} else {
+						value.type = XmlBlock.nativeGetAttributeDataType(((XmlBlock.Parser)parser).mParseState, xmlCache.get(resId));
+						value.data = XmlBlock.nativeGetAttributeData(((XmlBlock.Parser)parser).mParseState, xmlCache.get(resId));
+					}
 					value.resourceId = 0;
 					value.assetCookie = -1;
 					if (value.type != TypedValue.TYPE_ATTRIBUTE)
@@ -888,9 +887,7 @@ public final class AssetManager {
 								    boolean resolve);
 	/*package*/ native static final void dumpTheme(long theme, int priority, String tag, String prefix);
 
-	private /*native*/ final int openXmlAssetNative(int cookie, String fileName) {
-		return openAsset("../" + fileName, 0);
-	}
+	private native final long openXmlAssetNative(int cookie, String fileName);
 
 	private native final String[] getArrayStringResource(int arrayRes);
 	private native final int[] getArrayStringInfo(int arrayRes);
