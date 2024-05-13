@@ -217,6 +217,14 @@ JNIEXPORT void JNICALL Java_android_widget_SeekBar_native_1setProgress
 
 /*
  * Class:     android_widget_SeekBar
+ * Method:    native_getProgress
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_android_widget_SeekBar_native_1getProgress
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     android_widget_SeekBar
  * Method:    native_setMax
  * Signature: (JI)V
  */

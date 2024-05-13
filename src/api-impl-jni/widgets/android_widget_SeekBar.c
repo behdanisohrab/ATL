@@ -53,3 +53,9 @@ JNIEXPORT void JNICALL Java_android_widget_SeekBar_setOnSeekBarChangeListener(JN
 		g_signal_connect(range, "change_value", G_CALLBACK(on_change_value), _REF(listener));
 	}
 }
+
+JNIEXPORT jint JNICALL Java_android_widget_SeekBar_native_1getProgress(JNIEnv *env, jobject this, jlong widget_ptr)
+{
+	GtkRange *range = GTK_RANGE(_PTR(widget_ptr));
+	return gtk_range_get_value(range);
+}
