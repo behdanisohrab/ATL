@@ -151,7 +151,16 @@ static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,
 	return AV_PIX_FMT_NONE;
 }
 
-struct render_frame_data {AVFrame *frame; struct ATL_codec_context *ctx; AVFrame *drm_frame;};
+struct render_frame_data {
+	AVFrame *frame;
+	AVFrame *drm_frame;
+#if GTK_CHECK_VERSION(4, 14, 0)
+	GtkPicture *gtk_picture;
+#else
+	struct zwp_linux_dmabuf_v1 *zwp_linux_dmabuf_v1;
+	struct ANativeWindow *native_window;
+#endif
+};
 
 #if GTK_CHECK_VERSION(4, 14, 0)
 static void handle_dmabuftexture_destroy(void *data)
@@ -495,7 +504,6 @@ static gboolean render_frame(void *data)
 {
 	struct render_frame_data *d = (struct render_frame_data *)data;
 	AVFrame *frame = d->frame;
-	struct ATL_codec_context *ctx = d->ctx;
 	int ret;
 
 	AVFrame *drm_frame = d->drm_frame = av_frame_alloc();
@@ -513,17 +521,17 @@ static gboolean render_frame(void *data)
 
 #if GTK_CHECK_VERSION(4, 14, 0)
 	GdkTexture *texture = import_drm_frame_desc_as_texture(drm_frame_desc, drm_frame->width, drm_frame->height, d);
-	gtk_picture_set_paintable(ctx->video.gtk_picture, GDK_PAINTABLE(texture));
+	gtk_picture_set_paintable(d->gtk_picture, GDK_PAINTABLE(texture));
 	g_object_unref(texture);
 #else
-	struct wl_buffer *wl_buffer = import_drm_frame_desc(ctx->video.zwp_linux_dmabuf_v1,
+	struct wl_buffer *wl_buffer = import_drm_frame_desc(d->zwp_linux_dmabuf_v1,
 		drm_frame_desc, drm_frame->width, drm_frame->height);
 	if (!wl_buffer) {
 		exit(1);
 	}
 	wl_buffer_add_listener(wl_buffer, &buffer_listener, frame);
 
-	struct ANativeWindow *native_window = ctx->video.native_window;
+	struct ANativeWindow *native_window = d->native_window;
 
 	wl_surface_damage(native_window->wayland_surface, 0, 0, INT32_MAX, INT32_MAX);
 	wl_surface_attach(native_window->wayland_surface, wl_buffer, 0, 0);
@@ -547,6 +555,7 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1releaseOutputBuffer
 	if (ctx->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
 		AVFrame **raw_buffer = get_nio_buffer(env, buffer, &array_ref, &array);
 		frame = *raw_buffer;
+		*raw_buffer = NULL;
 		release_nio_buffer(env, array_ref, array);
 
 		if (!render) {
@@ -557,7 +566,12 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1releaseOutputBuffer
 
 		struct render_frame_data *data = malloc(sizeof(struct render_frame_data));
 		data->frame = frame;
-		data->ctx = ctx;
+#if GTK_CHECK_VERSION(4, 14, 0)
+		data->gtk_picture = ctx->video.gtk_picture;
+#else
+		data->native_window = ctx->video.native_window;
+		data->zwp_linux_dmabuf_v1 = ctx->video.zwp_linux_dmabuf_v1;
+#endif
 		g_idle_add(render_frame, data);
 	}
 }
