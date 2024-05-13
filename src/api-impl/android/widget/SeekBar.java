@@ -35,6 +35,11 @@ public class SeekBar extends AbsSeekBar {
 	public native void setOnSeekBarChangeListener(final OnSeekBarChangeListener l);
 
 	public static interface OnSeekBarChangeListener {
+		public void onStartTrackingTouch(SeekBar seekBar);
+
+		public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser);
+
+		public void onStopTrackingTouch(SeekBar seekBar);
 	}
 
 }
