@@ -47,21 +47,16 @@ On X11, Gtk might decide to use GLX, which completely messes up our EGL-dependen
 Use GDK_DEBUG=gl-egl to force the use of EGL.  
 
 ### Contribute
-If you are trying to launch a random app, chances are that we are missing implementations for some  
-stuff that it needs, and we also don't have (sufficiently real looking) stubs for the stuff it says  
-it needs but doesn't really.  
-the workflow is basically to see where it fails (usually a Class or Method was not found) and to create  
-stubs which sufficiently satisfy the app so that it continues trying to launch.  
-once the app launches, you may find that some functionality (UI elements, ...) is missing; to enable  
-such functionality, you need to convert the relevant stubs to actual implementation.  
-you can look at simple widgets (e.g. TextView, or ImageView) to see how to implement a widget such that  
-it shows up as a Gtk Widget.  
+If you are trying to launch a random app, chances are that we are missing implementations for some stuff that it needs, and we also don't have (sufficiently real looking) stubs for the stuff it says it needs but doesn't really.
 
-for more specific instructions, see `doc/QuickHelp.md`
-for general description of the architecure, see `doc/Architecture.md`
+The workflow is basically to see where it fails (usually a Class or Method was not found) and to create stubs which sufficiently satisfy the app so that it continues trying to launch.
 
-if you want to contribute, and find the codebase overwhelming, don't hesitate to open an issue
-so we can help you out and possibly write more documentation.
+Once the app launches, you may find that some functionality (UI elements, ...) is missing. To enable such functionality, you need to convert the relevant stubs to actual implementation. You can look at simple widgets (e.g. TextView, or ImageView) to see how to implement a widget such that it shows up as a Gtk Widget.
+
+For more specific instructions, see [doc/QuickHelp.md](https://gitlab.com/android_translation_layer/android_translation_layer/-/blob/master/doc/QuickHelp.md).  
+For general description of the architecure, see [doc/Architecture.md](https://gitlab.com/android_translation_layer/android_translation_layer/-/blob/master/doc/Architecture.md).
+
+If you want to contribute, and find the codebase overwhelming, don't hesitate to open an issue so we can help you out and possibly write more documentation.
 
 ### Roadmap
 
