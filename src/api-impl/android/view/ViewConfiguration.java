@@ -44,7 +44,7 @@ public class ViewConfiguration {
 	}
 
 	public int getScaledDoubleTapSlop() {
-		return 0;
+		return 100;
 	}
 
 	public static float getScrollFriction() {
