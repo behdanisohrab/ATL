@@ -1722,4 +1722,17 @@ public class View implements Drawable.Callback {
 	public void setRotationX(float deg) {}
 
 	public void setRotationY(float deg) {}
+
+	public float getRotationX() {return 0.f;}
+	public float getRotationY() {return 0.f;}
+
+	public float getScaleX() {return 1.f;}
+	public float getScaleY() {return 1.f;}
+
+	public float getPivotX() {return 0.f;}
+	public float getPivotY() {return 0.f;}
+
+	public float getTranslationZ() {return 0.f;}
+
+	public void setTranslationZ(float translationZ) {}
 }
