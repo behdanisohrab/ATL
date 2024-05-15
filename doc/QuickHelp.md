@@ -18,12 +18,19 @@ package android.webkit;
 public class WebView {
 }
 ```
+
 This should fix the "no such class" error, and let you get further in your attempt to simply launch the app.  
+
+__NOTE__: you may also get a "no such class" error for a class inside the app, caused by that class being 
+a descendant of some android class that we're missing. Decompiling the app with e.g `jadx` should help
+you figure out what class you need to stub out.
+
 If the app uses a non-default constructor, you will need to provide that as well (empty is fine), and you will 
 need to provide stub classes for any types used for paramters.
 
-Since the class was needed, it's pretty likely that up next you will get a "no such method" error. The easiest 
-case is a void method:
+Since the class was needed, it's pretty likely that up next you will get a "no such method" error.  
+(`java.lang.NoSuchMethodError: No [static] method [method_name]([parameters])[return type] in class L[class]`)  
+The easiest case is a void method:
 ```Java
 package android.webkit;
 
@@ -34,14 +41,14 @@ public class WebView {
 	}
 }
 ```
-here, all that you need to take care of is that at `src/api-impl/android/content/Context.java`, you have at minimum 
+Here, all that you need to take care of is that at `src/api-impl/android/content/Context.java`, you have at minimum 
 a stub class.
 
 Unfortunately, in the WebView case, the method that an app was trying call wasn't returning `void`. If this is 
 the case, your best case scenario is that you can return some sort of value that will make you progress further. 
-For example, if the method is called DoWeHaveInternetConnection, it's pretty likely that upon decompiling 
-the app, you will find that returing `false` from that function makes the app decide not to attempt to use 
-Internet-related APIs (which you might not feel like implementing at the moment).  
+For example, if a method is called DoWeHaveInternetConnection, it's pretty likely that upon decompiling 
+the app (e.g with `jadx`), you will find that returning `false` from that function makes the app decide 
+not to attempt to use Internet-related APIs (which you might not feel like implementing at the moment).  
 Sadly, in our case, the return type is an Object. If that's the case, and the Object is of a type not yet 
 implemented, you can try simply making a stub class for said object, and then returning `null`.
 
@@ -85,15 +92,30 @@ This might be enough, but quite often, the returned Object's methods are called 
 simply create stub methods in that class same as we did above, and after a few iterations you should get to the 
 end of the rabbit hole.
 
-NOTE: in some cases, such as with enums and interfaces, you should be able to simply copy the APACHE-licensed 
+__NOTE__: exceptions like `java.lang.NoSuchMethodException` may sometimes not provide information about what class
+the method is supposed to be in (not even with the "or it's superclasses" disclaimer). If that happens, you will
+again need to decompile the app's code and look around the place mentioned in the stack trace for calls to a method
+of the name mentioned.
+
+__NOTE__: in some cases, such as with enums and interfaces, you should be able to simply copy the APACHE-licensed 
 android code. With interfaces, you might want to comment out any methods not needed for the app you are trying 
 to get to work in order to cut down on the amount of stubbing you need to do.
+
+Random Layout widgets can also mostly be copied from AOSP, with minor changes and maybe some commenting out 
+of things that make the code not compile (if they turn out to have been important, can always fix them properly later)
+
+__IMPORTANT__: run `clang-format --style="{BasedOnStyle: LLVM, IndentWidth: 8, UseTab: Always, AllowShortIfStatementsOnASingleLine: false, IndentCaseLabels: true, ColumnLimit: 0}"`
+on any AOSP file that you are importing; manual code style changes are not required, but this simple automatic step is. 
+Make sure to run this before doing any changes to the code, since e.g commented out sections do not get reformatted 
+by `clang-format`.
+
+If you added any classes, make sure to add them in `src/api-impl/meson.build` (sorted alphabetically).
 
 ##### intriguing case: widgets
 
 There are two basic types of widgets (Views): containers (Layouts) and the rest.
 
-Initially all container widgets where backed by Gtk container widgets. As this caused lots of behaviour diffeneces with AOSP,
+Initially all container widgets were backed by Gtk container widgets. As this caused lots of behaviour diffeneces with AOSP,
 we have instead implemented the API of ViewGroup, which is the super class of all container widgets. This allows to more or
 less completely reuse specialized container widget implementation from AOSP source code.
 
@@ -116,22 +138,34 @@ import android.content.Context;
 import android.view.View;
 ```
 ↑ any widget will need to import these
-```
+```Java
 public class ImageView extends View {
-	public ImageView(AttributeSet attrs) {
-		super(attrs);
-
-		native_constructor(attrs);
+	public ImageView(Context context, AttributeSet attrs) {
+		this(context, attrs, 0);
 	}
 
 	public ImageView(Context context) {
-		super(context);
-
-		native_constructor(context);
+		this(context, null);
 	}
 
-	private native void native_constructor(AttributeSet attrs);
-	private native void native_constructor(Context context);
+	public ImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
+
+		haveCustomMeasure = false;
+```
+↑ TODO: explain this
+```Java
+		TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.ImageView, defStyleAttr, 0);
+		setImageDrawable(a.getDrawable(com.android.internal.R.styleable.ImageView_src));
+		setScaleType(scaletype_from_int[a.getInt(com.android.internal.R.styleable.ImageView_scaleType, 3 /*CENTER*/)]);
+		a.recycle();
+```
+↑ you will probably want to add this stuff at a later point, here we apply properties from layout xml files
+```Java
+	}
+
+	@Override
+	protected native long native_constructor(Context context, AttributeSet attrs);
 ```
 ↑ at least these will be needed for any widget
 ```Java
@@ -143,7 +177,7 @@ public class ImageView extends View {
     public enum ScaleType { ... }
 }
 ```
-↑ you might need some stubs, don't fall into the trap of thinking that you need to immediately implement these
+↑ you might need some stubs, don't fall into the trap of thinking that you need to immediately implement everything
 
 ---
 
@@ -162,27 +196,29 @@ public class ImageView extends View {
 #include "../generated_headers/android_widget_ImageView.h"
 ```
 ↑ this is the jni-generated header file (btw, t's name is what dicates the name of this .c file)
-↓ there should be two functions here, one for the `Context` costructor and one for the `AttributeSet` one; for start, you can keep them the same
+↓ native constructor
 ```C
-JNIEXPORT void JNICALL Java_android_widget_ImageView_native_1constructor__Landroid_content_Context_2(JNIEnv *env, jobject this, jobject context)
+JNIEXPORT jlong JNICALL Java_android_widget_ImageView_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
-	GtkWidget *wrapper = wrapper_widget_new();
+	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
 ```
 ↑ the wrapper widget is required, it's expected by generic functions operating on widgets; the purpose is to allow for things like background image
 handling for cases where we can't subclass the backing widget itself
 ```C
-	GtkWidget *image = gtk_image_new_from_icon_name("FIXME"); // will not actually use gtk_image_new_from_icon_name when implementing this, but we want that nice "broken image" icon
+	GtkWidget *image = gtk_picture_new();
 ```
 ↑ here we create the actual backing Gtk widget.
 ```C
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), image);
+	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 ```
 ↑ put the widget in the wrapper
 ```C
-	_SET_LONG_FIELD(this, "widget", _INTPTR(image));
+	return _INTPTR(image);
 ```
-↑ set the `widget` member of the View-derived class to the pointer to our widget; this lets us access this widget in the context of the View, which is precisely when we will need to access it
-```
+↑ the Java constructor will set the `widget` member of the View-derived class to the pointer to our widget that we return here; 
+this will then be passed to other native functions that will operate on the backing widget.
+```C
 }
 
 ```
