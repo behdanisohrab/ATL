@@ -1064,7 +1064,9 @@ public class View implements Drawable.Callback {
 		setBackgroundDrawable(getResources().getDrawable(resid));
 	}
 
-	public void getHitRect(Rect outRect) {}
+	public void getHitRect(Rect outRect) {
+		outRect.set(left, top, right, bottom);
+	}
 	public final boolean getLocalVisibleRect(Rect r) { return false; }
 
 	public final int getScrollX() {
