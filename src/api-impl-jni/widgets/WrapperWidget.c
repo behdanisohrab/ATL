@@ -182,7 +182,7 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 		GtkWidget *sk_area = sk_area_new();
 		gtk_widget_set_sensitive(sk_area, false);
 		sk_area_set_draw_func(SK_AREA_WIDGET(sk_area), skia_draw_func, wrapper);
-		gtk_widget_insert_before(sk_area, GTK_WIDGET(wrapper), NULL);
+		gtk_widget_insert_after(sk_area, GTK_WIDGET(wrapper), NULL);
 		wrapper->sk_area = sk_area;
 //		gtk_widget_add_tick_callback(sk_area, tick_callback, NULL, NULL);
 	}
