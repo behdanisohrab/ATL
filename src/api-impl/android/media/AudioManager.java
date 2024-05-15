@@ -48,4 +48,8 @@ public class AudioManager {
 	public boolean isWiredHeadsetOn() {
 		return false;
 	}
+
+	public void setStreamVolume(int streamType, int index, int flags) {
+		System.out.println("AudioManager.setStreamVolume: >" + streamType + "< >" + index + "< >" + flags + "<");
+	}
 }

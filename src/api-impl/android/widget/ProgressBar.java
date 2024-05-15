@@ -78,6 +78,10 @@ public class ProgressBar extends View {
 	}
 
 	public void setProgress(int progress) {
+		if (progress > max)
+			progress = max;
+		else if (progress < 0)
+			progress = 0;
 		this.progress = progress;
 		native_setProgress(widget, progress / (float)max);
 	}
@@ -96,4 +100,8 @@ public class ProgressBar extends View {
 	}
 
 	public native void native_setIndeterminate(boolean indeterminate);
+
+	public void incrementProgressBy(int diff) {
+		setProgress(progress + diff);
+	}
 }
