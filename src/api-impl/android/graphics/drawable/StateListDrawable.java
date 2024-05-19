@@ -155,7 +155,7 @@ public class StateListDrawable extends DrawableContainer {
 									+ ": <item> tag requires a 'drawable' attribute or "
 									+ "child tag defining a drawable");
 				}
-				// dr = Drawable.createFromXmlInner(r, parser, attrs, theme);
+				dr = Drawable.createFromXmlInner(r, parser, attrs, theme);
 			}
 
 			state.addStateSet(states, dr);

@@ -176,15 +176,26 @@ public class Drawable {
 		while ((type=parser.next()) != XmlPullParser.START_TAG && type != XmlPullParser.END_DOCUMENT);
 		if (type != XmlPullParser.START_TAG)
 			throw new XmlPullParserException("No start tag found");
+
+		return createFromXmlInner(resources, parser, parser, null);
+	}
+
+	public static Drawable createFromXmlInner(Resources resources, XmlPullParser parser, AttributeSet attrs) throws XmlPullParserException, IOException {
+		return createFromXmlInner(resources, parser, attrs, null);
+	}
+
+	public static Drawable createFromXmlInner(Resources resources, XmlPullParser parser, AttributeSet attrs, Theme theme) throws XmlPullParserException, IOException {
 		if ("selector".equals(parser.getName())) {
 			StateListDrawable drawable = new StateListDrawable();
-			drawable.inflate(resources, parser, parser, null);
+			drawable.inflate(resources, parser, attrs, null);
 			return drawable;
 		} else if ("shape".equals(parser.getName())) {
-			return new GradientDrawable();
+			GradientDrawable drawable = new GradientDrawable();
+			drawable.inflate(resources, parser, attrs);
+			return drawable;
 		} else if ("bitmap".equals(parser.getName())) {
 			BitmapDrawable drawable = new BitmapDrawable();
-			drawable.inflate(resources, parser, parser, null);
+			drawable.inflate(resources, parser, attrs, null);
 			return drawable;
 		} else if ("transition".equals(parser.getName())) {
 			return new Drawable();
@@ -193,19 +204,11 @@ public class Drawable {
 			return new ColorDrawable(0);
 		} else if ("vector".equals(parser.getName())) {
 			VectorDrawable drawable = new VectorDrawable();
-			drawable.inflate(resources, parser, parser, null);
+			drawable.inflate(resources, parser, attrs, null);
 			return drawable;
 		} else if ("layer-list".equals(parser.getName())) {
 			return new LayerDrawable();
 		}
-		return null;
-	}
-
-	public static Drawable createFromXmlInner(Resources resources, XmlPullParser parser, AttributeSet attrs) {
-		return createFromXmlInner(resources, parser, attrs, null);
-	}
-
-	public static Drawable createFromXmlInner(Resources resources, XmlPullParser parser, AttributeSet attrs, Theme theme) {
 		return null;
 	}
 

@@ -850,7 +850,6 @@ public class GradientDrawable extends Drawable {
 		return !mRect.isEmpty();
 	}
 
-/*	@Override
 	public void inflate(Resources r, XmlPullParser parser,
 			    AttributeSet attrs)
 	    throws XmlPullParserException, IOException {
@@ -860,8 +859,8 @@ public class GradientDrawable extends Drawable {
 		TypedArray a = r.obtainAttributes(attrs,
 						  com.android.internal.R.styleable.GradientDrawable);
 
-		super.inflateWithAttributes(r, parser, a,
-					    com.android.internal.R.styleable.GradientDrawable_visible);
+		// super.inflateWithAttributes(r, parser, a,
+		// 			    com.android.internal.R.styleable.GradientDrawable_visible);
 
 		int shapeType = a.getInt(
 		    com.android.internal.R.styleable.GradientDrawable_shape, RECTANGLE);
@@ -1078,7 +1077,7 @@ public class GradientDrawable extends Drawable {
 		}
 
 		mGradientState.computeOpacity();
-	}*/
+	}
 
 	private static float getFloatOrFraction(TypedArray a, int index, float defaultValue) {
 		TypedValue tv = a.peekValue(index);
