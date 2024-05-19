@@ -1435,9 +1435,7 @@ public class View implements Drawable.Callback {
 
 	protected native boolean native_getMatrix(long widget, long matrix);
 	public Matrix getMatrix() {
-		Matrix matrix = new Matrix();
-		native_getMatrix(widget, matrix.native_instance);
-		return matrix;
+		return Matrix.IDENTITY_MATRIX;
 	}
 
 	protected static final int[] EMPTY_STATE_SET = new int[0];
