@@ -30,6 +30,10 @@ public class Dialog implements Window.Callback, DialogInterface {
 		window.native_window = nativePtr;
 	}
 
+	public Dialog(Context context) {
+		this(context, 0);
+	}
+
 	public final boolean requestWindowFeature(int featureId) {
 		return false;
 	}
@@ -58,6 +62,10 @@ public class Dialog implements Window.Callback, DialogInterface {
 
 	public void setOnDismissListener(OnDismissListener onDismissListener) {
 		this.onDismissListener = onDismissListener;
+	}
+
+	public View findViewById(int id) {
+		return window.findViewById(id);
 	}
 
 	public void show() {

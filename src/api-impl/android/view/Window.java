@@ -101,4 +101,9 @@ public class Window {
 	public void setFormat(int format) {}
 
 	public void setLayout(int dummy, int dummy2) {}
+
+	public WindowManager getWindowManager() {
+		return new WindowManagerImpl();
+	}
+
 }

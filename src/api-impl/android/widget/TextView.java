@@ -126,9 +126,20 @@ public class TextView extends View {
 	}
 
 	public void setHintTextColor(ColorStateList colorStateList) {}
+	public void setHintTextColor(int i) {}
 	public void setLinkTextColor(ColorStateList colorStateList) {}
 
 	public void setSingleLine() {}
+	public void setSelection(int i) {}
+	public void setSelection(int i, int j) {}
+
+	public int getSelectionStart() {
+		return 0;
+	}
+
+	public int getSelectionEnd() {
+		return 0;
+	}
 
 	public void setEllipsize(TextUtils.TruncateAt truncateAt) {}
 
@@ -245,4 +256,6 @@ public class TextView extends View {
 	public void setCompoundDrawablesWithIntrinsicBounds(int left, int top, int right, int bottom) {}
 
 	public void setCompoundDrawablesWithIntrinsicBounds(Drawable left, Drawable top, Drawable right, Drawable bottom) {}
+
+	public void setHint(CharSequence s) {}
 }
