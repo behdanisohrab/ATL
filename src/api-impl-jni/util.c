@@ -108,6 +108,7 @@ void set_up_handle_cache(JNIEnv *env)
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 	handle_cache.view.onDraw = _METHOD(handle_cache.view.class, "onDraw", "(Landroid/graphics/Canvas;)V");
+	handle_cache.view.draw = _METHOD(handle_cache.view.class, "draw", "(Landroid/graphics/Canvas;)V");
 	handle_cache.view.onMeasure = _METHOD(handle_cache.view.class, "onMeasure", "(II)V");
 	handle_cache.view.onLayout = _METHOD(handle_cache.view.class, "onLayout", "(ZIIII)V");
 	handle_cache.view.getMeasuredWidth = _METHOD(handle_cache.view.class, "getMeasuredWidth", "()I");

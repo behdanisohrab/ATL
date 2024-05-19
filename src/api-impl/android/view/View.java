@@ -900,6 +900,9 @@ public class View implements Drawable.Callback {
 	}
 
 	public void onDraw(Canvas canvas) {}
+	public void draw(Canvas canvas) {
+		onDraw(canvas);
+	}
 
 	public View(Context context) {
 		this(context, null);

@@ -175,8 +175,9 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 	(*env)->GetJavaVM(env, &jvm);
 	wrapper->jvm = jvm;
 	wrapper->jobj = _REF(jobj);
-	jmethodID draw_method = _METHOD(_CLASS(jobj), "onDraw", "(Landroid/graphics/Canvas;)V");
-	if (draw_method != handle_cache.view.onDraw) {
+	jmethodID on_draw_method = _METHOD(_CLASS(jobj), "onDraw", "(Landroid/graphics/Canvas;)V");
+	jmethodID draw_method = _METHOD(_CLASS(jobj), "draw", "(Landroid/graphics/Canvas;)V");
+	if (on_draw_method != handle_cache.view.onDraw || draw_method != handle_cache.view.draw) {
 		wrapper->draw_method = draw_method;
 
 		GtkWidget *sk_area = sk_area_new();

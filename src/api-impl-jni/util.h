@@ -62,6 +62,7 @@ struct handle_cache {
 		jclass class;
 		jmethodID setLayoutParams;
 		jmethodID onDraw;
+		jmethodID draw;
 		jmethodID onMeasure;
 		jmethodID onLayout;
 		jmethodID getMeasuredWidth;
