@@ -252,6 +252,10 @@ public class Drawable {
 
 	protected void onBoundsChange(Rect bounds) {}
 
+	public void setDither(boolean dither) {}
+
+	public void setAutoMirrored(boolean mirrored) {}
+
 	protected static native long native_paintable_from_path(String path);
 	protected native long native_constructor();
 	protected native void native_invalidate(long paintable);

@@ -10,6 +10,7 @@ hax_jar = jar('hax', [
               	'android/animation/ArgbEvaluator.java',
               	'android/animation/LayoutTransition.java',
               	'android/animation/ObjectAnimator.java',
+              	'android/animation/PropertyValuesHolder.java',
               	'android/animation/StateListAnimator.java',
               	'android/animation/TimeInterpolator.java',
               	'android/animation/TypeEvaluator.java',

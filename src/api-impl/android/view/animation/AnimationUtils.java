@@ -8,4 +8,8 @@ public class AnimationUtils {
 	public static long currentAnimationTimeMillis() {
 		return System.currentTimeMillis();
 	}
+
+	public static Interpolator loadInterpolator(Context context, int dummy) {
+		return null;
+	}
 }

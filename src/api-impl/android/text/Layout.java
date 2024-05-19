@@ -1,5 +1,7 @@
 package android.text;
 
+import android.graphics.Canvas;
+
 public class Layout {
 	
 	public enum Alignment {
@@ -23,4 +25,6 @@ public class Layout {
 	public int getWidth() {return 10;}
 
 	public int getHeight() {return 10;}
+
+	public void draw(Canvas canvas) {}
 }

@@ -1,7 +1,5 @@
 package android.animation;
 
-final class PropertyValuesHolder{}
-
 public class ValueAnimator extends Animator {
 
 	public static ValueAnimator ofFloat(float... values) {
@@ -43,6 +41,7 @@ public class ValueAnimator extends Animator {
 	public void setRepeatMode(int value) {}
 	public void cancel() {}
 	public void setEvaluator(TypeEvaluator evaluator) {}
+	public void setStartDelay(long startDelay) {}
 
 	/**
 	 * Implementors of this interface can add themselves as update listeners

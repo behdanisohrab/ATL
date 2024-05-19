@@ -33,4 +33,6 @@ public class ObjectAnimator extends ValueAnimator {
 
 	public void setAutoCancel(boolean autoCancel) {}
 
+	public void setPropertyName(String propertyName) {}
+
 }
