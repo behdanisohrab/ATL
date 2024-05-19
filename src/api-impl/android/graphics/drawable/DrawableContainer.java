@@ -1,6 +1,7 @@
 package android.graphics.drawable;
 
 import android.content.res.Resources;
+import android.graphics.Canvas;
 
 public class DrawableContainer extends Drawable {
 
@@ -61,6 +62,26 @@ public class DrawableContainer extends Drawable {
 				System.arraycopy(drawables, 0, newDrawables, 0, oldSize);
 				drawables = newDrawables;
 		}
+	}
+
+	@Override
+	public void draw(Canvas canvas) {
+		state.drawables[curIndex].draw(canvas);
+	}
+
+	@Override
+	public int getIntrinsicHeight() {
+		return state.drawables[curIndex].getIntrinsicHeight();
+	}
+
+	@Override
+	public int getIntrinsicWidth() {
+		return state.drawables[curIndex].getIntrinsicWidth();
+	}
+
+	@Override
+	public void setBounds(int left, int top, int right, int bottom) {
+		state.drawables[curIndex].setBounds(left, top, right, bottom);
 	}
 
 }
