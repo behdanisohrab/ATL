@@ -2,23 +2,34 @@ package android.animation;
 
 public class ValueAnimator extends Animator {
 
+	private AnimatorUpdateListener update_listener;
+	private Object value_end;
+
 	public static ValueAnimator ofFloat(float... values) {
-		return new ValueAnimator();
+		ValueAnimator animator = new ValueAnimator();
+		animator.value_end = values[values.length - 1];
+		return animator;
 	}
 
 	public static ValueAnimator ofObject(TypeEvaluator evaluator, Object[] values) {
-		return new ValueAnimator();
+		ValueAnimator animator = new ValueAnimator();
+		animator.value_end = values[values.length - 1];
+		return animator;
 	}
 
 	public static ValueAnimator ofInt(int... values) {
-		return new ValueAnimator();
+		ValueAnimator animator = new ValueAnimator();
+		animator.value_end = values[values.length - 1];
+		return animator;
 	}
 
 	public ValueAnimator setDuration(long duration) {
 		return this;
 	}
 
-	public void addUpdateListener(AnimatorUpdateListener listener) {}
+	public void addUpdateListener(AnimatorUpdateListener listener) {
+		this.update_listener = listener;
+	}
 
 	public static long getFrameDelay() {
 		return 20; // 20ms frame interval
@@ -34,14 +45,29 @@ public class ValueAnimator extends Animator {
 	public int getRepeatCount() {return 0;}
 	public int getRepeatMode() {return 0;}
 	public void setInterpolator(TimeInterpolator interpolator) {}
-	public void setFloatValues(float[] values) {}
+	public void setFloatValues(float[] values) {
+		value_end = values[values.length - 1];
+	}
 	public boolean isRunning() {return false;}
-	public void setIntValues(int[] values) {}
+	public void setIntValues(int[] values) {
+		value_end = values[values.length - 1];
+	}
 	public void setRepeatCount(int value) {}
 	public void setRepeatMode(int value) {}
 	public void cancel() {}
 	public void setEvaluator(TypeEvaluator evaluator) {}
 	public void setStartDelay(long startDelay) {}
+
+	@Override
+	public void start() {
+		if (update_listener != null)
+			update_listener.onAnimationUpdate(this);
+		super.start();
+	}
+
+	public Object getAnimatedValue() {
+		return value_end;
+	}
 
 	/**
 	 * Implementors of this interface can add themselves as update listeners
