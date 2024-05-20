@@ -515,7 +515,7 @@ JNIEXPORT jboolean JNICALL Java_android_view_View_native_1getGlobalVisibleRect(J
 		return false;
 	_SET_INT_FIELD(rect, "left", point_out.x + off_x);
 	_SET_INT_FIELD(rect, "top", point_out.y + off_y);
-	point_in = (graphene_point_t){gtk_widget_get_width(widget), gtk_widget_get_height(widget)};
+	point_in = (graphene_point_t){Java_android_view_View_getWidth(env, this), Java_android_view_View_getHeight(env, this)};
 	ret = gtk_widget_compute_point(widget, window, &point_in, &point_out);
 	if (!ret)
 		return false;
