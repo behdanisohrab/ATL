@@ -51,6 +51,14 @@ void _gdb_get_java_stack_trace(void)
 	(*env)->ExceptionDescribe(env);
 }
 
+void _gdb_force_java_stack_trace(void)
+{
+	JNIEnv *env = get_jni_env();
+	(*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/Exception"), "forced stack trace");
+	(*env)->ExceptionDescribe(env);
+	(*env)->ExceptionClear(env);
+}
+
 void set_up_handle_cache(JNIEnv *env)
 {
 	(*env)->GetJavaVM(env, &jvm);
