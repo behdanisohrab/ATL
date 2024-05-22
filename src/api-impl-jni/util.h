@@ -106,6 +106,10 @@ struct handle_cache {
 		jmethodID draw;
 		jmethodID setBounds;
 	} drawable;
+	struct {
+		jclass class;
+		jmethodID putExtraCharSequence;
+	} intent;
 };
 
 extern struct handle_cache handle_cache;

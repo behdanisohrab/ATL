@@ -191,6 +191,7 @@ struct jni_callback_data {
 	gboolean install;
 	char *prgname;
 	char **extra_jvm_options;
+	char **extra_string_keys;
 };
 
 static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* hint, struct jni_callback_data *d)
@@ -425,8 +426,30 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
+	if(d->extra_string_keys) {
+		GError *error = NULL;
+		GRegex *regex = g_regex_new("(?<!\\\\)=", 0, 0, &error);
+		if (!regex) {
+			fprintf(stderr, "g_regex_new error: '%s'\n", error->message);
+			exit(1);
+		}
 
-	/* -- set the window title and (FIXME) app icon -- */
+		jobject intent = _GET_OBJ_FIELD(activity_object, "intent", "Landroid/content/Intent;");
+
+		for(char **arg = d->extra_string_keys; *arg; arg++) {
+			gchar **keyval = g_regex_split_full(regex, *arg, -1, 0, 0, 2, NULL);
+			if(!keyval || !keyval[0] || !keyval[1]) {
+				fprintf(stderr, "extra string arg not in 'key=value' format: '%s'\n", *arg);
+				exit(1);
+			}
+			(*env)->CallObjectMethod(env, intent, handle_cache.intent.putExtraCharSequence, _JSTRING(keyval[0]), _JSTRING(keyval[1]));
+			g_strfreev(keyval);
+		}
+		g_regex_unref(regex);
+		g_strfreev(d->extra_string_keys);
+	}
+
+	/* -- set the window title and app icon -- */
 
 	package_name = _CSTRING((*env)->CallObjectMethod(env, activity_object, handle_cache.context.get_package_name));
 	if((*env)->ExceptionCheck(env))
@@ -590,6 +613,14 @@ void init_cmd_parameters(GApplication *app, struct jni_callback_data *d)
       .arg_data = &d->extra_jvm_options,
       .description = "install .desktop file for the given apk",
     },
+    {
+      .long_name = "extra-string-key",
+      .short_name = 'e',
+      .flags = 0,
+      .arg = G_OPTION_ARG_STRING_ARRAY,
+      .arg_data = &d->extra_string_keys,
+      .description = "pass a string extra (-e key=value)",
+    },
     {NULL}
   };
 
@@ -618,6 +649,7 @@ int main(int argc, char **argv)
 	callback_data->install = FALSE;
 	callback_data->prgname = argv[0];
 	callback_data->extra_jvm_options = NULL;
+	callback_data->extra_string_keys = NULL;
 
 	app = gtk_application_new("com.example.demo_application", G_APPLICATION_NON_UNIQUE | G_APPLICATION_HANDLES_OPEN | G_APPLICATION_CAN_OVERRIDE_APP_ID);
 

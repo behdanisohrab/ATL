@@ -157,6 +157,9 @@ void set_up_handle_cache(JNIEnv *env)
 	handle_cache.drawable.class = _REF((*env)->FindClass(env, "android/graphics/drawable/Drawable"));
 	handle_cache.drawable.draw = _METHOD(handle_cache.drawable.class, "draw", "(Landroid/graphics/Canvas;)V");
 	handle_cache.drawable.setBounds = _METHOD(handle_cache.drawable.class, "setBounds", "(IIII)V");
+
+	handle_cache.intent.class = _REF((*env)->FindClass(env, "android/content/Intent"));
+	handle_cache.intent.putExtraCharSequence = _METHOD(handle_cache.intent.class, "putExtra", "(Ljava/lang/String;Ljava/lang/CharSequence;)Landroid/content/Intent;");
 }
 
 void extract_from_apk(const char *path, const char *target) {
