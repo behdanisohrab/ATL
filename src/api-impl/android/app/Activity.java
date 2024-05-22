@@ -8,6 +8,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,10 +23,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManagerImpl;
-import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
-import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
-import java.io.IOException;
-import java.io.InputStream;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -51,16 +49,27 @@ public class Activity extends ContextWrapper implements Window.Callback {
 	 *
 	 * @param className  class name of activity or null
 	 * @return  instance of main activity class
+	 * @throws Exception 
 	 */
-	private static Activity createMainActivity(String className, long native_window) throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
+	private static Activity createMainActivity(String className, long native_window) throws Exception {
 		if (className == null) {
-			InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
-			AndroidManifestBlock block = AndroidManifestBlock.load(inStream);
-			className = block.getMainActivity().searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString();
+			XmlResourceParser parser = Context.this_application.getAssets().openXmlResourceParser("AndroidManifest.xml");
+			for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
+				if (parser.getEventType() == XmlResourceParser.START_TAG && "activity".equals(parser.getName())) {
+					className = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name");
+				}
+				// check if it is the main activity
+				if (parser.getEventType() == XmlResourceParser.START_TAG && "action".equals(parser.getName())) {
+					if ("android.intent.action.MAIN".equals(parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name"))) {
+						break;
+					}
+				}
+			}
+			parser.close();
 			if(className.indexOf('.') == -1)
 				className = "." + className;
 			if (className.startsWith("."))
-				className = block.getPackageName() + className;
+				className = Context.this_application.getPackageName() + className;
 		} else {
 			className = className.replace('/', '.');
 		}
@@ -76,13 +85,30 @@ public class Activity extends ContextWrapper implements Window.Callback {
 		layout_inflater = new LayoutInflater();
 		intent = new Intent();
 
-		ResXmlAttribute label;
-		if((label = manifest.getActivityByName(getClass().getName()).searchAttributeByResourceId(AndroidManifestBlock.ID_label)) != null
-		   || (label = manifest.getApplicationElement().searchAttributeByResourceId(AndroidManifestBlock.ID_label)) != null) {
-			if(label.getValueType() == com.reandroid.arsc.value.ValueType.STRING)
-				setTitle(label.getValueAsString());
-			else
-				setTitle(getString(label.getData()));
+		CharSequence label = null;
+		CharSequence app_label = null;
+		try (XmlResourceParser parser = getAssets().openXmlResourceParser("AndroidManifest.xml")) {
+			for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
+				if (parser.getEventType() == XmlResourceParser.START_TAG && "application".equals(parser.getName())) {
+					TypedArray a = obtainStyledAttributes(parser, R.styleable.AndroidManifestApplication);
+					app_label = a.getText(R.styleable.AndroidManifestApplication_label);
+					a.recycle();
+				} else if (parser.getEventType() == XmlResourceParser.START_TAG && "activity".equals(parser.getName())) {
+					if (getClass().getName().equals(parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name"))) {
+						TypedArray a = obtainStyledAttributes(parser, R.styleable.AndroidManifestActivity);
+						label = a.getText(R.styleable.AndroidManifestActivity_label);
+						a.recycle();
+						break;
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (label != null) {
+			setTitle(label);
+		} else if (app_label != null) {
+			setTitle(app_label);
 		}
 	}
 

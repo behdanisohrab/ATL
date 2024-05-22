@@ -22,10 +22,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 
-import com.reandroid.arsc.chunk.xml.ResXmlDocument;
-import com.reandroid.arsc.chunk.xml.ResXmlPullParser;
-import com.reandroid.arsc.value.ValueItem;
-
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,6 +30,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -112,10 +109,17 @@ public final class AssetManager {
 			//            ensureSystemAssets()
 			try {
 				Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources("resources.arsc");
+				ArrayList<String> paths = new ArrayList<String>();
+				paths.add(null);  // reserve first slot for framework-res.apk
 				while (resources.hasMoreElements()) {
-					URL resource = resources.nextElement();
-					String path = resource.getPath();
-					if (!path.contains("com.google.android.gms")) { // ignore MicroG .apk
+					String path = resources.nextElement().getPath();
+					if (path.contains("framework-res.apk"))  // needs to be first, so it can be overridden
+						paths.set(0, path);
+					else if (!path.contains("com.google.android.gms"))  // microg resources can not be merged
+						paths.add(path);
+				}
+				for (String path : paths) {
+					if (path != null) {
 						path = path.substring(path.indexOf("file:") + 5, path.indexOf("!/resources.arsc"));
 						addAssetPath(path);
 					}
@@ -759,18 +763,7 @@ public final class AssetManager {
 		if (defStyleRes == 0 && theme != 0 && loadThemeAttributeValue(theme, defStyleAttr, value, true) >= 0)
 			defStyleRes = value.data;
 		if (defStyleRes == 0 && set != null) {
-			if (parser instanceof ResXmlPullParser) {
-				ValueItem valueItem = ((ResXmlPullParser)parser).getAttribute(null, "style");
-				if (valueItem != null) {
-					value.type = valueItem.getType();
-					value.data = valueItem.getData();
-					if (theme != 0 && (value.type == TypedValue.TYPE_ATTRIBUTE))
-						loadThemeAttributeValue(theme, value.data, value, true);
-					defStyleRes = value.data;
-				}
-			} else {
-				defStyleRes = parser.getStyleAttribute();
-			}
+			defStyleRes = parser.getStyleAttribute();
 		}
 
 		outIndices[0] = 0;
@@ -798,14 +791,8 @@ public final class AssetManager {
 					value.assetCookie = -1;
 					found = true;
 				} else if (xmlCache.containsKey(resId)) {
-					if (parser instanceof ResXmlPullParser) {
-						ValueItem valueItem = ((ResXmlPullParser)parser).getResXmlAttributeAt(xmlCache.get(resId));
-						value.type = valueItem.getType();
-						value.data = valueItem.getData();
-					} else {
-						value.type = XmlBlock.nativeGetAttributeDataType(((XmlBlock.Parser)parser).mParseState, xmlCache.get(resId));
-						value.data = XmlBlock.nativeGetAttributeData(((XmlBlock.Parser)parser).mParseState, xmlCache.get(resId));
-					}
+					value.type = XmlBlock.nativeGetAttributeDataType(((XmlBlock.Parser)parser).mParseState, xmlCache.get(resId));
+					value.data = XmlBlock.nativeGetAttributeData(((XmlBlock.Parser)parser).mParseState, xmlCache.get(resId));
 					value.resourceId = 0;
 					value.assetCookie = -1;
 					if (value.type != TypedValue.TYPE_ATTRIBUTE)

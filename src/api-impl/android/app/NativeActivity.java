@@ -21,6 +21,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.content.res.XmlResourceParser;
 // import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,13 +35,8 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
-import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
-import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
-import com.reandroid.arsc.chunk.xml.ResXmlElement;
 // import android.view.inputmethod.InputMethodManager;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Convenience for implementing an activity that will be implemented
@@ -166,26 +162,28 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 		}*/
 
 		// parse AndroidManifest.xml to get name and entry of native lib
-		try (InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml")) {
-			for (ResXmlElement activity : AndroidManifestBlock.load(inStream).listActivities()) {
-				if (!getClass().getName().equals(activity.searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString())) {
-					continue;
-				}
-				for (ResXmlElement metaData : activity.listElements(AndroidManifestBlock.TAG_meta_data)) {
-					ResXmlAttribute name = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_name);
-					ResXmlAttribute value = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_value);
-					if (name == null || value == null) {
+		try (XmlResourceParser parser = getAssets().openXmlResourceParser("AndroidManifest.xml")) {
+			for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
+				if (parser.getEventType() == XmlResourceParser.START_TAG && "activity".equals(parser.getName())) {
+					if (!getClass().getName().equals(parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name"))) {
 						continue;
 					}
-					if (META_DATA_LIB_NAME.equals(name.getValueAsString())) {
-						libname = value.getValueAsString();
+					for (; !(parser.getEventType() == XmlResourceParser.END_TAG && "activity".equals(parser.getName())); parser.next()) {
+						if (parser.getEventType() == XmlResourceParser.START_TAG && "meta-data".equals(parser.getName())) {
+							String name = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name");
+							String value = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "value");
+							if (META_DATA_LIB_NAME.equals(name)) {
+								libname = value;
+							}
+							if (META_DATA_FUNC_NAME.equals(name)) {
+								funcname = value;
+							}
+						}
 					}
-					if (META_DATA_FUNC_NAME.equals(name.getValueAsString())) {
-						funcname = value.getValueAsString();
-					}
+					break;
 				}
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

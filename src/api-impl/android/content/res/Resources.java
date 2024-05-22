@@ -34,8 +34,6 @@ import android.util.LongSparseArray;
 import android.util.Slog;
 import android.util.TypedValue;
 import com.android.internal.util.XmlUtils;
-import com.reandroid.arsc.chunk.xml.ResXmlPullParser;
-import com.reandroid.arsc.value.ValueItem;
 // import android.view.DisplayAdjustments;
 import java.io.IOException;
 import java.io.InputStream;

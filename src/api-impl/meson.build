@@ -514,9 +514,6 @@ hax_jar = jar('hax', [
               	'javax/microedition/khronos/opengles/GL11ExtensionPack.java',
               	'org/apache/harmony/xnet/provider/jsse/SSLParametersImpl.java',
               ],
-              dependencies: [
-              	declare_dependency(link_with: hax_arsc_lib_jar)
-              ],
               java_args: [
               	'-bootclasspath', bootclasspath,
               	'-source', '1.8', '-target', '1.8',

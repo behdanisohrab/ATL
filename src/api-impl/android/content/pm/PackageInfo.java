@@ -16,22 +16,17 @@
 
 package android.content.pm;
 
+import android.R;
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.content.res.XmlResourceParser;
 import android.util.TypedValue;
-
-import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
-import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
-import com.reandroid.arsc.chunk.xml.ResXmlElement;
-
-import java.io.InputStream;
-import java.io.IOException;
 
 /**
  * Overall information about the contents of a package.  This corresponds
  * to all of the information collected from AndroidManifest.xml.
  */
 public class PackageInfo {
-	private static AndroidManifestBlock manifest = null; // TODO: only ever load this once, in one place
 
 	/**
 	 * The name of this package.  From the &lt;manifest&gt; tag's "name"
@@ -242,64 +237,55 @@ public class PackageInfo {
 	 */
 	public String requiredAccountType;
 
-	static {
-		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
+	public PackageInfo() {
+		applicationInfo = new ApplicationInfo();
 		try {
-			manifest = AndroidManifestBlock.load(inStream);
-		} catch (IOException e) {
+			XmlResourceParser parser = Context.this_application.getAssets().openXmlResourceParser("AndroidManifest.xml");
+			for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
+				if (parser.getEventType() == XmlResourceParser.START_TAG && "manifest".equals(parser.getName())) {
+					packageName = parser.getAttributeValue(null, "package");
+					versionCode = parser.getAttributeIntValue("http://schemas.android.com/apk/res/android", "versionCode", -1);
+					versionName = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "versionName");
+				}
+				if (parser.getEventType() == XmlResourceParser.START_TAG && "application".equals(parser.getName())) {
+					for (; !(parser.getEventType() == XmlResourceParser.END_TAG && "application".equals(parser.getName())); parser.next()) {
+						if (parser.getEventType() == XmlResourceParser.START_TAG && "meta-data".equals(parser.getName())) {
+							TypedArray a = Context.this_application.getResources().obtainAttributes(parser, R.styleable.AndroidManifestMetaData);
+							String metadata_name = a.getString(R.styleable.AndroidManifestMetaData_name);
+							if (metadata_name == null || !a.hasValue(R.styleable.AndroidManifestMetaData_value)) {
+								a.recycle();
+								continue;
+							}
+
+							TypedValue metadata_value = new TypedValue();
+							a.getValue(R.styleable.AndroidManifestMetaData_value, metadata_value);
+							a.recycle();
+
+							switch(metadata_value.type) {
+								case TypedValue.TYPE_STRING:
+									System.out.println("PackageInfo(): applicationInfo.metaData.putString("+metadata_name+", "+metadata_value.string+")");
+									applicationInfo.metaData.putString(metadata_name, metadata_value.string.toString());
+									break;
+								case TypedValue.TYPE_INT_BOOLEAN:
+									System.out.println("PackageInfo(): applicationInfo.metaData.putBoolean("+metadata_name+", "+(metadata_value.data != 0)+")");
+									applicationInfo.metaData.putBoolean(metadata_name, metadata_value.data != 0);
+									break;
+								case TypedValue.TYPE_INT_DEC:
+								case TypedValue.TYPE_INT_HEX:
+									System.out.println("PackageInfo(): applicationInfo.metaData.putInt("+metadata_name+", "+metadata_value.data+")");
+									applicationInfo.metaData.putInt(metadata_name, metadata_value.data);
+									break;
+								default:
+									System.out.println("PackageInfo(): metaData: "+metadata_name+": type "+metadata_value.type+" not handled!");
+									break;
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public PackageInfo() {
-		packageName = manifest.getPackageName();
-		versionCode = manifest.getVersionCode();
-		versionName = manifest.getVersionName();
-
-		System.out.println("PackageInfo()");
-
-		applicationInfo = new ApplicationInfo();
-
-		ResXmlElement application = manifest.getApplicationElement();
-		for (ResXmlElement metaData : application.listElements(AndroidManifestBlock.TAG_meta_data)) {
-			ResXmlAttribute name = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_name);
-			ResXmlAttribute value = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_value);
-			if (name == null || value == null) {
-				continue;
-			}
-
-			String metadata_name = name.getValueAsString();
-			TypedValue metadata_value = new TypedValue();
-			int data = value.getData();
-
-			try {
-				Context.r.getValue(data, metadata_value, true);
-			} catch (android.content.res.Resources.NotFoundException e) {
-				System.out.println("PackageInfo(): error getting value for '"+metadata_name+"'");
-				e.printStackTrace();
-				continue;
-			}
-
-			switch(metadata_value.type) {
-				case TypedValue.TYPE_STRING:
-					System.out.println("PackageInfo(): applicationInfo.metaData.putString("+metadata_name+", "+metadata_value.string+")");
-					applicationInfo.metaData.putString(metadata_name, value.getValueAsString());
-					break;
-				case TypedValue.TYPE_INT_BOOLEAN:
-					System.out.println("PackageInfo(): applicationInfo.metaData.putBoolean("+metadata_name+", "+metadata_value.data != 0+")");
-					applicationInfo.metaData.putBoolean(metadata_name, metadata_value.data != 0);
-					break;
-				case TypedValue.TYPE_INT_DEC:
-				case TypedValue.TYPE_INT_HEX:
-					System.out.println("PackageInfo(): applicationInfo.metaData.putInt("+metadata_name+", "+metadata_value.data+")");
-					applicationInfo.metaData.putInt(metadata_name, metadata_value.data);
-					break;
-				default:
-					System.out.println("PackageInfo(): metaData: "+metadata_name+": type "+metadata_value.type+" not handled!");
-					break;
-			}
-		}
- 
 		System.out.println("PackageInfo(): packageName: >"+packageName+"<, versionCode: >"+versionCode+"<, versionName: >"+versionName+"<");
 	}
 

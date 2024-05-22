@@ -1,5 +1,6 @@
 package android.content;
 
+import android.R;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlarmManager;
@@ -15,6 +16,7 @@ import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.content.res.XmlResourceParser;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
@@ -43,9 +45,6 @@ import android.view.WindowManagerImpl;
 import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.InputMethodManager;
 
-import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
-import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -68,7 +67,6 @@ public class Context extends Object {
 	public static final String WINDOW_SERVICE = "window";
 	public static final String INPUT_METHOD_SERVICE = "input";
         public static final String POWER_SERVICE = "power";
-	public static AndroidManifestBlock manifest = null;
 
 	public static Vibrator vibrator;
 
@@ -101,33 +99,51 @@ public class Context extends Object {
 		theme = r.newTheme();
 		application_info = new ApplicationInfo();
 		application_info.dataDir = Environment.getExternalStorageDirectory().getAbsolutePath();
-		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
-		try {
-			manifest = AndroidManifestBlock.load(inStream);
-			Integer targetSdkVersion = manifest.getTargetSdkVersion();
-			if (targetSdkVersion != null)
-				application_info.targetSdkVersion = targetSdkVersion;
-		} catch (IOException e) {
+		try (XmlResourceParser parser = assets.openXmlResourceParser("AndroidManifest.xml")) {
+			for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
+				if (parser.getEventType() == XmlResourceParser.START_TAG && "uses-sdk".equals(parser.getName())) {
+					application_info.targetSdkVersion = parser.getAttributeIntValue(null, "targetSdkVersion", 0);
+				}
+				if (parser.getEventType() == XmlResourceParser.START_TAG && "manifest".equals(parser.getName())) {
+					application_info.packageName = parser.getAttributeValue(null, "package");
+				}
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	protected static native void native_updateConfig(Configuration config);
 
-	static Application createApplication(long native_window) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+	static Application createApplication(long native_window) throws Exception {
 		Application application;
-		ResXmlAttribute application_name = manifest.getApplicationElement().searchAttributeByResourceId(AndroidManifestBlock.ID_name);
-		String className = (application_name != null) ? application_name.getValueAsString() : "android.app.Application";
+		CharSequence application_name = null;
+		int application_theme = 0;
+		String packageName = null;
+		XmlResourceParser parser = assets.openXmlResourceParser("AndroidManifest.xml");
+		for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
+			if (parser.getEventType() == XmlResourceParser.START_TAG && "manifest".equals(parser.getName())) {
+				packageName = parser.getAttributeValue(null, "package");
+			}
+			if (parser.getEventType() == XmlResourceParser.START_TAG && "application".equals(parser.getName())) {
+				TypedArray a = r.obtainAttributes(parser, R.styleable.AndroidManifestApplication);
+				application_name = a.getText(R.styleable.AndroidManifestApplication_name);
+				application_theme = a.getResourceId(R.styleable.AndroidManifestApplication_theme, 0);
+				a.recycle();
+			}
+		}
+		parser.close();
+
+		String className = (application_name != null) ? application_name.toString() : "android.app.Application";
 		if(className.indexOf('.') == -1)
 			className = "." + className;
 		if (className.startsWith("."))
-			className = manifest.getPackageName() + className;
+			className = packageName + className;
 		Class<? extends Application> cls = Class.forName(className).asSubclass(Application.class);
 		Constructor<? extends Application> constructor = cls.getConstructor();
 		application = constructor.newInstance();
-		ResXmlAttribute application_theme = manifest.getApplicationElement().searchAttributeByResourceId(AndroidManifestBlock.ID_theme);
-		if (application_theme != null)
-			application.setTheme(application_theme.getData());
+		if (application_theme != 0)
+			application.setTheme(application_theme);
 		application.native_window = native_window;
 		this_application = application;
 		return application;
@@ -228,7 +244,7 @@ public class Context extends Object {
 	}
 
 	public String getPackageName() {
-		return manifest.getPackageName();
+		return application_info.packageName;
 	}
 
 	public String getPackageCodePath() {

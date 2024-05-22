@@ -2,18 +2,15 @@ package android.app;
 
 import android.os.Bundle;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import com.reandroid.apk.AndroidFrameworks;
-import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
-import java.io.InputStream;
-import java.io.IOException;
-
+import android.content.res.TypedArray;
+import android.content.res.XmlResourceParser;
+import android.R;
 import android.content.Context;
 import android.content.ContextWrapper;
 
 public class Application extends ContextWrapper {
 	private String app_icon_path = null;
+	private String app_label = null;
 	public long native_window;
 
 	private String get_app_icon_path() {
@@ -21,8 +18,7 @@ public class Application extends ContextWrapper {
 	}
 
 	private String get_app_label() {
-		int app_label_resid = manifest.getApplicationElement().searchAttributeByResourceId(AndroidManifestBlock.ID_label).getData();
-		return getResources().getString(app_label_resid);
+		return app_label;
 	}
 
 	public interface ActivityLifecycleCallbacks {
@@ -52,12 +48,16 @@ public class Application extends ContextWrapper {
 	public Application() {
 		super(new Context());
 		/* TODO: is this the right place to put this? */
-		InputStream inStream = ClassLoader.getSystemClassLoader().getResourceAsStream("AndroidManifest.xml");
-		try {
-			AndroidManifestBlock manifest = AndroidManifestBlock.load(inStream);
-			int app_icon_resid = manifest.getIconResourceId();
-			app_icon_path = r.getString(app_icon_resid);
-		} catch (IOException e) {
+		try (XmlResourceParser parser = getAssets().openXmlResourceParser("AndroidManifest.xml")) {
+			for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
+				if (parser.getEventType() == XmlResourceParser.START_TAG && "application".equals(parser.getName())) {
+					TypedArray a = getResources().obtainAttributes(parser, R.styleable.AndroidManifestApplication);
+					app_icon_path = a.getString(R.styleable.AndroidManifestApplication_icon);
+					app_label = a.getString(R.styleable.AndroidManifestApplication_label);
+					a.recycle();
+				}
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

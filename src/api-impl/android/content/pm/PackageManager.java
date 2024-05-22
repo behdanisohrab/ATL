@@ -38,10 +38,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.reandroid.arsc.chunk.xml.AndroidManifestBlock;
-import com.reandroid.arsc.chunk.xml.ResXmlAttribute;
-import com.reandroid.arsc.chunk.xml.ResXmlElement;
-
 class IPackageInstallObserver {}
 class VerificationParams {}
 class ContainerEncryptionParams {}
@@ -1693,32 +1689,37 @@ public class PackageManager {
 	 * to modify the data returned.
 	 *
 	 * @return ProviderInfo containing information about the service.
+	 * @throws Exception 
 	 *
 	 * @see #GET_META_DATA
 	 * @see #GET_SHARED_LIBRARY_FILES
 	 */
 	public ProviderInfo getProviderInfo(ComponentName component,
-					    int flags) throws NameNotFoundException {
+					    int flags) throws Exception {
 		ProviderInfo providerInfo = new ProviderInfo();
 		if ((flags & GET_META_DATA) == GET_META_DATA) {
 			String cls = component.getClassName();
-			List<ResXmlElement> providers = Context.manifest.getApplicationElement().listElements(AndroidManifestBlock.TAG_provider);
-			for (ResXmlElement providerElement : providers) {
-				String providerName = providerElement.searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString();
-				if (providerName.startsWith(".")) {
-					providerName = Context.manifest.getPackageName() + providerName;
-				}
-				if (providerName.equals(cls)) {
-					List<ResXmlElement> metaDatas = providerElement.listElements(AndroidManifestBlock.TAG_meta_data);
-					Bundle bundle = new Bundle(metaDatas.size());
-					for (ResXmlElement metaData : metaDatas) {
-						bundle.putString(metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_name).getValueAsString(),
-										metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_value).getValueAsString());
+			XmlResourceParser parser = Context.this_application.getAssets().openXmlResourceParser("AndroidManifest.xml");
+			for(; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
+				if (parser.getEventType() == XmlResourceParser.START_TAG && "provider".equals(parser.getName())) {
+					String providerName = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name");
+					if (providerName.startsWith("."))
+						providerName = Context.this_application.getPackageName() + providerName;
+					if (!providerName.equals(cls))
+						continue;
+					Bundle bundle = new Bundle();
+					for (; !(parser.getEventType() == XmlResourceParser.END_TAG && "provider".equals(parser.getName())); parser.next()) {
+						if (parser.getEventType() == XmlResourceParser.START_TAG && "meta-data".equals(parser.getName())) {
+							String metaName = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name");
+							String metaValue = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "value");
+							bundle.putString(metaName, metaValue);
+						}
 					}
 					providerInfo.metaData = bundle;
 					break;
 				}
 			}
+			parser.close();
 		}
 		return providerInfo;
 	}
@@ -2424,23 +2425,29 @@ public class PackageManager {
 	 *
 	 * @return ContentProviderInfo Information about the provider, if found,
 	 *         else null.
+	 * @throws Exception 
 	 */
-	public ProviderInfo resolveContentProvider(String authority, int flags) {
+	public ProviderInfo resolveContentProvider(String authority, int flags) throws Exception {
 		ProviderInfo providerInfo = new ProviderInfo();
-		List<ResXmlElement> providers = Context.manifest.getApplicationElement().listElements(AndroidManifestBlock.TAG_provider);
-		for (ResXmlElement providerElement : providers) {
-			String providerAuthority = providerElement.searchAttributeByResourceId(AndroidManifestBlock.ID_authorities).getValueAsString();
-			if (providerAuthority.startsWith("."))
-				providerAuthority = Context.manifest.getPackageName() + providerAuthority;
-			if (!providerAuthority.equals(authority))
-				continue;
-			for (ResXmlElement metaData : providerElement.listElements(AndroidManifestBlock.TAG_meta_data)) {
-				ResXmlAttribute metaName = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_name);
-				ResXmlAttribute metaRes = metaData.searchAttributeByResourceId(AndroidManifestBlock.ID_resource);
-				providerInfo.metaData.putInt(metaName.getValueAsString(), metaRes.getData());
+		XmlResourceParser parser = Context.this_application.getAssets().openXmlResourceParser("AndroidManifest.xml");
+		for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
+			if (parser.getEventType() == XmlResourceParser.START_TAG && "provider".equals(parser.getName())) {
+				String providerAuthority = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "authorities");
+				if (providerAuthority.startsWith("."))
+					providerAuthority = Context.this_application.getPackageName() + providerAuthority;
+				if (!providerAuthority.equals(authority))
+					continue;
+				for (; !(parser.getEventType() == XmlResourceParser.END_TAG && "provider".equals(parser.getName())); parser.next()) {
+					if (parser.getEventType() == XmlResourceParser.START_TAG && "meta-data".equals(parser.getName())) {
+						String metaName = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name");
+						int metaRes = parser.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "resource", -1);
+						providerInfo.metaData.putInt(metaName, metaRes);
+					}
+				}
+				break;
 			}
-			break;
 		}
+		parser.close();
 		return providerInfo;
 	}
 
