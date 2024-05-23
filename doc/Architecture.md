@@ -1,5 +1,4 @@
 #### directory structure
-`src/ARSCLib/` - Java .arsc library used to parse binary xml resources in apks
 `doc/` - documentation
 `src/api-impl/` - Java code implementing the android APIs
 `src/api-impl-jni/` - C code implementing things which it doesn't make sense to do in Java (ideally this would be most things)
@@ -36,9 +35,7 @@ against)
 	2. GtkApplication glue parses the cmdline and calls `static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* hint, struct jni_callback_data *d)`
 	3. `static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* hint, struct jni_callback_data *d)`:
 		1. constructs the classpath from the following:
-			- the path to api-impl.jar (contains the following, renamed to classes{2}.dex so that art loads them)
-				- `hax_arsc_parser.dex` is dalvik bytecode implementing .arsc parsing duties (to be replaced by C code eventually)
-				- `hax.dex` contains all the implementations of android framework functions
+			- the path to api-impl.jar (contains all the implementations of android framework functions)
 			- the path to the app's apk (passed to us on cmdline), making the bytecode within (and resources.arsc, which is currently the only other file read straight from the apk) available in classpath
 			- the path to a microG apk, needed for apps with a dependency on GSF; this is specified after the app's apk so that the the app's apk is the first zip file in the classpath (needed for getting the right resources.arsc, TODO: ask for the classloader which loaded the activity that was specified on the cmdline)
 		2. contructs other options (mainly library path) for and launches the dalvik virtual machine

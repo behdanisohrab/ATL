@@ -157,21 +157,16 @@ executable('android-translation-layer', [
                                         ],
                                         install_rpath: get_option('prefix') / get_option('libdir') / 'art:' + get_option('prefix') / get_option('libdir') / 'java/dex/android_translation_layer/natives')
 
-# hax_arsc_lib.dex (named as classes2.dex so it works inside a jar)
-subdir('src/ARSCLib')
-hax_arsc_lib_dex = custom_target('hax_arsc_lib.dex', build_by_default: true, input: [hax_arsc_lib_jar], output: ['classes2.dex'],
-                                    command: ['dx', '--verbose', '--dex', '--min-sdk-version', '26', '--output='+join_paths(builddir_base, 'classes2.dex'), hax_arsc_lib_jar.full_path()])
-
 # hax.dex (named as classes.dex so it works inside a jar)
 subdir('src/api-impl')
 hax_dex = custom_target('hax.dex', build_by_default: true, input: [hax_jar], output: ['classes.dex'],
                         command: ['dx', '--verbose', '--dex', '--output='+join_paths(builddir_base, 'classes.dex'), hax_jar.full_path()])
 
 # api-impl.jar
-custom_target('api-impl.jar', build_by_default: true, input: [hax_dex, hax_arsc_lib_dex], output: ['api-impl.jar'],
+custom_target('api-impl.jar', build_by_default: true, input: [hax_dex], output: ['api-impl.jar'],
               install: true,
               install_dir : get_option('libdir') / 'java/dex/android_translation_layer',
-              command: ['jar', '-cvf', join_paths(builddir_base, 'api-impl.jar'), '-C', builddir_base, hax_dex, '-C', builddir_base, hax_arsc_lib_dex])
+              command: ['jar', '-cvf', join_paths(builddir_base, 'api-impl.jar'), '-C', builddir_base, hax_dex])
 
 #framework-res.apk
 subdir('res')
