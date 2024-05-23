@@ -266,6 +266,10 @@ public class Paint {
 
 	public void clearShadowLayer() {}
 
+	public FontMetrics getFontMetrics() {
+		return new FontMetrics();
+	}
+
 	private native long native_constructor();
 	private native void native_set_antialias(long skia_paint, boolean aa);
 	private native void native_set_color(long skia_paint, int color);

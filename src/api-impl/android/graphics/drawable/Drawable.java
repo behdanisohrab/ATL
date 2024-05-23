@@ -256,6 +256,8 @@ public class Drawable {
 
 	public void setAutoMirrored(boolean mirrored) {}
 
+	public void jumpToCurrentState() {}
+
 	protected static native long native_paintable_from_path(String path);
 	protected native long native_constructor();
 	protected native void native_invalidate(long paintable);

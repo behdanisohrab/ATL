@@ -69,6 +69,10 @@ public class ValueAnimator extends Animator {
 		return value_end;
 	}
 
+	public float getAnimatedFraction() {
+		return 1.0f;
+	}
+
 	/**
 	 * Implementors of this interface can add themselves as update listeners
 	 * to an <code>ValueAnimator</code> instance to receive callbacks on every animation
