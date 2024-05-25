@@ -138,9 +138,10 @@ struct NativeCode * NativeCode_new(void* _dlhandle, ANativeActivity_createFunc* 
 	return this;
 }
 
-// FIXME: this is currently in libandroid.so, which is not necessarily requested by the app and therefore loaded
+// FIXME: this is in libandroid.so, should use header files
 ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface);
 void ANativeWindow_release(ANativeWindow *native_window);
+struct AssetManager * AAssetManager_fromJava(JNIEnv *env, jobject asset_manager);
 
 void NativeCode_setSurface(struct NativeCode *this, jobject _surface)
 {
@@ -334,7 +335,7 @@ jlong Java_android_app_NativeActivity_loadNativeCode(JNIEnv* env, jobject clazz,
 
 		code->native_activity.sdkVersion = sdkVersion;
 
-		code->native_activity.assetManager = NULL;//assetManagerForJavaObject(env, jAssetMgr);
+		code->native_activity.assetManager = AAssetManager_fromJava(env, jAssetMgr);
 
 		if (obbDir != NULL) {
 			code->native_activity.obbPath = (*env)->GetStringUTFChars(env, obbDir, NULL);

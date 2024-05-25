@@ -63,6 +63,9 @@ libandroid_so = shared_library('android', [
                                           soversion: 0,
                                           dependencies: [
                                           	dependency('gtk4'), dependency('jni'), dependency('vulkan'), dependency('openxr').partial_dependency(includes: true)
+                                          ],
+                                          c_args: [
+                                          	'-D_LARGEFILE64_SOURCE',
                                           ])
 
 libtranslationlayer_so = shared_library('translation_layer_main', [
@@ -142,6 +145,9 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   link_with: [ libandroid_so ],
                                                                   link_args: [
                                                                   	'-lasound'
+                                                                  ],
+                                                                  c_args: [
+                                                                  	'-D_LARGEFILE64_SOURCE',
                                                                   ])
 
 executable('android-translation-layer', [

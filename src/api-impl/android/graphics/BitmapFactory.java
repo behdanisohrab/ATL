@@ -559,12 +559,7 @@ public class BitmapFactory {
 
 		Trace.traceBegin(Trace.TRACE_TAG_GRAPHICS, "decodeBitmap");
 		try {
-			if (is instanceof AssetManager.AssetInputStream) {
-				final String fileName = ((AssetManager.AssetInputStream)is).fileName;
-				bm = new Bitmap(fileName);
-			} else {
-				bm = decodeStreamInternal(is, outPadding, opts);
-			}
+			bm = decodeStreamInternal(is, outPadding, opts);
 
 			if (bm == null && opts != null && opts.inBitmap != null) {
 				throw new IllegalArgumentException("Problem decoding into existing bitmap");

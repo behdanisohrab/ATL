@@ -124,74 +124,66 @@ JNIEXPORT jstring JNICALL Java_android_content_res_AssetManager_getResourceEntry
 /*
  * Class:     android_content_res_AssetManager
  * Method:    openAsset
- * Signature: (Ljava/lang/String;I)I
+ * Signature: (Ljava/lang/String;I)J
  */
-JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openAsset
+JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_openAsset
   (JNIEnv *, jobject, jstring, jint);
 
 /*
  * Class:     android_content_res_AssetManager
  * Method:    openAssetFd
- * Signature: (Ljava/lang/String;[J)Landroid/os/ParcelFileDescriptor;
+ * Signature: (Ljava/lang/String;I[J[J)I
  */
-JNIEXPORT jobject JNICALL Java_android_content_res_AssetManager_openAssetFd
-  (JNIEnv *, jobject, jstring, jlongArray);
-
-/*
- * Class:     android_content_res_AssetManager
- * Method:    openNonAssetFdNative
- * Signature: (ILjava/lang/String;[J)Landroid/os/ParcelFileDescriptor;
- */
-JNIEXPORT jobject JNICALL Java_android_content_res_AssetManager_openNonAssetFdNative
-  (JNIEnv *, jobject, jint, jstring, jlongArray);
+JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openAssetFd
+  (JNIEnv *, jobject, jstring, jint, jlongArray, jlongArray);
 
 /*
  * Class:     android_content_res_AssetManager
  * Method:    destroyAsset
- * Signature: (I)V
+ * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_android_content_res_AssetManager_destroyAsset
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     android_content_res_AssetManager
  * Method:    readAssetChar
- * Signature: (I)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_readAssetChar
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     android_content_res_AssetManager
  * Method:    readAsset
- * Signature: (I[BII)I
+ * Signature: (J[BJJ)I
  */
 JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_readAsset
-  (JNIEnv *, jobject, jint, jbyteArray, jint, jint);
+  (JNIEnv *, jobject, jlong, jbyteArray, jlong, jlong);
 
 /*
  * Class:     android_content_res_AssetManager
  * Method:    seekAsset
- * Signature: (IJI)J
+ * Signature: (JJI)J
  */
 JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_seekAsset
-  (JNIEnv *, jobject, jint, jlong, jint);
+  (JNIEnv *, jobject, jlong, jlong, jint);
 
 /*
  * Class:     android_content_res_AssetManager
  * Method:    getAssetLength
- * Signature: (I)J
+ * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_getAssetLength
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     android_content_res_AssetManager
  * Method:    getAssetRemainingLength
- * Signature: (I)J
+ * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_getAssetRemainingLength
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     android_content_res_AssetManager
@@ -359,14 +351,6 @@ JNIEXPORT jintArray JNICALL Java_android_content_res_AssetManager_getArrayString
  * Signature: ()V
  */
 JNIEXPORT void JNICALL Java_android_content_res_AssetManager_init
-  (JNIEnv *, jobject);
-
-/*
- * Class:     android_content_res_AssetManager
- * Method:    destroy
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_android_content_res_AssetManager_destroy
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus

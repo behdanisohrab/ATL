@@ -17,6 +17,7 @@
 package android.content.res;
 
 import android.content.Context;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -127,6 +128,7 @@ public final class AssetManager {
 			} catch (IOException e) {
 				Log.e(TAG, "failed to load resources.arsc" + e);
 			}
+			addAssetPath(android.os.Environment.getExternalStorageDirectory().getAbsolutePath());
 		}
 	}
 
@@ -308,48 +310,12 @@ public final class AssetManager {
 	 * @see #list
 	 */
 	public final InputStream open(String fileName, int accessMode) throws IOException {
-		int asset;
-		// try loading from filesystem
-		synchronized (this) {
-			if (!mOpen) {
-				throw new RuntimeException("Assetmanager has been closed");
-			}
-			asset = openAsset(fileName, accessMode);
-			if (asset >= 0) {
-				AssetInputStream res = new AssetInputStream(asset, "/assets/" + fileName);
-				incRefsLocked(res.hashCode());
-				return res;
-			}
-		}
-		// alternatively load directly from APK
-		InputStream ret = ClassLoader.getSystemClassLoader().getResourceAsStream("assets/" + fileName);
-		if(ret == null)
-			throw new FileNotFoundException("Asset file: " + fileName + ", errno: " + asset);
-
-		return ret;
+		long asset = openAsset("assets/" + fileName, accessMode);
+		return new AssetInputStream(asset);
 	}
 
-	public final AssetFileDescriptor openFd(String fileName)
-	    throws IOException {
-		int asset;
-		synchronized (this) {
-			if (!mOpen) {
-				throw new RuntimeException("Assetmanager has been closed");
-			}
-			asset = openAsset(fileName, 0);
-			if (asset < 0)
-				throw new FileNotFoundException("Asset file: " + fileName + ", errno: " + asset);
-
-			FileDescriptor fd = new FileDescriptor();
-			fd.setInt$(asset);
-			ParcelFileDescriptor pfd = new ParcelFileDescriptor(fd);
-			if (pfd != null) {
-				AssetFileDescriptor afd = new AssetFileDescriptor(pfd, 0, getAssetLength(asset));
-				afd.fileName = "/assets/" + fileName;
-				return afd;
-			}
-		}
-		throw new FileNotFoundException("Asset file: " + fileName);
+	public final AssetFileDescriptor openFd(String fileName) throws IOException {
+		return openFd_internal("assets/" + fileName, 0);
 	}
 
 	/**
@@ -415,21 +381,8 @@ public final class AssetManager {
 	 * @param accessMode Desired access mode for retrieving the data.
 	 */
 	public final InputStream openNonAsset(int cookie, String fileName, int accessMode) throws IOException {
-		int asset;
-		// try loading from filesystem
-		synchronized (this) {
-			if (!mOpen) {
-				throw new RuntimeException("Assetmanager has been closed");
-			}
-			asset = openNonAssetNative(cookie, fileName, accessMode);
-			if (asset >= 0) {
-				AssetInputStream res = new AssetInputStream(asset, fileName);
-				incRefsLocked(res.hashCode());
-				return res;
-			}
-		}
-		// alternatively load directly from APK
-		return ClassLoader.getSystemClassLoader().getResourceAsStream(fileName);
+		long asset = openAsset(fileName, accessMode);
+		return new AssetInputStream(asset);
 	}
 
 	public final AssetFileDescriptor openNonAssetFd(String fileName)
@@ -439,17 +392,33 @@ public final class AssetManager {
 
 	public final AssetFileDescriptor openNonAssetFd(int cookie,
 							String fileName) throws IOException {
+		return openFd_internal(fileName, 0);
+
+	}
+
+	private final AssetFileDescriptor openFd_internal(String fileName, int accessMode)
+							  throws IOException {
+		int asset;
 		synchronized (this) {
 			if (!mOpen) {
 				throw new RuntimeException("Assetmanager has been closed");
 			}
-			ParcelFileDescriptor pfd = openNonAssetFdNative(cookie,
-									fileName, mOffsets);
+			long[] offset = new long[1];
+			long[] length = new long[1];
+			asset = openAssetFd(fileName, accessMode, offset, length);
+			if (asset < 0)
+				throw new FileNotFoundException("file: " + fileName + ", error: " + asset);
+
+			FileDescriptor fd = new FileDescriptor();
+			fd.setInt$(asset);
+			ParcelFileDescriptor pfd = new ParcelFileDescriptor(fd);
 			if (pfd != null) {
-				return new AssetFileDescriptor(pfd, mOffsets[0], mOffsets[1]);
+				AssetFileDescriptor afd = new AssetFileDescriptor(pfd, offset[0], length[0]);
+				afd.fileName = fileName;
+				return afd;
 			}
 		}
-		throw new FileNotFoundException("Asset absolute file: " + fileName);
+		throw new FileNotFoundException("file: " + fileName);
 	}
 
 	/**
@@ -553,13 +522,9 @@ public final class AssetManager {
 	}
 
 	public final class AssetInputStream extends InputStream {
-		public final int getAssetInt() {
-			return mAsset;
-		}
-		private AssetInputStream(int asset, String fileName) {
+		private AssetInputStream(long asset) {
 			mAsset = asset;
 			mLength = getAssetLength(asset);
-			this.fileName = fileName;
 		}
 		public final int read() throws IOException {
 			return readAssetChar(mAsset);
@@ -607,10 +572,9 @@ public final class AssetManager {
 			close();
 		}
 
-		private int mAsset;
+		private long mAsset;
 		private long mLength;
 		private long mMarkPos;
-		public String fileName;
 	}
 
 	/**
@@ -720,20 +684,15 @@ public final class AssetManager {
 	/*package*/ native final String getResourceTypeName(int resid);
 	/*package*/ native final String getResourceEntryName(int resid);
 
-	private native final int openAsset(String fileName, int accessMode);
-	private final native ParcelFileDescriptor openAssetFd(String fileName,
-							      long[] outOffsets) throws IOException;
-	private /*native*/ final int openNonAssetNative(int cookie, String fileName, int accessMode) {
-		return openAsset("../" + fileName, accessMode);
-	}
-	private native ParcelFileDescriptor openNonAssetFdNative(int cookie,
-								 String fileName, long[] outOffsets) throws IOException;
-	private native final void destroyAsset(int asset);
-	private native final int readAssetChar(int asset);
-	private native final int readAsset(int asset, byte[] b, int off, int len);
-	private native final long seekAsset(int asset, long offset, int whence);
-	private native final long getAssetLength(int asset);
-	private native final long getAssetRemainingLength(int asset);
+	private native final long openAsset(String fileName, int accessMode);
+	private native final int openAssetFd(String fileName, int accessMode, long[] offset, long[] length);
+
+	private native final void destroyAsset(long asset);
+	private native final int readAssetChar(long asset);
+	private native final int readAsset(long asset, byte[] b, long offset, long length);
+	private native final long seekAsset(long asset, long offset, int whence);
+	private native final long getAssetLength(long asset);
+	private native final long getAssetRemainingLength(long asset);
 
 	/**
 	 * Returns true if the resource was found, filling in mRetStringBlock and
@@ -894,7 +853,9 @@ public final class AssetManager {
 	}
 
 	private native final void init();
-	private native final void destroy();
+	private /*native*/ final void destroy() {
+		System.out.println("AssetManager.destroy(): STUB");
+	}
 
 	private final void incRefsLocked(int id) {
 		if (DEBUG_REFS) {

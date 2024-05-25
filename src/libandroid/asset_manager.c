@@ -1,4 +1,3 @@
-#define _LARGEFILE64_SOURCE
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -7,208 +6,122 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
-struct AAssetManager {
-	char dummy;
-};
+#include <androidfw/androidfw_c_api.h>
 
-struct AAssetManager dummy_asset_manager;
-
-struct AAsset{
-	int fd;
-	off64_t read;
-};
+#include "../api-impl-jni/defines.h"
+#include "../api-impl-jni/util.h"
 
 struct AAssetDir {
-	DIR *dp;
-	const char *dirname;
+	struct AssetDir *asset_dir;
+	size_t curr_index;
 };
 
-typedef int64_t off64_t;
-typedef void JNIEnv;
-typedef void * jobject;
-
 #define ASSET_DIR "assets/"
-char *get_app_data_dir();
 
-int AAsset_openFileDescriptor(struct AAsset *asset, off_t *out_start, off_t *out_length)
+int AAsset_openFileDescriptor(struct Asset *asset, off_t *out_start, off_t *out_length)
 {
-	int ret;
-	int fd = asset->fd;
-
-	printf("openning asset's file descriptor: : %d\n", fd);
-
-	struct stat statbuf;
-
-	ret = fstat(fd, &statbuf);
-	if(ret)
-		printf("oopsie, fstat failed on fd: %d with errno: %d\n", fd, errno);
-
-	*out_start = 0; // on android, we would be returning the fd of the app's apk, and this would be the offset to a non-compressed archive member
-	*out_length = statbuf.st_size; // similarly, this would be the size of the section of memory containing the non-compressed archive member
-
-	return fd;
+	return Asset_openFileDescriptor(asset, out_start, out_length);
 }
 
-struct AAsset* AAssetManager_open(struct AAssetManager *amgr, const char *file_name, int mode)
+struct Asset* AAssetManager_open(struct AssetManager *asset_manager, const char *file_name, int mode)
 {
-	char *app_data_dir = get_app_data_dir();
-	char *path = malloc(strlen(app_data_dir) + strlen(ASSET_DIR) + strlen(file_name) + 1);
-	int fd;
-	strcpy(path, app_data_dir);
-	strcat(path, ASSET_DIR);
-	strcat(path, file_name);
+	char *path = malloc(strlen(ASSET_DIR) + strlen(file_name) + 1);
+	sprintf(path, "%s%s", ASSET_DIR, file_name);
 
-	printf("openning asset with filename: %s\n", file_name);
-
-	printf("openning asset at path: %s\n", path);
-
-	fd = open(path, O_CLOEXEC | O_RDWR);
-	if(fd < 0) {
-		printf("oopsie, falied to open file: %s (errno: %d)\n", file_name, errno);
-		return NULL;
-	}
+	printf("AAssetManager_open called for %s\n", file_name);
+	struct Asset *asset = AssetManager_openNonAsset(asset_manager, path, mode);
 
 	free(path);
-
-	struct AAsset* asset = malloc(sizeof(struct AAsset));
-	asset->fd = fd;
-	asset->read = 0;
 
 	return asset;
 }
 
-struct AAssetDir * AAssetManager_openDir(struct AAssetManager *amgr, const char *dirname)
+const void * AAsset_getBuffer(struct Asset *asset)
 {
-	char* app_data_dir = get_app_data_dir();
-	char* dirpath = malloc(strlen(app_data_dir) + strlen(ASSET_DIR) + strlen(dirname) + 1);
+	return Asset_getBuffer(asset, false);
+}
+
+off64_t AAsset_getLength64(struct Asset *asset)
+{
+	return Asset_getLength(asset);
+}
+
+off_t AAsset_getLength(struct Asset *asset)
+{
+	return Asset_getLength(asset);
+}
+
+int AAsset_read(struct Asset *asset, void *buf, size_t count) {
+	return Asset_read(asset, buf, count);
+}
+
+off_t AAsset_seek(struct Asset *asset, off_t offset, int whence) {
+	return Asset_seek(asset, offset, whence);
+}
+
+off64_t AAsset_seek64(struct Asset *asset, off64_t offset, int whence) {
+	return Asset_seek(asset, offset, whence);
+}
+
+off_t AAsset_getRemainingLength(struct Asset *asset)
+{
+	return Asset_getRemainingLength(asset);
+}
+off64_t AAsset_getRemainingLength64(struct Asset *asset)
+{
+	return Asset_getRemainingLength(asset);
+}
+
+void AAsset_close(struct Asset *asset)
+{
+	Asset_delete(asset);
+}
+
+struct AAssetDir * AAssetManager_openDir(struct AssetManager *asset_manager, const char *dirname)
+{
+	char* dirpath = malloc(strlen(ASSET_DIR) + strlen(dirname) + 1);
+	sprintf(dirpath, "%s%s", ASSET_DIR, dirname);
+
+	struct AssetDir *asset_dir = AssetManager_openDir(asset_manager, dirname);
+
 	struct AAssetDir* dir = malloc(sizeof(struct AAssetDir));
-	dir->dirname = dirname;
+	dir->asset_dir = asset_dir;
+	dir->curr_index = 0;
 
-	strcpy(dirpath, app_data_dir);
-	strcat(dirpath, ASSET_DIR);
-	strcat(dirpath, dirname);
-	printf("open directory path %s\n", dirpath);
-
-	dir->dp = opendir(dirpath);
-	if (dir->dp < 0)
-	{
-		printf("failed to open directory %s: %d\n", dirpath, errno);
-		return NULL;
-	}
+	printf("AAssetManager_openDir called for %s\n", dirpath);
 
 	return dir;
 }
 
 const char * AAssetDir_getNextFileName(struct AAssetDir *dir)
 {
-	struct dirent *ep = readdir(dir->dp);
-	if (ep == NULL)
-		return NULL;
+	size_t index = dir->curr_index;
+	const size_t max = AssetDir_getFileCount(dir->asset_dir);
 
-	if (!strcmp(ep->d_name, ".") || !strcmp(ep->d_name, "..")) {
-		return AAssetDir_getNextFileName(dir);
+	/* skip non-regular files */
+	while ((index < max) && AssetDir_getFileType(dir->asset_dir, index) != FILE_TYPE_REGULAR)
+		index++;
+
+	if (index >= max) {
+		dir->curr_index = index;
+		return NULL;
 	}
 
-	// google claims to return full path, but it really doesn't seem so
-	return ep->d_name;
-/*	char *asset_root_path = malloc(strlen(dir->dirname) + 1 + strlen(ep->d_name) + 1);
-
-	sprintf(asset_root_path, "%s/%s", dir->dirname, ep->d_name);
-	printf("AAssetDir_getNextFileName: returning >%s<\n", asset_root_path);
-
-	return asset_root_path;*/
-
+	dir->curr_index = index + 1;
+	return AssetDir_getFileName(dir->asset_dir, index);
 }
 
 
 void AAssetDir_close(struct AAssetDir *dir)
 {
-	closedir(dir->dp);
+	AssetDir_delete(dir->asset_dir);
 	free(dir);
 }
 
-const void * AAsset_getBuffer(struct AAsset *asset)
+struct AssetManager * AAssetManager_fromJava(JNIEnv *env, jobject asset_manager)
 {
-	int ret;
-	int err;
-	int fd = asset->fd;
-
-	struct stat statbuf;
-
-	ret = fstat(fd, &statbuf);
-	if(ret)
-		printf("oopsie, fstat failed on fd: %d with errno: %d\n", fd, errno);
-
-	uint8_t *buffer = malloc(statbuf.st_size);
-	ret = pread(fd, buffer, statbuf.st_size, 0);
-	if(ret < 0) {
-		err = errno;
-		printf("oopsie, read failed on fd: %d with errno: %d\n", fd, err);
-		exit(err);
-	}
-
-	return buffer;
-}
-
-off64_t AAsset_getLength64(struct AAsset *asset)
-{
-	int ret;
-	int fd = asset->fd;
-
-	struct stat statbuf;
-
-	ret = fstat(fd, &statbuf);
-	if(ret)
-		printf("oopsie, fstat failed on fd: %d with errno: %d\n", fd, errno);
-
-	return statbuf.st_size;
-}
-
-off_t AAsset_getLength(struct AAsset *asset)
-{
-	return AAsset_getLength64(asset);
-}
-struct AAssetManager * AAssetManager_fromJava(JNIEnv *env, jobject assetManager)
-{
-	// some apps don't like if we return NULL here
-	return &dummy_asset_manager;
-}
-
-int AAsset_read(struct AAsset *asset, void *buf, size_t count) {
-	off64_t tmp = read(asset->fd, buf, count);
-	asset->read += tmp;
-	return tmp;
-}
-
-off_t AAsset_seek(struct AAsset *asset, off_t offset, int whence) {
-	off64_t tmp =  lseek(asset->fd, offset, whence);
-	asset->read += tmp;
-	return tmp;
-}
-
-off64_t AAsset_seek64(struct AAsset *asset, off64_t offset, int whence) {
-	off64_t tmp =  lseek64(asset->fd, offset, whence);
-	asset->read += tmp;
-	return tmp;
-}
-
-off_t AAsset_getRemainingLength(struct AAsset* asset)
-{
-	return AAsset_getLength(asset) - asset->read;
-}
-off64_t AAsset_getRemainingLength64(struct AAsset* asset)
-{
-	return AAsset_getLength64(asset) - asset->read;
-}
-
-void AAsset_close(struct AAsset *asset)
-{
-	int fd = asset->fd;
-
-	printf("closing asset with fd: %d\n", fd);
-	close(fd);
-
-	free(asset);
+	return _PTR(_GET_LONG_FIELD(asset_manager, "mObject"));
 }

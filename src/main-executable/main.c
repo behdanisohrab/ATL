@@ -403,7 +403,6 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
-	extract_from_apk("assets/", "assets/");
 	/* extract native libraries from apk*/
 	if(!getenv("ATL_SKIP_NATIVES_EXTRACTION"))
 		extract_from_apk("lib/" NATIVE_ARCH "/", "lib/");

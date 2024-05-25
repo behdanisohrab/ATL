@@ -18,100 +18,81 @@
 #define ASSET_DIR "assets/"
 char *get_app_data_dir();
 
-JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openAsset(JNIEnv *env, jobject this, jstring _file_name, jint mode)
+JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_openAsset(JNIEnv *env, jobject this, jstring _file_name, jint mode)
 {
 	const char *file_name = _CSTRING(_file_name);
 
-	/* handle absolute paths */
-	if(file_name[0] == '/')
-		return open(file_name, O_CLOEXEC | O_RDWR);
+	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
+	struct Asset *asset = AssetManager_openNonAsset(asset_manager, file_name, mode);
+	printf("AssetManager_openAsset(%p, %s, %d)\n", asset_manager, file_name, mode);
 
-	char *app_data_dir = get_app_data_dir();
-	char *path = malloc(strlen(app_data_dir) + strlen(ASSET_DIR) + strlen(file_name) + 1);
+	return _INTPTR(asset);
+}
+
+JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openAssetFd(JNIEnv *env, jobject this, jstring _file_name, jint mode, jlongArray _offset, jlongArray _size)
+{
 	int fd;
+	off_t offset;
+	off_t size;
 
-	strcpy(path, app_data_dir);
-	strcat(path, ASSET_DIR);
-	strcat(path, file_name);
+	const char *file_name = _CSTRING(_file_name);
 
-	printf("openning asset with filename: %s\n", _CSTRING(_file_name));
+	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
+	struct Asset *asset = AssetManager_openNonAsset(asset_manager, file_name, mode);
+	printf("AssetManager_openAssetFd(%p, %s, %d, ...)\n", asset_manager, file_name, mode);
 
-	printf("openning asset at path: %s\n", path);
+	fd = Asset_openFileDescriptor(asset, &offset, &size);
 
-	fd = open(path, O_CLOEXEC | O_RDWR);
-
-	free(path);
+	(*env)->SetLongArrayRegion(env, _offset, 0, 1, (jlong[]){offset});
+	(*env)->SetLongArrayRegion(env, _size, 0, 1, (jlong[]){size});
 
 	return fd;
 }
 
-JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_getAssetLength(JNIEnv *env, jobject this, jint fd)
+JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_getAssetLength(JNIEnv *env, jobject this, jlong _asset)
 {
-	int ret;
-	struct stat statbuf;
-
-	ret = fstat(fd, &statbuf);
-	if(ret)
-		printf("oopsie, fstat failed on fd: %d with errno: %d\n", fd, errno);
-
-	return statbuf.st_size;
+	struct Asset *asset = _PTR(_asset);
+	return Asset_getLength(asset);
 }
 
-JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_getAssetRemainingLength(JNIEnv *env, jobject this, jint fd)
+JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_getAssetRemainingLength(JNIEnv *env, jobject this, jlong _asset)
 {
-	jlong file_size = Java_android_content_res_AssetManager_getAssetLength(env, this, fd);
-	off_t offset = lseek(fd, 0, SEEK_CUR);
-
-	return file_size - offset;
+	struct Asset *asset = _PTR(_asset);
+	return Asset_getRemainingLength(asset);
 }
 
-JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_readAsset(JNIEnv *env, jobject this, jint fd, jbyteArray b, jint off, jint len)
+JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_readAsset(JNIEnv *env, jobject this, jlong _asset, jbyteArray b, jlong offset, jlong length)
 {
 	int ret;
-	int err;
 
+	struct Asset *asset = _PTR(_asset);
 	jbyte *array = _GET_BYTE_ARRAY_ELEMENTS(b);
-	ret = read(fd, &array[off], len);
+	ret = Asset_read(asset, &array[offset], length);
 	_RELEASE_BYTE_ARRAY_ELEMENTS(b, array);
 
-	if(ret < 0) {
-		err = errno;
-		printf("oopsie, read failed on fd: %d with errno: %d\n", fd, err);
-		exit(err);
-	} else if (ret == 0) { //EOF
-		return -1;
-	} else {
-		return ret;
-	}
+	return ret;
 }
 
-JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_readAssetChar(JNIEnv *env, jobject this, jint fd)
+JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_readAssetChar(JNIEnv *env, jobject this, jlong _asset)
 {
 	int ret;
-	int err;
-	unsigned char byte;
+	uint8_t byte;
 
-	ret = read(fd, &byte, 1);
-	if(ret == 1)
-		return byte;
-	else if(ret == 0)
-		return -1;
-	else {
-		err = errno;
-		printf("oopsie, read failed on fd: %d with errno: %d\n", fd, err);
-		exit(err);
-	}
+	struct Asset *asset = _PTR(_asset);
+	ret = Asset_read(asset, &byte, 1);
+	return (ret == 1) ? byte : ret;
 }
 
-JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_seekAsset(JNIEnv *env, jobject this, jint fd, jlong off, jint whence)
+JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_seekAsset(JNIEnv *env, jobject this, jlong _asset, jlong offset, jint whence)
 {
-	return lseek(fd, off, (whence > 0) ? SEEK_END : (whence < 0 ? SEEK_SET : SEEK_CUR));
+	struct Asset *asset = _PTR(_asset);
+	return Asset_seek(asset, offset, whence);
 }
 
-JNIEXPORT void JNICALL Java_android_content_res_AssetManager_destroyAsset(JNIEnv *env, jobject this, jint fd)
+JNIEXPORT void JNICALL Java_android_content_res_AssetManager_destroyAsset(JNIEnv *env, jobject this, jlong _asset)
 {
-	printf("closing asset with fd: %d\n", fd);
-	close(fd);
+	struct Asset *asset = _PTR(_asset);
+	Asset_delete(asset);
 }
 
 JNIEXPORT void JNICALL Java_android_content_res_AssetManager_init(JNIEnv *env, jobject this)
