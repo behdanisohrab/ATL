@@ -62,17 +62,19 @@ public class GskCanvas extends Canvas {
 
 	@Override
 	public void rotate(float degrees, float px, float py) {
-		System.out.println("GskCanvas.rotate(" + degrees + ", " + px + ", " + py + ")");
+		native_translate(snapshot, px, py);
+		native_rotate(snapshot, degrees);
+		native_translate(snapshot, -px, -py);
 	}
 
 	@Override
 	public void drawText(String text, float x, float y, Paint paint) {
-		System.out.println("GskCanvas.drawText(" + text + ", " + x + ", " + y + ", " + paint + ")");
+		native_drawText(snapshot, text, x, y, paint.skia_paint);
 	}
 
 	@Override
 	public void drawLine(float startX, float startY, float stopX, float stopY, Paint paint) {
-		System.out.println("GskCanvas.drawLine(" + startX + ", " + startY + ", " + stopX + ", " + stopY + ", " + paint + ")");
+		native_drawLine(snapshot, startX, startY, stopX, stopY, paint.skia_paint);
 	}
 
 	@Override
@@ -82,6 +84,11 @@ public class GskCanvas extends Canvas {
 		drawBitmap(bitmap, src, dst, paint);
 	}
 
+	@Override
+	public void drawBitmap(Bitmap bitmap, Rect src, RectF dst, Paint paint) {
+		drawBitmap(bitmap, src, new Rect((int)dst.left, (int)dst.top, (int)dst.right, (int)dst.bottom), paint);
+	}
+
 	protected native void native_drawBitmap(long snapshot, long pixbuf, int x, int y, int width, int height, int color);
 	protected native void native_drawRect(long snapshot, float left, float top, float right, float bottom, int color);
 	protected native void native_drawPath(long snapshot, long path, long paint);
@@ -89,4 +96,6 @@ public class GskCanvas extends Canvas {
 	protected native void native_rotate(long snapshot, float degrees);
 	protected native void native_save(long snapshot);
 	protected native void native_restore(long snapshot);
+	protected native void native_drawLine(long snapshot, float startX, float startY, float stopX, float stopY, long paint);
+	protected native void native_drawText(long snapshot, String text, float x, float y, long paint);
 }

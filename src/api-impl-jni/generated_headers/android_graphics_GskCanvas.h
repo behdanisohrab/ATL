@@ -65,6 +65,22 @@ JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1save
 JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1restore
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     android_graphics_GskCanvas
+ * Method:    native_drawLine
+ * Signature: (JFFFFJ)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1drawLine
+  (JNIEnv *, jobject, jlong, jfloat, jfloat, jfloat, jfloat, jlong);
+
+/*
+ * Class:     android_graphics_GskCanvas
+ * Method:    native_drawText
+ * Signature: (JLjava/lang/String;FFJ)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_GskCanvas_native_1drawText
+  (JNIEnv *, jobject, jlong, jstring, jfloat, jfloat, jlong);
+
 #ifdef __cplusplus
 }
 #endif
