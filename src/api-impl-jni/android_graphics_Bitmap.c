@@ -99,15 +99,18 @@ JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeGetPixels(JNIEnv *env,
 	(*env)->ReleaseIntArrayElements(env, pixelArray, dst, 0);
 }
 
-JNIEXPORT jboolean JNICALL Java_android_graphics_Bitmap_nativeRecycle(JNIEnv *env, jclass, jlong bitmapHandle)
+JNIEXPORT jboolean JNICALL Java_android_graphics_Bitmap_nativeRecycle(JNIEnv *env, jclass, jlong bitmapHandle, jlong textureHandle)
 {
 	GdkPixbuf *pixbuf = _PTR(bitmapHandle);
+	GdkTexture *texture = _PTR(textureHandle);
 	sk_image_t *image = g_object_get_data(G_OBJECT(pixbuf), "sk_image");
 	if(image)
 		sk_image_unref(image);
 	else
 		fprintf(stderr, "nativeRecycle: pixbuf doesn't have a skia image associated: %p\n", pixbuf);
 	g_object_unref(pixbuf);
+	if (texture)
+		g_object_unref(texture);
 	return true;
 }
 
@@ -136,4 +139,10 @@ JNIEXPORT jint JNICALL Java_android_graphics_Bitmap_nativeRowBytes(JNIEnv *env, 
 	GdkPixbuf *pixbuf = _PTR(pixbuf_ptr);
 
 	return gdk_pixbuf_get_rowstride(pixbuf);
+}
+
+JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1paintable_1from_1pixbuf(JNIEnv *env, jclass, jlong pixbuf_ptr)
+{
+	GdkPixbuf *pixbuf = _PTR(pixbuf_ptr);
+	return _INTPTR(gdk_texture_new_for_pixbuf(pixbuf));
 }

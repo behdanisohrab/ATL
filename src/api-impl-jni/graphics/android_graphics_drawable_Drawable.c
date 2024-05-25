@@ -93,5 +93,6 @@ JNIEXPORT void JNICALL Java_android_graphics_drawable_Drawable_native_1invalidat
 JNIEXPORT void JNICALL Java_android_graphics_drawable_Drawable_native_1draw(JNIEnv *env, jobject this, jlong paintable_ptr, jlong snapshot_ptr, jint width, jint height) {
 	GdkSnapshot *snapshot = (GdkSnapshot *)_PTR(snapshot_ptr);
 	GdkPaintable *paintable = GDK_PAINTABLE(_PTR(paintable_ptr));
-	gdk_paintable_snapshot(paintable, snapshot, width, height);
+	if (!JAVA_IS_PAINTABLE(paintable))
+		gdk_paintable_snapshot(paintable, snapshot, width, height);
 }

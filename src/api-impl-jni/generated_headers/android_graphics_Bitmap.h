@@ -61,6 +61,14 @@ JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1create
 
 /*
  * Class:     android_graphics_Bitmap
+ * Method:    native_paintable_from_pixbuf
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1paintable_1from_1pixbuf
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     android_graphics_Bitmap
  * Method:    nativeCopy
  * Signature: (IIZ)Landroid/graphics/Bitmap;
  */
@@ -78,10 +86,10 @@ JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeDestructor
 /*
  * Class:     android_graphics_Bitmap
  * Method:    nativeRecycle
- * Signature: (J)Z
+ * Signature: (JJ)Z
  */
 JNIEXPORT jboolean JNICALL Java_android_graphics_Bitmap_nativeRecycle
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv *, jclass, jlong, jlong);
 
 /*
  * Class:     android_graphics_Bitmap

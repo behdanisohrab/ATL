@@ -25,7 +25,7 @@ public class BitmapDrawable extends Drawable {
 
 	public BitmapDrawable(Resources res, Bitmap bitmap) {
 		this.bitmap = bitmap;
-		this.paintable = native_paintable_from_pixbuf(bitmap.pixbuf);
+		this.paintable = bitmap.getTexture();
 	}
 
 	public Bitmap getBitmap() {
@@ -40,6 +40,4 @@ public class BitmapDrawable extends Drawable {
 		}
 		a.recycle();
 	}
-
-	static native long native_paintable_from_pixbuf(long pixbuf);
 }

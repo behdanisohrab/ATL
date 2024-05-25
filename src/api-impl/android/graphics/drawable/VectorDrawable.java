@@ -50,7 +50,7 @@ public class VectorDrawable extends Drawable {
 		String svg = sb.toString();
 		byte[] bytes = svg.getBytes();
 		Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-		this.paintable = BitmapDrawable.native_paintable_from_pixbuf(bm.pixbuf);
+		this.paintable = bm.getTexture();
 	}
 
 }

@@ -47,7 +47,7 @@ public class GskCanvas extends Canvas {
 		if (paint != null && paint.colorFilter instanceof PorterDuffColorFilter) {
 			color = ((PorterDuffColorFilter) paint.colorFilter).getColor();
 		}
-		native_drawBitmap(snapshot, bitmap.pixbuf, dst.left, dst.top, dst.width(), dst.height(), color);
+		native_drawBitmap(snapshot, bitmap.getTexture(), dst.left, dst.top, dst.width(), dst.height(), color);
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class GskCanvas extends Canvas {
 		drawBitmap(bitmap, src, new Rect((int)dst.left, (int)dst.top, (int)dst.right, (int)dst.bottom), paint);
 	}
 
-	protected native void native_drawBitmap(long snapshot, long pixbuf, int x, int y, int width, int height, int color);
+	protected native void native_drawBitmap(long snapshot, long texture, int x, int y, int width, int height, int color);
 	protected native void native_drawRect(long snapshot, float left, float top, float right, float bottom, int color);
 	protected native void native_drawPath(long snapshot, long path, long paint);
 	protected native void native_translate(long snapshot, float dx, float dy);

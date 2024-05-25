@@ -16,6 +16,7 @@
 
 package android.graphics;
 
+import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,6 +103,7 @@ public final class Bitmap {
 	}
 
 	public long pixbuf = 0;
+	private long texture = 0;
 
 	Bitmap() {
 		mIsMutable = false;
@@ -352,7 +354,7 @@ public final class Bitmap {
 	 */
 	public void recycle() {
 		if (!mRecycled) {
-			if (nativeRecycle(pixbuf)) {
+			if (nativeRecycle(pixbuf, texture)) {
 				// return value indicates whether native pixel object was actually recycled.
 				// false indicates that it is still in use at the native level and these
 				// objects should not be collected now. They will be collected later when the
@@ -1594,17 +1596,29 @@ public final class Bitmap {
 		}
 	}
 
+	/**
+	 * internal ATL method to create or get a GdkTexture for the pixbuf
+	 * @return pointer to the GdkTexture
+	 */
+	public long getTexture() {
+		if (texture == 0) {
+			texture = native_paintable_from_pixbuf(pixbuf);
+		}
+		return texture;
+	}
+
 	//////////// native methods
 
 	private native long native_bitmap_from_path(CharSequence path);
 	static native long native_copy(long src);
 	static native long native_subpixbuf(long src, int x, int y, int width, int height);
 	private static native long native_create(int width, int height);
+	public static native long native_paintable_from_pixbuf(long pixbuf);
 
 	private static native Bitmap nativeCopy(int srcBitmap, int nativeConfig,
 						boolean isMutable);
 	private static native void nativeDestructor(int nativeBitmap);
-	private static native boolean nativeRecycle(long nativeBitmap);
+	private static native boolean nativeRecycle(long nativeBitmap, long texture);
 	private static native void nativeReconfigure(int nativeBitmap, int width, int height,
 						     int config, int allocSize);
 
