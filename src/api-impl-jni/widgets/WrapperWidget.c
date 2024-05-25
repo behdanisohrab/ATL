@@ -115,6 +115,22 @@ void wrapper_widget_allocate(GtkWidget *widget, int width, int height, int basel
 		gtk_widget_size_allocate(wrapper->background, &allocation, baseline);
 }
 
+static void wrapper_widget_snapshot(GtkWidget *widget, GdkSnapshot *snapshot)
+{
+	WrapperWidget *wrapper = WRAPPER_WIDGET(widget);
+	if (wrapper->real_height > 0 && wrapper->real_width > 0) {
+		gtk_snapshot_push_clip(snapshot, &GRAPHENE_RECT_INIT(0, 0, wrapper->real_width, wrapper->real_height));
+	}
+	GtkWidget *child = gtk_widget_get_first_child(widget);
+	while (child) {
+		gtk_widget_snapshot_child(widget, child, snapshot);
+		child = gtk_widget_get_next_sibling(child);
+	}
+	if (wrapper->real_height > 0 && wrapper->real_width > 0) {
+		gtk_snapshot_pop(snapshot);
+	}
+}
+
 static void wrapper_widget_class_init(WrapperWidgetClass *class)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (class);
@@ -125,6 +141,7 @@ static void wrapper_widget_class_init(WrapperWidgetClass *class)
 	widget_class->get_request_mode = wrapper_widget_get_request_mode;
 	widget_class->measure = wrapper_widget_measure;
 	widget_class->size_allocate = wrapper_widget_allocate;
+	widget_class->snapshot = wrapper_widget_snapshot;
 }
 
 GtkWidget * wrapper_widget_new(void)
