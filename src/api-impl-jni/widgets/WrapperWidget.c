@@ -94,16 +94,21 @@ void wrapper_widget_allocate(GtkWidget *widget, int width, int height, int basel
 		gtk_widget_size_allocate(wrapper->background, &allocation, baseline);
 }
 
+void wrapper_widget_draw_children(WrapperWidget *wrapper, GdkSnapshot *snapshot)
+{
+	GtkWidget *widget = &wrapper->parent_instance;
+	GtkWidget *child = gtk_widget_get_first_child(widget);
+	while (child) {
+		gtk_widget_snapshot_child(widget, child, snapshot);
+		child = gtk_widget_get_next_sibling(child);
+	}
+}
+
 static void wrapper_widget_snapshot(GtkWidget *widget, GdkSnapshot *snapshot)
 {
 	WrapperWidget *wrapper = WRAPPER_WIDGET(widget);
 	if (wrapper->real_height > 0 && wrapper->real_width > 0) {
 		gtk_snapshot_push_clip(snapshot, &GRAPHENE_RECT_INIT(0, 0, wrapper->real_width, wrapper->real_height));
-	}
-	GtkWidget *child = gtk_widget_get_first_child(widget);
-	while (child) {
-		gtk_widget_snapshot_child(widget, child, snapshot);
-		child = gtk_widget_get_next_sibling(child);
 	}
 	if (wrapper->draw_method) {
 		JNIEnv *env = get_jni_env();
@@ -111,6 +116,8 @@ static void wrapper_widget_snapshot(GtkWidget *widget, GdkSnapshot *snapshot)
 		(*env)->CallVoidMethod(env, wrapper->jobj, wrapper->draw_method, wrapper->canvas);
 		if ((*env)->ExceptionCheck(env))
 			(*env)->ExceptionDescribe(env);
+	} else {
+		wrapper_widget_draw_children(wrapper, snapshot);
 	}
 	if (wrapper->real_height > 0 && wrapper->real_width > 0) {
 		gtk_snapshot_pop(snapshot);

@@ -5,7 +5,7 @@ package android.graphics;
  *   - implements Canvas for onscreen rendering inside GTKs snapshot function
  */
 public class GskCanvas extends Canvas {
-	private long snapshot;
+	public long snapshot;
 	private int save_count = 0;
 
 	public GskCanvas(long snapshot) {

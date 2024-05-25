@@ -17,6 +17,7 @@ import android.content.res.Resources.Theme;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.GskCanvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
@@ -74,7 +75,10 @@ public class Drawable {
 		return mBounds;
 	}
 
-	public void draw(Canvas canvas) {}
+	public void draw(Canvas canvas) {
+		if (canvas instanceof GskCanvas)
+			native_draw(paintable, ((GskCanvas)canvas).snapshot, mBounds.width(), mBounds.height());
+	}
 
 	public boolean setState(int[] stateSet) {
 		if (!Arrays.equals(this.mStateSet, stateSet)) {
@@ -261,4 +265,5 @@ public class Drawable {
 	protected static native long native_paintable_from_path(String path);
 	protected native long native_constructor();
 	protected native void native_invalidate(long paintable);
+	protected native void native_draw(long paintable, long snapshot, int width, int height);
 }

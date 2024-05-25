@@ -7,6 +7,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.GskCanvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -899,7 +900,11 @@ public class View implements Drawable.Callback {
 			return null;
 	}
 
-	public void onDraw(Canvas canvas) {}
+	protected native void native_onDraw(long widget, long snapshot);
+	public void onDraw(Canvas canvas) {
+		if (canvas instanceof GskCanvas)
+			native_onDraw(widget, ((GskCanvas)canvas).snapshot);
+	}
 	public void draw(Canvas canvas) {
 		onDraw(canvas);
 	}
