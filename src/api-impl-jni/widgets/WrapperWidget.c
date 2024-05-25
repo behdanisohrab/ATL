@@ -3,8 +3,6 @@
 #include "../defines.h"
 #include "../util.h"
 
-#include "../sk_area/sk_area.h"
-
 #include "../generated_headers/android_view_View.h"
 
 #include "WrapperWidget.h"
@@ -30,23 +28,6 @@ static void wrapper_widget_dispose(GObject *wrapper_widget)
 			_UNREF(wrapper->canvas);
 	}
 	G_OBJECT_CLASS (wrapper_widget_parent_class)->dispose (wrapper_widget);
-}
-
-void skia_draw_func(SKArea *sk_area, sk_canvas_t *canvas, void *user_data)
-{
-	WrapperWidget *wrapper_widget = WRAPPER_WIDGET(user_data);
-	JNIEnv *env;
-	(*wrapper_widget->jvm)->GetEnv(wrapper_widget->jvm, (void**)&env, JNI_VERSION_1_6);
-	if(wrapper_widget->canvas == NULL) {
-		wrapper_widget->canvas = _REF((*env)->NewObject(env, handle_cache.canvas.class, handle_cache.canvas.constructor, _INTPTR(canvas), 0));
-	} else {
-		_SET_LONG_FIELD(wrapper_widget->canvas, "skia_canvas", _INTPTR(canvas));
-	}
-
-	(*env)->CallVoidMethod(env, wrapper_widget->jobj, wrapper_widget->draw_method, wrapper_widget->canvas);
-
-	if((*env)->ExceptionCheck(env))
-		(*env)->ExceptionDescribe(env);
 }
 
 GtkSizeRequestMode wrapper_widget_get_request_mode(GtkWidget *widget)
@@ -109,8 +90,6 @@ void wrapper_widget_allocate(GtkWidget *widget, int width, int height, int basel
 	} else {
 		gtk_widget_size_allocate(wrapper->child, &allocation, baseline);
 	}
-	if (wrapper->sk_area)
-		gtk_widget_size_allocate(wrapper->sk_area, &allocation, baseline);
 	if (wrapper->background)
 		gtk_widget_size_allocate(wrapper->background, &allocation, baseline);
 }
@@ -125,6 +104,13 @@ static void wrapper_widget_snapshot(GtkWidget *widget, GdkSnapshot *snapshot)
 	while (child) {
 		gtk_widget_snapshot_child(widget, child, snapshot);
 		child = gtk_widget_get_next_sibling(child);
+	}
+	if (wrapper->draw_method) {
+		JNIEnv *env = get_jni_env();
+		_SET_LONG_FIELD(wrapper->canvas, "snapshot", _INTPTR(snapshot));
+		(*env)->CallVoidMethod(env, wrapper->jobj, wrapper->draw_method, wrapper->canvas);
+		if ((*env)->ExceptionCheck(env))
+			(*env)->ExceptionDescribe(env);
 	}
 	if (wrapper->real_height > 0 && wrapper->real_width > 0) {
 		gtk_snapshot_pop(snapshot);
@@ -155,18 +141,18 @@ void wrapper_widget_set_child(WrapperWidget *parent, GtkWidget *child) // TODO: 
 	parent->child = child;
 }
 
-static guint sk_area_queue_queue_redraw(GtkWidget *sk_area)
+static guint queue_queue_redraw(GtkWidget *widget)
 {
-	gtk_widget_queue_draw(sk_area);
+	gtk_widget_queue_draw(widget);
 	return G_SOURCE_REMOVE;
 }
 
 void wrapper_widget_queue_draw(WrapperWidget *wrapper)
 {
-	if(wrapper->sk_area) {
-		/* schedule the call to gtk_widget_queue_draw for a future event loop pass in case we're currently inside the sk_area's snapshot */
+	if (wrapper->draw_method) {
+		/* schedule the call to gtk_widget_queue_draw for a future event loop pass in case we're currently inside the snapshot */
 		/* GTK+ uses G_PRIORITY_HIGH_IDLE + 10 for resizing operations, and G_PRIORITY_HIGH_IDLE + 20 for redrawing operations. */
-		g_idle_add_full(G_PRIORITY_HIGH_IDLE + 20, G_SOURCE_FUNC(sk_area_queue_queue_redraw), wrapper->sk_area, NULL);
+		g_idle_add_full(G_PRIORITY_HIGH_IDLE + 20, G_SOURCE_FUNC(queue_queue_redraw), &wrapper->parent_instance, NULL);
 	}
 
 	if(wrapper->child)
@@ -196,13 +182,10 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 	jmethodID draw_method = _METHOD(_CLASS(jobj), "draw", "(Landroid/graphics/Canvas;)V");
 	if (on_draw_method != handle_cache.view.onDraw || draw_method != handle_cache.view.draw) {
 		wrapper->draw_method = draw_method;
-
-		GtkWidget *sk_area = sk_area_new();
-		gtk_widget_set_sensitive(sk_area, false);
-		sk_area_set_draw_func(SK_AREA_WIDGET(sk_area), skia_draw_func, wrapper);
-		gtk_widget_insert_after(sk_area, GTK_WIDGET(wrapper), NULL);
-		wrapper->sk_area = sk_area;
-//		gtk_widget_add_tick_callback(sk_area, tick_callback, NULL, NULL);
+		jclass canvas_class = (*env)->FindClass(env, "android/graphics/GskCanvas");
+		jmethodID canvas_constructor = _METHOD(canvas_class, "<init>", "(J)V");
+		wrapper->canvas = _REF((*env)->NewObject(env, canvas_class, canvas_constructor, 0));
+		(*env)->DeleteLocalRef(env, canvas_class);
 	}
 
 	jmethodID ontouchevent_method = _METHOD(_CLASS(jobj), "onTouchEvent", "(Landroid/view/MotionEvent;)Z");

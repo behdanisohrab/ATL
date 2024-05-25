@@ -10,7 +10,6 @@ struct _WrapperWidget
 {
 	GtkWidget parent_instance;
 	GtkWidget *child;
-	GtkWidget *sk_area;
 	GtkWidget *background;
 	JavaVM *jvm;
 	jobject jobj;
