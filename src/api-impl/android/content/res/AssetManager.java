@@ -472,7 +472,7 @@ public final class AssetManager {
 				throw new RuntimeException("Assetmanager has been closed");
 			}
 			xmlBlock = openXmlAssetNative(cookie, fileName);
-			if (xmlBlock >= 0) {
+			if (xmlBlock != 0) {
 				XmlBlock res = new XmlBlock(this, xmlBlock);
 				incRefsLocked(res.hashCode());
 				return res;
