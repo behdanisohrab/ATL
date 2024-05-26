@@ -610,7 +610,7 @@ public final class AssetManager {
 		return cookies;
 	}
 
-	private static void extractFromAPK(String path, String target) throws IOException {
+	public static void extractFromAPK(String path, String target) throws IOException {
 		if (path.endsWith("/")) { // directory
 			try (JarFile apk = new JarFile(Context.this_application.getPackageCodePath())) {
 				Enumeration<JarEntry> entries = apk.entries();

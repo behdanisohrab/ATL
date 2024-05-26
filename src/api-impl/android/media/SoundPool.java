@@ -1,6 +1,9 @@
 package android.media;
 
+import java.io.IOException;
+
 import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 
 public class SoundPool {
 
@@ -21,8 +24,9 @@ public class SoundPool {
 		nativePool = native_constructor();
 	}
 
-	public int load(AssetFileDescriptor afd, int priority) {
-		return nativeLoad(nativePool, android.os.Environment.getExternalStorageDirectory().getPath() + afd.fileName);
+	public int load(AssetFileDescriptor afd, int priority) throws IOException {
+		AssetManager.extractFromAPK(afd.fileName, afd.fileName);
+		return nativeLoad(nativePool, android.os.Environment.getExternalStorageDirectory().getPath() + "/" + afd.fileName);
 	}
 
 	/**
