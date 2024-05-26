@@ -133,6 +133,10 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 
 	protected native void native_addView(long widget, long child, int index, LayoutParams params);
 	protected native void native_removeView(long widget, long child);
+	@Override
+	protected native void native_drawChildren(long widget, long snapshot);
+	@Override
+	protected void native_drawContent(long widget, long snapshot) {}
 
 	public View getChildAt(int index) {
 		try {

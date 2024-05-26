@@ -201,14 +201,6 @@ extern "C" {
 #define android_view_View_TEXT_DIRECTION_RTL 4L
 /*
  * Class:     android_view_View
- * Method:    native_onDraw
- * Signature: (JJ)V
- */
-JNIEXPORT void JNICALL Java_android_view_View_native_1onDraw
-  (JNIEnv *, jobject, jlong, jlong);
-
-/*
- * Class:     android_view_View
  * Method:    setOnTouchListener
  * Signature: (Landroid/view/View/OnTouchListener;)V
  */
@@ -302,6 +294,22 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setBackgroundDrawable
  */
 JNIEXPORT void JNICALL Java_android_view_View_native_1queueAllocate
   (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     android_view_View
+ * Method:    native_drawBackground
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_native_1drawBackground
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     android_view_View
+ * Method:    native_drawContent
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_android_view_View_native_1drawContent
+  (JNIEnv *, jobject, jlong, jlong);
 
 /*
  * Class:     android_view_View

@@ -900,13 +900,16 @@ public class View implements Drawable.Callback {
 			return null;
 	}
 
-	protected native void native_onDraw(long widget, long snapshot);
 	public void onDraw(Canvas canvas) {
 		if (canvas instanceof GskCanvas)
-			native_onDraw(widget, ((GskCanvas)canvas).snapshot);
+			native_drawContent(widget, ((GskCanvas)canvas).snapshot);
 	}
 	public void draw(Canvas canvas) {
+		if (canvas instanceof GskCanvas)
+			native_drawBackground(widget, ((GskCanvas)canvas).snapshot);
 		onDraw(canvas);
+		if (canvas instanceof GskCanvas)
+			native_drawChildren(widget, ((GskCanvas)canvas).snapshot);
 	}
 
 	public View(Context context) {
@@ -981,6 +984,10 @@ public class View implements Drawable.Callback {
 	protected native void native_requestLayout(long widget);
 	protected native void native_setBackgroundDrawable(long widget, long paintable);
 	protected native void native_queueAllocate(long widget);
+
+	protected native void native_drawBackground(long widget, long snapshot);
+	protected native void native_drawContent(long widget, long snapshot);
+	protected void native_drawChildren(long widget, long snapshot) {}  // override in ViewGroup
 
 	// --- stubs
 
