@@ -166,6 +166,14 @@ public class ImageView extends View {
 
 	public void setImageState(int[] state, boolean merge) {}
 
+	public ColorStateList getImageTintList() {
+		return null;
+	}
+
+	public PorterDuff.Mode getImageTintMode() {
+		return null;
+	}
+
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	protected native void native_setPixbuf(long widget, long pixbuf);

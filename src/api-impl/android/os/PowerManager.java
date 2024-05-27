@@ -16,4 +16,6 @@ public final class PowerManager {
 	}
 
 	public void userActivity(long dummy, boolean dummy2) {}
+
+	public static final int FULL_WAKE_LOCK = 0x1a;
 }

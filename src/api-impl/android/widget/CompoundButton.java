@@ -1,6 +1,7 @@
 package android.widget;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
@@ -43,6 +44,9 @@ public abstract class CompoundButton extends Button implements Checkable {
 	public void setTextColor(int color) {}
 	@Override
 	public void setTextSize(float size) {}
+
+	public void setButtonTintList(ColorStateList list) {
+	}
 
 	public void setButtonDrawable(Drawable drawable) {
 		button_drawable = drawable;
