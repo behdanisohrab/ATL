@@ -311,6 +311,8 @@ public final class AssetManager {
 	 */
 	public final InputStream open(String fileName, int accessMode) throws IOException {
 		long asset = openAsset("assets/" + fileName, accessMode);
+		if(asset == 0)
+			throw new FileNotFoundException("file: " + fileName);
 		return new AssetInputStream(asset);
 	}
 
@@ -382,6 +384,8 @@ public final class AssetManager {
 	 */
 	public final InputStream openNonAsset(int cookie, String fileName, int accessMode) throws IOException {
 		long asset = openAsset(fileName, accessMode);
+		if(asset == 0)
+			throw new FileNotFoundException("file: " + fileName);
 		return new AssetInputStream(asset);
 	}
 

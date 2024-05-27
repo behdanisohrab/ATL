@@ -24,7 +24,7 @@ JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_openAsset(JNIEnv *
 
 	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
 	struct Asset *asset = AssetManager_openNonAsset(asset_manager, file_name, mode);
-	printf("AssetManager_openAsset(%p, %s, %d)\n", asset_manager, file_name, mode);
+	printf("AssetManager_openAsset(%p, %s, %d) returns %p\n", asset_manager, file_name, mode, asset);
 
 	return _INTPTR(asset);
 }
