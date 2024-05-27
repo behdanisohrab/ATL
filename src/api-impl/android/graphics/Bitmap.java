@@ -540,7 +540,7 @@ public final class Bitmap {
 			throw new RuntimeException("Buffer not large enough for pixels");
 		}
 
-		nativeCopyPixelsToBuffer(mNativeBitmap, dst);
+		nativeCopyPixelsToBuffer(pixbuf, dst);
 
 		// now update the buffer's position
 		int position = dst.position();
@@ -1618,7 +1618,7 @@ public final class Bitmap {
 	private static native Bitmap nativeCopy(int srcBitmap, int nativeConfig,
 						boolean isMutable);
 	private static native void nativeDestructor(int nativeBitmap);
-	private static native boolean nativeRecycle(long nativeBitmap, long texture);
+	private static native boolean nativeRecycle(long pixbuf, long texture);
 	private static native void nativeReconfigure(int nativeBitmap, int width, int height,
 						     int config, int allocSize);
 
@@ -1626,12 +1626,12 @@ public final class Bitmap {
 						     int quality, OutputStream stream,
 						     byte[] tempStorage);
 	private static native void nativeErase(int nativeBitmap, int color);
-	private static native int nativeRowBytes(long nativeBitmap);
+	private static native int nativeRowBytes(long pixbuf);
 	private static native int nativeConfig(int nativeBitmap);
 
 	private static native int nativeGetPixel(int nativeBitmap, int x, int y,
 						 boolean isPremultiplied);
-	private static native void nativeGetPixels(long nativeBitmap, int[] pixels,
+	private static native void nativeGetPixels(long pixbuf, int[] pixels,
 						   int offset, int stride, int x, int y,
 						   int width, int height, boolean isPremultiplied);
 
@@ -1640,7 +1640,7 @@ public final class Bitmap {
 	private static native void nativeSetPixels(int nativeBitmap, int[] colors,
 						   int offset, int stride, int x, int y,
 						   int width, int height, boolean isPremultiplied);
-	private static native void nativeCopyPixelsToBuffer(int nativeBitmap,
+	private static native void nativeCopyPixelsToBuffer(long pixbuf,
 							    Buffer dst);
 	private static native void nativeCopyPixelsFromBuffer(int nb, Buffer src);
 	private static native int nativeGenerationId(int nativeBitmap);

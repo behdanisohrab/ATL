@@ -146,3 +146,15 @@ JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1paintable_1from_1pi
 	GdkPixbuf *pixbuf = _PTR(pixbuf_ptr);
 	return _INTPTR(gdk_texture_new_for_pixbuf(pixbuf));
 }
+
+JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeCopyPixelsToBuffer(JNIEnv *env, jclass this, jlong _pixbuf, jobject buffer)
+{
+	GdkPixbuf *pixbuf = _PTR(_pixbuf);
+	size_t pixbuf_size = gdk_pixbuf_get_rowstride(pixbuf) * (gdk_pixbuf_get_height(pixbuf) - 1)
+	                     + /* last row: */ gdk_pixbuf_get_width(pixbuf) * ((gdk_pixbuf_get_n_channels(pixbuf) * gdk_pixbuf_get_bits_per_sample(pixbuf) + 7) / 8);
+	jarray array_ref;
+	jbyte *array;
+	uint8_t *pixels = get_nio_buffer(env, buffer, &array_ref, &array);
+	memcpy(pixels, pixbuf, pixbuf_size);
+	release_nio_buffer(env, array_ref, array);
+}
