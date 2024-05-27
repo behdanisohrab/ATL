@@ -49,22 +49,6 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glBlendFunc
 
 /*
  * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glClear
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glClear
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glClearColor
- * Signature: (FFFF)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glClearColor
-  (JNIEnv *, jobject, jfloat, jfloat, jfloat, jfloat);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
  * Method:    glClearColorx
  * Signature: (IIII)V
  */
@@ -1202,17 +1186,9 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glGetFixedv__ILj
 /*
  * Class:     com_google_android_gles_jni_GLImpl
  * Method:    glGetFloatv
- * Signature: (I[FI)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glGetFloatv__I_3FI
-  (JNIEnv *, jobject, jint, jfloatArray, jint);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glGetFloatv
  * Signature: (ILjava/nio/FloatBuffer;)V
  */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glGetFloatv__ILjava_nio_FloatBuffer_2
+JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glGetFloatv
   (JNIEnv *, jobject, jint, jobject);
 
 /*

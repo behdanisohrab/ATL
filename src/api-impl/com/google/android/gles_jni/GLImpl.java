@@ -33,6 +33,8 @@ import javax.microedition.khronos.opengles.GL11;
 import javax.microedition.khronos.opengles.GL11Ext;
 import javax.microedition.khronos.opengles.GL11ExtensionPack;
 
+import android.opengl.GLES10;
+
 public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 	// Private accessors for native code
 
@@ -116,16 +118,20 @@ public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 
 	// C function void glClear ( GLbitfield mask )
 
-	public native void glClear(
-	    int mask);
+	public void glClear(
+	    int mask) {
+		GLES10.glClear(mask);
+	}
 
 	// C function void glClearColor ( GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha )
 
-	public native void glClearColor(
+	public void glClearColor(
 	    float red,
 	    float green,
 	    float blue,
-	    float alpha);
+	    float alpha) {
+		GLES10.glClearColor(red, green, blue, alpha);
+	}
 
 	// C function void glClearColorx ( GLclampx red, GLclampx green, GLclampx blue, GLclampx alpha )
 
@@ -1198,10 +1204,12 @@ public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 
 	// C function void glGetFloatv ( GLenum pname, GLfloat *params )
 
-	public native void glGetFloatv(
+	public void glGetFloatv(
 	    int pname,
 	    float[] params,
-	    int offset);
+	    int offset) {
+		GLES10.glGetFloatv(pname, params, offset);
+	}
 
 	// C function void glGetFloatv ( GLenum pname, GLfloat *params )
 
