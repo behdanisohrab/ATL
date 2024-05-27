@@ -610,7 +610,7 @@ void init_cmd_parameters(GApplication *app, struct jni_callback_data *d)
       .flags = 0,
       .arg = G_OPTION_ARG_STRING_ARRAY,
       .arg_data = &d->extra_jvm_options,
-      .description = "install .desktop file for the given apk",
+      .description = "pass an additional option directly to art",
     },
     {
       .long_name = "extra-string-key",
