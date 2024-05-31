@@ -20,8 +20,8 @@ cd skia
 cp build/linux-self-hosted/DEPS DEPS
 python3 tools/git-sync-deps
 export arch=x64
-gn gen 'out/linux/$arch' --args='is_official_build=true skia_enable_tools=false target_os="linux" target_cpu="$arch" skia_use_icu=false skia_use_sfntly=false skia_use_piex=true skia_use_system_harfbuzz=true skia_use_system_expat=true skia_use_system_freetype2=true skia_use_system_libjpeg_turbo=true skia_use_system_libpng=true skia_use_system_libwebp=true skia_use_system_zlib=true skia_enable_gpu=true extra_cflags=[ "-DSKIA_C_DLL" ] linux_soname_version="99.9"'
-ninja -C 'out/linux/$arch' SkiaSharp
+gn gen "out/linux/$arch" --args='is_official_build=true skia_enable_tools=false target_os="linux" target_cpu="$arch" skia_use_icu=false skia_use_sfntly=false skia_use_piex=true skia_use_system_harfbuzz=true skia_use_system_expat=true skia_use_system_freetype2=true skia_use_system_libjpeg_turbo=true skia_use_system_libpng=true skia_use_system_libwebp=true skia_use_system_zlib=true skia_enable_gpu=true extra_cflags=[ "-DSKIA_C_DLL" ] linux_soname_version="99.9"'
+ninja -C "out/linux/$arch" SkiaSharp
 sudo cp out/linux/$arch/libSkiaSharp.so.99.9 /usr/local/lib64/
 sudo ln -s /usr/local/lib64/libSkiaSharp.so.99.9 /usr/local/lib64/libSkiaSharp.so
 ```
