@@ -138,7 +138,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   dependencies: [
                                                                   	dependency('gtk4', version: '>=4.8'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni'),
                                                                   	dependency('libportal'), dependency('sqlite3'), libskia_dep, dependency('libavcodec', version: '>=59'), dependency('libdrm'),
-                                                                  	dependency('gudev-1.0'),
+                                                                  	dependency('gudev-1.0'), dependency('libswscale'),
                                                                   	libandroidfw_dep
                                                                   ],
                                                                   link_with: [ libandroid_so ],

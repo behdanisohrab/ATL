@@ -19,6 +19,7 @@
 #include <libavutil/pixdesc.h>
 #include <drm_fourcc.h>
 #include <libswresample/swresample.h>
+#include <libswscale/swscale.h>
 
 #include <stdlib.h>
 #if !GTK_CHECK_VERSION(4, 14, 0)
@@ -40,9 +41,9 @@ struct ATL_codec_context {
 			SwrContext *swr;
 		} audio;
 		struct {
-#if GTK_CHECK_VERSION(4, 14, 0)
+			struct SwsContext *sws;  // for software decoding
 			GtkPicture *gtk_picture;
-#else
+#if !GTK_CHECK_VERSION(4, 14, 0)
 			struct zwp_linux_dmabuf_v1 *zwp_linux_dmabuf_v1;
 			struct wp_viewporter *wp_viewporter;
 			struct wp_viewport *viewport;
@@ -138,9 +139,9 @@ static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,
 
 struct render_frame_data {
 	AVFrame *frame;
-#if GTK_CHECK_VERSION(4, 14, 0)
+	GdkTexture *texture;  // for software decoding
 	GtkPicture *gtk_picture;
-#else
+#if !GTK_CHECK_VERSION(4, 14, 0)
 	struct zwp_linux_dmabuf_v1 *zwp_linux_dmabuf_v1;
 	struct ANativeWindow *native_window;
 #endif
@@ -324,7 +325,7 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JN
 		if (!config) {
 			fprintf(stderr, "Decoder %s doesn't support pixel format VAAPI or DRM_PRIME\n",
 				codec_ctx->codec->name);
-			exit(1);
+			break;
 		}
 
 		if ((config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX) &&
@@ -343,8 +344,8 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JN
 		i++;
 	}
 
-#if GTK_CHECK_VERSION(4, 14, 0)
 	GtkWidget *surface_view_widget = _PTR(_GET_LONG_FIELD(surface_obj, "widget"));
+#if GTK_CHECK_VERSION(4, 14, 0)
 	GtkWidget *graphics_offload = gtk_widget_get_first_child(surface_view_widget);
 	if (!GTK_IS_GRAPHICS_OFFLOAD(graphics_offload)) {
 		graphics_offload = gtk_graphics_offload_new(gtk_picture_new());
@@ -352,6 +353,12 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JN
 	}
 	ctx->video.gtk_picture = GTK_PICTURE(gtk_graphics_offload_get_child(GTK_GRAPHICS_OFFLOAD(graphics_offload)));
 #else
+	GtkWidget *gtk_picture = gtk_widget_get_first_child(surface_view_widget);
+	if (!GTK_IS_PICTURE(gtk_picture)) {
+		gtk_picture = gtk_picture_new();
+		gtk_widget_insert_after(gtk_picture, surface_view_widget, NULL);
+	}
+	ctx->video.gtk_picture = GTK_PICTURE(gtk_picture);
 	struct ANativeWindow *native_window = ANativeWindow_fromSurface(env, surface_obj);
 	ctx->video.native_window = native_window;
 	ctx->video.surface_width = gtk_widget_get_width(native_window->surface_view_widget);
@@ -519,6 +526,16 @@ static gboolean render_frame(void *data)
 	return G_SOURCE_REMOVE;
 }
 
+static gboolean render_texture(void *data) {
+	struct render_frame_data *d = (struct render_frame_data *)data;
+
+	gtk_picture_set_paintable(d->gtk_picture, GDK_PAINTABLE(d->texture));
+	g_object_unref(d->texture);
+
+	free(d);
+	return G_SOURCE_REMOVE;
+}
+
 JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1releaseOutputBuffer(JNIEnv *env, jobject this, jlong codec, jobject buffer, jboolean render)
 {
 	struct ATL_codec_context *ctx = _PTR(codec);
@@ -538,6 +555,39 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1releaseOutputBuffer
 			return;
 		}
 
+		if (!frame->hw_frames_ctx) {
+			const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(frame->format);
+			enum AVPixelFormat gdk_pix_fmt;
+			GdkMemoryFormat gdk_mem_fmt;
+			int stride;
+			if (desc != NULL && (desc->flags & AV_PIX_FMT_FLAG_ALPHA)) {
+				gdk_pix_fmt = AV_PIX_FMT_RGBA;
+				gdk_mem_fmt = GDK_MEMORY_R8G8B8A8;
+				stride = frame->width * 4;
+			} else {
+				gdk_pix_fmt = AV_PIX_FMT_RGB24;
+				gdk_mem_fmt = GDK_MEMORY_R8G8B8;
+				stride = frame->width * 3;
+			}
+
+			// use swscale to convert YUV to RGB
+			ctx->video.sws = sws_getCachedContext(ctx->video.sws, frame->width, frame->height, frame->format,
+						frame->width, frame->height, gdk_pix_fmt, 0, NULL, NULL, NULL);
+			guchar *data_rgb = g_try_malloc0(frame->height * stride);
+			sws_scale(ctx->video.sws, (const uint8_t * const *)frame->data, frame->linesize, 0,
+						frame->height, (uint8_t *[1]) { data_rgb }, (int[1]) { stride });
+
+			GBytes *bytes = g_bytes_new_take(data_rgb, frame->height * stride);
+			GdkTexture *texture = gdk_memory_texture_new(frame->width, frame->height, gdk_mem_fmt, bytes, stride);
+			struct render_frame_data *data = malloc(sizeof(struct render_frame_data));
+			data->texture = texture;
+			data->gtk_picture = ctx->video.gtk_picture;
+			g_idle_add(render_texture, data);
+			g_bytes_unref (bytes);
+			av_frame_free(&frame);
+			return;
+		}
+
 		struct render_frame_data *data = malloc(sizeof(struct render_frame_data));
 		data->frame = frame;
 #if GTK_CHECK_VERSION(4, 14, 0)
@@ -553,6 +603,16 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1releaseOutputBuffer
 JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1release(JNIEnv *env, jobject this, jlong codec)
 {
 	struct ATL_codec_context *ctx = _PTR(codec);
+#if !GTK_CHECK_VERSION(4, 14, 0)
+	if (ctx->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+		struct ANativeWindow *native_window = ctx->video.native_window;
+		g_signal_handlers_disconnect_by_data(native_window->surface_view_widget, ctx);
+	}
+#endif
+	if (ctx->codec->codec_type == AVMEDIA_TYPE_VIDEO && ctx->video.sws) {
+		sws_freeContext(ctx->video.sws);
+	}
+
 	avcodec_free_context(&ctx->codec);
 	free(ctx);
 }
