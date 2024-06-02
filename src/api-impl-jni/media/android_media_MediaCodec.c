@@ -5,6 +5,8 @@
  */
 
 #include <libavutil/frame.h>
+#include <libavutil/hwcontext.h>
+#include <libavutil/pixfmt.h>
 #include <stdio.h>
 #include <EGL/eglplatform.h>
 
@@ -51,8 +53,6 @@ struct ATL_codec_context {
 		} video;
 	};
 };
-
-static enum AVPixelFormat hw_pix_fmt = AV_PIX_FMT_NONE;
 
 JNIEXPORT jlong JNICALL Java_android_media_MediaCodec_native_1constructor(JNIEnv *env, jobject this, jstring codec_name)
 {
@@ -123,27 +123,12 @@ static uint32_t get_drm_frame_format(const AVDRMFrameDescriptor *drm_frame_desc)
 	return DRM_FORMAT_INVALID;
 }
 
-static int check_hw_device_type(enum AVHWDeviceType type)
-{
-	enum AVHWDeviceType t = AV_HWDEVICE_TYPE_NONE;
-	while (1) {
-		t = av_hwdevice_iterate_types(t);
-		if (t == AV_HWDEVICE_TYPE_NONE) {
-			break;
-		}
-		if (t == type) {
-			return 0;
-		}
-	}
-	return -1;
-}
-
 static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,
 		const enum AVPixelFormat *pix_fmts)
 {
 	for (size_t i = 0; pix_fmts[i] != AV_PIX_FMT_NONE; i++) {
-		if (pix_fmts[i] == hw_pix_fmt) {
-			return hw_pix_fmt;
+		if (pix_fmts[i] == AV_PIX_FMT_VAAPI || pix_fmts[i] == AV_PIX_FMT_DRM_PRIME) {
+			return pix_fmts[i];
 		}
 	}
 
@@ -153,7 +138,6 @@ static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,
 
 struct render_frame_data {
 	AVFrame *frame;
-	AVFrame *drm_frame;
 #if GTK_CHECK_VERSION(4, 14, 0)
 	GtkPicture *gtk_picture;
 #else
@@ -165,15 +149,11 @@ struct render_frame_data {
 #if GTK_CHECK_VERSION(4, 14, 0)
 static void handle_dmabuftexture_destroy(void *data)
 {
-	struct render_frame_data *d = data;
-	AVFrame *frame = d->frame;
-	av_frame_free(&frame);
-	AVFrame *drm_frame = d->drm_frame;
+	AVFrame *drm_frame = data;
 	av_frame_free(&drm_frame);
-	free(d);
 }
 
-static GdkTexture *import_drm_frame_desc_as_texture(const AVDRMFrameDescriptor *drm_frame_desc, int width, int height, struct render_frame_data *d)
+static GdkTexture *import_drm_frame_desc_as_texture(const AVDRMFrameDescriptor *drm_frame_desc, int width, int height, AVFrame *drm_frame)
 {
 	// VA-API drivers may use separate layers with one plane each, or a single
 	// layer with multiple planes. We need to handle both.
@@ -205,7 +185,7 @@ static GdkTexture *import_drm_frame_desc_as_texture(const AVDRMFrameDescriptor *
 	gdk_dmabuf_texture_builder_set_height(builder, height);
 	gdk_dmabuf_texture_builder_set_fourcc(builder, drm_format);
 	GError *error = NULL;
-	GdkTexture *texture = gdk_dmabuf_texture_builder_build(builder, handle_dmabuftexture_destroy, d, &error);
+	GdkTexture *texture = gdk_dmabuf_texture_builder_build(builder, handle_dmabuftexture_destroy, drm_frame, &error);
 	if (error) {
 		fprintf(stderr, "Failed to build texture: %s\n", error->message);
 		exit(1);
@@ -338,30 +318,30 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JN
 		printf("params->extradata[%d] = %x\n", i, codec_ctx->extradata[i]);
 	}
 
-	enum AVHWDeviceType type = AV_HWDEVICE_TYPE_VAAPI;
-	int ret = check_hw_device_type(type);
-	if (ret != 0) {
-		fprintf(stderr, "VA-API not supported\n");
-		exit(1);
-	}
 	int i = 0;
 	while (1) {
 		const AVCodecHWConfig *config = avcodec_get_hw_config(codec_ctx->codec, i);
 		if (!config) {
-			fprintf(stderr, "Decoder %s doesn't support device type %s\n",
-				codec_ctx->codec->name, av_hwdevice_get_type_name(type));
+			fprintf(stderr, "Decoder %s doesn't support pixel format VAAPI or DRM_PRIME\n",
+				codec_ctx->codec->name);
 			exit(1);
 		}
 
 		if ((config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX) &&
-				config->device_type == type) {
-			hw_pix_fmt = config->pix_fmt;
-			break;
+				(config->pix_fmt == AV_PIX_FMT_VAAPI || config->pix_fmt == AV_PIX_FMT_DRM_PRIME)) {
+			fprintf(stderr, "Selected pixel format %s\n", av_get_pix_fmt_name(config->pix_fmt));
+			codec_ctx->get_format = get_hw_format;
+
+			AVBufferRef *hw_device_ctx = NULL;
+			int ret = av_hwdevice_ctx_create(&hw_device_ctx, config->device_type, NULL, NULL, 0);
+			if (ret >= 0) {
+				codec_ctx->hw_device_ctx = av_buffer_ref(hw_device_ctx);
+				break;
+			}
 		}
 
 		i++;
 	}
-	fprintf(stderr, "Selected pixel format %s\n", av_get_pix_fmt_name(hw_pix_fmt));
 
 #if GTK_CHECK_VERSION(4, 14, 0)
 	GtkWidget *surface_view_widget = _PTR(_GET_LONG_FIELD(surface_obj, "widget"));
@@ -407,16 +387,6 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1start(JNIEnv *env, 
 		}
 		swr_init(ctx->audio.swr);
 	} else if (codec_ctx->codec_type == AVMEDIA_TYPE_VIDEO) {
-		enum AVHWDeviceType type = AV_HWDEVICE_TYPE_VAAPI;
-		codec_ctx->get_format = get_hw_format;
-
-		AVBufferRef *hw_device_ctx = NULL;
-		int ret = av_hwdevice_ctx_create(&hw_device_ctx, type, NULL, NULL, 0);
-		if (ret < 0) {
-			fprintf(stderr, "Failed to create HW device context\n");
-			exit(1);
-		}
-		codec_ctx->hw_device_ctx = av_buffer_ref(hw_device_ctx);
 
 #if !GTK_CHECK_VERSION(4, 14, 0)
 		struct ANativeWindow *native_window = ctx->video.native_window;
@@ -506,21 +476,27 @@ static gboolean render_frame(void *data)
 	AVFrame *frame = d->frame;
 	int ret;
 
-	AVFrame *drm_frame = d->drm_frame = av_frame_alloc();
-	drm_frame->format = AV_PIX_FMT_DRM_PRIME;
-	drm_frame->hw_frames_ctx = av_buffer_ref(frame->hw_frames_ctx);
+	AVFrame *drm_frame;
+	if (frame->format != AV_PIX_FMT_DRM_PRIME) {
+		drm_frame = av_frame_alloc();
+		drm_frame->format = AV_PIX_FMT_DRM_PRIME;
+		drm_frame->hw_frames_ctx = av_buffer_ref(frame->hw_frames_ctx);
 
-	// Convert the VA-API frame into a DMA-BUF frame
-	ret = av_hwframe_map(drm_frame, frame, 0);
-	if (ret < 0) {
-		fprintf(stderr, "Failed to map frame: %s\n", av_err2str(ret));
-		exit(1);
+		// Convert the VA-API frame into a DMA-BUF frame
+		ret = av_hwframe_map(drm_frame, frame, 0);
+		if (ret < 0) {
+			fprintf(stderr, "Failed to map frame: %s\n", av_err2str(ret));
+			exit(1);
+		}
+		av_frame_free(&frame);
+	} else {
+		drm_frame = frame;
 	}
 
 	AVDRMFrameDescriptor *drm_frame_desc = (void *)drm_frame->data[0];
 
 #if GTK_CHECK_VERSION(4, 14, 0)
-	GdkTexture *texture = import_drm_frame_desc_as_texture(drm_frame_desc, drm_frame->width, drm_frame->height, d);
+	GdkTexture *texture = import_drm_frame_desc_as_texture(drm_frame_desc, drm_frame->width, drm_frame->height, drm_frame);
 	gtk_picture_set_paintable(d->gtk_picture, GDK_PAINTABLE(texture));
 	g_object_unref(texture);
 #else
@@ -529,7 +505,7 @@ static gboolean render_frame(void *data)
 	if (!wl_buffer) {
 		exit(1);
 	}
-	wl_buffer_add_listener(wl_buffer, &buffer_listener, frame);
+	wl_buffer_add_listener(wl_buffer, &buffer_listener, drm_frame);
 
 	struct ANativeWindow *native_window = d->native_window;
 
@@ -537,10 +513,8 @@ static gboolean render_frame(void *data)
 	wl_surface_attach(native_window->wayland_surface, wl_buffer, 0, 0);
 	wl_surface_commit(native_window->wayland_surface);
 
-	// actual frame will be freed in handle_buffer_release callback
-	av_frame_free(&drm_frame);
-	free(d);
 #endif
+	free(d);
 
 	return G_SOURCE_REMOVE;
 }
