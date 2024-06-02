@@ -258,4 +258,8 @@ public class TextView extends View {
 	public void setCompoundDrawablesWithIntrinsicBounds(Drawable left, Drawable top, Drawable right, Drawable bottom) {}
 
 	public void setHint(CharSequence s) {}
+
+	public Drawable[] getCompoundDrawablesRelative() {return new Drawable[4];}
+
+	public Drawable[] getCompoundDrawables() {return new Drawable[4];}
 }
