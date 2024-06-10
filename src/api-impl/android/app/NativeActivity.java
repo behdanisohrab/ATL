@@ -18,23 +18,19 @@ package android.app;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
+import android.content.pm.PackageParser;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
-import android.content.res.XmlResourceParser;
 // import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.MessageQueue;
 import android.util.AttributeSet;
 import android.view.InputQueue;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.WindowManager;
 // import android.view.inputmethod.InputMethodManager;
 import java.io.File;
 
@@ -161,30 +157,16 @@ public class NativeActivity extends Activity implements SurfaceHolder.Callback,
 			throw new RuntimeException("Error getting activity info", e);
 		}*/
 
-		// parse AndroidManifest.xml to get name and entry of native lib
-		try (XmlResourceParser parser = getAssets().openXmlResourceParser("AndroidManifest.xml")) {
-			for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
-				if (parser.getEventType() == XmlResourceParser.START_TAG && "activity".equals(parser.getName())) {
-					if (!getClass().getName().equals(parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name"))) {
-						continue;
-					}
-					for (; !(parser.getEventType() == XmlResourceParser.END_TAG && "activity".equals(parser.getName())); parser.next()) {
-						if (parser.getEventType() == XmlResourceParser.START_TAG && "meta-data".equals(parser.getName())) {
-							String name = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name");
-							String value = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "value");
-							if (META_DATA_LIB_NAME.equals(name)) {
-								libname = value;
-							}
-							if (META_DATA_FUNC_NAME.equals(name)) {
-								funcname = value;
-							}
-						}
-					}
-					break;
+		for (PackageParser.Activity activity : pkg.activities) {
+			if (getClass().getName().equals(activity.className)) {
+				if (activity.metaData != null) {
+					String ln = activity.metaData.getString(META_DATA_LIB_NAME);
+					if (ln != null) libname = ln;
+					ln = activity.metaData.getString(META_DATA_FUNC_NAME);
+					if (ln != null) funcname = ln;
 				}
+				break;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 		String path = null;

@@ -17,6 +17,7 @@
 package android.content.pm;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
@@ -936,7 +937,7 @@ public class PackageParser {
 		return new Signature(sig);
 	}
 
-	private Package parsePackage(
+	public Package parsePackage(
 	    Resources res, XmlResourceParser parser, int flags, String[] outError)
 	    throws XmlPullParserException, IOException {
 		AttributeSet attrs = parser;
@@ -1162,9 +1163,9 @@ public class PackageParser {
 							return null;
 						}
 					} else if (minVers > SDK_VERSION) {
-						outError[0] = "Requires newer sdk version #" + minVers + " (current version is #" + SDK_VERSION + ")";
-						mParseError = PackageManager.INSTALL_FAILED_OLDER_SDK;
-						return null;
+						// outError[0] = "Requires newer sdk version #" + minVers + " (current version is #" + SDK_VERSION + ")";
+						// mParseError = PackageManager.INSTALL_FAILED_OLDER_SDK;
+						// return null;
 					}
 
 					if (targetCode != null) {
@@ -2203,6 +2204,62 @@ public class PackageParser {
 		return true;
 	}
 
+	private boolean parseIntent(Resources res, XmlPullParser parser, AttributeSet attrs, boolean allowGlobs,
+			boolean allowAutoVerify, IntentInfo outInfo, String[] outError)
+					throws XmlPullParserException, IOException {
+		TypedArray sa = res.obtainAttributes(attrs,
+				com.android.internal.R.styleable.AndroidManifestIntentFilter);
+		TypedValue v = sa.peekValue(
+				com.android.internal.R.styleable.AndroidManifestIntentFilter_label);
+		if (v != null && (outInfo.labelRes=v.resourceId) == 0) {
+			outInfo.nonLocalizedLabel = v.coerceToString();
+		}
+		outInfo.icon = sa.getResourceId(
+				com.android.internal.R.styleable.AndroidManifestIntentFilter_icon, 0);
+
+		outInfo.logo = sa.getResourceId(
+				com.android.internal.R.styleable.AndroidManifestIntentFilter_logo, 0);
+		sa.recycle();
+		int outerDepth = parser.getDepth();
+		int type;
+		while ((type = parser.next()) != XmlPullParser.END_DOCUMENT
+				&& (type != XmlPullParser.END_TAG || parser.getDepth() > outerDepth)) {
+			if (type == XmlPullParser.END_TAG || type == XmlPullParser.TEXT) {
+				continue;
+			}
+			String nodeName = parser.getName();
+			if (nodeName.equals("action")) {
+				String value = parser.getAttributeValue(
+						ANDROID_RESOURCES, "name");
+				if (value == null || value == "") {
+					outError[0] = "No value supplied for <android:name>";
+					return false;
+				}
+				XmlUtils.skipCurrentTag(parser);
+				outInfo.addAction(value);
+			} else if (nodeName.equals("category")) {
+				String value = parser.getAttributeValue(
+						ANDROID_RESOURCES, "name");
+				if (value == null || value == "") {
+					outError[0] = "No value supplied for <android:name>";
+					return false;
+				}
+				XmlUtils.skipCurrentTag(parser);
+			} else if (nodeName.equals("data")) {
+				XmlUtils.skipCurrentTag(parser);
+			} else if (!RIGID_PARSER) {
+				Slog.w(TAG, "Unknown element under <intent-filter>: "
+						+ parser.getName() + " at " + mArchiveSourcePath + " "
+						+ parser.getPositionDescription());
+				XmlUtils.skipCurrentTag(parser);
+			} else {
+				outError[0] = "Bad element under <intent-filter>: " + parser.getName();
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private Activity parseActivity(Package owner, Resources res,
 				       XmlPullParser parser, AttributeSet attrs, int flags, String[] outError,
 				       boolean receiver, boolean hardwareAccelerated)
@@ -2405,7 +2462,20 @@ public class PackageParser {
 				continue;
 			}
 
-			if (parser.getName().equals("meta-data")) {
+			if (parser.getName().equals("intent-filter")) {
+				ActivityIntentInfo intent = new ActivityIntentInfo(a);
+				if (!parseIntent(res, parser, attrs, true /*allowGlobs*/, true /*allowAutoVerify*/,
+						intent, outError)) {
+					return null;
+				}
+				if (intent.countActions() == 0) {
+					Slog.w(TAG, "No actions in intent filter at "
+							+ mArchiveSourcePath + " "
+							+ parser.getPositionDescription());
+				} else {
+					a.intents.add(intent);
+				}
+			} else if (parser.getName().equals("meta-data")) {
 				if ((a.metaData = parseMetaData(res, parser, attrs, a.metaData,
 								outError)) == null) {
 					return null;
@@ -2721,6 +2791,7 @@ public class PackageParser {
 								      outInfo.metaData, outError)) == null) {
 					return false;
 				}
+				outInfo.info.metaData = outInfo.metaData;
 
 			} else if (parser.getName().equals("grant-uri-permission")) {
 				TypedArray sa = res.obtainAttributes(attrs,

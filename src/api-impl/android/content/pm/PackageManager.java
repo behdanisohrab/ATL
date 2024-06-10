@@ -27,7 +27,6 @@ import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 // import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.UserHandle;
 import android.util.AndroidException;
@@ -36,6 +35,7 @@ import android.util.Slog;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 class IPackageInstallObserver {}
@@ -1374,7 +1374,7 @@ public class PackageManager {
 
 
 	public PackageManager() {
-		package_info = new PackageInfo();
+		package_info = PackageParser.generatePackageInfo(Context.pkg, new int[0], 0, 0, 0, new HashSet<>(), new PackageUserState());
 	}
 
 	/**
@@ -1696,32 +1696,12 @@ public class PackageManager {
 	 */
 	public ProviderInfo getProviderInfo(ComponentName component,
 					    int flags) throws Exception {
-		ProviderInfo providerInfo = new ProviderInfo();
-		if ((flags & GET_META_DATA) == GET_META_DATA) {
-			String cls = component.getClassName();
-			XmlResourceParser parser = Context.this_application.getAssets().openXmlResourceParser("AndroidManifest.xml");
-			for(; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
-				if (parser.getEventType() == XmlResourceParser.START_TAG && "provider".equals(parser.getName())) {
-					String providerName = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name");
-					if (providerName.startsWith("."))
-						providerName = Context.this_application.getPackageName() + providerName;
-					if (!providerName.equals(cls))
-						continue;
-					Bundle bundle = new Bundle();
-					for (; !(parser.getEventType() == XmlResourceParser.END_TAG && "provider".equals(parser.getName())); parser.next()) {
-						if (parser.getEventType() == XmlResourceParser.START_TAG && "meta-data".equals(parser.getName())) {
-							String metaName = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name");
-							String metaValue = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "value");
-							bundle.putString(metaName, metaValue);
-						}
-					}
-					providerInfo.metaData = bundle;
-					break;
-				}
+		for (PackageParser.Provider p : Context.pkg.providers) {
+			if (p.className.equals(component.getClassName())) {
+				return p.info;
 			}
-			parser.close();
 		}
-		return providerInfo;
+		throw new NameNotFoundException();
 	}
 
 	/**
@@ -2428,27 +2408,12 @@ public class PackageManager {
 	 * @throws Exception 
 	 */
 	public ProviderInfo resolveContentProvider(String authority, int flags) throws Exception {
-		ProviderInfo providerInfo = new ProviderInfo();
-		XmlResourceParser parser = Context.this_application.getAssets().openXmlResourceParser("AndroidManifest.xml");
-		for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
-			if (parser.getEventType() == XmlResourceParser.START_TAG && "provider".equals(parser.getName())) {
-				String providerAuthority = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "authorities");
-				if (providerAuthority.startsWith("."))
-					providerAuthority = Context.this_application.getPackageName() + providerAuthority;
-				if (!providerAuthority.equals(authority))
-					continue;
-				for (; !(parser.getEventType() == XmlResourceParser.END_TAG && "provider".equals(parser.getName())); parser.next()) {
-					if (parser.getEventType() == XmlResourceParser.START_TAG && "meta-data".equals(parser.getName())) {
-						String metaName = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name");
-						int metaRes = parser.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "resource", -1);
-						providerInfo.metaData.putInt(metaName, metaRes);
-					}
-				}
-				break;
-			}
+		for (PackageParser.Provider p : Context.pkg.providers) {
+			if (p.info.authority.equals(authority))
+				return p.info;
 		}
-		parser.close();
-		return providerInfo;
+
+		throw new Exception("Provider not found: " + authority);
 	}
 
 	/**

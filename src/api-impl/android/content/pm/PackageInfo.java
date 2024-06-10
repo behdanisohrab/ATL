@@ -16,12 +16,6 @@
 
 package android.content.pm;
 
-import android.R;
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.content.res.XmlResourceParser;
-import android.util.TypedValue;
-
 /**
  * Overall information about the contents of a package.  This corresponds
  * to all of the information collected from AndroidManifest.xml.
@@ -236,58 +230,6 @@ public class PackageInfo {
 	 * @hide
 	 */
 	public String requiredAccountType;
-
-	public PackageInfo() {
-		applicationInfo = new ApplicationInfo();
-		try {
-			XmlResourceParser parser = Context.this_application.getAssets().openXmlResourceParser("AndroidManifest.xml");
-			for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
-				if (parser.getEventType() == XmlResourceParser.START_TAG && "manifest".equals(parser.getName())) {
-					packageName = parser.getAttributeValue(null, "package");
-					versionCode = parser.getAttributeIntValue("http://schemas.android.com/apk/res/android", "versionCode", -1);
-					versionName = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "versionName");
-				}
-				if (parser.getEventType() == XmlResourceParser.START_TAG && "application".equals(parser.getName())) {
-					for (; !(parser.getEventType() == XmlResourceParser.END_TAG && "application".equals(parser.getName())); parser.next()) {
-						if (parser.getEventType() == XmlResourceParser.START_TAG && "meta-data".equals(parser.getName())) {
-							TypedArray a = Context.this_application.getResources().obtainAttributes(parser, R.styleable.AndroidManifestMetaData);
-							String metadata_name = a.getString(R.styleable.AndroidManifestMetaData_name);
-							if (metadata_name == null || !a.hasValue(R.styleable.AndroidManifestMetaData_value)) {
-								a.recycle();
-								continue;
-							}
-
-							TypedValue metadata_value = new TypedValue();
-							a.getValue(R.styleable.AndroidManifestMetaData_value, metadata_value);
-							a.recycle();
-
-							switch(metadata_value.type) {
-								case TypedValue.TYPE_STRING:
-									System.out.println("PackageInfo(): applicationInfo.metaData.putString("+metadata_name+", "+metadata_value.string+")");
-									applicationInfo.metaData.putString(metadata_name, metadata_value.string.toString());
-									break;
-								case TypedValue.TYPE_INT_BOOLEAN:
-									System.out.println("PackageInfo(): applicationInfo.metaData.putBoolean("+metadata_name+", "+(metadata_value.data != 0)+")");
-									applicationInfo.metaData.putBoolean(metadata_name, metadata_value.data != 0);
-									break;
-								case TypedValue.TYPE_INT_DEC:
-								case TypedValue.TYPE_INT_HEX:
-									System.out.println("PackageInfo(): applicationInfo.metaData.putInt("+metadata_name+", "+metadata_value.data+")");
-									applicationInfo.metaData.putInt(metadata_name, metadata_value.data);
-									break;
-								default:
-									System.out.println("PackageInfo(): metaData: "+metadata_name+": type "+metadata_value.type+" not handled!");
-									break;
-							}
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println("PackageInfo(): packageName: >"+packageName+"<, versionCode: >"+versionCode+"<, versionName: >"+versionName+"<");
-	}
 
 	public String toString() {
 		return "PackageInfo{" + Integer.toHexString(System.identityHashCode(this)) + " " + packageName + "}";

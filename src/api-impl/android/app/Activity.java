@@ -3,13 +3,11 @@ package android.app;
 import android.R;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageParser;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
-import android.content.res.XmlResourceParser;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,23 +51,16 @@ public class Activity extends ContextWrapper implements Window.Callback {
 	 */
 	private static Activity createMainActivity(String className, long native_window) throws Exception {
 		if (className == null) {
-			XmlResourceParser parser = Context.this_application.getAssets().openXmlResourceParser("AndroidManifest.xml");
-			for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
-				if (parser.getEventType() == XmlResourceParser.START_TAG && "activity".equals(parser.getName())) {
-					className = parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name");
-				}
-				// check if it is the main activity
-				if (parser.getEventType() == XmlResourceParser.START_TAG && "action".equals(parser.getName())) {
-					if ("android.intent.action.MAIN".equals(parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name"))) {
+			for (PackageParser.Activity activity: pkg.activities) {
+				for (PackageParser.IntentInfo intent: activity.intents) {
+					if (intent.matchAction("android.intent.action.MAIN")) {
+						className = activity.className;
 						break;
 					}
 				}
+				if (className != null)
+					break;
 			}
-			parser.close();
-			if(className.indexOf('.') == -1)
-				className = "." + className;
-			if (className.startsWith("."))
-				className = Context.this_application.getPackageName() + className;
 		} else {
 			className = className.replace('/', '.');
 		}
@@ -87,24 +78,13 @@ public class Activity extends ContextWrapper implements Window.Callback {
 
 		CharSequence label = null;
 		CharSequence app_label = null;
-		try (XmlResourceParser parser = getAssets().openXmlResourceParser("AndroidManifest.xml")) {
-			for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
-				if (parser.getEventType() == XmlResourceParser.START_TAG && "application".equals(parser.getName())) {
-					TypedArray a = obtainStyledAttributes(parser, R.styleable.AndroidManifestApplication);
-					app_label = a.getText(R.styleable.AndroidManifestApplication_label);
-					a.recycle();
-				} else if (parser.getEventType() == XmlResourceParser.START_TAG && "activity".equals(parser.getName())) {
-					if (getClass().getName().equals(parser.getAttributeValue("http://schemas.android.com/apk/res/android", "name"))) {
-						TypedArray a = obtainStyledAttributes(parser, R.styleable.AndroidManifestActivity);
-						label = a.getText(R.styleable.AndroidManifestActivity_label);
-						a.recycle();
-						break;
-					}
-				}
+		for (PackageParser.Activity activity: pkg.activities) {
+			if (getClass().getName().equals(activity.className)) {
+				label = getText(activity.info.labelRes);
+				break;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+		app_label = getText(pkg.applicationInfo.labelRes);
 		if (label != null) {
 			setTitle(label);
 		} else if (app_label != null) {

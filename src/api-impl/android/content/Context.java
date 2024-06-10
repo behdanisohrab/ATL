@@ -12,6 +12,7 @@ import android.app.SharedPreferencesImpl;
 import android.app.UiModeManager;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageParser;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -76,6 +77,7 @@ public class Context extends Object {
 	static ApplicationInfo application_info;
 	static Resources.Theme theme;
 	private static Map<Class<? extends Service>,Service> runningServices = new HashMap<>();
+	public static PackageParser.Package pkg;
 
 	static String apk_path = "/tmp/APK_PATH_SHOULD_HAVE_BEEN_FILLED_IN_BY_CODE_IN_main.c/";
 
@@ -100,14 +102,8 @@ public class Context extends Object {
 		application_info = new ApplicationInfo();
 		application_info.dataDir = Environment.getExternalStorageDirectory().getAbsolutePath();
 		try (XmlResourceParser parser = assets.openXmlResourceParser("AndroidManifest.xml")) {
-			for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
-				if (parser.getEventType() == XmlResourceParser.START_TAG && "uses-sdk".equals(parser.getName())) {
-					application_info.targetSdkVersion = parser.getAttributeIntValue(null, "targetSdkVersion", 0);
-				}
-				if (parser.getEventType() == XmlResourceParser.START_TAG && "manifest".equals(parser.getName())) {
-					application_info.packageName = parser.getAttributeValue(null, "package");
-				}
-			}
+			pkg = new PackageParser(null).parsePackage(r, parser, 0, new String[1]);
+			application_info = pkg.applicationInfo;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -117,33 +113,16 @@ public class Context extends Object {
 
 	static Application createApplication(long native_window) throws Exception {
 		Application application;
-		CharSequence application_name = null;
-		int application_theme = 0;
-		String packageName = null;
-		XmlResourceParser parser = assets.openXmlResourceParser("AndroidManifest.xml");
-		for (; parser.getEventType() != XmlResourceParser.END_DOCUMENT; parser.next()) {
-			if (parser.getEventType() == XmlResourceParser.START_TAG && "manifest".equals(parser.getName())) {
-				packageName = parser.getAttributeValue(null, "package");
-			}
-			if (parser.getEventType() == XmlResourceParser.START_TAG && "application".equals(parser.getName())) {
-				TypedArray a = r.obtainAttributes(parser, R.styleable.AndroidManifestApplication);
-				application_name = a.getText(R.styleable.AndroidManifestApplication_name);
-				application_theme = a.getResourceId(R.styleable.AndroidManifestApplication_theme, 0);
-				a.recycle();
-			}
-		}
-		parser.close();
 
-		String className = (application_name != null) ? application_name.toString() : "android.app.Application";
-		if(className.indexOf('.') == -1)
-			className = "." + className;
-		if (className.startsWith("."))
-			className = packageName + className;
-		Class<? extends Application> cls = Class.forName(className).asSubclass(Application.class);
-		Constructor<? extends Application> constructor = cls.getConstructor();
-		application = constructor.newInstance();
-		if (application_theme != 0)
-			application.setTheme(application_theme);
+		if (pkg.applicationInfo.className != null) {
+			Class<? extends Application> cls = Class.forName(pkg.applicationInfo.className).asSubclass(Application.class);
+			Constructor<? extends Application> constructor = cls.getConstructor();
+			application = constructor.newInstance();
+		} else {
+			application = new Application();
+		}
+		if (pkg.applicationInfo.theme != 0)
+			application.setTheme(pkg.applicationInfo.theme);
 		application.native_window = native_window;
 		this_application = application;
 		return application;
