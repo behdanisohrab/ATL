@@ -7,6 +7,7 @@
 
 #include "WrapperWidget.h"
 #include "AdapterView.h"
+#include "../views/AndroidLayout.h"
 
 #include "../generated_headers/android_widget_AbsListView.h"
 
@@ -73,14 +74,20 @@ static void bind_listitem_cb(GtkListItemFactory *factory, GtkListItem *list_item
 	jmethodID getView = _METHOD(_CLASS(model->adapter), "getView", "(ILandroid/view/View;Landroid/view/ViewGroup;)Landroid/view/View;");
 	jobject view = (*env)->CallObjectMethod(env, model->adapter, getView, index, wrapper ? wrapper->jobj : NULL, model->jobject);
 	view = _REF(view);
-	GtkWidget *child = gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(view, "widget"))));
-	gtk_list_item_set_child(list_item, child);
+	GtkWidget *child = GTK_WIDGET(_PTR(_GET_LONG_FIELD(view, "widget")));
+	GtkWidget *child_wrapper = gtk_widget_get_parent(child);
+	jobject layout_params = _GET_OBJ_FIELD(view, "layout_params", "Landroid/view/ViewGroup$LayoutParams;");
+	GtkLayoutManager *layout_manager = gtk_widget_get_layout_manager(child);
+	if (!layout_params && ATL_IS_ANDROID_LAYOUT(layout_manager)) {  // use default layout params
+		android_layout_set_params(ATL_ANDROID_LAYOUT(layout_manager), MATCH_PARENT, WRAP_CONTENT);
+	}
+	gtk_list_item_set_child(list_item, child_wrapper);
 
 	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_click_new());
 	gtk_event_controller_set_propagation_phase(controller, GTK_PHASE_BUBBLE);
 	g_signal_connect(controller, "released", G_CALLBACK(on_click), list_item);
-	gtk_widget_add_controller(GTK_WIDGET(child), controller);
-	g_object_set_data(G_OBJECT(child), "on_item_click_listener", controller);
+	gtk_widget_add_controller(GTK_WIDGET(child_wrapper), controller);
+	g_object_set_data(G_OBJECT(child_wrapper), "on_item_click_listener", controller);
 }
 
 static void unbind_listitem_cb(GtkListItemFactory *factory, GtkListItem *list_item)
