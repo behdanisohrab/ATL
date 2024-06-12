@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Intent {
 	private ComponentName component;
@@ -308,5 +309,9 @@ public class Intent {
 	public Intent setData(Uri uri) {
 		this.data = uri;
 		return this;
+	}
+
+	public ArrayList<Parcelable> getParcelableArrayListExtra(String name) {
+		return extras.getParcelableArrayList(name);
 	}
 }
