@@ -1,5 +1,6 @@
 package android.media;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayDeque;
@@ -20,9 +21,12 @@ public class MediaCodec {
 	private Queue<Integer> queuedInputBuffers;
 	private Queue<Integer> freeInputBuffers;
 
-	private MediaCodec(String codecName) {
+	private MediaCodec(String codecName) throws IOException {
 		this.codecName = codecName;
 		native_codec = native_constructor(codecName);
+		if (native_codec == 0) {
+			throw new IOException("Unable to create MediaCodec: " + codecName);
+		}
 		inputBuffers = new ByteBuffer[1];
 		inputBufferTimestamps = new long[inputBuffers.length];
 		freeInputBuffers = new ArrayDeque<>(inputBuffers.length);
@@ -39,7 +43,7 @@ public class MediaCodec {
 		}
 	}
 
-	public static MediaCodec createByCodecName(String codecName) {
+	public static MediaCodec createByCodecName(String codecName) throws IOException {
 		return new MediaCodec(codecName);
 	}
 

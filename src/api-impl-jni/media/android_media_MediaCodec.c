@@ -60,6 +60,8 @@ JNIEXPORT jlong JNICALL Java_android_media_MediaCodec_native_1constructor(JNIEnv
 	const char *name = (*env)->GetStringUTFChars(env, codec_name, NULL);
 	const AVCodec *codec = avcodec_find_decoder_by_name(name);
 	(*env)->ReleaseStringUTFChars(env, codec_name, name);
+	if (!codec)
+		return 0;
 	AVCodecContext *codec_ctx = avcodec_alloc_context3(codec);
 
 	struct ATL_codec_context *ctx = calloc(1, sizeof(struct ATL_codec_context));
