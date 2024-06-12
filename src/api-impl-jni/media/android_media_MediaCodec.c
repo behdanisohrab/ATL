@@ -127,13 +127,18 @@ static uint32_t get_drm_frame_format(const AVDRMFrameDescriptor *drm_frame_desc)
 static enum AVPixelFormat get_hw_format(AVCodecContext *ctx,
 		const enum AVPixelFormat *pix_fmts)
 {
-	for (size_t i = 0; pix_fmts[i] != AV_PIX_FMT_NONE; i++) {
+	size_t i;
+	for (i = 0; pix_fmts[i] != AV_PIX_FMT_NONE; i++) {
 		if (pix_fmts[i] == AV_PIX_FMT_VAAPI || pix_fmts[i] == AV_PIX_FMT_DRM_PRIME) {
 			return pix_fmts[i];
 		}
 	}
 
 	fprintf(stderr, "Failed to find HW pixel format\n");
+	if (i > 0) {
+		printf("falling back to software decode\n");
+		return pix_fmts[i-1];  // last pixel format should be for software decoding
+	}
 	return AV_PIX_FMT_NONE;
 }
 
