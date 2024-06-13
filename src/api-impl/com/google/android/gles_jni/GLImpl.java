@@ -344,7 +344,9 @@ public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 
 	// C function void glFlush ( void )
 
-	public native void glFlush();
+	public void glFlush() {
+		GLES10.glFlush();
+	}
 
 	// C function void glFogf ( GLenum pname, GLfloat param )
 

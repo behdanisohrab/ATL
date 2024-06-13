@@ -125,3 +125,11 @@ JNIEXPORT jboolean JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1egl
 {
 	return eglDestroyContext(_PTR(display), _PTR(context));
 }
+
+JNIEXPORT jlong JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglCreatePbufferSurface(JNIEnv *env, jobject this, jlong display, jlong config, jintArray _attrib_list)
+{
+	EGLint *attrib_list = get_int_array_crit(env, _attrib_list);
+	EGLSurface ret = eglCreatePbufferSurface(_PTR(display), _PTR(config), attrib_list);
+	release_int_array_crit(env, _attrib_list, attrib_list);
+	return _INTPTR(ret);
+}

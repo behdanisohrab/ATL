@@ -87,6 +87,14 @@ JNIEXPORT jboolean JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1egl
 JNIEXPORT jboolean JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglDestroyContext
   (JNIEnv *, jobject, jlong, jlong);
 
+/*
+ * Class:     com_google_android_gles_jni_EGLImpl
+ * Method:    native_eglCreatePbufferSurface
+ * Signature: (JJ[I)J
+ */
+JNIEXPORT jlong JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglCreatePbufferSurface
+  (JNIEnv *, jobject, jlong, jlong, jintArray);
+
 #ifdef __cplusplus
 }
 #endif

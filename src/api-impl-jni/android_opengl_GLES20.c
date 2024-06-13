@@ -252,3 +252,8 @@ JNIEXPORT void JNICALL Java_android_opengl_GLES20_glGetFloatv__I_3FI(JNIEnv *env
 
 	(*env)->ReleasePrimitiveArrayCritical(env, params_ref, params_base, 0);
 }
+
+JNIEXPORT void JNICALL Java_android_opengl_GLES20_glFlush(JNIEnv *env, jclass this)
+{
+	glFlush();
+}

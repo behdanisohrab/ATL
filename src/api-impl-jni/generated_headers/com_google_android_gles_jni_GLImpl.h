@@ -265,14 +265,6 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glFinish
 
 /*
  * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glFlush
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glFlush
-  (JNIEnv *, jobject);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
  * Method:    glFogf
  * Signature: (IF)V
  */

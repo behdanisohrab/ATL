@@ -118,9 +118,12 @@ public class EGLImpl implements EGL10 {
 		return native_eglDestroyContext(display.native_egl_display, context.native_egl_context);
 	}
 
+	public EGLSurface eglCreatePbufferSurface(EGLDisplay display, EGLConfig config, int[] attrib_list) {
+		return new EGLSurfaceImpl(native_eglCreatePbufferSurface(display.native_egl_display, config.native_egl_config, attrib_list));
+	}
+
 	/* STUBS */
 	public boolean eglCopyBuffers(EGLDisplay display, EGLSurface surface, Object native_pixmap) { return false; }
-	public EGLSurface eglCreatePbufferSurface(EGLDisplay display, EGLConfig config, int[] attrib_list) { return null; }
 	public EGLSurface eglCreatePixmapSurface(EGLDisplay display, EGLConfig config, Object native_pixmap, int[] attrib_list) { return null; }
 	public boolean eglGetConfigs(EGLDisplay display, EGLConfig[] configs, int config_size, int[] num_config) { return false; }
 	public EGLContext eglGetCurrentContext() { return null; }
@@ -146,4 +149,5 @@ public class EGLImpl implements EGL10 {
 	private native boolean native_eglSwapBuffers(long native_egl_display, long native_surface);
 	private native boolean native_eglDestroySurface(long native_egl_display, long native_surface);
 	private native boolean native_eglDestroyContext(long native_egl_display, long native_context);
+	private native long native_eglCreatePbufferSurface(long native_egl_display, long native_egl_config, int[] attrib_list);
 }
