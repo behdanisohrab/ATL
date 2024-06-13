@@ -450,11 +450,13 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	/* -- set the window title and app icon -- */
 
-	package_name = _CSTRING((*env)->CallObjectMethod(env, activity_object, handle_cache.context.get_package_name));
+	jstring package_name_jstr = (*env)->CallObjectMethod(env, activity_object, handle_cache.context.get_package_name);
+	package_name = package_name_jstr ? _CSTRING(package_name_jstr) : NULL;
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
-	const char *app_icon_path = _CSTRING((*env)->CallObjectMethod(env, application_object, handle_cache.application.get_app_icon_path));
+	jstring app_icon_path_jstr = (*env)->CallObjectMethod(env, application_object, handle_cache.application.get_app_icon_path);
+	const char *app_icon_path = app_icon_path_jstr ? _CSTRING(app_icon_path_jstr) : NULL;
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
