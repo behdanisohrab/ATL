@@ -17,9 +17,9 @@
 package android.content.pm;
 
 import android.content.res.XmlResourceParser;
-// import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-// import android.text.TextUtils;
+import android.text.TextUtils;
 import android.util.Printer;
 import java.text.Collator;
 import java.util.Comparator;

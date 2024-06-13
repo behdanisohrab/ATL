@@ -25,7 +25,7 @@ import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
-// import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.UserHandle;
@@ -46,7 +46,6 @@ class IPackageDataObserver {}
 class IPackageStatsObserver {}
 class VerifierDeviceIdentity {}
 class IPackageMoveObserver {}
-class Drawable {}
 
 /**
  * Class for retrieving various kinds of information related to the application

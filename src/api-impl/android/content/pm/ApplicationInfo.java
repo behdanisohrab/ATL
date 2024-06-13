@@ -18,7 +18,7 @@ package android.content.pm;
 
 import android.content.pm.PackageManager.NameNotFoundException;
 // import android.content.res.Resources;
-// import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable;
 import android.util.Printer;
 import java.text.Collator;
 import java.util.Comparator;

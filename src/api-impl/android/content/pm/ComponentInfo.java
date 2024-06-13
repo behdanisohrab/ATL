@@ -16,7 +16,7 @@
 
 package android.content.pm;
 
-// import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable;
 import android.util.Printer;
 
 /**
