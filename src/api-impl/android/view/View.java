@@ -1489,11 +1489,6 @@ public class View implements Drawable.Callback {
 
 	public void clearFocus() {}
 
-	public void setRotation(float rotation) {}
-
-	public void setScaleX(float scaleX) {}
-	public void setScaleY(float scaleY) {}
-
 	public static View inflate(Context context, int resource, ViewGroup root) {
 		LayoutInflater factory = LayoutInflater.from(context);
 		return factory.inflate(resource, root);
@@ -1734,15 +1729,21 @@ public class View implements Drawable.Callback {
 
 	public void getWindowVisibleDisplayFrame(Rect rect) {}
 
+	public void setRotation(float rotation) {}
 	public void setRotationX(float deg) {}
-
 	public void setRotationY(float deg) {}
 
 	public float getRotationX() {return 0.f;}
 	public float getRotationY() {return 0.f;}
 
+	public void setScaleX(float scaleX) {}
+	public void setScaleY(float scaleY) {}
+
 	public float getScaleX() {return 1.f;}
 	public float getScaleY() {return 1.f;}
+
+	public void setPivotX(float pivot_x) {}
+	public void setPivotY(float pivot_y) {}
 
 	public float getPivotX() {return 0.f;}
 	public float getPivotY() {return 0.f;}
@@ -1750,4 +1751,10 @@ public class View implements Drawable.Callback {
 	public float getTranslationZ() {return 0.f;}
 
 	public void setTranslationZ(float translationZ) {}
+
+	public int getWindowSystemUiVisibility() {
+		return 0;
+	}
+
+	public void setScrollIndicators(int indicators, int mask) {}
 }

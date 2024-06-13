@@ -372,6 +372,7 @@ hax_jar = jar('hax', [
               	'android/util/XmlPullAttributes.java',
               	'android/view/AbsSavedState.java',
               	'android/view/ActionMode.java',
+              	'android/view/ViewAnimationUtils.java',
               	'android/view/Choreographer.java',
               	'android/view/ContextThemeWrapper.java',
               	'android/view/Display.java',

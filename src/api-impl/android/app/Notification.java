@@ -9,9 +9,10 @@ import android.media.AudioAttributes;
 import android.media.session.MediaSession;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.widget.RemoteViews;
 
-public class Notification {
+public class Notification implements Parcelable {
 
 	public static final AudioAttributes AUDIO_ATTRIBUTES_DEFAULT = new AudioAttributes();
 

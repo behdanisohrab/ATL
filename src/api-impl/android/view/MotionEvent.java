@@ -1804,7 +1804,8 @@ public final class MotionEvent extends InputEvent {
 	 * a stream of position events.
 	 */
 	public final long getDownTime() {
-		return nativeGetDownTimeNanos(mNativePtr) / NS_PER_MS;
+		return getEventTime(); // FIXME?
+//		return nativeGetDownTimeNanos(mNativePtr) / NS_PER_MS;
 	}
 
 	/**

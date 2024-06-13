@@ -17,4 +17,5 @@ public class HorizontalScrollView extends FrameLayout {
 
 	public void smoothScrollTo(int x, int y) {}
 
+	public void setFillViewport(boolean fillViewport) {}
 }

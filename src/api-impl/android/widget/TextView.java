@@ -262,4 +262,10 @@ public class TextView extends View {
 	public Drawable[] getCompoundDrawablesRelative() {return new Drawable[4];}
 
 	public Drawable[] getCompoundDrawables() {return new Drawable[4];}
+
+	public void setTextAppearance(int dummy) {}
+
+	public int length() {
+		return getText().length();
+	}
 }

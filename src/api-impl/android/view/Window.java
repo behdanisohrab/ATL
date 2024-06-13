@@ -106,4 +106,5 @@ public class Window {
 		return new WindowManagerImpl();
 	}
 
+	public void setSoftInputMode(int dummy) {}
 }

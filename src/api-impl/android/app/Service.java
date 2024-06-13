@@ -22,4 +22,7 @@ public abstract class Service extends Context {
 		System.out.println("stopForeground(" + remove + ") called");
 	}
 
+	public Application getApplication() {
+		return this_application;
+	}
 }

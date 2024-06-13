@@ -41,6 +41,7 @@ public class Activity extends ContextWrapper implements Window.Callback {
 	private boolean paused = false;
 	private CharSequence title = null;
 	List<Fragment> fragments = new ArrayList<>();
+	boolean destroyed = false;
 
 	/**
 	 * Helper function to be called from native code to construct main activity
@@ -204,6 +205,7 @@ public class Activity extends ContextWrapper implements Window.Callback {
 			fragment.onDestroy();
 		}
 
+		destroyed = true;
 		return;
 	}
 
@@ -480,6 +482,10 @@ public class Activity extends ContextWrapper implements Window.Callback {
 
 	public boolean hasWindowFocus() {
 		return true; // FIXME?
+	}
+
+	public boolean isDestroyed() {
+		return destroyed;
 	}
 
 	private native void nativeFinish(long native_window);

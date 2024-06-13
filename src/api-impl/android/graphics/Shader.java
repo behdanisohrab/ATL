@@ -8,4 +8,5 @@ public class Shader {
 		REPEAT
 	}
 
+	public void setLocalMatrix(Matrix matrix) {}
 }
