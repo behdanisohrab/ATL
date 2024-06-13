@@ -462,7 +462,6 @@ public class GradientDrawable extends Drawable {
 		final boolean haveFill = currFillAlpha > 0;
 		final GradientState st = mGradientState;
 		final ColorFilter colorFilter = mColorFilter != null ? mColorFilter : mTintFilter;
-		System.out.println("draw(): colorFilter: "+colorFilter);
 		/*  we need a layer iff we're drawing both a fill and stroke, and the
 		    stroke is non-opaque, and our shapetype actually supports
 		    fill+stroke. Otherwise we can just draw the stroke (if any) on top
@@ -570,14 +569,14 @@ public class GradientDrawable extends Drawable {
 				break;
 		}
 
-		if (useLayer) {
+		/*if (useLayer) {
 			canvas.restore();
-		} else {
+		} else {*/
 			mFillPaint.setAlpha(prevFillAlpha);
 			if (haveStroke) {
 				mStrokePaint.setAlpha(prevStrokeAlpha);
 			}
-		}
+		/*}*/
 	}
 
 	private Path buildRing(GradientState st) {
