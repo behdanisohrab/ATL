@@ -80,7 +80,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_readAssetChar(JNIEn
 
 	struct Asset *asset = _PTR(_asset);
 	ret = Asset_read(asset, &byte, 1);
-	return (ret == 1) ? byte : ret;
+	return (ret == 1) ? byte : -1;
 }
 
 JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_seekAsset(JNIEnv *env, jobject this, jlong _asset, jlong offset, jint whence)

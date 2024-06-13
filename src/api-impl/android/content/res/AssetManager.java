@@ -556,10 +556,10 @@ public final class AssetManager {
 			seekAsset(mAsset, mMarkPos, -1);
 		}
 		public final int read(byte[] b) throws IOException {
-			return readAsset(mAsset, b, 0, b.length);
+			return readAsset_internal(mAsset, b, 0, b.length);
 		}
 		public final int read(byte[] b, int off, int len) throws IOException {
-			return readAsset(mAsset, b, off, len);
+			return readAsset_internal(mAsset, b, off, len);
 		}
 		public final long skip(long n) throws IOException {
 			long pos = seekAsset(mAsset, 0, 0);
@@ -579,6 +579,15 @@ public final class AssetManager {
 		private long mAsset;
 		private long mLength;
 		private long mMarkPos;
+	}
+
+	private int readAsset_internal(long asset, byte[] b, long offset, long length) throws IOException {
+		int ret = readAsset(asset, b, offset, length);
+		if(ret < 0)
+			throw new IOException();
+		if(ret == 0)
+			ret = -1;
+		return ret;
 	}
 
 	/**
