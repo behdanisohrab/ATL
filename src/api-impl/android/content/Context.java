@@ -78,6 +78,7 @@ public class Context extends Object {
 	static Resources.Theme theme;
 	private static Map<Class<? extends Service>,Service> runningServices = new HashMap<>();
 	public static PackageParser.Package pkg;
+	public static PackageManager package_manager;
 
 	static String apk_path = "/tmp/APK_PATH_SHOULD_HAVE_BEEN_FILLED_IN_BY_CODE_IN_main.c/";
 
@@ -107,6 +108,8 @@ public class Context extends Object {
 			e.printStackTrace();
 		}
 		application_info.dataDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+		application_info.nativeLibraryDir = (new File(Environment.getExternalStorageDirectory(), "lib")).getAbsolutePath();
+		package_manager = new PackageManager();
 	}
 
 	protected static native void native_updateConfig(Configuration config);
@@ -130,6 +133,7 @@ public class Context extends Object {
 
 	public Context() {
 		Slog.v(TAG, "new Context! this one is: " + this);
+		getApplicationInfo().sourceDir = getPackageCodePath();
 	}
 
 	public int checkPermission(String permission, int pid, int uid) {
@@ -141,8 +145,6 @@ public class Context extends Object {
 	}
 
 	public ApplicationInfo getApplicationInfo() {
-		// TODO: do this somewhere saner?
-		application_info.nativeLibraryDir = (new File(getDataDirFile(), "lib")).getAbsolutePath();
 		return application_info;
 	}
 
@@ -223,7 +225,7 @@ public class Context extends Object {
 	}
 
 	public String getPackageName() {
-		return application_info.packageName;
+		return getApplicationInfo().packageName;
 	}
 
 	public String getPackageCodePath() {
@@ -243,7 +245,7 @@ public class Context extends Object {
 	}
 
 	public PackageManager getPackageManager() {
-		return new PackageManager();
+		return package_manager;
 	}
 
 	public Resources getResources() {
@@ -315,10 +317,19 @@ public class Context extends Object {
 		return new File[] {getObbDir()};
 	}
 
-	// FIXME: should be something like /tmp/cache, but may need to create that directory
 	public File getCacheDir() {
 		if (cache_dir == null) {
-			cache_dir = new File("/tmp/");
+			cache_dir = new File("/tmp/atl_cache/" + getPackageName());
+		}
+		if (!cache_dir.exists()) {
+			if (!cache_dir.mkdirs()) {
+				if (cache_dir.exists()) {
+					// spurious failure; probably racing with another process for this app
+					return cache_dir;
+				}
+				Slog.w(TAG, "Unable to create cache directory >" + cache_dir.getPath() + "<");
+				return null;
+			}
 		}
 		return cache_dir;
 	}
@@ -337,7 +348,7 @@ public class Context extends Object {
 					// spurious failure; probably racing with another process for this app
 					return nobackup_dir;
 				}
-				Slog.w(TAG, "Unable to create obb directory >" + nobackup_dir.getPath() + "<");
+				Slog.w(TAG, "Unable to create no_backup directory >" + nobackup_dir.getPath() + "<");
 				return null;
 			}
 		}
@@ -422,7 +433,7 @@ public class Context extends Object {
 	public int checkCallingOrSelfPermission(String permission) {
 		Slog.w(TAG, "!!! app wants to know if it has a permission: >" + permission + "< (returning PREMISSION_DENIED)");
 
-		return -1; // PackageManager.PERMISSION_DENIED
+		return PackageManager.PERMISSION_DENIED;
 	}
 
 	public void registerComponentCallbacks(ComponentCallbacks callbacks) {}
