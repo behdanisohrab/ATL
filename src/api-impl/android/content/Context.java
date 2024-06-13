@@ -100,13 +100,13 @@ public class Context extends Object {
 		r = new Resources(assets, dm, config);
 		theme = r.newTheme();
 		application_info = new ApplicationInfo();
-		application_info.dataDir = Environment.getExternalStorageDirectory().getAbsolutePath();
 		try (XmlResourceParser parser = assets.openXmlResourceParser("AndroidManifest.xml")) {
 			pkg = new PackageParser(null).parsePackage(r, parser, 0, new String[1]);
 			application_info = pkg.applicationInfo;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		application_info.dataDir = Environment.getExternalStorageDirectory().getAbsolutePath();
 	}
 
 	protected static native void native_updateConfig(Configuration config);
