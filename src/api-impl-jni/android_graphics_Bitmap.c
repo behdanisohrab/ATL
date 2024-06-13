@@ -155,6 +155,6 @@ JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeCopyPixelsToBuffer(JNI
 	jarray array_ref;
 	jbyte *array;
 	uint8_t *pixels = get_nio_buffer(env, buffer, &array_ref, &array);
-	memcpy(pixels, pixbuf, pixbuf_size);
+	memcpy(pixels, gdk_pixbuf_get_pixels(pixbuf), pixbuf_size);
 	release_nio_buffer(env, array_ref, array);
 }
