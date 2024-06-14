@@ -9,6 +9,7 @@ public class Canvas {
 	public Canvas() {}
 
 	public Canvas(Bitmap bmp) {
+		bmp.destroyTexture();  // invalidate cached texture
 		this.skia_canvas = native_canvas_from_bitmap(bmp.pixbuf);
 		this.widget = 0;
 	}

@@ -158,3 +158,9 @@ JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeCopyPixelsToBuffer(JNI
 	memcpy(pixels, gdk_pixbuf_get_pixels(pixbuf), pixbuf_size);
 	release_nio_buffer(env, array_ref, array);
 }
+
+JNIEXPORT void JNICALL Java_android_graphics_Bitmap_native_1unref_1texture(JNIEnv *env, jclass class, jlong texture_ptr)
+{
+	GdkTexture *texture = GDK_TEXTURE(_PTR(texture_ptr));
+	g_object_unref(texture);
+}

@@ -69,6 +69,14 @@ JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1paintable_1from_1pi
 
 /*
  * Class:     android_graphics_Bitmap
+ * Method:    native_unref_texture
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Bitmap_native_1unref_1texture
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     android_graphics_Bitmap
  * Method:    nativeCopy
  * Signature: (IIZ)Landroid/graphics/Bitmap;
  */

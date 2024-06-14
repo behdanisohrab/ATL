@@ -1607,13 +1607,24 @@ public final class Bitmap {
 		return texture;
 	}
 
+	/**
+	 * internal ATL method to destroy the cached GdkTexture when the Bitmap was touched 
+	 */
+	public void destroyTexture() {
+		if (texture != 0) {
+			native_unref_texture(texture);
+			texture = 0;
+		}
+	}
+
 	//////////// native methods
 
 	private native long native_bitmap_from_path(CharSequence path);
 	static native long native_copy(long src);
 	static native long native_subpixbuf(long src, int x, int y, int width, int height);
 	private static native long native_create(int width, int height);
-	public static native long native_paintable_from_pixbuf(long pixbuf);
+	private static native long native_paintable_from_pixbuf(long pixbuf);
+	private static native void native_unref_texture(long texture);
 
 	private static native Bitmap nativeCopy(int srcBitmap, int nativeConfig,
 						boolean isMutable);
