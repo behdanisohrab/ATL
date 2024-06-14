@@ -103,6 +103,11 @@ JNIEXPORT jlong JNICALL Java_android_view_SurfaceView_native_1constructor(JNIEnv
 	// TODO: is this correct for all usecases? how do we know when it's not?
 	gtk_widget_set_hexpand(wrapper, true);
 	gtk_widget_set_vexpand(wrapper, true);
+#if GTK_CHECK_VERSION(4, 14, 0)
+	gtk_widget_insert_after(gtk_graphics_offload_new(gtk_picture_new()), dummy, NULL);
+#else
+	gtk_widget_insert_after(gtk_picture_new(), dummy, NULL);
+#endif
 
 	JavaVM *jvm;
 	(*env)->GetJavaVM(env, &jvm);
@@ -116,4 +121,31 @@ JNIEXPORT jlong JNICALL Java_android_view_SurfaceView_native_1constructor(JNIEnv
 	g_signal_connect(dummy, "realize", G_CALLBACK(on_realize), callback_data);
 
 	return _INTPTR(dummy);
+}
+
+JNIEXPORT jlong JNICALL Java_android_view_SurfaceView_native_1createSnapshot(JNIEnv *env, jclass class)
+{
+	return _INTPTR(gtk_snapshot_new());
+}
+
+extern GtkWindow *window;
+
+JNIEXPORT void JNICALL Java_android_view_SurfaceView_native_1postSnapshot(JNIEnv *env, jclass class, jlong surface_view, jlong snapshot_ptr)
+{
+	GtkWidget *view = GTK_WIDGET(_PTR(surface_view));
+#if GTK_CHECK_VERSION(4, 14, 0)
+	GtkPicture *picture = GTK_PICTURE(gtk_widget_get_first_child(gtk_widget_get_first_child(view)));
+#else
+	GtkPicture *picture = GTK_PICTURE(gtk_widget_get_first_child(view));
+#endif
+	GtkSnapshot *snapshot = GTK_SNAPSHOT(_PTR(snapshot_ptr));
+	GskRenderer *renderer = gsk_renderer_new_for_surface(gtk_native_get_surface(GTK_NATIVE(window)));
+	GskRenderNode *node = gtk_snapshot_free_to_node(snapshot);
+	GdkTexture *paintable = gsk_renderer_render_texture(renderer, node, NULL);
+	gsk_render_node_unref(node);
+	gsk_renderer_unrealize(renderer);
+	g_object_unref(renderer);
+
+	gtk_picture_set_paintable(picture, GDK_PAINTABLE(paintable));
+	g_object_unref(paintable);
 }

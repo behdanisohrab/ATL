@@ -207,6 +207,22 @@ extern "C" {
 JNIEXPORT jlong JNICALL Java_android_view_SurfaceView_native_1constructor
   (JNIEnv *, jobject, jobject, jobject);
 
+/*
+ * Class:     android_view_SurfaceView
+ * Method:    native_createSnapshot
+ * Signature: ()J
+ */
+JNIEXPORT jlong JNICALL Java_android_view_SurfaceView_native_1createSnapshot
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     android_view_SurfaceView
+ * Method:    native_postSnapshot
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_android_view_SurfaceView_native_1postSnapshot
+  (JNIEnv *, jobject, jlong, jlong);
+
 #ifdef __cplusplus
 }
 #endif

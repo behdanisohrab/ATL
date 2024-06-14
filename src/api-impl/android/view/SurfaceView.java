@@ -2,6 +2,7 @@ package android.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.GskCanvas;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 
@@ -37,6 +38,9 @@ public class SurfaceView extends View {
 
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
+
+	protected native long native_createSnapshot();
+	protected native void native_postSnapshot(long surfaceView, long snapshot);
 
 	public SurfaceHolder getHolder() {
 		return mSurfaceHolder;
@@ -125,8 +129,7 @@ public class SurfaceView extends View {
 		 */
 		@Override
 		public Canvas lockCanvas() {
-			//		return internalLockCanvas(null);
-			return null;
+			return internalLockCanvas(null);
 		}
 
 		/**
@@ -146,8 +149,7 @@ public class SurfaceView extends View {
 		 */
 		@Override
 		public Canvas lockCanvas(Rect inOutDirty) {
-			//		return internalLockCanvas(inOutDirty);
-			return null;
+			return internalLockCanvas(inOutDirty);
 		}
 
 		private final Canvas internalLockCanvas(Rect dirty) {
@@ -186,7 +188,10 @@ public class SurfaceView extends View {
 					mLastLockTime = now;
 					mSurfaceLock.unlock();
 			*/
-			return null;
+			if(getWidth() == 0 || getHeight() == 0)
+				return null;
+
+			return new GskCanvas(native_createSnapshot());
 		}
 
 		/**
@@ -197,6 +202,7 @@ public class SurfaceView extends View {
 		 */
 		@Override
 		public void unlockCanvasAndPost(Canvas canvas) {
+			native_postSnapshot(widget, ((GskCanvas)canvas).snapshot);
 			//		mSurface.unlockCanvasAndPost(canvas);
 			//		mSurfaceLock.unlock();
 		}
