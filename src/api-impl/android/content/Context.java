@@ -385,10 +385,18 @@ public class Context extends Object {
 		return makeFilename(getPreferencesDir(), name + ".xml");
 	}
 
+	private static Map<String, SharedPreferences> sharedPrefs = new HashMap<String, SharedPreferences>();
+
 	public SharedPreferences getSharedPreferences(String name, int mode) {
 		Slog.v(TAG, "\n\n...> getSharedPreferences(" + name + ")\n\n");
-		File prefsFile = getSharedPrefsFile(name);
-		return new SharedPreferencesImpl(prefsFile, mode);
+		if (sharedPrefs.containsKey(name)) {
+			return sharedPrefs.get(name);
+		} else {
+			File prefsFile = getSharedPrefsFile(name);
+			SharedPreferences prefs = new SharedPreferencesImpl(prefsFile, mode);
+			sharedPrefs.put(name, prefs);
+			return prefs;
+		}
 	}
 
 	public ClassLoader getClassLoader() {
