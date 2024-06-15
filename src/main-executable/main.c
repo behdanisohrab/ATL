@@ -397,6 +397,8 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
         if(getenv("ATL_FORCE_FULLSCREEN"))
                 gtk_window_fullscreen(GTK_WINDOW(window));
 
+	prepare_main_looper(env);
+
 	// construct Application
 	application_object = (*env)->CallStaticObjectMethod(env, handle_cache.context.class,
 		_STATIC_METHOD(handle_cache.context.class, "createApplication", "(J)Landroid/app/Application;"), window);
@@ -406,8 +408,6 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	/* extract native libraries from apk*/
 	if(!getenv("ATL_SKIP_NATIVES_EXTRACTION"))
 		extract_from_apk("lib/" NATIVE_ARCH "/", "lib/");
-
-	prepare_main_looper(env);
 
 	jclass content_provider = (*env)->FindClass(env, "android/content/ContentProvider");
 	(*env)->CallStaticVoidMethod(env, content_provider, _STATIC_METHOD(content_provider, "createContentProviders", "()V"));

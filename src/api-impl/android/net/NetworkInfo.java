@@ -31,4 +31,20 @@ public class NetworkInfo {
 	public boolean isConnectedOrConnecting() {
 		return false;
 	}
+
+	public int getSubtype() {
+		return 0;  // NETWORK_TYPE_UNKNOWN
+	}
+
+	public boolean isRoaming() {
+		return false;
+	}
+
+	public String getTypeName() {
+		return "UNKNOWN";
+	}
+
+	public String getSubtypeName() {
+		return "UNKNOWN";
+	}
 }

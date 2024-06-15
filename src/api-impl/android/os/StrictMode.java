@@ -3,6 +3,8 @@ package android.os;
 public final class StrictMode {
 	public static void setThreadPolicy(final ThreadPolicy policy) {}
 	public static void setVmPolicy(final VmPolicy policy) {}
+	public static ThreadPolicy allowThreadDiskWrites() {return null;}
+	public static ThreadPolicy allowThreadDiskReads() {return null;}
 
 	public static final class ThreadPolicy {
 		public static final class Builder {

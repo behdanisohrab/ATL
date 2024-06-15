@@ -9,6 +9,8 @@ public final class PowerManager {
 		public void release() {}
 
 		public boolean isHeld() { return false; }
+
+		public void acquire(long timeout) {}
 	}
 
 	public WakeLock newWakeLock(int levelAndFlags, String tag) {
@@ -18,4 +20,8 @@ public final class PowerManager {
 	public void userActivity(long dummy, boolean dummy2) {}
 
 	public static final int FULL_WAKE_LOCK = 0x1a;
+
+	public boolean isPowerSaveMode() { return false; }
+
+	public boolean isScreenOn() { return true; }
 }

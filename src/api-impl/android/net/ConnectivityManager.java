@@ -22,4 +22,8 @@ public class ConnectivityManager {
 	public native boolean isActiveNetworkMetered();
 
 	protected native boolean nativeGetNetworkAvailable();
+
+	public NetworkInfo[] getAllNetworkInfo() {
+		return new NetworkInfo[] { getActiveNetworkInfo() };
+	}
 }

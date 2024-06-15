@@ -38,6 +38,11 @@ public class LayoutInflater {
 	}
 
 	private Factory2 mFactory2;
+	private Context context;
+
+	public LayoutInflater(Context context) {
+		this.context = context;
+	}
 
 	public final LayoutInflater.Factory getFactory() {
 		return null;
@@ -48,7 +53,7 @@ public class LayoutInflater {
 	}
 
 	public static LayoutInflater from(Context context) {
-		return new LayoutInflater();
+		return new LayoutInflater(context);
 	}
 
 	public final View createView(String name, String prefix, AttributeSet attrs) throws Exception {
@@ -59,7 +64,7 @@ public class LayoutInflater {
 
 		Constructor constructor = view_class.getConstructor(Context.class, AttributeSet.class);
 
-		Context context = Context.this_application;
+		Context context = this.context;
 		final TypedArray ta = context.obtainStyledAttributes(attrs, new int[]{com.android.internal.R.attr.theme});
 		final int themeResId = ta.getResourceId(0, 0);
 		if (themeResId != 0) {
@@ -115,7 +120,7 @@ public class LayoutInflater {
 	public View inflate(int layoutResID, ViewGroup root, boolean attachToRoot) {
 
 		Slog.v(TAG, "inflating view from id: " + String.format("%x", layoutResID));
-		XmlResourceParser xpp = Context.this_application.getResources().getLayout(layoutResID);
+		XmlResourceParser xpp = context.getResources().getLayout(layoutResID);
 
 		try {
 			return inflate(xpp, root, attachToRoot);
@@ -252,7 +257,7 @@ public class LayoutInflater {
 
 		int layout = attrs.getAttributeResourceValue(null, "layout", 0);
 
-		final XmlResourceParser childParser = Context.this_application.getResources().getLayout(layout);
+		final XmlResourceParser childParser = context.getResources().getLayout(layout);
 		final AttributeSet childAttrs = Xml.asAttributeSet(childParser);
 
 		while ((type = childParser.next()) != XmlPullParser.START_TAG &&
@@ -295,5 +300,9 @@ public class LayoutInflater {
 
 	public LayoutInflater cloneInContext(Context context) {
 		return this;
+	}
+
+	public Context getContext() {
+		return context;
 	}
 }

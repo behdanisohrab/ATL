@@ -11,4 +11,8 @@ public final class Debug {
 		public InstructionCount() {
 		}
 	}
+
+	public static boolean isDebuggerConnected() {
+		return false;
+	}
 }

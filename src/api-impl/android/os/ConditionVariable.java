@@ -7,4 +7,6 @@ public class ConditionVariable {
 	public void open() {}
 
 	public void block() {}
+
+	public void close() {}
 }

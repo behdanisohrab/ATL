@@ -12,4 +12,8 @@ public final class DisplayManager {
 
 	public void registerDisplayListener(DisplayListener listener, Handler handler) {
 	}
+
+	public Display[] getDisplays() {
+		return new Display[0];
+	}
 }

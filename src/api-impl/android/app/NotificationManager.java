@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.os.Looper;
 
 public class NotificationManager {
 	public void cancelAll() {}
@@ -40,7 +41,7 @@ public class NotificationManager {
 	public void cancel(String tag, final int id) {
 		// remove_notification doesn't work reliably when sent directly after add_notification in GNOME session.
 		// So we give some extra delay here.
-		new Handler().postDelayed(new Runnable() {
+		new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
 			@Override
 			public void run() {
 				nativeCancel(id);

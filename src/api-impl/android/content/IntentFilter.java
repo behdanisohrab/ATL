@@ -1,11 +1,14 @@
 package android.content;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class IntentFilter {
 	
-	private Set<String> actions = new HashSet<>();
+	private List<String> actions = new ArrayList<>();
+	private Set<String> categories = new HashSet<>();
 
 	public IntentFilter() {}
 	public IntentFilter(String action) {
@@ -21,5 +24,20 @@ public class IntentFilter {
 
 	public final boolean matchAction(String action) {
 		return actions.contains(action);
+	}
+
+	public void addCategory(String category) {
+		categories.add(category);
+	}
+	public int countCategories() {
+		return categories.size();
+	}
+
+	public final boolean hasCategory(String category) {
+		return categories.contains(category);
+	}
+
+	public String getAction(int index) {
+		return actions.get(index);
 	}
 }

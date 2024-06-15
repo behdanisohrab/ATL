@@ -25,4 +25,12 @@ public abstract class Service extends Context {
 	public Application getApplication() {
 		return this_application;
 	}
+
+	public void stopSelf(int startId) {
+		System.out.println("Service.stopSelf(" + startId + ") called");
+	}
+
+	public void stopSelf() {
+		System.out.println("Service.stopSelf() called");
+	}
 }

@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.GskCanvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -30,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
+class WindowId {}
 
 public class View implements Drawable.Callback {
 
@@ -1757,4 +1760,14 @@ public class View implements Drawable.Callback {
 	}
 
 	public void setScrollIndicators(int indicators, int mask) {}
+
+	public void setLayoutDirection(int layoutDirection) {}
+
+	public ColorStateList getBackgroundTintList() {return null;}
+
+	public PorterDuff.Mode getBackgroundTintMode() {return null;}
+
+	public String getTransitionName() {return null;}
+
+	public WindowId getWindowId() {return null;}
 }

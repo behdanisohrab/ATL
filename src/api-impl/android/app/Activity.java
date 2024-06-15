@@ -3,7 +3,7 @@ package android.app;
 import android.R;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.ContextWrapper;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageParser;
@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Activity extends ContextWrapper implements Window.Callback {
+public class Activity extends ContextThemeWrapper implements Window.Callback {
 	LayoutInflater layout_inflater;
 	Window window = new Window(this);
 	int requested_orientation = -1 /*ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED*/; // dummy
@@ -54,7 +55,7 @@ public class Activity extends ContextWrapper implements Window.Callback {
 		if (className == null) {
 			for (PackageParser.Activity activity: pkg.activities) {
 				for (PackageParser.IntentInfo intent: activity.intents) {
-					if (intent.matchAction("android.intent.action.MAIN")) {
+					if (intent.hasCategory("android.intent.category.LAUNCHER")) {
 						className = activity.className;
 						break;
 					}
@@ -74,23 +75,27 @@ public class Activity extends ContextWrapper implements Window.Callback {
 
 	public Activity() {
 		super(null);
-		layout_inflater = new LayoutInflater();
+		layout_inflater = new LayoutInflater(this);
 		intent = new Intent();
 
 		CharSequence label = null;
 		CharSequence app_label = null;
+		int themeResId = 0;
 		for (PackageParser.Activity activity: pkg.activities) {
 			if (getClass().getName().equals(activity.className)) {
-				label = getText(activity.info.labelRes);
+				label = r.getText(activity.info.labelRes);
+				themeResId = activity.info.getThemeResource();
 				break;
 			}
 		}
-		app_label = getText(pkg.applicationInfo.labelRes);
+		app_label = r.getText(pkg.applicationInfo.labelRes);
 		if (label != null) {
 			setTitle(label);
 		} else if (app_label != null) {
 			setTitle(app_label);
 		}
+		attachBaseContext(new Context());
+		setTheme(themeResId);
 	}
 
 	public View root_view;
@@ -422,6 +427,10 @@ public class Activity extends ContextWrapper implements Window.Callback {
 		this.title = title;
 	}
 
+	public void setTitle(int titleId) {
+		this.title = getText(titleId);
+	}
+
 	public CharSequence getTitle() {
 		return title;
 	}
@@ -486,6 +495,10 @@ public class Activity extends ContextWrapper implements Window.Callback {
 
 	public boolean isDestroyed() {
 		return destroyed;
+	}
+
+	public void finishAffinity() {
+		finish();
 	}
 
 	private native void nativeFinish(long native_window);

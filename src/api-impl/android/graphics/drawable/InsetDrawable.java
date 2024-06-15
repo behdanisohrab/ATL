@@ -8,6 +8,10 @@ public class InsetDrawable extends Drawable {
 		super();
 	}
 
+	public InsetDrawable(Drawable drawable, int inset) {
+		super();
+	}
+
 	public boolean getPadding(Rect padding) { return false; }
 	
 }

@@ -211,7 +211,9 @@ public class Drawable {
 			drawable.inflate(resources, parser, attrs, null);
 			return drawable;
 		} else if ("layer-list".equals(parser.getName())) {
-			return new LayerDrawable();
+			LayerDrawable drawable = new LayerDrawable();
+			drawable.inflate(resources, parser, attrs);
+			return drawable;
 		}
 		return null;
 	}

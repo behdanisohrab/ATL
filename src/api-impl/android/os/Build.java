@@ -101,6 +101,8 @@ public class Build {
 	 */
 	public static final String SERIAL = getString("ro.serialno");
 
+	public static final String[] SUPPORTED_ABIS = {CPU_ABI, CPU_ABI2};
+
 	/**
 	 * Various version strings.
 	 */

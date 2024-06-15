@@ -107,4 +107,8 @@ public class Window {
 	}
 
 	public void setSoftInputMode(int dummy) {}
+
+	public int getNavigationBarColor() {
+		return 0xFF888888;  // gray
+	}
 }

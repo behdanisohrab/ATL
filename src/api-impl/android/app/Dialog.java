@@ -22,6 +22,7 @@ public class Dialog implements Window.Callback, DialogInterface {
 	private Context context;
 	private Window window;
 	private OnDismissListener onDismissListener;
+	private OnShowListener onShowListener;
 
 	public Dialog(Context context, int themeResId) {
 		this.context = context;
@@ -75,6 +76,8 @@ public class Dialog implements Window.Callback, DialogInterface {
 			public void run() {
 				onCreate(null);
 				nativeShow(nativePtr);
+				if (onShowListener != null)
+					onShowListener.onShow(Dialog.this);
 			}
 		};
 		if(Looper.myLooper() == Looper.getMainLooper()) {
@@ -159,5 +162,9 @@ public class Dialog implements Window.Callback, DialogInterface {
 	@Override
 	public void cancel() {
 		dismiss();
+	}
+
+	public void setOnShowListener(OnShowListener onShowListener) {
+		this.onShowListener = onShowListener;
 	}
 }

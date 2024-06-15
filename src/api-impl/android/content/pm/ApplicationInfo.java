@@ -472,6 +472,8 @@ public class ApplicationInfo extends PackageItemInfo {
 	 */
 	public int installLocation = PackageInfo.INSTALL_LOCATION_UNSPECIFIED;
 
+	public String[] splitSourceDirs;
+
 	public void dump(Printer pw, String prefix) {
 		super.dumpFront(pw, prefix);
 		if (className != null) {

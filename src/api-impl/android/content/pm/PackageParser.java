@@ -2245,6 +2245,7 @@ public class PackageParser {
 					return false;
 				}
 				XmlUtils.skipCurrentTag(parser);
+				outInfo.addCategory(value);
 			} else if (nodeName.equals("data")) {
 				XmlUtils.skipCurrentTag(parser);
 			} else if (!RIGID_PARSER) {

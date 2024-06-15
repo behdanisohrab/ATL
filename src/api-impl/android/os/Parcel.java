@@ -15,4 +15,24 @@ public class Parcel {
 	public void setDataPosition(int position) {}
 
 	public void recycle() {}
+
+	public void writeByte(byte b) {
+		System.out.println("Parcel.writeByte(" + b + ")");
+	}
+
+	public void writeString(String s) {
+		System.out.println("Parcel.writeString(" + s + ")");
+	}
+
+	public void writeLong(long l) {
+		System.out.println("Parcel.writeLong(" + l + ")");
+	}
+
+	public void writeInt(int i) {
+		System.out.println("Parcel.writeInt(" + i + ")");
+	}
+
+	public byte[] marshall() {
+		return new byte[0];
+	}
 }

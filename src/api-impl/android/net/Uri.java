@@ -184,6 +184,11 @@ public class Uri implements Parcelable {
 			return this;
 		}
 
+		public Builder path(String path) {
+			this.path = "/" + path;
+			return this;
+		}
+
 		public Uri build() throws URISyntaxException {
 			if ("content".equals(scheme)) { // hack: content providers not yet supported
 				scheme = "file";

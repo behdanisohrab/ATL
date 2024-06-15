@@ -314,4 +314,8 @@ public class Intent {
 	public ArrayList<Parcelable> getParcelableArrayListExtra(String name) {
 		return extras.getParcelableArrayList(name);
 	}
+
+	public String getPackage() {
+		return component.getPackageName();
+	}
 }

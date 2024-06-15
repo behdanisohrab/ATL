@@ -6,22 +6,32 @@ import android.content.res.Resources;
 
 public class ContextThemeWrapper extends ContextWrapper {
 
-	private Resources.Theme theme = getResources().newTheme();
+	private Resources.Theme theme = null;
+
+	public ContextThemeWrapper(Context base) {
+		super(base);
+	}
 
 	public ContextThemeWrapper(Context context, int themeResId) {
 		super(context);
-		theme.setTo(context.getTheme());
 		setTheme(themeResId);
 	}
 
 	@Override
 	public void setTheme(int resid) {
+		if (theme == null) {
+			theme = getResources().newTheme();
+			theme.setTo(getBaseContext().getTheme());
+		}
 		theme.applyStyle(resid, true);
 	}
 
 	@Override
 	public Resources.Theme getTheme() {
-		return theme;
+		if (theme != null)
+			return theme;
+		else
+			return super.getTheme();
 	}
 
 }

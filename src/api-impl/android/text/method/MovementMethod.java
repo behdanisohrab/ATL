@@ -1,4 +1,4 @@
 package android.text.method;
 
-public class MovementMethod {
+public interface MovementMethod {
 }

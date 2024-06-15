@@ -10,4 +10,9 @@ public class ContextWrapper extends Context {
 	public Context getBaseContext() {
 		return baseContext;
 	}
+
+	protected void attachBaseContext(Context baseContext) {
+		this.baseContext = baseContext;
+	}
+
 }

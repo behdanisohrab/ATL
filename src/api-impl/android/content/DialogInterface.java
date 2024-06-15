@@ -19,6 +19,7 @@ public interface DialogInterface {
 		void onClick(DialogInterface dialog, int which);
 	}
 	public interface OnShowListener {
+		void onShow(DialogInterface dialog);
 	}
 	public interface OnCancelListener {
 	}

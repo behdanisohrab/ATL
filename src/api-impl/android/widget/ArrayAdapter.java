@@ -282,7 +282,7 @@ public class ArrayAdapter<T> extends BaseAdapter /*implements Filterable*/ {
 	}
 	private void init(Context context, int resource, int textViewResourceId, List<T> objects) {
 		mContext = context;
-		mInflater = new LayoutInflater();
+		mInflater = new LayoutInflater(context);
 		mResource = mDropDownResource = resource;
 		mObjects = objects;
 		mFieldId = textViewResourceId;

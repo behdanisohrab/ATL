@@ -1670,7 +1670,12 @@ public class PackageManager {
 	 */
 	public ServiceInfo getServiceInfo(ComponentName component,
 					  int flags) throws NameNotFoundException {
-		return null;
+		for (PackageParser.Service s : Context.pkg.services) {
+			if (s.className.equals(component.getClassName())) {
+				return s.info;
+			}
+		}
+		return new ServiceInfo();
 	}
 
 	/**

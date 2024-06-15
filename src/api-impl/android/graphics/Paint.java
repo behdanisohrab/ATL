@@ -88,6 +88,8 @@ public class Paint {
 	public float measureText(char[] text, int index, int count) { return 10; }
 	public float measureText(String text, int start, int end) { return 10; }
 	public float measureText(String text) {
+		if (skia_font == 0)
+			skia_font = native_create_font();
 		return native_measure_text(skia_font, text, 0, text.length(), skia_paint);
 	}
 	public float measureText(CharSequence text, int start, int end) { return 10; }

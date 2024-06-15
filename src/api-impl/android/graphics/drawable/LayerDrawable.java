@@ -162,7 +162,8 @@ public class LayerDrawable extends Drawable implements Drawable.Callback {
 				dr = Drawable.createFromXmlInner(r, parser, attrs);
 			}
 
-			addLayer(dr, id, left, top, right, bottom);
+			if (dr != null)
+				addLayer(dr, id, left, top, right, bottom);
 		}
 
 		ensurePadding();

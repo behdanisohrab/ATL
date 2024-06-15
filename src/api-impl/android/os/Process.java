@@ -785,8 +785,11 @@ public class Process {
 	/**
 	 * @hide
 	 */
-	public static final native boolean readProcFile(String file, int[] format,
-							String[] outStrings, long[] outLongs, float[] outFloats);
+	public static final /*native*/ boolean readProcFile(String file, int[] format,
+							String[] outStrings, long[] outLongs, float[] outFloats) {
+		System.out.println("readProcFile(" + file + ") called");
+		return false;
+	}
 
 	/**
 	 * @hide

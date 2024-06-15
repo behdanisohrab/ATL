@@ -31,4 +31,10 @@ public class TelephonyManager {
 	public CellLocation getCellLocation() {
 		return new CellLocation();
 	}
+
+	public boolean isNetworkRoaming() {
+		return false;
+	}
+
+	public void listen(PhoneStateListener listener, int events) {}
 }

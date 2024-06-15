@@ -17,7 +17,7 @@ public class ContentProvider {
 	public boolean onCreate() {return false;}
 
 	public Context getContext() {
-		return Context.this_application;
+		return new Context();
 	}
 
 }

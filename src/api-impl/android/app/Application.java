@@ -41,7 +41,7 @@ public class Application extends ContextWrapper {
 	}
 
 	public Application() {
-		super(new Context());
+		super(null);
 	}
 	/**
 	 * Called when the application is starting, before any activity, service,

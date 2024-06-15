@@ -265,7 +265,7 @@ public class Environment {
 	 * Return the user data directory.
 	 */
 	public static File getDataDirectory() {
-		return DATA_DIRECTORY;
+		return getExternalStorageDirectory();
 	}
 
 	/**

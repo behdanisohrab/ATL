@@ -8,9 +8,11 @@ import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Layout;
+import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.BaseMovementMethod;
 import android.text.method.KeyListener;
 import android.text.method.MovementMethod;
 import android.text.method.TransformationMethod;
@@ -210,7 +212,7 @@ public class TextView extends View {
 	}
 
 	public MovementMethod getMovementMethod() {
-		return new MovementMethod();
+		return new BaseMovementMethod();
 	}
 
 	public CharSequence getHint() {return "HINT";}
@@ -268,4 +270,12 @@ public class TextView extends View {
 	public int length() {
 		return getText().length();
 	}
+
+	public void setHighlightColor(int color) {}
+
+	public Editable getEditableText() {
+		return new SpannableStringBuilder(getText());
+	}
+
+	public int getMaxWidth() {return 1000;}
 }

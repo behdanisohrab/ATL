@@ -39,4 +39,12 @@ public class MediaFormat {
 	public String toString() {
 		return map.toString();
 	}
+
+	public String getString(String name) {
+		return (String) map.get(name);
+	}
+
+	public long getLong(String name) {
+		return (long) map.get(name);
+	}
 }

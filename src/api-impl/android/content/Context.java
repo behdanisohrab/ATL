@@ -41,6 +41,7 @@ import android.telephony.TelephonyManager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Slog;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.WindowManagerImpl;
 import android.view.accessibility.AccessibilityManager;
@@ -128,6 +129,7 @@ public class Context extends Object {
 			application.setTheme(pkg.applicationInfo.theme);
 		application.native_window = native_window;
 		this_application = application;
+		application.attachBaseContext(new Context());
 		return application;
 	}
 
@@ -199,7 +201,7 @@ public class Context extends Object {
 			case "accessibility":
 				return new AccessibilityManager();
 			case "layout_inflater":
-				return new LayoutInflater();
+				return new LayoutInflater(getApplicationContext());
 			case "wifi":
 				return new WifiManager();
 			default:
@@ -214,14 +216,7 @@ public class Context extends Object {
 	}
 
 	public Looper getMainLooper() {
-		/* TODO: this is not what AOSP does, which could be a problem */
-		Looper looper = Looper.myLooper();
-		if(looper == null) {
-			Looper.prepare();
-			looper = Looper.myLooper();
-		}
-
-		return looper;
+		return Looper.getMainLooper();
 	}
 
 	public String getPackageName() {
@@ -452,7 +447,7 @@ public class Context extends Object {
 			return false;
 		}
 
-		new Handler().post(new Runnable() { // run this asynchron so the caller can finish its setup before onServiceConnected is called
+		new Handler(Looper.getMainLooper()).post(new Runnable() { // run this asynchron so the caller can finish its setup before onServiceConnected is called
 			@Override
 			public void run() {
 				try {
@@ -490,15 +485,26 @@ public class Context extends Object {
 			}
 			return;
 		}
-		try {
-			Class<? extends Activity> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Activity.class);
-			Constructor<? extends Activity> constructor = cls.getConstructor();
-			Activity activity = constructor.newInstance();
-			activity.intent = intent;
-			activity.getWindow().native_window = this_application.native_window;
-			Activity.nativeStartActivity(activity);
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
+		final Intent intent_ = intent;
+		Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Class<? extends Activity> cls = Class.forName(intent_.getComponent().getClassName()).asSubclass(Activity.class);
+					Constructor<? extends Activity> constructor = cls.getConstructor();
+					Activity activity = constructor.newInstance();
+					activity.intent = intent_;
+					activity.getWindow().native_window = this_application.native_window;
+					Activity.nativeStartActivity(activity);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		if (Looper.myLooper() == Looper.getMainLooper()) {
+			runnable.run();
+		} else {
+			new Handler(Looper.getMainLooper()).post(runnable);
 		}
 	}
 
@@ -576,6 +582,18 @@ public class Context extends Object {
 	}
 
 	public Context createConfigurationContext(Configuration configuration) {
-		return this;
+		return new Context();
+	}
+
+	public void sendOrderedBroadcast(Intent intent, String receiverPermission, BroadcastReceiver resultReceiver, Handler handler, int flags, String extra, Bundle options) {
+		System.out.println("sendOrderedBroadcast(" + intent + ", " + receiverPermission + ", " + resultReceiver + ", " + handler + ", " + flags + ", " + extra + ", " + options + ") called");
+	}
+
+	public Context createDisplayContext(Display display) {
+		return new Context();
+	}
+
+	public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler) {
+		return registerReceiver(receiver, filter);
 	}
 }

@@ -27,4 +27,6 @@ public class Animator {
 
 	public Animator setDuration(long duration) { return this; }
 
+	public void setInterpolator(TimeInterpolator i) {}
+
 }
