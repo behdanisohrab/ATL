@@ -355,8 +355,13 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	// create lib dir
 	mkdir(app_lib_dir, DEFFILEMODE | S_IXUSR | S_IXGRP | S_IXOTH);
 
+	// Apps which extract libraries on their own can place them anywhere in app_data_dir. Therefore, we add app_data_dir/** to the
+	// BIONIC_LD_LIBRARY_PATH. While app_data_dir/lib is already matched by the wildcard, it needs to be specified again to allow loading
+	// libraries by libname from app_data_dir/lib
+	char *ld_path = g_strdup_printf("%s:%s**", app_lib_dir, app_data_dir);
 	// calling directly into the shim bionic linker to whitelist the app's lib dir as containing bionic-linked libraries
-	dl_parse_library_path(app_lib_dir, ":");
+	dl_parse_library_path(ld_path, ":");
+	g_free(ld_path);
 
 	JNIEnv* env = create_vm(api_impl_jar, apk_classpath, microg_apk, framework_res_apk, api_impl_natives_dir, app_lib_dir, d->extra_jvm_options);
 
