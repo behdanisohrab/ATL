@@ -8,7 +8,13 @@
 
 #include "../generated_headers/android_content_Context.h"
 
-JNIEXPORT void JNICALL Java_android_content_Context_native_1updateConfig(JNIEnv *env, jclass class, jobject config)
+extern char *apk_path;
+
+JNIEXPORT jstring JNICALL Java_android_content_Context_native_1get_1apk_1path(JNIEnv *env, jclass this) {
+	return _JSTRING(apk_path);
+}
+
+JNIEXPORT void JNICALL Java_android_content_Context_native_1updateConfig(JNIEnv *env, jclass this, jobject config)
 {
 	GtkSettings *settings = gtk_settings_get_default();
 	char *theme_name;

@@ -11,6 +11,14 @@ extern "C" {
 #define android_content_Context_MODE_PRIVATE 0L
 /*
  * Class:     android_content_Context
+ * Method:    native_get_apk_path
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_android_content_Context_native_1get_1apk_1path
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     android_content_Context
  * Method:    native_updateConfig
  * Signature: (Landroid/content/res/Configuration;)V
  */

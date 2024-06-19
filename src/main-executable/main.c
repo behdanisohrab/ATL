@@ -33,6 +33,7 @@
 #endif
 
 GtkWidget *window;
+char *apk_path;
 
 // standard Gtk Application stuff, more or less
 
@@ -386,13 +387,12 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	jmethodID loadLibrary_with_classloader = _METHOD(java_runtime_class, "loadLibrary", "(Ljava/lang/String;Ljava/lang/ClassLoader;)V");
 	(*env)->CallVoidMethod(env, java_runtime, loadLibrary_with_classloader, _JSTRING("translation_layer_main"), class_loader);
 
+	// some apps need the apk path since they directly read their apk
+	apk_path = strdup(apk_classpath);
+
 	set_up_handle_cache(env);
 
 	/* -- misc -- */
-
-	// some apps need the apk path since they directly read their apk
-	jclass context_class = (*env)->FindClass(env, "android/content/Context");
-	_SET_STATIC_OBJ_FIELD(context_class, "apk_path", "Ljava/lang/String;", _JSTRING(apk_classpath));
 
 	window = gtk_application_window_new(app);
 

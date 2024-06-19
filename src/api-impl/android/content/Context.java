@@ -81,8 +81,6 @@ public class Context extends Object {
 	public static PackageParser.Package pkg;
 	public static PackageManager package_manager;
 
-	static String apk_path = "/tmp/APK_PATH_SHOULD_HAVE_BEEN_FILLED_IN_BY_CODE_IN_main.c/";
-
 	public /*← FIXME?*/ static Application this_application;
 
 	File data_dir = null;
@@ -110,9 +108,11 @@ public class Context extends Object {
 		}
 		application_info.dataDir = Environment.getExternalStorageDirectory().getAbsolutePath();
 		application_info.nativeLibraryDir = (new File(Environment.getExternalStorageDirectory(), "lib")).getAbsolutePath();
+		application_info.sourceDir = native_get_apk_path();
 		package_manager = new PackageManager();
 	}
 
+	private static native String native_get_apk_path();
 	protected static native void native_updateConfig(Configuration config);
 
 	static Application createApplication(long native_window) throws Exception {
@@ -135,7 +135,6 @@ public class Context extends Object {
 
 	public Context() {
 		Slog.v(TAG, "new Context! this one is: " + this);
-		getApplicationInfo().sourceDir = getPackageCodePath();
 	}
 
 	public int checkPermission(String permission, int pid, int uid) {
@@ -224,7 +223,7 @@ public class Context extends Object {
 	}
 
 	public String getPackageCodePath() {
-		return apk_path;
+		return getApplicationInfo().sourceDir;
 	}
 
 	public int getColor(int resId) {
