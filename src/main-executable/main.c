@@ -644,9 +644,9 @@ int main(int argc, char **argv)
 	/* this has to be done in the main executable, so might as well do it here*/
 	init__r_debug();
 
-	// locale on android always behaves as en_US, and some apps might unbeknownst to them depend on that
+	// locale on android is always either C or C.UTF-8, and some apps might unbeknownst to them depend on that
 	// for correct functionality
-	setenv("LC_ALL", "en_US", 1);
+	setenv("LC_ALL", "C.UTF-8", 1);
 
 	struct jni_callback_data *callback_data = malloc(sizeof(struct jni_callback_data));
 	callback_data->apk_main_activity_class = NULL;
