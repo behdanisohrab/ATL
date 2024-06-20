@@ -70,6 +70,7 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 		Constructor<? extends Activity> constructor = cls.getConstructor();
 		Activity activity = constructor.newInstance();
 		activity.window.native_window = native_window;
+		activity.intent.putExtra("unity", "-scoreID=14913935");
 		return activity;
 	}
 
