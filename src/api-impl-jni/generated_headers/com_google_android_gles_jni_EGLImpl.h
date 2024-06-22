@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     com_google_android_gles_jni_EGLImpl
  * Method:    native_eglCreateContext
- * Signature: (JJLjavax/microedition/khronos/egl/EGLContext;[I)J
+ * Signature: (JJJ[I)J
  */
 JNIEXPORT jlong JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglCreateContext
-  (JNIEnv *, jobject, jlong, jlong, jobject, jintArray);
+  (JNIEnv *, jobject, jlong, jlong, jlong, jintArray);
 
 /*
  * Class:     com_google_android_gles_jni_EGLImpl

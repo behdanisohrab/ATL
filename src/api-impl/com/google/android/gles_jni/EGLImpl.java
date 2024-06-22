@@ -22,10 +22,10 @@ import android.view.SurfaceView;
 import javax.microedition.khronos.egl.*;
 
 public class EGLImpl implements EGL10 {
-	private native long native_eglCreateContext(long egl_display, long egl_config, EGLContext share_context, int[] attrib_list);
+	private native long native_eglCreateContext(long egl_display, long egl_config, long share_context, int[] attrib_list);
 
 	public EGLContext eglCreateContext(EGLDisplay display, EGLConfig config, EGLContext share_context, int[] attrib_list) {
-		long native_egl_context = native_eglCreateContext(display.native_egl_display, config.native_egl_config, share_context, attrib_list);
+		long native_egl_context = native_eglCreateContext(display.native_egl_display, config.native_egl_config, (share_context != null) ? share_context.native_egl_context : 0, attrib_list);
 		if (native_egl_context == 0) {
 			return EGL10.EGL_NO_CONTEXT;
 		}

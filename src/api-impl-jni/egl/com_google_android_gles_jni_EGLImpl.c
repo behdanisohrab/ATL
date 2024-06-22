@@ -9,45 +9,45 @@
 
 // helpers from android source (TODO: either use GetIntArrayElements, or figure out if GetPrimitiveArrayCritical is superior and use it everywhere if so)
 static jint* get_int_array_crit(JNIEnv *env, jintArray array) {
-    if (array != NULL) {
-        return (jint *)(*env)->GetPrimitiveArrayCritical(env, array, (jboolean *)0);
-    } else {
-        return(jint*) NULL; // FIXME - do apps expect us to use some default?
-    }
+	if (array != NULL) {
+		return (jint *)(*env)->GetPrimitiveArrayCritical(env, array, (jboolean *)0);
+	} else {
+		return (jint *)NULL; // FIXME - do apps expect us to use some default?
+	}
 }
 
 static void release_int_array_crit(JNIEnv *env, jintArray array, jint* base) {
-    if (array != NULL) {
-        (*env)->ReleasePrimitiveArrayCritical(env, array, base, JNI_ABORT);
-    }
+	if (array != NULL) {
+		(*env)->ReleasePrimitiveArrayCritical(env, array, base, JNI_ABORT);
+	}
 }
 
 // ---
 
 static jlong* get_long_array_crit(JNIEnv *env, jlongArray array) {
-    if (array != NULL) {
-        return (jlong *)(*env)->GetPrimitiveArrayCritical(env, array, (jboolean *)0);
-    } else {
-        return(jlong*) NULL; // FIXME - do apps expect us to use some default?
-    }
+	if (array != NULL) {
+		return (jlong *)(*env)->GetPrimitiveArrayCritical(env, array, (jboolean *)0);
+	} else {
+		return(jlong*) NULL; // FIXME - do apps expect us to use some default?
+	}
 }
 
 static void release_long_array_crit(JNIEnv *env, jlongArray array, jlong* base) {
-    if (array != NULL) {
-        (*env)->ReleasePrimitiveArrayCritical(env, array, base, JNI_ABORT);
-    }
+	if (array != NULL) {
+		(*env)->ReleasePrimitiveArrayCritical(env, array, base, JNI_ABORT);
+	}
 }
 
-JNIEXPORT jlong JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglCreateContext(JNIEnv *env, jobject this, jlong egl_display, jlong egl_config, jobject share_context, jintArray attrib_list)
+JNIEXPORT jlong JNICALL Java_com_google_android_gles_1jni_EGLImpl_native_1eglCreateContext(JNIEnv *env, jobject this, jlong egl_display, jlong egl_config, jlong share_context, jintArray attrib_list)
 {
-	printf("env: %p, this: %p, egl_display: %p, egl_config: %p, share_context: %p, attrib_list: %p\n", env, this, _PTR(egl_display), _PTR(egl_config), share_context, attrib_list);
+	printf("env: %p, this: %p, egl_display: %p, egl_config: %p, share_context: %p, attrib_list: %p\n", env, this, _PTR(egl_display), _PTR(egl_config), _PTR(share_context), attrib_list);
 
-    jint* attrib_base = get_int_array_crit(env, attrib_list);
+	jint *attrib_base = get_int_array_crit(env, attrib_list);
 
-    EGLContext egl_context = eglCreateContext(_PTR(egl_display), _PTR(egl_config), NULL, attrib_base);
+	EGLContext egl_context = eglCreateContext(_PTR(egl_display), _PTR(egl_config), _PTR(share_context), attrib_base);
 	printf("egl_context: %p\n", egl_context);
 
-    release_int_array_crit(env, attrib_list, attrib_base);
+	release_int_array_crit(env, attrib_list, attrib_base);
 
 	return _INTPTR(egl_context);
 }
