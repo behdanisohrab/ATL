@@ -151,7 +151,6 @@ public class Drawable {
 	public void setTintList(ColorStateList tint) {}
 
 	public void setTint(int tint) {
-		System.out.println("setTint("+tint+")");
 		setTintList(ColorStateList.valueOf(tint));
 	}
 

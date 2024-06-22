@@ -876,7 +876,6 @@ public class View implements Drawable.Callback {
 
 					if(background != null) {
 						if(background instanceof ColorDrawable) {
-							System.out.printf("__background__: >%x<\n", ((ColorDrawable)background).getColor());
 							setBackgroundColor(((ColorDrawable)background).getColor());
 						} else {
 							setBackgroundDrawable(background);

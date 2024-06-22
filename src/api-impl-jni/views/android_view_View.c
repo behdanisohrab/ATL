@@ -272,8 +272,6 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setLayoutParams(JNIEnv *en
 	gboolean vexpand = FALSE;
 
 	if (gravity != -1) {
-		printf(":::-: setting gravity: %d\n", gravity);
-
 		if(gravity & GRAVITY_BOTTOM)
 			valign = GTK_ALIGN_END;
 		else if(gravity & GRAVITY_TOP)

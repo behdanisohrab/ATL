@@ -31,7 +31,7 @@ struct Asset* AAssetManager_open(struct AssetManager *asset_manager, const char 
 	char *path = malloc(strlen(ASSET_DIR) + strlen(file_name) + 1);
 	sprintf(path, "%s%s", ASSET_DIR, file_name);
 
-	printf("AAssetManager_open called for %s\n", file_name);
+	android_log_printf(ANDROID_LOG_VERBOSE, "["__FILE__"]", "AAssetManager_open called for %s\n", file_name);
 	struct Asset *asset = AssetManager_openNonAsset(asset_manager, path, mode);
 
 	free(path);
@@ -91,7 +91,7 @@ struct AAssetDir * AAssetManager_openDir(struct AssetManager *asset_manager, con
 	dir->asset_dir = asset_dir;
 	dir->curr_index = 0;
 
-	printf("AAssetManager_openDir called for %s\n", dirpath);
+	android_log_printf(ANDROID_LOG_VERBOSE, "["__FILE__"]", "AAssetManager_openDir called for %s\n", dirpath);
 
 	return dir;
 }

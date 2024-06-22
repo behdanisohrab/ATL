@@ -24,7 +24,7 @@ JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_openAsset(JNIEnv *
 
 	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
 	struct Asset *asset = AssetManager_openNonAsset(asset_manager, file_name, mode);
-	printf("AssetManager_openAsset(%p, %s, %d) returns %p\n", asset_manager, file_name, mode, asset);
+	android_log_printf(ANDROID_LOG_VERBOSE, "["__FILE__"]", "AssetManager_openAsset(%p, %s, %d) returns %p\n", asset_manager, file_name, mode, asset);
 
 	return _INTPTR(asset);
 }
@@ -39,7 +39,7 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_openAssetFd(JNIEnv 
 
 	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
 	struct Asset *asset = AssetManager_openNonAsset(asset_manager, file_name, mode);
-	printf("AssetManager_openAssetFd(%p, %s, %d, ...)\n", asset_manager, file_name, mode);
+	android_log_printf(ANDROID_LOG_VERBOSE, "["__FILE__"]", "AssetManager_openAssetFd(%p, %s, %d, ...)\n", asset_manager, file_name, mode);
 
 	fd = Asset_openFileDescriptor(asset, &offset, &size);
 

@@ -121,8 +121,8 @@ static void wrapper_widget_snapshot(GtkWidget *widget, GdkSnapshot *snapshot)
 
 static void wrapper_widget_class_init(WrapperWidgetClass *class)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (class);
-	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+	GObjectClass *object_class = G_OBJECT_CLASS(class);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS(class);
 
 	object_class->dispose = wrapper_widget_dispose;
 
