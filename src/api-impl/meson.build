@@ -279,6 +279,7 @@ hax_jar = jar('hax', [
               	'android/os/IBinder.java',
               	'android/os/IInterface.java',
               	'android/os/IMessenger.java',
+              	'android/os/LocaleList.java',
               	'android/os/Looper.java',
               	'android/os/MemoryFile.java',
               	'android/os/Message.java',

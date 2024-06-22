@@ -1770,4 +1770,8 @@ public class View implements Drawable.Callback {
 	public String getTransitionName() {return null;}
 
 	public WindowId getWindowId() {return null;}
+
+	public boolean isInLayout() {
+		return false; // FIXME
+	}
 }

@@ -18,6 +18,7 @@ package android.content.res;
 
 import android.content.pm.ActivityInfo;
 // import android.text.TextUtils;
+import android.os.LocaleList;
 import android.view.View;
 import java.util.Locale;
 
@@ -1444,6 +1445,34 @@ public final class Configuration implements Comparable<Configuration> {
 		result = 31 * result + smallestScreenWidthDp;
 		result = 31 * result + densityDpi;
 		return result;
+	}
+
+	/**
+	* Get the locale list. This is the preferred way for getting the locales (instead of using
+	* the direct accessor to {@link #locale}, which would only provide the primary locale).
+	*
+	* @return The locale list.
+	*/
+	public LocaleList getLocales() {
+		return new LocaleList();
+		/*fixUpLocaleList();
+		return mLocaleList;*/
+	}
+	/**
+	* Set the locale list. This is the preferred way for setting up the locales (instead of using
+	* the direct accessor or {@link #setLocale(Locale)}). This will also set the layout direction
+	* according to the first locale in the list.
+	*
+	* Note that the layout direction will always come from the first locale in the locale list,
+	* even if the locale is not supported by the resources (the resources may only support
+	* another locale further down the list which has a different direction).
+	*
+	* @param locales The locale list. If null, an empty LocaleList will be assigned.
+	*/
+	public void setLocales(LocaleList locales) {
+		/*mLocaleList = locales == null ? LocaleList.getEmptyLocaleList() : locales;
+		locale = mLocaleList.get(0);
+		setLayoutDirection(locale);*/
 	}
 
 	/**

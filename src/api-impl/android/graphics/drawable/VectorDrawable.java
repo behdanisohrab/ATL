@@ -53,4 +53,13 @@ public class VectorDrawable extends Drawable {
 		this.paintable = bm.getTexture();
 	}
 
+	@Override
+	public int getIntrinsicWidth() {
+		return 24; // FIXME
+	}
+
+	@Override
+	public int getIntrinsicHeight() {
+		return 24; // FIXME
+	}
 }
