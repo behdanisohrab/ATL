@@ -661,7 +661,7 @@ public class PackageParser {
 
 					final String name = je.getName();
 
-					if (name.startsWith("META-INF/"))
+					if (name.startsWith("META-INF/") && !"META-INF/MANIFEST.MF".equals(name))  // MANIFEST.MF is always trusted, get certificate from it
 						continue;
 
 					if (ANDROID_MANIFEST_FILENAME.equals(name)) {
@@ -675,10 +675,10 @@ public class PackageParser {
 					}
 
 					if (localCerts == null) {
-						Slog.e(TAG, "Package " + pkg.packageName + " has no certificates at entry " + je.getName() + "; ignoring!");
-						jarFile.close();
-						mParseError = PackageManager.INSTALL_PARSE_FAILED_NO_CERTIFICATES;
-						return false;
+						// Slog.e(TAG, "Package " + pkg.packageName + " has no certificates at entry " + je.getName() + "; ignoring!");
+						// jarFile.close();
+						// mParseError = PackageManager.INSTALL_PARSE_FAILED_NO_CERTIFICATES;
+						// return false;
 					} else if (certs == null) {
 						certs = localCerts;
 					} else {

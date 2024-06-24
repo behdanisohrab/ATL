@@ -101,7 +101,9 @@ public class Context extends Object {
 		theme = r.newTheme();
 		application_info = new ApplicationInfo();
 		try (XmlResourceParser parser = assets.openXmlResourceParser("AndroidManifest.xml")) {
-			pkg = new PackageParser(null).parsePackage(r, parser, 0, new String[1]);
+			PackageParser packageParser = new PackageParser(native_get_apk_path());
+			pkg = packageParser.parsePackage(r, parser, 0, new String[1]);
+			packageParser.collectCertificates(pkg, 0);
 			application_info = pkg.applicationInfo;
 		} catch (Exception e) {
 			e.printStackTrace();
