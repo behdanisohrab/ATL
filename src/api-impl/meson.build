@@ -248,6 +248,7 @@ hax_jar = jar('hax', [
               	'android/net/SSLSessionCache.java',
               	'android/net/TrafficStats.java',
               	'android/net/Uri.java',
+              	'android/net/UriCodec.java',
               	'android/net/UrlQuerySanitizer.java',
               	'android/net/http/X509TrustManagerExtensions.java',
               	'android/net/nsd/NsdManager.java',

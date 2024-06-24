@@ -24,7 +24,7 @@ public class ContentResolver {
 	}
 
 	public ParcelFileDescriptor openFileDescriptor(Uri uri, String mode) throws FileNotFoundException {
-		return ParcelFileDescriptor.open(new File(uri.uri), ParcelFileDescriptor.parseMode(mode));
+		return ParcelFileDescriptor.open(new File(uri.toString()), ParcelFileDescriptor.parseMode(mode));
 	}
 
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
