@@ -405,17 +405,24 @@ public class Context extends Object {
 			return null;
 		}
 
-		try {
-			Class<? extends Service> cls = Class.forName(component.getClassName()).asSubclass(Service.class);
-			if (!runningServices.containsKey(cls)) {
-				Service service = cls.getConstructor().newInstance();
-				service.onCreate();
-				runningServices.put(cls, service);
+		new Handler(Looper.getMainLooper()).post(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Class<? extends Service> cls = Class.forName(component.getClassName()).asSubclass(Service.class);
+					if (!runningServices.containsKey(cls)) {
+						Service service = cls.getConstructor().newInstance();
+						service.onCreate();
+						runningServices.put(cls, service);
+					}
+					
+					runningServices.get(cls).onStartCommand(intent, 0, 0);
+				} catch (ReflectiveOperationException e) {
+					e.printStackTrace();
+				}
 			}
-			runningServices.get(cls).onStartCommand(intent, 0, 0);
-		} catch (ReflectiveOperationException e) {
-			e.printStackTrace();
-		}
+		});
+
 		return component;
 	}
 
@@ -602,5 +609,13 @@ public class Context extends Object {
 
 	public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter, String broadcastPermission, Handler scheduler) {
 		return registerReceiver(receiver, filter);
+	}
+
+	public String[] fileList() {
+		return new String[0];
+	}
+
+	public void revokeUriPermission(Uri uri, int mode) {
+		System.out.println("revokeUriPermission(" + uri + ", " + mode + ") called");
 	}
 }

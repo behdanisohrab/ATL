@@ -165,6 +165,8 @@ public class ImageView extends View {
 		return null;
 	}
 
+	public void setImageTintMode(PorterDuff.Mode tintMode) {}
+
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	protected native void native_setPixbuf(long widget, long pixbuf);

@@ -272,6 +272,12 @@ public class Paint {
 		return new FontMetrics();
 	}
 
+	public void setFontMetricsInt(FontMetricsInt fmi) {}
+
+	public FontMetricsInt getFontMetricsInt() {
+		return new FontMetricsInt();
+	}
+
 	private native long native_constructor();
 	private native void native_set_antialias(long skia_paint, boolean aa);
 	private native void native_set_color(long skia_paint, int color);

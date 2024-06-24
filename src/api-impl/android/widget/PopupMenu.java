@@ -341,6 +341,11 @@ public class PopupMenu {
 		}
 
 		@Override
+		public MenuItem setIcon(Drawable icon) {
+			return this;
+		}
+
+		@Override
 		public MenuItem setVisible(boolean visible) {
 			// GMenu doesn't support invisible items, so we remove them while they're not visible
 			if (!visible && isVisible()) {

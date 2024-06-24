@@ -3031,6 +3031,7 @@ public class PackageParser {
 								outError)) == null) {
 					return null;
 				}
+				s.info.metaData = s.metaData;
 			} else {
 				if (!RIGID_PARSER) {
 					Slog.w(TAG, "Unknown element under <service>: " + parser.getName() + " at " + mArchiveSourcePath + " " + parser.getPositionDescription());

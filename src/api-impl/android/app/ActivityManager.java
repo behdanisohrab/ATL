@@ -34,4 +34,6 @@ public class ActivityManager {
 	public int getMemoryClass() {return 20;}  // suggested heap size in MB
 
 	public static void getMyMemoryState(RunningAppProcessInfo outInfo) {}
+
+	public boolean clearApplicationUserData() {return false;}
 }

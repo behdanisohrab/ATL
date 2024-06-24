@@ -49,4 +49,8 @@ public abstract class AdapterView extends ViewGroup {
 	public Adapter getAdapter() {
 		return adapter;
 	}
+
+	public Object getItemAtPosition(int position) {
+		return adapter.getItem(position);
+	}
 }

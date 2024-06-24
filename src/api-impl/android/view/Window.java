@@ -111,4 +111,8 @@ public class Window {
 	public int getNavigationBarColor() {
 		return 0xFF888888;  // gray
 	}
+
+	public void setBackgroundDrawableResource(int resId) {}
+
+	public int getStatusBarColor() { return 0xFFFF0000; }
 }

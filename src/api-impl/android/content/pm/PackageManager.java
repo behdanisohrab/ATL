@@ -2411,13 +2411,14 @@ public class PackageManager {
 	 *         else null.
 	 * @throws Exception 
 	 */
-	public ProviderInfo resolveContentProvider(String authority, int flags) throws Exception {
+	public ProviderInfo resolveContentProvider(String authority, int flags) {
 		for (PackageParser.Provider p : Context.pkg.providers) {
 			if (p.info.authority.equals(authority))
 				return p.info;
 		}
 
-		throw new Exception("Provider not found: " + authority);
+		Slog.w(TAG, "Provider not found: " + authority);
+		return null;
 	}
 
 	/**

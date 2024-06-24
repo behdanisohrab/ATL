@@ -9,4 +9,8 @@ public class InputMethodManager {
 
 	public boolean showSoftInput(View view, int flags) {return false;}
 
+	public boolean isFullscreenMode() {return false;}
+
+	public boolean isActive(View view) {return false;}
+
 }

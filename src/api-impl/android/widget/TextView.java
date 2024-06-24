@@ -280,4 +280,6 @@ public class TextView extends View {
 	public int getMaxWidth() {return 1000;}
 
 	public void nullLayouts() {}
+
+	public void setLinkTextColor(int color) {}
 }

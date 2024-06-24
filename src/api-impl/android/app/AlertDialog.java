@@ -47,9 +47,13 @@ public class AlertDialog extends Dialog implements DialogInterface {
 
 		public AlertDialog.Builder setNegativeButton (CharSequence text, DialogInterface.OnClickListener listener) {
 			System.out.println("AlertDialog.Builder setNegativeButton called with text: '" + text + "'");
+			dialog.setButton(DialogInterface.BUTTON_NEGATIVE, text, listener);
 			return this;
 		}
 
+		public AlertDialog.Builder setNegativeButton(int textId, DialogInterface.OnClickListener listener) {
+			return setNegativeButton(dialog.getContext().getText(textId), listener);
+		}
 
 		public AlertDialog.Builder setCancelable(boolean cancelable) {
 			return this;
@@ -93,6 +97,11 @@ public class AlertDialog extends Dialog implements DialogInterface {
 		}
 
 		public AlertDialog create() {
+			return dialog;
+		}
+
+		public AlertDialog show() {
+			dialog.show();
 			return dialog;
 		}
 	}

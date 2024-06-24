@@ -44,4 +44,8 @@ public class ContentResolver {
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder, CancellationSignal cancellationSignal) {
 		return query(uri, projection, selection, selectionArgs, sortOrder);
 	}
+
+	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		return 0;
+	}
 }

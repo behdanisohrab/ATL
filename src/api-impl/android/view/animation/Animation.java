@@ -22,4 +22,6 @@ public class Animation {
 	public void setAnimationListener(AnimationListener l) {
 		l.onAnimationEnd(this); // FIXME
 	}
+
+	public void setRepeatCount(int count) {}
 }

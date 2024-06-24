@@ -16,7 +16,10 @@ public abstract class Service extends Context {
 
 	public abstract IBinder onBind(Intent intent);
 
-	public abstract int onStartCommand(Intent intent, int flags, int startId);
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		System.out.println("Service.onStartCommand(" + intent + ", " + flags + ", " + startId + ") called");
+		return 0;
+	}
 
 	public void startForeground(int id, Notification notification) {
 		System.out.println("startForeground(" + id + ", " + notification + ") called");

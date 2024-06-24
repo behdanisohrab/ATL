@@ -1,5 +1,5 @@
 package android.app;
 
-public abstract class IntentService {
+public abstract class IntentService extends Service {
 
 }

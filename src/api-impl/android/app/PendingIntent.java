@@ -38,6 +38,8 @@ public class PendingIntent {
 			+ new String[] { "activity", "service", "broadcast" }[type] + "]";
 	}
 
+	public void cancel() {}
+
 	public class CanceledException extends Exception {
 	}
 }

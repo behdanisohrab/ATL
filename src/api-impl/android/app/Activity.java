@@ -27,7 +27,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Activity extends ContextThemeWrapper implements Window.Callback {
 	LayoutInflater layout_inflater;
@@ -337,8 +339,30 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 		setResult(resultCode, null);
 	}
 
+	protected Dialog onCreateDialog(int id) {
+		System.out.println("Activity.onCreateDialog(" + id + ") called");
+		return null;
+	}
+
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		System.out.println("Activity.onPrepareDialog(" + id + ") called");
+	}
+
+	private Map<Integer, Dialog> dialogs = new HashMap<Integer, Dialog>();
+
 	public final void showDialog(int id) {
 		System.out.println("Activity.showDialog(" + id + ") called");
+		Dialog dialog = dialogs.get(id);
+		if (dialog == null)
+			dialogs.put(id, dialog = onCreateDialog(id));
+		onPrepareDialog(id, dialog);
+		dialog.show();
+	}
+
+	public void removeDialog(int id) {
+		Dialog dialog = dialogs.remove(id);
+		if (dialog != null)
+			dialog.dismiss();
 	}
 
 	public void finish() {
@@ -500,6 +524,8 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 	public void finishAffinity() {
 		finish();
 	}
+
+	public void overridePendingTransition(int enterAnim, int exitAnim) {}
 
 	private native void nativeFinish(long native_window);
 	public static native void nativeRecreateActivity(Activity activity);

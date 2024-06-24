@@ -166,3 +166,15 @@ JNIEXPORT void JNICALL Java_android_graphics_Path_native_1rMoveTo(JNIEnv *env, j
 	sk_path_t *path = (sk_path_t *)_PTR(path_ptr);
 	sk_path_rmove_to(path, dx, dy);
 }
+
+JNIEXPORT void JNICALL Java_android_graphics_Path_native_1addRoundRect__JLandroid_graphics_RectF_2_3FI(JNIEnv *env, jclass class, jlong path_ptr, jobject rect, jfloatArray radii, jint dir)
+{
+	sk_path_t *path = (sk_path_t *)_PTR(path_ptr);
+	float left = _GET_FLOAT_FIELD(rect, "left");
+	float top = _GET_FLOAT_FIELD(rect, "top");
+	float right = _GET_FLOAT_FIELD(rect, "right");
+	float bottom = _GET_FLOAT_FIELD(rect, "bottom");
+	jfloat *radii_array = (*env)->GetFloatArrayElements(env, radii, 0);
+	sk_path_add_rounded_rect(path, &(sk_rect_t){left, top, right, bottom}, radii_array[0], radii_array[1], (sk_path_direction_t)dir);
+	(*env)->ReleaseFloatArrayElements(env, radii, radii_array, 0);
+}

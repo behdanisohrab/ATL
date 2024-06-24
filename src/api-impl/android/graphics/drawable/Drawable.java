@@ -76,8 +76,13 @@ public class Drawable {
 	}
 
 	public void draw(Canvas canvas) {
-		if (canvas instanceof GskCanvas)
+		if (canvas instanceof GskCanvas) {
+			if (mBounds.left != 0 || mBounds.top != 0)
+				canvas.translate(mBounds.left, mBounds.top);
 			native_draw(paintable, ((GskCanvas)canvas).snapshot, mBounds.width(), mBounds.height());
+			if (mBounds.left != 0 || mBounds.top != 0)
+				canvas.translate(-mBounds.left, -mBounds.top);
+		}
 	}
 
 	public boolean setState(int[] stateSet) {
@@ -145,8 +150,8 @@ public class Drawable {
 		return this;
 	}
 
-	public int getIntrinsicWidth() {return 0;}
-	public int getIntrinsicHeight() {return 0;}
+	public int getIntrinsicWidth() {return 24;}
+	public int getIntrinsicHeight() {return 24;}
 
 	public void setTintList(ColorStateList tint) {}
 
@@ -262,6 +267,10 @@ public class Drawable {
 	public void setAutoMirrored(boolean mirrored) {}
 
 	public void jumpToCurrentState() {}
+
+	public boolean setLayoutDirection(int layoutDirection) {
+		return false;
+	}
 
 	protected static native long native_paintable_from_path(String path);
 	protected native long native_constructor();

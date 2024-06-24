@@ -25,4 +25,6 @@ public interface DialogInterface {
 	}
 	public interface OnMultiChoiceClickListener {
 	}
+	public interface OnKeyListener {
+	}
 }

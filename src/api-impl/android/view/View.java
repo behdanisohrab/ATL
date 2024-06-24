@@ -1776,4 +1776,16 @@ public class View implements Drawable.Callback {
 	public boolean isInLayout() {
 		return false; // FIXME
 	}
+
+	public void setTextDirection(int textDirection) {}
+
+	public Drawable getForeground() {return null;}
+
+	public void setScrollbarFadingEnabled(boolean fadeEnabled) {}
+
+	public void setScrollBarStyle(int style) {}
+
+	public void setVerticalScrollbarPosition(int position) {}
+
+	public void setNestedScrollingEnabled(boolean enabled) {}
 }

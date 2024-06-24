@@ -35,4 +35,8 @@ public class Parcel {
 	public byte[] marshall() {
 		return new byte[0];
 	}
+
+	public int dataPosition() {
+		return 0;
+	}
 }

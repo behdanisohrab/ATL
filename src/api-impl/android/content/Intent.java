@@ -318,4 +318,15 @@ public class Intent {
 	public String getPackage() {
 		return component.getPackageName();
 	}
+
+	public String getScheme() {
+		return data == null ? null : data.getScheme();
+	}
+
+	public static class ShortcutIconResource {
+
+		public static ShortcutIconResource fromContext(Context context, int id) {
+			return new ShortcutIconResource();
+		}
+	}
 }

@@ -241,7 +241,12 @@ public class LayoutInflater {
 			} else {
 				final View view = createViewFromTag(parent, name, attrs);
 				final ViewGroup viewGroup = (ViewGroup)parent;
-				final ViewGroup.LayoutParams params = viewGroup.generateLayoutParams(attrs);
+				ViewGroup.LayoutParams params = null;
+				try {
+					params = viewGroup.generateLayoutParams(attrs);
+				} catch (RuntimeException e) {
+					params = viewGroup.generateDefaultLayoutParams();
+				}
 				params.resolveLayoutDirection(viewGroup.getLayoutDirection());
 				rInflate(parser, view, attrs, true);
 				viewGroup.addView(view, params);

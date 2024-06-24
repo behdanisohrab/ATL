@@ -61,6 +61,10 @@ public abstract class AbsListView extends AdapterView {
 		return -1;
 	}
 
+	public void setFastScrollEnabled(boolean enabled) {}
+
+	public void setFastScrollAlwaysVisible(boolean alwaysVisible) {}
+
 	public interface OnScrollListener {}
 
 	public interface SelectionBoundsAdjuster {}

@@ -3,6 +3,8 @@ package android.text;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import com.android.internal.util.ArrayUtils;
+
 public class TextUtils {
 	public static int getLayoutDirectionFromLocale(Locale locale) {
 		return 0 /*LTR*/; // FIXME
@@ -236,8 +238,8 @@ public class TextUtils {
 			sTemp = null;
 		}
 
-		// if (buf == null || buf.length < len)
-		//     buf = ArrayUtils.newUnpaddedCharArray(len);
+		if (buf == null || buf.length < len)
+		    buf = ArrayUtils.newUnpaddedCharArray(len);
 
 		return buf;
 	}

@@ -40,4 +40,6 @@ public class IntentFilter {
 	public String getAction(int index) {
 		return actions.get(index);
 	}
+
+	public void setPriority(int priority) {}
 }

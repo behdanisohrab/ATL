@@ -11,6 +11,10 @@ public class PopupWindow {
 		popover = native_constructor();
 	}
 
+	public PopupWindow(Context context) {
+		this(context, null, 0, 0);
+	}
+
 	private View contentView;
 	private long popover;  // native pointer to GtkPopover
 

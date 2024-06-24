@@ -50,4 +50,8 @@ public class ViewConfiguration {
 	public static float getScrollFriction() {
 		return 0.015f;
 	}
+
+	public int getScaledWindowTouchSlop() {
+		return 8;
+	}
 }

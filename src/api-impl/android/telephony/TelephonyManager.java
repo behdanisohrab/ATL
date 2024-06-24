@@ -37,4 +37,20 @@ public class TelephonyManager {
 	}
 
 	public void listen(PhoneStateListener listener, int events) {}
+
+	public int getNetworkType() {
+		return 0; // NETWORK_TYPE_UNKNOWN
+	}
+
+	public String getLine1Number() {
+		return null;
+	}
+
+	public int getSimState() {
+		return 0; // SIM_STATE_UNKNOWN
+	}
+
+	public String getSimOperatorName() {
+		return null;
+	}
 }

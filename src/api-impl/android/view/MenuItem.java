@@ -50,4 +50,6 @@ public interface MenuItem {
 
 	public MenuItem setOnActionExpandListener(OnActionExpandListener listener);
 
+	public MenuItem setIcon(Drawable icon);
+
 }

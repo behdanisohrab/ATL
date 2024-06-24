@@ -63,6 +63,16 @@ public class BaseBundle {
 	}
 
 	/**
+	 * Returns the entry with the given key as an object.
+	 *
+	 * @param key a String key
+	 * @return an Object, or null
+	 */
+	public Object get(String key) {
+		return mMap.get(key);
+	}
+
+	/**
 	 * Returns the value associated with the given key, or null if
 	 * no mapping of the desired type exists for the given key or a null
 	 * value is explicitly associated with the key.
@@ -92,6 +102,17 @@ public class BaseBundle {
 	public String getString(String key, String defaultValue) {
 		final String s = getString(key);
 		return (s == null) ? defaultValue : s;
+	}
+
+	/**
+	 * Returns the value associated with the given key, or 0L if
+	 * no mapping of the desired type exists for the given key.
+	 *
+	 * @param key a String
+	 * @return a long value
+	 */
+	public long getLong(String key) {
+		return getLong(key, 0L);
 	}
 
 	/**
