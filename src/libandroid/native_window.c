@@ -477,7 +477,64 @@ EGLDisplay bionic_eglGetDisplay(NativeDisplayType native_display)
 	}
 }
 
-EGLSurface egl_surface_hashtable;
+GHashTable *egl_surface_hashtable;
+
+EGLBoolean bionic_eglChooseConfig(EGLDisplay display, EGLint *attrib_list, EGLConfig *configs, EGLint config_size, EGLint *num_config)
+{
+	GdkDisplay *gdk_display = gtk_root_get_display(GTK_ROOT(window));
+
+	if(GDK_IS_X11_DISPLAY (gdk_display)) {
+		/* X11 supports pbuffers just fine */
+		return eglChooseConfig(display, attrib_list, configs, config_size, num_config);
+	} else {
+		for(EGLint *attr = attrib_list; *attr != EGL_NONE; attr+=2) {
+			if(*attr == EGL_SURFACE_TYPE && *(attr + 1) != EGL_DONT_CARE) {
+				*(attr + 1) &= ~EGL_PBUFFER_BIT;
+				*(attr + 1) |= EGL_WINDOW_BIT;
+			}
+		}
+
+		return eglChooseConfig(display, attrib_list, configs, config_size, num_config);
+	}
+}
+
+EGLSurface bionic_eglCreatePbufferSurface(EGLDisplay display, EGLConfig config, EGLint const *attrib_list)
+{
+	GdkDisplay *gdk_display = gtk_root_get_display(GTK_ROOT(window));
+
+	if(GDK_IS_X11_DISPLAY (gdk_display)) {
+		/* X11 supports pbuffers just fine */
+		return eglCreatePbufferSurface(display, config, attrib_list);
+	} else {
+		struct wl_compositor *wl_compositor = gdk_wayland_display_get_wl_compositor(gdk_display);
+		struct wl_surface *wayland_surface = wl_compositor_create_surface(wl_compositor);
+		EGLint width = 0;
+		EGLint height = 0;
+		EGLint *new_attrib_list = NULL;
+		if(attrib_list) {
+			size_t attrib_list_len = 0;
+			for(EGLint *attr = (EGLint *)attrib_list; *attr != EGL_NONE; attr++)
+				attrib_list_len++;
+			new_attrib_list = malloc(attrib_list_len);
+			EGLint *new_attr_pos = new_attrib_list;
+			for(EGLint *attr = (EGLint *)attrib_list; *attr != EGL_NONE; attr+=2) {
+				if(*attr == EGL_WIDTH) {
+					width = *(attr + 1);
+				} else if(*attr == EGL_HEIGHT) {
+					height = *(attr + 1);
+				} else {
+					*new_attr_pos = *attr;
+					*(new_attr_pos + 1) = *(attr + 1);
+					new_attr_pos+=2;
+				}
+			}
+			*new_attr_pos = EGL_NONE;
+		}
+		struct wl_egl_window *egl_window = wl_egl_window_create(wayland_surface, width, height);
+		EGLSurface surface = eglCreateWindowSurface(display, config, (EGLNativeWindowType)egl_window, new_attrib_list);
+		return surface;
+	}
+}
 
 EGLSurface bionic_eglCreateWindowSurface(EGLDisplay display, EGLConfig config, struct ANativeWindow *native_window, EGLint const *attrib_list)
 {
@@ -639,7 +696,7 @@ XrResult bionic_xrCreateInstance(XrInstanceCreateInfo *createInfo, XrInstance *i
 			new_names[i] = harmless_extension;
 	}
 
-	for (int i = 0; i < ARRRAY_SIZE(extra_exts); ++i)
+	for (int i = 0; i < ARRRAY_SIZE(extra_exts); i++)
 		new_names[createInfo->enabledExtensionCount + i] = extra_exts[i];
 
 	createInfo->enabledExtensionCount = new_count;
