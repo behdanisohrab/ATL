@@ -182,10 +182,10 @@ JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeCopyPixelsToBuffer
 /*
  * Class:     android_graphics_Bitmap
  * Method:    nativeCopyPixelsFromBuffer
- * Signature: (ILjava/nio/Buffer;)V
+ * Signature: (JLjava/nio/Buffer;)V
  */
 JNIEXPORT void JNICALL Java_android_graphics_Bitmap_nativeCopyPixelsFromBuffer
-  (JNIEnv *, jclass, jint, jobject);
+  (JNIEnv *, jclass, jlong, jobject);
 
 /*
  * Class:     android_graphics_Bitmap

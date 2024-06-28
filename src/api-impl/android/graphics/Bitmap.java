@@ -580,7 +580,7 @@ public final class Bitmap {
 			throw new RuntimeException("Buffer not large enough for pixels");
 		}
 
-		nativeCopyPixelsFromBuffer(mNativeBitmap, src);
+		nativeCopyPixelsFromBuffer(pixbuf, src);
 
 		// now update the buffer's position
 		int position = src.position();
@@ -1651,9 +1651,8 @@ public final class Bitmap {
 	private static native void nativeSetPixels(int nativeBitmap, int[] colors,
 						   int offset, int stride, int x, int y,
 						   int width, int height, boolean isPremultiplied);
-	private static native void nativeCopyPixelsToBuffer(long pixbuf,
-							    Buffer dst);
-	private static native void nativeCopyPixelsFromBuffer(int nb, Buffer src);
+	private static native void nativeCopyPixelsToBuffer(long pixbuf, Buffer dst);
+	private static native void nativeCopyPixelsFromBuffer(long pixbuf, Buffer src);
 	private static native int nativeGenerationId(int nativeBitmap);
 
 	// returns a new bitmap built from the native bitmap's alpha, and the paint
