@@ -257,3 +257,12 @@ JNIEXPORT void JNICALL Java_android_opengl_GLES20_glFlush(JNIEnv *env, jclass th
 {
 	glFlush();
 }
+
+JNIEXPORT void JNICALL Java_android_opengl_GLES20_glReadPixels(JNIEnv *env, jclass this, jint x, jint y, jint width, jint height, jint format, jint type, jobject pixels_buf)
+{
+	jarray array_ref;
+	jbyte *array;
+	GLvoid *pixels = get_nio_buffer(env, pixels_buf, &array_ref, &array);
+	glReadPixels(x, y, width, height, format, type, pixels);
+	release_nio_buffer(env, array_ref, array);
+}

@@ -753,14 +753,6 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glPushMatrix
 
 /*
  * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glReadPixels
- * Signature: (IIIIIILjava/nio/Buffer;)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glReadPixels
-  (JNIEnv *, jobject, jint, jint, jint, jint, jint, jint, jobject);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
  * Method:    glRotatef
  * Signature: (FFFF)V
  */

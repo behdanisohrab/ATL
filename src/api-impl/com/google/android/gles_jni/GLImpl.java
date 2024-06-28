@@ -772,14 +772,16 @@ public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 
 	// C function void glReadPixels ( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *pixels )
 
-	public native void glReadPixels(
+	public void glReadPixels(
 	    int x,
 	    int y,
 	    int width,
 	    int height,
 	    int format,
 	    int type,
-	    java.nio.Buffer pixels);
+	    java.nio.Buffer pixels) {
+		GLES10.glReadPixels(x, y, width, height, format, type, pixels);
+	}
 
 	// C function void glRotatef ( GLfloat angle, GLfloat x, GLfloat y, GLfloat z )
 
