@@ -38,4 +38,6 @@ public class ListView extends AbsListView {
 	}
 
 	public void setDivider(Drawable drawable) {}
+
+	public void setSelectionFromTop(int position, int y) {}
 }

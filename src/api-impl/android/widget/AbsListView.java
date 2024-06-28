@@ -3,6 +3,7 @@ package android.widget;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 
 public abstract class AbsListView extends AdapterView {
 
@@ -76,4 +77,7 @@ public abstract class AbsListView extends AdapterView {
 		}
 	}
 
+	public class LayoutParams extends ViewGroup.LayoutParams {
+
+	}
 }
