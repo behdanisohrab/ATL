@@ -132,6 +132,10 @@ public class Context extends Object {
 		application.native_window = native_window;
 		this_application = application;
 		application.attachBaseContext(new Context());
+		// HACK: Set WhatsApp's custom logging mechanism to verbose for easier debugging. Should be removed again once WhatsApp is fully supported
+		try {
+			Class.forName("com.whatsapp.util.Log").getField("level").setInt(null, 5);
+		} catch (Exception e) {} // ignore for other apps
 		return application;
 	}
 
