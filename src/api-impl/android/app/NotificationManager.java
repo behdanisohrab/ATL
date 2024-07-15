@@ -1,5 +1,6 @@
 package android.app;
 
+import android.app.Notification.MediaStyle;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,10 @@ public class NotificationManager {
 	public void cancelAll() {}
 
 	public void notify(String tag, int id, Notification notification) {
+		if (notification.style instanceof MediaStyle) {
+			return;  // MPRIS is handled by MediaSession implementation
+		}
+
 		System.out.println("notify(" + tag + ", " + id + ", " + notification + ") called");
 		long builder = nativeInitBuilder();
 		for (Notification.Action action : notification.actions) {

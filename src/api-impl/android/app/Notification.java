@@ -54,6 +54,7 @@ public class Notification implements Parcelable {
 	PendingIntent intent;
 	String iconPath;
 	boolean ongoing;
+	Style style;
 
 	public String toString() {
 		return "Notification [" + title + ", " + text + ", " + actions + "]";
@@ -151,6 +152,7 @@ public class Notification implements Parcelable {
 		}
 
 		public Builder setStyle(Style style) {
+			notification.style = style;
 			if (style instanceof MediaStyle) {
 				notification.ongoing = true;
 			}

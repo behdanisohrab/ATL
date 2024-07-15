@@ -47,6 +47,10 @@ linux_dmabuf = wl_mod.scan_xml(xml)
 xml = wl_mod.find_protocol('viewporter')
 viewporter = wl_mod.scan_xml(xml)
 
+mpris = gnome.gdbus_codegen('mpris-dbus',
+                            'src/api-impl-jni/media/org.mpris.MediaPlayer2.xml',
+                            interface_prefix: 'org.mpris')
+
 # libandroid
 libandroid_so = shared_library('android', [
                                           	'src/libandroid/asset_manager.c',
@@ -105,6 +109,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/graphics/android_graphics_drawable_DrawableContainer.c',
                                                                   	'src/api-impl-jni/location/android_location_LocationManager.c',
                                                                   	'src/api-impl-jni/media/android_media_MediaCodec.c',
+                                                                  	'src/api-impl-jni/media/android_media_session_MediaSession.c',
                                                                   	'src/api-impl-jni/net/android_net_ConnectivityManager.c',
                                                                   	'src/api-impl-jni/sensors/android_hardware_SensorManager.c',
                                                                   	'src/api-impl-jni/util.c',
@@ -131,6 +136,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/sk_area/sk_area.c',
                                                                   	linux_dmabuf,
                                                                   	viewporter,
+                                                                  	mpris,
                                                                   ] + marshal_files,
                                                                   include_directories: ['src/sk_area/'],
                                                                   install: true,
