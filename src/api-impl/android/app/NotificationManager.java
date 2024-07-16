@@ -11,8 +11,9 @@ public class NotificationManager {
 	public void cancelAll() {}
 
 	public void notify(String tag, int id, Notification notification) {
-		if (notification.style instanceof MediaStyle) {
-			return;  // MPRIS is handled by MediaSession implementation
+		if (notification.style instanceof MediaStyle) {  // MPRIS content is handled by MediaSession implementation
+			nativeShowMPRIS(Context.this_application.getPackageName(), Context.this_application.get_app_label());
+			return;
 		}
 
 		System.out.println("notify(" + tag + ", " + id + ", " + notification + ") called");
@@ -76,5 +77,6 @@ public class NotificationManager {
 	protected native long nativeInitBuilder();
 	protected native void nativeAddAction(long builder, String title, int intentType, String action, String className);
 	protected native void nativeShowNotification(long builder, int id, String title, String text, String iconPath, boolean ongoing, int intentType, String action, String className);
+	protected native void nativeShowMPRIS(String packageName, String identiy);
 	protected native void nativeCancel(int id);
 }

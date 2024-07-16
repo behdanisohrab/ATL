@@ -12,7 +12,7 @@ public class Application extends ContextWrapper {
 		return getString(pkg.applicationInfo.icon);
 	}
 
-	private String get_app_label() {
+	String get_app_label() {
 		return getString(pkg.applicationInfo.labelRes);
 	}
 

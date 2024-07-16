@@ -1,9 +1,15 @@
+#include <gtk/gtk.h>
 #include <libportal/portal.h>
 
 #include "../defines.h"
 #include "../util.h"
 
+#include "mpris-dbus.h"
+
 #include "../generated_headers/android_app_NotificationManager.h"
+
+#define MPRIS_BUS_NAME_PREFIX "org.mpris.MediaPlayer2."
+#define MPRIS_OBJECT_NAME "/org/mpris/MediaPlayer2"
 
 static XdpPortal *portal = NULL;
 static GHashTable *ongoing_notifications = NULL;
@@ -136,4 +142,46 @@ void remove_ongoing_notifications()
 {
 	if (ongoing_notifications)
 		g_hash_table_foreach(ongoing_notifications, remove_ongoing_notification, NULL);
+}
+
+static MediaPlayer2 *mpris = NULL;
+extern MediaPlayer2Player *mpris_player;
+extern GtkWindow *window;
+
+static gboolean on_media_player_handle_raise(MediaPlayer2 *mpris, GDBusMethodInvocation *invocation, gpointer user_data)
+{
+	gtk_window_present(window);
+	media_player2_complete_raise(mpris, invocation);
+	return TRUE;
+}
+
+static void on_bus_acquired(GDBusConnection *connection, const char *name, gpointer user_data)
+{
+	g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON(mpris),
+	                                 connection, MPRIS_OBJECT_NAME, NULL);
+
+	g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON(mpris_player),
+	                                 connection, MPRIS_OBJECT_NAME, NULL);
+}
+
+JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowMPRIS(JNIEnv *env, jobject this, jstring package_name_jstr, jstring identity_jstr)
+{
+	if (!mpris) {
+		mpris = media_player2_skeleton_new();
+		g_signal_connect(mpris, "handle-raise", G_CALLBACK(on_media_player_handle_raise), NULL);
+
+		g_bus_own_name(G_BUS_TYPE_SESSION, MPRIS_BUS_NAME_PREFIX "ATL", G_BUS_NAME_OWNER_FLAGS_NONE,
+		               on_bus_acquired, NULL, NULL, mpris, NULL);
+	}
+	media_player2_set_can_raise(mpris, TRUE);
+	if (package_name_jstr) {
+		const char *package_name = (*env)->GetStringUTFChars(env, package_name_jstr, NULL);
+		media_player2_set_desktop_entry(mpris, package_name);
+		(*env)->ReleaseStringUTFChars(env, package_name_jstr, package_name);
+	}
+	if (identity_jstr) {
+		const char *identity = (*env)->GetStringUTFChars(env, identity_jstr, NULL);
+		media_player2_set_identity(mpris, identity);
+		(*env)->ReleaseStringUTFChars(env, identity_jstr, identity);
+	}
 }

@@ -6,18 +6,11 @@
 #include "../generated_headers/android_media_session_MediaSession.h"
 #include "../generated_headers/android_os_SystemClock.h"
 
-#define MPRIS_BUS_NAME_PREFIX "org.mpris.MediaPlayer2."
 #define MPRIS_OBJECT_NAME "/org/mpris/MediaPlayer2"
 
 MediaPlayer2Player *mpris_player = NULL;
 static jobject callback = NULL;
 static jlong last_position = 0;  // playback_position - SystemClock.elapsedRealtime in ms
-
-static void on_bus_acquired(GDBusConnection *connection, const char *name, gpointer user_data)
-{
-	g_dbus_interface_skeleton_export(G_DBUS_INTERFACE_SKELETON (mpris_player),
-	                                 connection, MPRIS_OBJECT_NAME, NULL);
-}
 
 static gboolean on_media_player_handle_action(MediaPlayer2Player *mpris_player, GDBusMethodInvocation *invocation, char *method)
 {
@@ -77,8 +70,6 @@ JNIEXPORT void JNICALL Java_android_media_session_MediaSession_nativeSetState(JN
 		                 "signal::handle-seek", on_media_player_handle_seek, NULL,
 		                 "signal::handle-set-position", on_media_player_handle_set_position, NULL,
 		                 NULL);
-		g_bus_own_name(G_BUS_TYPE_SESSION, MPRIS_BUS_NAME_PREFIX "ATL", G_BUS_NAME_OWNER_FLAGS_NONE,
-		               on_bus_acquired, NULL, NULL, mpris_player, NULL);
 	}
 	media_player2_player_set_playback_status(mpris_player, playback_states[state < 4 ? state : 0]);
 	media_player2_player_set_position(mpris_player, position * 1000);
