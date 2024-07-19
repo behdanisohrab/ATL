@@ -10,6 +10,10 @@ public abstract class Service extends Context {
 		System.out.println("Service.onCreate() called");
 	}
 
+	public void onDestroy() {
+		System.out.println("Service.onDestroy() called");
+	}
+
 	public abstract IBinder onBind(Intent intent);
 
 	public abstract int onStartCommand(Intent intent, int flags, int startId);

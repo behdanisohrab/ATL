@@ -553,7 +553,15 @@ public class Context extends Object {
 		}
 	}
 
-	public boolean stopService(Intent intent) {return false;}
+	public boolean stopService(Intent intent) throws ClassNotFoundException {
+		Class<? extends Service> cls = Class.forName(intent.getComponent().getClassName()).asSubclass(Service.class);
+		Service service = runningServices.remove(cls);
+		if (service != null) {
+			service.onDestroy();
+			return true;
+		}
+		return false;
+	}
 
 	public void unbindService(ServiceConnection serviceConnection) {}
 
