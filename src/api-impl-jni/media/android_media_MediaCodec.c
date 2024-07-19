@@ -425,22 +425,26 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1start(JNIEnv *env, 
 
 JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1queueInputBuffer(JNIEnv *env, jobject this, jlong codec, jobject buffer, jlong presentationTimeUs)
 {
-	jarray array_ref;
-	jbyte *array;
+	jarray array_ref = NULL;
+	jbyte *array = NULL;
 	int ret;
 	struct ATL_codec_context *ctx = _PTR(codec);
 	AVCodecContext *codec_ctx = ctx->codec;
-	AVPacket *pkt = av_packet_alloc();
-
-	pkt->size = get_nio_buffer_size(env, buffer);
-	pkt->data = get_nio_buffer(env, buffer, &array_ref, &array);
-	pkt->pts = presentationTimeUs;
+	AVPacket *pkt = NULL;
+	if (buffer) {  // buffer can be null if we're sending EOF
+		pkt = av_packet_alloc();
+		pkt->size = get_nio_buffer_size(env, buffer);
+		pkt->data = get_nio_buffer(env, buffer, &array_ref, &array);
+		pkt->pts = presentationTimeUs;
+	}
 	ret = avcodec_send_packet(codec_ctx, pkt);
 	if (ret < 0 && ret != AVERROR(EAGAIN)) {
 		fprintf(stderr, "Error while sending packet: %d = %s\n", ret, av_err2str(ret));
 	}
-	release_nio_buffer(env, array_ref, array);
-	av_packet_free(&pkt);
+	if (buffer) {
+		release_nio_buffer(env, array_ref, array);
+		av_packet_free(&pkt);
+	}
 	return ret;
 }
 
@@ -455,6 +459,14 @@ JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1dequeueOutputBuffer
 
 	ret = avcodec_receive_frame(codec_ctx, frame);
 	if (ret < 0) {
+		if (ret == AVERROR_EOF) {
+			_SET_INT_FIELD(buffer_info, "flags", android_media_MediaCodec_BUFFER_FLAG_END_OF_STREAM);
+			_SET_INT_FIELD(buffer_info, "offset", 0);
+			_SET_INT_FIELD(buffer_info, "size", 0);
+			_SET_LONG_FIELD(buffer_info, "presentationTimeUs", 0);
+			av_frame_free(&frame);
+			return 0;
+		}
 		if (ret != AVERROR(EAGAIN)) {
 			printf("avcodec_receive_frame returned %d\n", ret);
 			printf("frame->data = %p frame->nb_samples = %d\n", frame->data[0], frame->nb_samples);
@@ -462,6 +474,7 @@ JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1dequeueOutputBuffer
 		av_frame_free(&frame);
 		return INFO_TRY_AGAIN_LATER;
 	}
+	_SET_INT_FIELD(buffer_info, "flags", 0);
 	_SET_LONG_FIELD(buffer_info, "presentationTimeUs", frame->pts);
 
 	if (codec_ctx->codec_type == AVMEDIA_TYPE_AUDIO) {

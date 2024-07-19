@@ -7,6 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef android_media_MediaCodec_BUFFER_FLAG_END_OF_STREAM
+#define android_media_MediaCodec_BUFFER_FLAG_END_OF_STREAM 4L
 /*
  * Class:     android_media_MediaCodec
  * Method:    native_constructor

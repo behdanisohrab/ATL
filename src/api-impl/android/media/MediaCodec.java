@@ -9,6 +9,8 @@ import android.view.Surface;
 
 public class MediaCodec {
 
+	public static final int BUFFER_FLAG_END_OF_STREAM = 0x4;
+
 	private String codecName;
 	private ByteBuffer[] inputBuffers;
 	private ByteBuffer[] outputBuffers;
@@ -104,10 +106,16 @@ public class MediaCodec {
 	private void tryProcessInputBuffer() {
 		Integer index = queuedInputBuffers.peek();
 		if (index != null) {
-			int ret = native_queueInputBuffer(native_codec, inputBuffers[index], inputBufferTimestamps[index]);
+			int ret;
+			if (index == -1) {  // end of stream
+				ret = native_queueInputBuffer(native_codec, null, 0);
+			} else {
+				ret = native_queueInputBuffer(native_codec, inputBuffers[index], inputBufferTimestamps[index]);
+			}
 			if (ret == 0) {
 				queuedInputBuffers.remove(index);
-				freeInputBuffers.add(index);
+				if (index != -1)
+					freeInputBuffers.add(index);
 			}
 		}
 	}
@@ -123,6 +131,11 @@ public class MediaCodec {
 	}
 
 	public void queueInputBuffer(int index, int offset, int size, long presentationTimeUs, int flags) {
+		if ((flags & BUFFER_FLAG_END_OF_STREAM) != 0) {
+			queuedInputBuffers.add(-1);
+			tryProcessInputBuffer();
+			return;
+		}
 		inputBufferTimestamps[index] = presentationTimeUs;
 		queuedInputBuffers.add(index);
 		tryProcessInputBuffer();
