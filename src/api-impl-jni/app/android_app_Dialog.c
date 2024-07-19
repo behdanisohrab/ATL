@@ -16,8 +16,9 @@ static gboolean on_close_request(GtkWidget *dialog, jobject jobj)
 
 JNIEXPORT jlong JNICALL Java_android_app_Dialog_nativeInit(JNIEnv *env, jobject this)
 {
-	GtkWidget *dialog = gtk_dialog_new();
+	GtkWidget *dialog = gtk_window_new();
 	gtk_window_set_default_size(GTK_WINDOW(dialog), 500, 500);
+	gtk_window_set_child(GTK_WINDOW(dialog), gtk_box_new(GTK_ORIENTATION_VERTICAL, 1));
 	g_signal_connect_swapped(dialog, "response", G_CALLBACK(gtk_window_destroy), dialog);
 	g_signal_connect(GTK_WINDOW(dialog), "close-request", G_CALLBACK(on_close_request), _REF(this));
 	return _INTPTR(g_object_ref(dialog));
@@ -32,11 +33,10 @@ JNIEXPORT void JNICALL Java_android_app_Dialog_nativeSetTitle(JNIEnv *env, jobje
 }
 
 JNIEXPORT void JNICALL Java_android_app_Dialog_nativeSetContentView(JNIEnv *env, jobject this, jlong ptr, jlong widget_ptr) {
-	GtkDialog *dialog = GTK_DIALOG(_PTR(ptr));
+	GtkWindow *dialog = GTK_WINDOW(_PTR(ptr));
 	GtkWidget *widget = GTK_WIDGET(_PTR(widget_ptr));
 
-	GtkWidget *content_area = gtk_dialog_get_content_area(dialog);
-	gtk_box_append(GTK_BOX(content_area), gtk_widget_get_parent(widget));
+	gtk_window_set_child(dialog, gtk_widget_get_parent(widget));
 }
 
 JNIEXPORT void JNICALL Java_android_app_Dialog_nativeShow(JNIEnv *env, jobject this, jlong ptr)

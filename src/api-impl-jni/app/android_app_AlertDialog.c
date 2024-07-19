@@ -6,9 +6,9 @@
 
 JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeSetMessage(JNIEnv *env, jobject this, jlong ptr, jstring message)
 {
-	GtkDialog *dialog = GTK_DIALOG(_PTR(ptr));
+	GtkWindow *dialog = GTK_WINDOW(_PTR(ptr));
 	const char* nativeMessage = (*env)->GetStringUTFChars(env, message, NULL);
-	GtkWidget *content_area = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+	GtkWidget *content_area = gtk_window_get_child(dialog);
 	GtkWidget *label = gtk_label_new(nativeMessage);
 	gtk_label_set_wrap(GTK_LABEL(label), TRUE);
 	gtk_box_append(GTK_BOX(content_area), label);
@@ -16,9 +16,12 @@ JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeSetMessage(JNIEnv *env
 }
 
 JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeSetButton(JNIEnv *env, jobject this, jlong ptr, jint id, jstring text) {
-	GtkDialog *dialog = GTK_DIALOG(_PTR(ptr));
+	GtkWindow *dialog = GTK_WINDOW(_PTR(ptr));
+	GtkWidget *content_area = gtk_window_get_child(dialog);
 	const char* nativeText = (*env)->GetStringUTFChars(env, text, NULL);
-	gtk_dialog_add_button(dialog, nativeText, id);
+	GtkWidget *button = gtk_button_new_with_label(nativeText);
+	g_signal_connect_swapped(button, "clicked", G_CALLBACK(gtk_window_destroy), dialog);
+	gtk_box_append(GTK_BOX(content_area), button);
 	(*env)->ReleaseStringUTFChars(env, text, nativeText);
 }
 
@@ -62,7 +65,7 @@ static void activate_cb(GtkListView *list, guint position, struct click_callback
 }
 
 JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeSetItems(JNIEnv *env, jobject this, jlong ptr, jobjectArray items, jobject on_click) {
-	GtkDialog *dialog = GTK_DIALOG(_PTR(ptr));
+	GtkWindow *dialog = GTK_WINDOW(_PTR(ptr));
 
 	GListStore *store = g_list_store_new(list_entry_get_type());
 	int stringCount = (*env)->GetArrayLength(env, items);
@@ -78,7 +81,7 @@ JNIEXPORT void JNICALL Java_android_app_AlertDialog_nativeSetItems(JNIEnv *env, 
 	GtkWidget *list = gtk_list_view_new(GTK_SELECTION_MODEL(gtk_single_selection_new(G_LIST_MODEL(store))), factory);
 	gtk_list_view_set_single_click_activate(GTK_LIST_VIEW(list), TRUE);
 
-	GtkWidget *content_area = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+	GtkWidget *content_area = gtk_window_get_child(dialog);
 	gtk_box_append(GTK_BOX(content_area), list);
 
 	JavaVM *jvm;
