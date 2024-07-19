@@ -1428,8 +1428,11 @@ public class View implements Drawable.Callback {
 
 	public void clearAnimation() {}
 
+	private ViewPropertyAnimator viewPropertyAnimator;
 	public ViewPropertyAnimator animate() {
-		return new ViewPropertyAnimator(this);
+		if (viewPropertyAnimator == null)
+			viewPropertyAnimator = new ViewPropertyAnimator(this);
+		return viewPropertyAnimator;
 	}
 
 	public float getTranslationX() {return 0.f;}
