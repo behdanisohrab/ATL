@@ -224,3 +224,27 @@ void wrapper_widget_set_background(WrapperWidget *wrapper, GdkPaintable *paintab
 	}
 	gtk_picture_set_paintable(GTK_PICTURE(wrapper->background), paintable);
 }
+
+static gboolean on_touch_event_consume(GtkEventControllerLegacy *controller, GdkEvent *event) {
+	switch(gdk_event_get_event_type(event)) {
+		case GDK_BUTTON_PRESS:
+		case GDK_TOUCH_BEGIN:
+		case GDK_BUTTON_RELEASE:
+		case GDK_TOUCH_END:
+		case GDK_MOTION_NOTIFY:
+		case GDK_TOUCH_UPDATE:
+			return TRUE;
+		default:
+			return FALSE;
+	}
+}
+
+// Add default on touch listener, which just consumes all events to prevent bubbling to the parent
+void wrapper_widget_consume_touch_events(WrapperWidget *wrapper)
+{
+	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_event_controller_legacy_new());
+	g_signal_connect(controller, "event", G_CALLBACK(on_touch_event_consume), NULL);
+	gtk_widget_add_controller(GTK_WIDGET(wrapper), controller);
+	g_object_set_data(G_OBJECT(wrapper), "on_touch_listener", controller);
+
+}
