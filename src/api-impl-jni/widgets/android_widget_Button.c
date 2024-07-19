@@ -46,6 +46,7 @@ static void clicked_cb(GtkWidget *button, struct touch_callback_data *d) {
 JNIEXPORT void JNICALL Java_android_widget_Button_native_1setOnClickListener(JNIEnv *env, jobject this, jlong widget_ptr, jobject on_click_listener)
 {
 	GtkWidget *button = GTK_WIDGET(_PTR(widget_ptr));
+	g_signal_handlers_disconnect_matched(button, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, clicked_cb, NULL);
 	if (!on_click_listener)
 		return;
 
