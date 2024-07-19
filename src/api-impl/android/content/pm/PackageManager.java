@@ -2748,7 +2748,7 @@ public class PackageManager {
 	 * application could not be loaded (most likely because it was uninstalled).
 	 */
 	public Resources getResourcesForApplication(ApplicationInfo app) throws NameNotFoundException {
-		return null;
+		return Context.this_application.getResources();
 	}
 
 	/**
@@ -2767,14 +2767,14 @@ public class PackageManager {
 	 * @see #getResourcesForApplication(ApplicationInfo)
 	 */
 	public Resources getResourcesForApplication(String appPackageName) throws NameNotFoundException {
-		return null;
+		return Context.this_application.getResources();
 	}
 
 	/**
 	 * @hide
 	 */
 	public Resources getResourcesForApplicationAsUser(String appPackageName, int userId) throws NameNotFoundException {
-		return null;
+		return Context.this_application.getResources();
 	}
 
 	/**
