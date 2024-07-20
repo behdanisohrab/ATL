@@ -1341,7 +1341,7 @@ public class View implements Drawable.Callback {
 
 	public void requestLayout() {
 		layoutRequested = true;
-		if (parent != null && !parent.isLayoutRequested()) {
+		if (parent != null) {
 			parent.requestLayout();
 		}
 		native_requestLayout(widget);
