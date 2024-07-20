@@ -29,25 +29,43 @@ struct changed_callback_data {
 	jmethodID getText;
 };
 
-static void changed_cb(GtkEditable* self, struct changed_callback_data *d) {
+static void changed_cb(GtkEditable* self, jobject listener) {
 	JNIEnv *env = get_jni_env();
 
-	jobject text = (*env)->CallObjectMethod(env, d->this, d->getText);
-	(*env)->CallVoidMethod(env, d->listener, d->listener_method, text);
+	const char *text = gtk_editable_get_text(self);
+	jclass spannable_string_builder = (*env)->FindClass(env, "android/text/SpannableStringBuilder");
+	jmethodID spannable_string_builder_constructor = _METHOD(spannable_string_builder, "<init>", "(Ljava/lang/CharSequence;)V");
+	jobject text_obj = (*env)->NewObject(env, spannable_string_builder, spannable_string_builder_constructor, _JSTRING(text));
+	jmethodID listener_method = _METHOD(_CLASS(listener), "afterTextChanged", "(Landroid/text/Editable;)V");
+	(*env)->CallVoidMethod(env, listener, listener_method, text_obj);
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 }
 
 JNIEXPORT void JNICALL Java_android_widget_EditText_native_1addTextChangedListener(JNIEnv *env, jobject this, jlong widget_ptr, jobject listener) {
 	GtkEntry *entry = GTK_ENTRY(_PTR(widget_ptr));
+	listener = _REF(listener);
 
-	struct changed_callback_data *callback_data = malloc(sizeof(struct changed_callback_data));
-	callback_data->this = _REF(this);
-	callback_data->listener = _REF(listener);
-	callback_data->listener_method = _METHOD(_CLASS(listener), "afterTextChanged", "(Landroid/text/Editable;)V");
-	callback_data->getText = _METHOD(_CLASS(this), "getText", "()Landroid/text/Editable;");
+	GList *listeners = g_object_get_data(G_OBJECT(entry), "text_changed_listeners");
+	listeners = g_list_append(listeners, listener);
+	g_object_set_data(G_OBJECT(entry), "text_changed_listeners", listeners);
+	g_signal_connect(GTK_EDITABLE(entry), "changed", G_CALLBACK(changed_cb), listener);
+}
 
-	g_signal_connect(GTK_EDITABLE(entry), "changed", G_CALLBACK(changed_cb), callback_data);
+JNIEXPORT void JNICALL Java_android_widget_EditText_native_1removeTextChangedListener(JNIEnv *env, jobject this, jlong widget_ptr, jobject listener) {
+	GtkEntry *entry = GTK_ENTRY(_PTR(widget_ptr));
+
+	GList *listeners = g_object_get_data(G_OBJECT(entry), "text_changed_listeners");
+	GList *l;
+	for (l = listeners; l != NULL; l = l->next) {
+		if ((*env)->IsSameObject(env, l->data, listener)) {
+			g_signal_handlers_disconnect_by_func(GTK_EDITABLE(entry), changed_cb, l->data);
+			_UNREF(l->data);
+			listeners = g_list_delete_link(listeners, l);
+			break;
+		}
+	}
+	g_object_set_data(G_OBJECT(entry), "text_changed_listeners", listeners);
 }
 
 #define IME_ACTION_SEARCH 3
