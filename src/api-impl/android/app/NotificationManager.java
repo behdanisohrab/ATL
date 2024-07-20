@@ -1,5 +1,9 @@
 package android.app;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import android.app.Notification.MediaStyle;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,6 +14,9 @@ import android.os.Looper;
 public class NotificationManager {
 
 	private static int mpris_notification_id = -1;
+
+	// store Intents in map, as long as Parcelable serialization is not yet implemented
+	private static Map<Integer, Intent> intents = new HashMap<Integer, Intent>();
 
 	public void cancelAll() {}
 
@@ -42,6 +49,7 @@ public class NotificationManager {
 			intentType = notification.intent.type;
 			actionName = notification.intent.intent.getAction();
 			className = notification.intent.intent.getComponent() != null ? notification.intent.intent.getComponent().getClassName() : null;
+			intents.put(id, notification.intent.intent);
 		}
 		nativeShowNotification(builder, id, notification.title, notification.text, notification.iconPath, notification.ongoing, intentType, actionName, className);
 	}
@@ -72,9 +80,14 @@ public class NotificationManager {
 
 	protected static void notificationActionCallback(int id, int intentType, String action, String className) {
 		Context context = Context.this_application;
-		Intent intent = new Intent(action);
-		if (className != null && !className.isEmpty()) {
-			intent.setComponent(new ComponentName(context, className));
+		action = "".equals(action) ? null : action;
+		className = "".equals(className) ? null : className;
+		Intent intent = intents.remove(id);
+		if (intent == null || !Objects.equals(action, intent.getAction()) || !Objects.equals(className, intent.getComponent().getClassName())) {
+			intent = new Intent(action);
+			if (className != null) {
+				intent.setComponent(new ComponentName(context, className));
+			}
 		}
 		if (intentType == 0) { // type Activity
 			context.startActivity(intent);
