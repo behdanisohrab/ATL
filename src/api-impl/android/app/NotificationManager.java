@@ -8,11 +8,17 @@ import android.os.Handler;
 import android.os.Looper;
 
 public class NotificationManager {
+
+	private static int mpris_notification_id = -1;
+
 	public void cancelAll() {}
 
 	public void notify(String tag, int id, Notification notification) {
 		if (notification.style instanceof MediaStyle) {  // MPRIS content is handled by MediaSession implementation
-			nativeShowMPRIS(Context.this_application.getPackageName(), Context.this_application.get_app_label());
+			if (mpris_notification_id == -1) {
+				nativeShowMPRIS(Context.this_application.getPackageName(), Context.this_application.get_app_label());
+				mpris_notification_id = id;
+			}
 			return;
 		}
 
@@ -50,7 +56,12 @@ public class NotificationManager {
 		new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				nativeCancel(id);
+				if (mpris_notification_id == id) {
+					mpris_notification_id = -1;
+					nativeCancelMPRIS();
+				} else {
+					nativeCancel(id);
+				}
 			}
 		}, 100);
 	}
@@ -79,4 +90,5 @@ public class NotificationManager {
 	protected native void nativeShowNotification(long builder, int id, String title, String text, String iconPath, boolean ongoing, int intentType, String action, String className);
 	protected native void nativeShowMPRIS(String packageName, String identiy);
 	protected native void nativeCancel(int id);
+	protected native void nativeCancelMPRIS();
 }

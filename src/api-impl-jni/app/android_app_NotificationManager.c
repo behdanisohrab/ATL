@@ -145,6 +145,7 @@ void remove_ongoing_notifications()
 }
 
 static MediaPlayer2 *mpris = NULL;
+static int dbus_name_id = 0;
 extern MediaPlayer2Player *mpris_player;
 extern GtkWindow *window;
 
@@ -169,8 +170,9 @@ JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowMPRIS(JNIE
 	if (!mpris) {
 		mpris = media_player2_skeleton_new();
 		g_signal_connect(mpris, "handle-raise", G_CALLBACK(on_media_player_handle_raise), NULL);
-
-		g_bus_own_name(G_BUS_TYPE_SESSION, MPRIS_BUS_NAME_PREFIX "ATL", G_BUS_NAME_OWNER_FLAGS_NONE,
+	}
+	if (!dbus_name_id) {
+		dbus_name_id = g_bus_own_name(G_BUS_TYPE_SESSION, MPRIS_BUS_NAME_PREFIX "ATL", G_BUS_NAME_OWNER_FLAGS_NONE,
 		               on_bus_acquired, NULL, NULL, mpris, NULL);
 	}
 	media_player2_set_can_raise(mpris, TRUE);
@@ -183,5 +185,14 @@ JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowMPRIS(JNIE
 		const char *identity = (*env)->GetStringUTFChars(env, identity_jstr, NULL);
 		media_player2_set_identity(mpris, identity);
 		(*env)->ReleaseStringUTFChars(env, identity_jstr, identity);
+	}
+}
+
+JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeCancelMPRIS(JNIEnv *env, jobject this)
+{
+	if (dbus_name_id) {
+		g_dbus_interface_skeleton_unexport(G_DBUS_INTERFACE_SKELETON(mpris));
+		g_dbus_interface_skeleton_unexport(G_DBUS_INTERFACE_SKELETON(mpris_player));
+		g_clear_handle_id (&dbus_name_id, g_bus_unown_name);
 	}
 }
