@@ -1,6 +1,7 @@
 package android.graphics.drawable;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -27,10 +28,12 @@ public class VectorDrawable extends Drawable {
 		int tint = a.getColor(R.styleable.VectorDrawable_tint, 0);
 		float viewportWidth = a.getFloat(R.styleable.VectorDrawable_viewportWidth, 24);
 		float viewportHeight = a.getFloat(R.styleable.VectorDrawable_viewportHeight, 24);
+		float width = a.getDimension(R.styleable.VectorDrawable_width, 24);
+		float height = a.getDimension(R.styleable.VectorDrawable_height, 24);
 		a.recycle();
 		StringBuilder sb = new StringBuilder();
-		sb.append(String.format("<svg id=\"vector\" xmlns=\"http://www.w3.org/2000/svg\" width=\"%f\" height=\"%f\" viewBox=\"0 0 %f %f\">",
-				viewportWidth, viewportHeight, viewportWidth, viewportHeight));
+		sb.append(String.format(Locale.ENGLISH, "<svg id=\"vector\" xmlns=\"http://www.w3.org/2000/svg\" width=\"%f\" height=\"%f\" viewBox=\"0 0 %f %f\">",
+				width, height, viewportWidth, viewportHeight));
 		while ((type = parser.next()) != XmlPullParser.END_DOCUMENT
 				&& (parser.getDepth() >= innerDepth
 				|| type != XmlPullParser.END_TAG)) {
@@ -42,7 +45,7 @@ public class VectorDrawable extends Drawable {
 				int strokeColor = tint != 0 ? tint : a.getColor(R.styleable.VectorDrawablePath_strokeColor, 0);
 				float strokeWidth = a.getFloat(R.styleable.VectorDrawablePath_strokeWidth, 0);
 				a.recycle();
-				sb.append(String.format("<path fill=\"#%06x%02x\" stroke=\"#%06x%02x\" stroke-width=\"%f\" d=\"%s\"/>",
+				sb.append(String.format(Locale.ENGLISH, "<path fill=\"#%06x%02x\" stroke=\"#%06x%02x\" stroke-width=\"%f\" d=\"%s\"/>",
 						fillColor & 0xFFFFFF, (fillColor >> 24) & 0xFF, strokeColor & 0xFFFFFF, (strokeColor >> 24) & 0xFF, strokeWidth, pathData));
 			}
 		}

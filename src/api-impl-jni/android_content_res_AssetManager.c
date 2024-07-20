@@ -441,3 +441,18 @@ JNIEXPORT jlong JNICALL Java_android_content_res_AssetManager_openXmlAssetNative
 	Asset_delete(asset);
 	return _INTPTR(res_xml);
 }
+
+JNIEXPORT jobjectArray JNICALL Java_android_content_res_AssetManager_getLocales(JNIEnv *env, jobject this)
+{
+	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
+	char **locales = AssetManager_getLocales(asset_manager, true);
+	int i = 0;
+	while (locales[i] != NULL) i++;
+	jobjectArray array = (*env)->NewObjectArray(env, i, (*env)->FindClass(env, "java/lang/String"), NULL);
+	for (i = 0; locales[i] != NULL; i++) {
+		(*env)->SetObjectArrayElement(env, array, i, (*env)->NewStringUTF(env, locales[i]));
+		free(locales[i]);
+	}
+	free(locales);
+	return array;
+}
