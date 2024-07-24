@@ -7,7 +7,7 @@ import android.view.View;
 public class AlertDialog extends Dialog implements DialogInterface {
 
 	private native void nativeSetMessage(long ptr, String message);
-	private native void nativeSetButton(long ptr, int whichButton, String text);
+	private native void nativeSetButton(long ptr, int whichButton, String text, OnClickListener listener);
 	private native void nativeSetItems(long ptr, String[] items, DialogInterface.OnClickListener listener);
 
 	public AlertDialog(Context context) {
@@ -24,7 +24,7 @@ public class AlertDialog extends Dialog implements DialogInterface {
 	}
 
 	public void setButton(int whichButton, CharSequence text, OnClickListener listener) {
-		nativeSetButton(nativePtr, whichButton, String.valueOf(text));
+		nativeSetButton(nativePtr, whichButton, String.valueOf(text), listener);
 	}
 
 	public static class Builder {
