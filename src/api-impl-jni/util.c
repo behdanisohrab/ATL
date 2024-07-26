@@ -133,6 +133,7 @@ void set_up_handle_cache(JNIEnv *env)
 	handle_cache.view.onInterceptTouchEvent = _METHOD(handle_cache.view.class, "onInterceptTouchEvent", "(Landroid/view/MotionEvent;)Z");
 	handle_cache.view.layoutInternal = _METHOD(handle_cache.view.class, "layoutInternal", "(II)V");
 	handle_cache.view.measure = _METHOD(handle_cache.view.class, "measure", "(II)V");
+	handle_cache.view.performLongClick = _METHOD(handle_cache.view.class, "performLongClick", "(FF)Z");
 
 	handle_cache.asset_manager.class = _REF((*env)->FindClass(env, "android/content/res/AssetManager"));
 	handle_cache.asset_manager.extractFromAPK = _STATIC_METHOD(handle_cache.asset_manager.class, "extractFromAPK", "(Ljava/lang/String;Ljava/lang/String;)V");

@@ -36,7 +36,7 @@ JNIEXPORT jlong JNICALL Java_android_widget_AbsSpinner_native_1constructor(JNIEn
 	GtkWidget *dropdown = gtk_drop_down_new(G_LIST_MODEL(model), NULL);
 	gtk_drop_down_set_factory(GTK_DROP_DOWN(dropdown), factory);
 	model->list_view = dropdown;
-	model->jobject = _REF(this);
+	model->jobject = _WEAK_REF(this);
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), dropdown);
 	gtk_widget_set_name(dropdown, "Spinner");
 	return _INTPTR(dropdown);

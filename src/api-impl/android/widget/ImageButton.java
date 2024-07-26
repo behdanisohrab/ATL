@@ -23,11 +23,7 @@ public class ImageButton extends ImageView {
 	protected native void native_setPixbuf(long widget, long pixbuf);
 	@Override
 	protected native void native_setDrawable(long widget, long paintable);
-	protected native void native_setOnClickListener(long widget, OnClickListener l);
-
 	@Override
-	public void setOnClickListener(final OnClickListener l) {
-		native_setOnClickListener(widget, l);
-	}
+	protected native void nativeSetOnClickListener(long widget);
 
 }

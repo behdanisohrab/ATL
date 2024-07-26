@@ -201,19 +201,19 @@ extern "C" {
 #define android_view_View_TEXT_DIRECTION_RTL 4L
 /*
  * Class:     android_view_View
- * Method:    setOnTouchListener
- * Signature: (Landroid/view/View/OnTouchListener;)V
+ * Method:    nativeSetOnTouchListener
+ * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT void JNICALL Java_android_view_View_nativeSetOnTouchListener
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     android_view_View
- * Method:    setOnClickListener
- * Signature: (Landroid/view/View/OnClickListener;)V
+ * Method:    nativeSetOnClickListener
+ * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_android_view_View_setOnClickListener
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT void JNICALL Java_android_view_View_nativeSetOnClickListener
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     android_view_View
@@ -337,11 +337,11 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setVisibility
 
 /*
  * Class:     android_view_View
- * Method:    setOnLongClickListener
- * Signature: (Landroid/view/View/OnLongClickListener;)V
+ * Method:    nativeSetOnLongClickListener
+ * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_android_view_View_setOnLongClickListener
-  (JNIEnv *, jobject, jobject);
+JNIEXPORT void JNICALL Java_android_view_View_nativeSetOnLongClickListener
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     android_view_View

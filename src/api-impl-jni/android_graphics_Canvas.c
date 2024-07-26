@@ -115,3 +115,9 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawPath(JNIEnv *env
 
 	sk_canvas_draw_path(canvas, path, paint);
 }
+
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1destroy_1canvas(JNIEnv *env, jclass class, jlong skia_canvas)
+{
+	sk_canvas_t *canvas = (sk_canvas_t *)_PTR(skia_canvas);
+	sk_canvas_destroy(canvas);
+}

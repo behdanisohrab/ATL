@@ -14,6 +14,8 @@
 #define _INTPTR(ptr)((jlong)(intptr_t)(ptr))
 #define _REF(obj)((*env)->NewGlobalRef(env, obj))
 #define _UNREF(obj)((*env)->DeleteGlobalRef(env, obj))
+#define _WEAK_REF(obj)((*env)->NewWeakGlobalRef(env, obj))
+#define _WEAK_UNREF(obj)((*env)->DeleteWeakGlobalRef(env, obj))
 #define _CLASS(object) ((*env)->GetObjectClass(env, object))
 #define _SUPER(object) ((*env)->GetSuperclass(env, object))
 #define _METHOD(class, method, attrs) ((*env)->GetMethodID(env, class, method, attrs))

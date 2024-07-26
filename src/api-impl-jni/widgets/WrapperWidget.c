@@ -17,13 +17,19 @@ static void wrapper_widget_init (WrapperWidget *wrapper_widget)
 
 static void wrapper_widget_dispose(GObject *wrapper_widget)
 {
-	gtk_widget_unparent(gtk_widget_get_first_child(GTK_WIDGET(wrapper_widget)));
+	GtkWidget *widget = GTK_WIDGET(wrapper_widget);
+	GtkWidget *child = gtk_widget_get_first_child(widget);
+	while (child) {
+		GtkWidget *_child = gtk_widget_get_next_sibling(child);
+		gtk_widget_unparent(child);
+		child = _child;
+	}
 	WrapperWidget *wrapper = WRAPPER_WIDGET(wrapper_widget);
 	if (wrapper->jvm) {
 		JNIEnv *env;
 		(*wrapper->jvm)->GetEnv(wrapper->jvm, (void**)&env, JNI_VERSION_1_6);
 		if (wrapper->jobj)
-			_UNREF(wrapper->jobj);
+			_WEAK_UNREF(wrapper->jobj);
 		if (wrapper->canvas)
 			_UNREF(wrapper->canvas);
 	}
@@ -179,7 +185,7 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 	JavaVM *jvm;
 	(*env)->GetJavaVM(env, &jvm);
 	wrapper->jvm = jvm;
-	wrapper->jobj = _REF(jobj);
+	wrapper->jobj = _WEAK_REF(jobj);
 	jmethodID on_draw_method = _METHOD(_CLASS(jobj), "onDraw", "(Landroid/graphics/Canvas;)V");
 	jmethodID draw_method = _METHOD(_CLASS(jobj), "draw", "(Landroid/graphics/Canvas;)V");
 	if (on_draw_method != handle_cache.view.onDraw || draw_method != handle_cache.view.draw) {
@@ -192,7 +198,7 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 
 	jmethodID ontouchevent_method = _METHOD(_CLASS(jobj), "onTouchEvent", "(Landroid/view/MotionEvent;)Z");
 	if (ontouchevent_method != handle_cache.view.onTouchEvent) {
-		_setOnTouchListener(env, jobj, GTK_WIDGET(wrapper), NULL);
+		_setOnTouchListener(env, jobj, GTK_WIDGET(wrapper));
 	}
 
 	jmethodID computeScroll_method = _METHOD(_CLASS(jobj), "computeScroll", "()V");
@@ -204,7 +210,7 @@ void wrapper_widget_set_jobject(WrapperWidget *wrapper, JNIEnv *env, jobject job
 	if (performClick_method != handle_cache.view.performClick) {
 		GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_click_new());
 
-		g_signal_connect(controller, "released", G_CALLBACK(on_click), _REF(jobj));
+		g_signal_connect(controller, "released", G_CALLBACK(on_click), wrapper->jobj);
 		gtk_widget_add_controller(wrapper->child, controller);
 		widget_set_needs_allocation(wrapper->child);
 	}

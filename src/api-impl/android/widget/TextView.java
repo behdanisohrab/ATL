@@ -169,12 +169,22 @@ public class TextView extends View {
 
 	protected native void native_setCompoundDrawables(long widget, long left, long top, long right, long bottom);
 
+	// just to prevent garbage collection while native side uses it
+	private Drawable drawableLeft = null;
+	private Drawable drawableTop = null;
+	private Drawable drawableRight = null;
+	private Drawable drawableBottom = null;
+
 	public void setCompoundDrawables(Drawable left, Drawable top, Drawable right, Drawable bottom) {
 		native_setCompoundDrawables(widget,
 				left != null ? left.paintable : 0,
 				top != null ? top.paintable : 0,
 				right != null ? right.paintable : 0,
 				bottom != null ? bottom.paintable : 0);
+		drawableLeft = left;
+		drawableTop = top;
+		drawableRight = right;
+		drawableBottom = bottom;
 	}
 
 	public void setAllCaps(boolean allCaps) {}

@@ -24,7 +24,8 @@ public class Button extends TextView {
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	public native final void native_setText(long widget, String text);
-	protected native void native_setOnClickListener(long widget, OnClickListener l);
+	@Override
+	protected native void nativeSetOnClickListener(long widget);
 
 	@Override
 	public void setText(CharSequence text) {
@@ -36,11 +37,6 @@ public class Button extends TextView {
 
 	@Override
 	public void setTextSize(float size) {}
-
-	@Override
-	public void setOnClickListener(final OnClickListener l) {
-		native_setOnClickListener(widget, l);
-	}
 
 	@Override
 	public void setCompoundDrawables(Drawable left, Drawable top, Drawable right, Drawable bottom) {}

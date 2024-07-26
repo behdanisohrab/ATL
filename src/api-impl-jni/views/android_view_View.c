@@ -13,34 +13,31 @@
 
 #define SOURCE_TOUCHSCREEN 0x1002
 
-struct touch_callback_data { JavaVM *jvm; jobject this; jobject on_touch_listener; jclass on_touch_listener_class; bool intercepted; };
-
 static GdkEvent *canceled_event = NULL;
-static struct touch_callback_data *cancel_triggerer = NULL;
+static WrapperWidget *cancel_triggerer = NULL;
 
-static bool call_ontouch_callback(int action, double x, double y, struct touch_callback_data *d, GtkPropagationPhase phase, guint32 timestamp, GdkEvent *event)
+static bool call_ontouch_callback(WrapperWidget *wrapper, int action, double x, double y, GtkPropagationPhase phase, guint32 timestamp, GdkEvent *event)
 {
 	bool ret;
 	double raw_x;
 	double raw_y;
-	JNIEnv *env;
-	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
+	JNIEnv *env = get_jni_env();
+	jobject this = wrapper->jobj;
 
 	gdk_event_get_position(event, &raw_x, &raw_y);
 	jobject motion_event = (*env)->NewObject(env, handle_cache.motion_event.class, handle_cache.motion_event.constructor, SOURCE_TOUCHSCREEN, action, (float)x, (float)y, (long)timestamp, (float)raw_x, (float)raw_y);
 
-	if (phase == GTK_PHASE_CAPTURE && !d->intercepted) {
-		d->intercepted = (*env)->CallBooleanMethod(env, d->this, handle_cache.view.onInterceptTouchEvent, motion_event);
-		if (d->intercepted) {
+	if (phase == GTK_PHASE_CAPTURE && !wrapper->intercepting_touch) {
+		wrapper->intercepting_touch = (*env)->CallBooleanMethod(env, this, handle_cache.view.onInterceptTouchEvent, motion_event);
+		if (wrapper->intercepting_touch) {
 			// store the event that was canceled and let it propagate to the child widgets
 			canceled_event = event;
-			cancel_triggerer = d;
+			cancel_triggerer = wrapper;
 		}
 		ret = false;
-	} else if(d->on_touch_listener) /* NULL listener means the callback was registered for onTouchEvent */
-		ret = (*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onTouch", "(Landroid/view/View;Landroid/view/MotionEvent;)Z"), d->this, motion_event);
-	else
-		ret = (*env)->CallBooleanMethod(env, d->this, _METHOD(d->on_touch_listener_class, "onTouchEvent", "(Landroid/view/MotionEvent;)Z"), motion_event);
+	} else {
+		ret = (*env)->CallBooleanMethod(env, this, handle_cache.view.onTouchEvent, motion_event);
+	}
 
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
@@ -48,7 +45,7 @@ static bool call_ontouch_callback(int action, double x, double y, struct touch_c
 	(*env)->DeleteLocalRef(env, motion_event);
 
 	if (action == MOTION_EVENT_ACTION_UP)
-		d->intercepted = false;
+		wrapper->intercepting_touch = false;
 	return ret;
 }
 static void gdk_event_get_widget_relative_position(GdkEvent *event, GtkWidget *widget, double *x, double *y)
@@ -70,41 +67,42 @@ static void gdk_event_get_widget_relative_position(GdkEvent *event, GtkWidget *w
 }
 
 // TODO: find a way to reconcile this with libandroid/input.c?
-static gboolean on_event(GtkEventControllerLegacy *event_controller, GdkEvent *event, struct touch_callback_data *d)
+static gboolean on_event(GtkEventControllerLegacy *event_controller, GdkEvent *event, gpointer user_data)
 {
 	double x;
 	double y;
 
 	GtkWidget *widget = gtk_event_controller_get_widget(GTK_EVENT_CONTROLLER(event_controller));
+	WrapperWidget *wrapper = WRAPPER_WIDGET(widget);
 	GtkPropagationPhase phase = gtk_event_controller_get_propagation_phase(GTK_EVENT_CONTROLLER(event_controller));
 	guint32 timestamp = gdk_event_get_time(event);
 
 	// TODO: this doesn't work for multitouch
-	if (cancel_triggerer == d) { // cancel done
+	if (cancel_triggerer == wrapper) { // cancel done
 		canceled_event = NULL;
 		cancel_triggerer = NULL;
 	} else if (event == canceled_event) {
 		gdk_event_get_widget_relative_position(event, widget, &x, &y);
-		call_ontouch_callback(MOTION_EVENT_ACTION_CANCEL, x, y, d, phase, timestamp, event);
+		call_ontouch_callback(wrapper, MOTION_EVENT_ACTION_CANCEL, x, y, phase, timestamp, event);
 		return false;
 	}
 	switch(gdk_event_get_event_type(event)) {
 		case GDK_BUTTON_PRESS:
 		case GDK_TOUCH_BEGIN:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
-			return call_ontouch_callback(MOTION_EVENT_ACTION_DOWN, x, y, d, phase, timestamp, event);
+			return call_ontouch_callback(wrapper, MOTION_EVENT_ACTION_DOWN, x, y, phase, timestamp, event);
 			break;
 		case GDK_BUTTON_RELEASE:
 		case GDK_TOUCH_END:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
-			return call_ontouch_callback(MOTION_EVENT_ACTION_UP, x, y, d, phase, timestamp, event);
+			return call_ontouch_callback(wrapper, MOTION_EVENT_ACTION_UP, x, y, phase, timestamp, event);
 			break;
 		case GDK_MOTION_NOTIFY:
 			if (!(gdk_event_get_modifier_state(event) & GDK_BUTTON1_MASK))
 				break;
 		case GDK_TOUCH_UPDATE:
 			gdk_event_get_widget_relative_position(event, widget, &x, &y);
-			return call_ontouch_callback(MOTION_EVENT_ACTION_MOVE, x, y, d, phase, timestamp, event);
+			return call_ontouch_callback(wrapper, MOTION_EVENT_ACTION_MOVE, x, y, phase, timestamp, event);
 			break;
 		default:
 			break;
@@ -113,12 +111,13 @@ static gboolean on_event(GtkEventControllerLegacy *event_controller, GdkEvent *e
 	return false;
 }
 
-static void on_click(GtkGestureClick *gesture, int n_press, double x, double y, struct touch_callback_data *d)
+static void on_click(GtkGestureClick *gesture, int n_press, double x, double y, gpointer user_data)
 {
-	JNIEnv *env;
-	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
+	JNIEnv *env = get_jni_env();
+	GtkWidget *widget = gtk_event_controller_get_widget(GTK_EVENT_CONTROLLER(gesture));
+	WrapperWidget *wrapper = WRAPPER_WIDGET(gtk_widget_get_parent(widget));
 
-	(*env)->CallVoidMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onClick", "(Landroid/view/View;)V"), d->this);
+	(*env)->CallBooleanMethod(env, wrapper->jobj, handle_cache.view.performClick);
 
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
@@ -146,25 +145,16 @@ static gboolean scroll_cb(GtkEventControllerScroll* self, gdouble dx, gdouble dy
 	return ret;
 }
 
-void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject on_touch_listener)
+void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget)
 {
-	JavaVM *jvm;
-	(*env)->GetJavaVM(env, &jvm);
-
-	struct touch_callback_data *callback_data = malloc(sizeof(struct touch_callback_data));
-	callback_data->jvm = jvm;
-	callback_data->this = _REF(this);
- 	callback_data->on_touch_listener = on_touch_listener ? _REF(on_touch_listener) : NULL;
-	callback_data->on_touch_listener_class = on_touch_listener ? _REF(_CLASS(callback_data->on_touch_listener)) : _REF(_CLASS(callback_data->this));
-
 	GtkEventController *old_controller = g_object_get_data(G_OBJECT(widget), "on_touch_listener");
 	if(old_controller)
-		gtk_widget_remove_controller(widget, old_controller);
+		return;
 
 	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_event_controller_legacy_new());
 	gtk_event_controller_set_propagation_phase(controller, GTK_PHASE_BUBBLE);
 
-	g_signal_connect(controller, "event", G_CALLBACK(on_event), callback_data);
+	g_signal_connect(controller, "event", G_CALLBACK(on_event), NULL);
 	gtk_widget_add_controller(widget, controller);
 	g_object_set_data(G_OBJECT(widget), "on_touch_listener", controller);
 
@@ -177,7 +167,7 @@ void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject o
 		GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_event_controller_legacy_new());
 		gtk_event_controller_set_propagation_phase(controller, GTK_PHASE_CAPTURE);
 
-		g_signal_connect(controller, "event", G_CALLBACK(on_event), callback_data);
+		g_signal_connect(controller, "event", G_CALLBACK(on_event), NULL);
 		gtk_widget_add_controller(widget, controller);
 		g_object_set_data(G_OBJECT(widget), "on_intercept_touch_listener", controller);
 	}
@@ -188,35 +178,24 @@ void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject o
 	gtk_widget_set_overflow(GTK_WIDGET(wrapper), GTK_OVERFLOW_HIDDEN);
 }
 
-JNIEXPORT void JNICALL Java_android_view_View_setOnTouchListener(JNIEnv *env, jobject this, jobject on_touch_listener)
+JNIEXPORT void JNICALL Java_android_view_View_nativeSetOnTouchListener(JNIEnv *env, jobject this, jlong widget_ptr)
 {
-	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget"))));
+	GtkWidget *widget = gtk_widget_get_parent(GTK_WIDGET(_PTR(widget_ptr)));
 
-	_setOnTouchListener(env, this, widget, on_touch_listener);
+	_setOnTouchListener(env, this, widget);
 }
 
-JNIEXPORT void JNICALL Java_android_view_View_setOnClickListener(JNIEnv *env, jobject this, jobject on_click_listener)
+JNIEXPORT void JNICALL Java_android_view_View_nativeSetOnClickListener(JNIEnv *env, jobject this, jlong widget_ptr)
 {
-	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
-	if (!on_click_listener)
-		return;
-
-	JavaVM *jvm;
-	(*env)->GetJavaVM(env, &jvm);
-
-	struct touch_callback_data *callback_data = malloc(sizeof(struct touch_callback_data));
-	callback_data->jvm = jvm;
-	callback_data->this = _REF(this);
- 	callback_data->on_touch_listener = _REF(on_click_listener);
-	callback_data->on_touch_listener_class = _REF(_CLASS(callback_data->on_touch_listener));
+	GtkWidget *widget = GTK_WIDGET(_PTR(widget_ptr));
 
 	GtkEventController *old_controller = g_object_get_data(G_OBJECT(widget), "on_click_listener");
 	if(old_controller)
-		gtk_widget_remove_controller(widget, old_controller);
+		return;
 
 	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_click_new());
 
-	g_signal_connect(controller, "released", G_CALLBACK(on_click), callback_data); // the release completes the click, I guess?
+	g_signal_connect(controller, "released", G_CALLBACK(on_click), NULL); // the release completes the click, I guess?
 	gtk_widget_add_controller(widget, controller);
 	g_object_set_data(G_OBJECT(widget), "on_click_listener", controller);
 	widget_set_needs_allocation(widget);
@@ -351,15 +330,27 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1setVisibility(JNIEnv *env,
  */
 struct _JavaWidget {GtkWidget parent_instance;};
 G_DECLARE_FINAL_TYPE(JavaWidget, java_widget, JAVA, WIDGET, GtkWidget)
+static void java_widget_dispose(GObject *java_widget)
+{
+	GtkWidget *widget = GTK_WIDGET(java_widget);
+	GtkWidget *child = gtk_widget_get_first_child(widget);
+	while (child) {
+		GtkWidget *_child = gtk_widget_get_next_sibling(child);
+		gtk_widget_unparent(child);
+		child = _child;
+	}
+}
 static void java_widget_init(JavaWidget *java_widget) {}
-static void java_widget_class_init(JavaWidgetClass *class) {}
+static void java_widget_class_init(JavaWidgetClass *class) {
+	G_OBJECT_CLASS(class)->dispose = java_widget_dispose;
+}
 G_DEFINE_TYPE(JavaWidget, java_widget, GTK_TYPE_WIDGET)
 
 JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
-	GtkWidget *wrapper = g_object_ref(wrapper_widget_new());
+	WrapperWidget *wrapper = g_object_ref(WRAPPER_WIDGET(wrapper_widget_new()));
 	GtkWidget *widget = g_object_new(java_widget_get_type(), NULL);
-	gtk_widget_set_layout_manager(widget, android_layout_new(_REF(this)));
+	gtk_widget_set_layout_manager(widget, android_layout_new(this));
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), widget);
 	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 
@@ -373,7 +364,7 @@ JNIEXPORT jlong JNICALL Java_android_view_View_native_1constructor(JNIEnv *env, 
 	if (_METHOD(_CLASS(this), "onGenericMotionEvent", "(Landroid/view/MotionEvent;)Z") != handle_cache.view.onGenericMotionEvent) {
 		GtkEventController *controller = gtk_event_controller_scroll_new(GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
 
-		g_signal_connect(controller, "scroll", G_CALLBACK(scroll_cb), _REF(this));
+		g_signal_connect(controller, "scroll", G_CALLBACK(scroll_cb), wrapper->jobj);
 		gtk_widget_add_controller(widget, controller);
 	}
 
@@ -522,12 +513,13 @@ JNIEXPORT jboolean JNICALL Java_android_view_View_native_1getGlobalVisibleRect(J
 	return true;
 }
 
-static void on_long_click(GtkGestureLongPress *gesture, double x, double y, struct touch_callback_data *d)
+static void on_long_click(GtkGestureLongPress *gesture, double x, double y, gpointer user_data)
 {
-	JNIEnv *env;
-	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
+	JNIEnv *env = get_jni_env();
+	GtkWidget *widget = gtk_event_controller_get_widget(GTK_EVENT_CONTROLLER(gesture));
+	WrapperWidget *wrapper = WRAPPER_WIDGET(gtk_widget_get_parent(widget));
 
-	bool ret =(*env)->CallBooleanMethod(env, d->on_touch_listener, _METHOD(d->on_touch_listener_class, "onLongClick", "(Landroid/view/View;)Z"), d->this);
+	bool ret =(*env)->CallBooleanMethod(env, wrapper->jobj, handle_cache.view.performLongClick, x, y);
 
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
@@ -536,7 +528,7 @@ static void on_long_click(GtkGestureLongPress *gesture, double x, double y, stru
 		gtk_gesture_set_state(GTK_GESTURE(gesture), GTK_EVENT_SEQUENCE_CLAIMED);
 }
 
-static void on_long_click_update(GtkGesture *gesture, GdkEventSequence* sequence, struct touch_callback_data *d)
+static void on_long_click_update(GtkGesture *gesture, GdkEventSequence* sequence, gpointer user_data)
 {
 	GdkEvent *event = gtk_gesture_get_last_event(gesture, sequence);
 	if (event == canceled_event) {
@@ -544,29 +536,17 @@ static void on_long_click_update(GtkGesture *gesture, GdkEventSequence* sequence
 	}
 }
 
-JNIEXPORT void JNICALL Java_android_view_View_setOnLongClickListener(JNIEnv *env, jobject this, jobject on_long_click_listener)
+JNIEXPORT void JNICALL Java_android_view_View_nativeSetOnLongClickListener(JNIEnv *env, jobject this, jlong widget_ptr)
 {
-	GtkWidget *widget = GTK_WIDGET(_PTR(_GET_LONG_FIELD(this, "widget")));
-	if (!on_long_click_listener)
-		return;
-
-	JavaVM *jvm;
-	(*env)->GetJavaVM(env, &jvm);
-
-	struct touch_callback_data *callback_data = malloc(sizeof(struct touch_callback_data));
-	callback_data->jvm = jvm;
-	callback_data->this = _REF(this);
- 	callback_data->on_touch_listener = _REF(on_long_click_listener);
-	callback_data->on_touch_listener_class = _REF(_CLASS(callback_data->on_touch_listener));
-
+	GtkWidget *widget = GTK_WIDGET(_PTR(widget_ptr));
 	GtkEventController *old_controller = g_object_get_data(G_OBJECT(widget), "on_long_click_listener");
 	if(old_controller)
-		gtk_widget_remove_controller(widget, old_controller);
+		return;
 
 	GtkEventController *controller = GTK_EVENT_CONTROLLER(gtk_gesture_long_press_new());
 
-	g_signal_connect(controller, "pressed", G_CALLBACK(on_long_click), callback_data);
-	g_signal_connect(controller, "update", G_CALLBACK(on_long_click_update), callback_data);
+	g_signal_connect(controller, "pressed", G_CALLBACK(on_long_click), NULL);
+	g_signal_connect(controller, "update", G_CALLBACK(on_long_click_update), NULL);
 	gtk_widget_add_controller(widget, controller);
 	g_object_set_data(G_OBJECT(widget), "on_long_click_listener", controller);
 }

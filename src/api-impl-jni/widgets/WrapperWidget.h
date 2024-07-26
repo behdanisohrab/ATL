@@ -22,6 +22,7 @@ struct _WrapperWidget
 	int real_width;
 	int real_height;
 	gboolean needs_allocation;
+	gboolean intercepting_touch;
 };
 
 struct _WrapperWidgetClass
@@ -37,6 +38,6 @@ void wrapper_widget_set_layout_params(WrapperWidget *wrapper, int width, int hei
 void wrapper_widget_set_background(WrapperWidget *wrapper, GdkPaintable *paintable);
 void wrapper_widget_consume_touch_events(WrapperWidget *wrapper);
 
-void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget, jobject on_touch_listener);
+void _setOnTouchListener(JNIEnv *env, jobject this, GtkWidget *widget);
 
 #endif

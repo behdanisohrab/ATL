@@ -45,7 +45,6 @@ JNIEXPORT jlong JNICALL Java_android_graphics_Bitmap_native_1bitmap_1from_1path(
 
 	attach_sk_image(pixbuf);
 
-	g_object_ref(pixbuf);
 	return _INTPTR(pixbuf);
 }
 /* new empty bitmap */

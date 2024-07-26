@@ -370,6 +370,8 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 			@Override
 			public void run() {
 				nativeFinish(getWindow().native_window);
+				getWindow().setContentView(null);
+				window = null;
 			}
 		});
 	}

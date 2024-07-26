@@ -79,6 +79,7 @@ struct handle_cache {
 		jmethodID onInterceptTouchEvent;
 		jmethodID layoutInternal;
 		jmethodID measure;
+		jmethodID performLongClick;
 	} view;
 	struct {
 		jclass class;

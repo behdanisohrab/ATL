@@ -616,7 +616,7 @@ public class View implements Drawable.Callback {
 	}
 
 	public interface OnLongClickListener {
-		// TODO
+		public boolean onLongClick(View v);
 	}
 
 	public interface OnHoverListener {
@@ -964,12 +964,25 @@ public class View implements Drawable.Callback {
 		this.gravity = gravity;
 	}
 
+	private OnTouchListener on_touch_listener = null;
 	public boolean onTouchEvent(MotionEvent event) {
-		return false;
+		if (on_touch_listener != null)
+			return on_touch_listener.onTouch(this, event);
+		else
+			return false;
 	}
 
-	public native void setOnTouchListener(OnTouchListener l);
-	public native void setOnClickListener(OnClickListener l);
+	public void setOnTouchListener(OnTouchListener l) {
+		nativeSetOnTouchListener(widget);
+		on_touch_listener = l;
+	}
+	protected native void nativeSetOnTouchListener(long widget);
+	private OnClickListener on_click_listener = null;
+	public void setOnClickListener(OnClickListener l) {
+		nativeSetOnClickListener(widget);
+		on_click_listener = l;
+	}
+	protected native void nativeSetOnClickListener(long widget);
 	public /*native*/ void setOnSystemUiVisibilityChangeListener(OnSystemUiVisibilityChangeListener l) {}
 	public native final int getWidth();
 	public native final int getHeight();
@@ -1200,7 +1213,18 @@ public class View implements Drawable.Callback {
 		return null;
 	}
 
-	public native void setOnLongClickListener(OnLongClickListener listener);
+	private OnLongClickListener on_long_click_listener = null;
+	public boolean performLongClick(float x, float y) {
+		if (on_long_click_listener != null) {
+			return on_long_click_listener.onLongClick(this);
+		}
+		return false;
+	}
+	public void setOnLongClickListener(OnLongClickListener listener) {
+		nativeSetOnLongClickListener(widget);
+		on_long_click_listener = listener;
+	}
+	protected native void nativeSetOnLongClickListener(long widget);
 
 	public void setLongClickable(boolean longClickable) {}
 
@@ -1398,6 +1422,7 @@ public class View implements Drawable.Callback {
 	public boolean isInEditMode() {return false;}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	protected void finalize() throws Throwable {
 		try {
 			native_destructor(widget);
@@ -1504,7 +1529,12 @@ public class View implements Drawable.Callback {
 	public void setDuplicateParentStateEnabled(boolean enabled) {}
 
 	public boolean performClick() {
-		return false;
+		if (on_click_listener != null) {
+			on_click_listener.onClick(this);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public void playSoundEffect(int soundConstant) {}
@@ -1661,6 +1691,9 @@ public class View implements Drawable.Callback {
 
 	protected void onAttachedToWindow () {
 		attachedToWindow = true;
+	}
+	protected void onDetachedFromWindow() {
+		attachedToWindow = false;
 	}
 
 	public void setLayerType(int layerType, Paint paint) {}

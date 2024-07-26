@@ -91,6 +91,8 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		child.parent = null;
 		children.remove(child);
 		native_removeView(widget, child.widget);
+		if (isAttachedToWindow())
+			child.onDetachedFromWindow();
 		if (onHierarchyChangeListener != null) {
 			onHierarchyChangeListener.onChildViewRemoved(this, child);
 		}
@@ -114,6 +116,8 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 			child.parent = null;
 			it.remove();
 			native_removeView(widget, child.widget);
+			if (isAttachedToWindow())
+				child.onDetachedFromWindow();
 			if (onHierarchyChangeListener != null) {
 				onHierarchyChangeListener.onChildViewRemoved(this, child);
 			}
@@ -314,6 +318,14 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		super.onAttachedToWindow();
 		for (View child: children) {
 			child.onAttachedToWindow();
+		}
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		for (View child: children) {
+			child.onDetachedFromWindow();
 		}
 	}
 

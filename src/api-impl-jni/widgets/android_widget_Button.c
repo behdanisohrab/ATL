@@ -15,6 +15,7 @@ JNIEXPORT jlong JNICALL Java_android_widget_Button_native_1constructor(JNIEnv *e
 	GtkWidget *label = gtk_button_new_with_label(text);
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), label);
 	wrapper_widget_consume_touch_events(WRAPPER_WIDGET(wrapper));  // Android button consumes touch events
+	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 	return _INTPTR(label);
 }
 
@@ -27,38 +28,20 @@ JNIEXPORT void JNICALL Java_android_widget_Button_native_1setText(JNIEnv *env, j
 	((*env)->ReleaseStringUTFChars(env, text, nativeText));
 }
 
-struct touch_callback_data {
-	JavaVM *jvm;
-	jobject this;
-	jobject listener;
-	jmethodID listener_method;
-};
+static void clicked_cb(GtkWidget *button, gpointer user_data) {
+	JNIEnv *env = get_jni_env();
+	WrapperWidget *wrapper = WRAPPER_WIDGET(gtk_widget_get_parent(button));
 
-static void clicked_cb(GtkWidget *button, struct touch_callback_data *d) {
-	JNIEnv *env;
-	(*d->jvm)->GetEnv(d->jvm, (void**)&env, JNI_VERSION_1_6);
-
-	(*env)->CallVoidMethod(env, d->listener, d->listener_method, d->this);
+	(*env)->CallBooleanMethod(env, wrapper->jobj, handle_cache.view.performClick);
 
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 }
 
-JNIEXPORT void JNICALL Java_android_widget_Button_native_1setOnClickListener(JNIEnv *env, jobject this, jlong widget_ptr, jobject on_click_listener)
+JNIEXPORT void JNICALL Java_android_widget_Button_nativeSetOnClickListener(JNIEnv *env, jobject this, jlong widget_ptr)
 {
 	GtkWidget *button = GTK_WIDGET(_PTR(widget_ptr));
 	g_signal_handlers_disconnect_matched(button, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, clicked_cb, NULL);
-	if (!on_click_listener)
-		return;
 
-	JavaVM *jvm;
-	(*env)->GetJavaVM(env, &jvm);
-
-	struct touch_callback_data *callback_data = malloc(sizeof(struct touch_callback_data));
-	callback_data->jvm = jvm;
-	callback_data->this = _REF(this);
- 	callback_data->listener = _REF(on_click_listener);
-	callback_data->listener_method = _METHOD(_CLASS(on_click_listener), "onClick", "(Landroid/view/View;)V");
-
-	g_signal_connect(button, "clicked", G_CALLBACK(clicked_cb), callback_data);
+	g_signal_connect(button, "clicked", G_CALLBACK(clicked_cb), NULL);
 }

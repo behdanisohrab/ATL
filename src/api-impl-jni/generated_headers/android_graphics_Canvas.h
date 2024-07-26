@@ -89,6 +89,14 @@ JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1rotate_1and_1transla
 JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1drawPath
   (JNIEnv *, jclass, jlong, jlong, jlong);
 
+/*
+ * Class:     android_graphics_Canvas
+ * Method:    native_destroy_canvas
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_android_graphics_Canvas_native_1destroy_1canvas
+  (JNIEnv *, jclass, jlong);
+
 #ifdef __cplusplus
 }
 #endif

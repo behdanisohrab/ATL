@@ -225,11 +225,11 @@ JNIEXPORT void JNICALL Java_android_widget_ImageButton_native_1setDrawable
 
 /*
  * Class:     android_widget_ImageButton
- * Method:    native_setOnClickListener
- * Signature: (JLandroid/view/View/OnClickListener;)V
+ * Method:    nativeSetOnClickListener
+ * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_android_widget_ImageButton_native_1setOnClickListener
-  (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL Java_android_widget_ImageButton_nativeSetOnClickListener
+  (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
 }

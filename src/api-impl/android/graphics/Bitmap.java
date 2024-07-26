@@ -1596,6 +1596,18 @@ public final class Bitmap {
 		}
 	}
 
+	@Override
+	@SuppressWarnings("deprecation")
+	protected void finalize() throws Throwable {
+		try {
+			super.finalize();
+		} finally {
+			if (!isRecycled()) {
+				recycle();
+			}
+		}
+	}
+
 	/**
 	 * internal ATL method to create or get a GdkTexture for the pixbuf
 	 * @return pointer to the GdkTexture

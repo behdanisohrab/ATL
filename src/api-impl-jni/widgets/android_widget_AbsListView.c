@@ -107,7 +107,7 @@ JNIEXPORT jlong JNICALL Java_android_widget_AbsListView_native_1constructor(JNIE
 	RangeListModel *model = g_object_new(range_list_model_get_type(), NULL);
 	GtkWidget *list_view = gtk_list_view_new(GTK_SELECTION_MODEL(gtk_single_selection_new(G_LIST_MODEL(model))), factory);
 	model->list_view = list_view;
-	model->jobject = _REF(this);
+	model->jobject = _WEAK_REF(this);
 	GtkWidget *scrolled_window = gtk_scrolled_window_new();
 	gtk_scrolled_window_set_propagate_natural_height(GTK_SCROLLED_WINDOW(scrolled_window), TRUE);
 	gtk_scrolled_window_set_propagate_natural_width(GTK_SCROLLED_WINDOW(scrolled_window), TRUE);

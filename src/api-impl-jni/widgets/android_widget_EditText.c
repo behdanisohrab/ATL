@@ -89,7 +89,7 @@ JNIEXPORT void JNICALL Java_android_widget_EditText_native_1setOnEditorActionLis
 		return;
 
 	struct changed_callback_data *callback_data = malloc(sizeof(struct changed_callback_data));
-	callback_data->this = _REF(this);
+	callback_data->this = _WEAK_REF(this);
 	callback_data->listener = _REF(listener);
 	callback_data->listener_method = _METHOD(_CLASS(listener), "onEditorAction", "(Landroid/widget/TextView;ILandroid/view/KeyEvent;)Z");
 

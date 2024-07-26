@@ -46,9 +46,16 @@ public class Window {
 	}
 
 	public void setContentView(View view) {
+		if (contentView != view) {
+			if (contentView != null)
+				contentView.onDetachedFromWindow();
+			if (view != null)
+				view.onAttachedToWindow();
+		}
 		contentView = view;
-		view.onAttachedToWindow();
-		set_widget_as_root(native_window, view.widget);
+		if (view != null) {
+			set_widget_as_root(native_window, view.widget);
+		}
 	}
 
 	public View getDecorView() {

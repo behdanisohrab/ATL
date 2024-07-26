@@ -87,11 +87,20 @@ static GtkSizeRequestMode android_layout_get_request_mode(GtkLayoutManager *layo
 	}
 }
 
+static void android_layout_dispose(GObject *layout_manager)
+{
+	AndroidLayout *layout = ATL_ANDROID_LAYOUT(layout_manager);
+	JNIEnv *env = get_jni_env();
+	_WEAK_UNREF(layout->view);
+}
+
 static void android_layout_class_init(AndroidLayoutClass *klass)
 {
 	klass->parent_class.measure = android_layout_measure;
 	klass->parent_class.allocate = android_layout_allocate;
 	klass->parent_class.get_request_mode = android_layout_get_request_mode;
+
+	klass->parent_class.parent_class.dispose = android_layout_dispose;
 }
 
 static void android_layout_init(AndroidLayout *self) {}
@@ -101,7 +110,8 @@ G_DEFINE_TYPE(AndroidLayout, android_layout, GTK_TYPE_LAYOUT_MANAGER)
 GtkLayoutManager *android_layout_new(jobject view)
 {
 	AndroidLayout *layout = g_object_new(android_layout_get_type(), NULL);
-	layout->view = view;
+	JNIEnv *env = get_jni_env();
+	layout->view = _WEAK_REF(view);
 	layout->width = MATCH_PARENT;
 	layout->height = MATCH_PARENT;
 	return &layout->parent_instance;

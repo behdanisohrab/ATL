@@ -30,6 +30,7 @@ JNIEXPORT jlong JNICALL Java_android_widget_TextView_native_1constructor(JNIEnv 
 	gtk_widget_set_hexpand(label, TRUE);
 	gtk_box_append(GTK_BOX(box), label);
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), box);
+	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 
 	PangoAttrList* pango_attrs = pango_attr_list_new();
 	pango_attr_list_insert(pango_attrs, pango_attr_font_features_new("tnum"));

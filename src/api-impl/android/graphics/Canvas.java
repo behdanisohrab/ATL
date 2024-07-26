@@ -19,6 +19,19 @@ public class Canvas {
 		this.widget = widget;
 	}
 
+	@Override
+	@SuppressWarnings("deprecation")
+	protected void finalize() throws Throwable {
+		try {
+			super.finalize();
+		} finally {
+			if (skia_canvas != 0) {
+				native_destroy_canvas(skia_canvas);
+				skia_canvas = 0;
+			}
+		}
+	}
+
 	// FIXME: are these _needed_ ?
 
 	public int save() {
@@ -444,4 +457,5 @@ public class Canvas {
 	private static native void native_rotate(long skia_canvas, long widget, float angle);
 	private static native void native_rotate_and_translate(long skia_canvas, long widget, float angle, float tx, float ty);
 	private static native void native_drawPath(long skia_canvas, long path, long skia_paint);
+	private static native void native_destroy_canvas(long skia_canvas);
 }

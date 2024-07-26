@@ -81,7 +81,7 @@ JNIEXPORT jlong JNICALL Java_android_graphics_drawable_Drawable_native_1construc
 	JavaPaintable *paintable = NULL;
 	if (handle_cache.drawable.draw != _METHOD(_CLASS(this), "draw", "(Landroid/graphics/Canvas;)V")) {
 		paintable = g_object_new(java_paintable_get_type(), NULL);
-		paintable->drawable = _REF(this);
+		paintable->drawable = _WEAK_REF(this);
 	}
 	return _INTPTR(paintable);
 }
