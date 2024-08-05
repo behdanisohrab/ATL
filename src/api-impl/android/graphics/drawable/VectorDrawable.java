@@ -17,6 +17,8 @@ import android.util.AttributeSet;
 
 public class VectorDrawable extends Drawable {
 
+	private Bitmap bitmap;  // prevent garbage collection
+
 	public VectorDrawable() {
 		super();
 	}
@@ -52,8 +54,8 @@ public class VectorDrawable extends Drawable {
 		sb.append("</svg>");
 		String svg = sb.toString();
 		byte[] bytes = svg.getBytes();
-		Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-		this.paintable = bm.getTexture();
+		bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+		this.paintable = bitmap.getTexture();
 	}
 
 	@Override
