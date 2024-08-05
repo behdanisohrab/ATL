@@ -65,6 +65,7 @@ hax_jar = jar('hax', [
               	'android/content/ComponentName.java',
               	'android/content/ContentProvider.java',
               	'android/content/ContentResolver.java',
+              	'android/content/ContentUris.java',
               	'android/content/ContentValues.java',
               	'android/content/Context.java',
               	'android/content/ContextWrapper.java',
