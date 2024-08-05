@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -61,12 +60,10 @@ public class ImageView extends View {
 
 	public void setImageDrawable(Drawable drawable) {
 		this.drawable = drawable;
-		if (drawable instanceof BitmapDrawable) {
-			setImageBitmap(((BitmapDrawable) drawable).getBitmap());
-		} else if (drawable != null && drawable.paintable != 0) {
+		if (drawable != null) {
 			drawable.setCallback(this);
-			native_setDrawable(widget, drawable.paintable);
 		}
+		native_setDrawable(widget, drawable != null ? drawable.paintable : 0);
 	}
 
 	public void setImageMatrix(Matrix matrix) {}

@@ -36,7 +36,8 @@ public class BitmapDrawable extends Drawable {
 			throws XmlPullParserException, IOException {
 		final TypedArray a = r.obtainAttributes(attrs, R.styleable.BitmapDrawable);
 		if (a.hasValue(R.styleable.BitmapDrawable_src)) {
-			paintable = a.getDrawable(R.styleable.BitmapDrawable_src).paintable;
+			bitmap = ((BitmapDrawable)a.getDrawable(R.styleable.BitmapDrawable_src)).bitmap;
+			paintable = bitmap.getTexture();
 		}
 		a.recycle();
 	}
