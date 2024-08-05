@@ -1821,4 +1821,6 @@ public class View implements Drawable.Callback {
 	public void setVerticalScrollbarPosition(int position) {}
 
 	public void setNestedScrollingEnabled(boolean enabled) {}
+
+	public void setTouchDelegate(TouchDelegate touchDelegate) {}
 }

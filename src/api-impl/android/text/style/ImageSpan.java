@@ -4,5 +4,17 @@ import android.graphics.drawable.Drawable;
 
 public class ImageSpan extends DynamicDrawableSpan {
 
-	public ImageSpan(Drawable d) {}
+	private Drawable drawable;
+
+	public ImageSpan(Drawable d) {
+		drawable = d;
+	}
+
+	public ImageSpan(Drawable d, String source) {
+		drawable = d;
+	}
+
+	public Drawable getDrawable() {
+		return drawable;
+	}
 }

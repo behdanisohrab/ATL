@@ -19,6 +19,7 @@ import android.text.method.TransformationMethod;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -292,4 +293,8 @@ public class TextView extends View {
 	public void nullLayouts() {}
 
 	public void setLinkTextColor(int color) {}
+
+	public void setCustomSelectionActionModeCallback(ActionMode.Callback actionModeCallback) {}
+
+	public int getExtendedPaddingTop() {return 0;}
 }

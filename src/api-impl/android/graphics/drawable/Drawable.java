@@ -62,6 +62,8 @@ public class Drawable {
 		public abstract Drawable newDrawable(Resources res);
 
 		public abstract Drawable newDrawable();
+
+		public abstract int getChangingConfigurations();
 	}
 
 	public void setBounds(int left, int top, int right, int bottom) {

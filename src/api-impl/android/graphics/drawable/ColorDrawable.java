@@ -22,4 +22,9 @@ public class ColorDrawable extends Drawable {
 	public void draw(Canvas canvas) {
 		canvas.drawRect(getBounds(), paint);
 	}
+
+	public void setColor(int color) {
+		this.color = color;
+		paint.setColor(color);
+	}
 }

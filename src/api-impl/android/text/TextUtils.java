@@ -330,4 +330,12 @@ public class TextUtils {
 	private static Object sLock = new Object();
 
 	private static char[] sTemp = null;
+
+	public static int getTrimmedLength(CharSequence s) {
+		return s.toString().trim().length();
+	}
+
+	public static String htmlEncode(String s) {
+		return s;
+	}
 }

@@ -34,6 +34,7 @@ public class Typeface {
 	public static final int BOLD_ITALIC = 3;
 
 	public long skia_typeface = 0;
+	public long native_instance = 0;  // directly accessed by androidx
 
 	public static Typeface createFromAsset(AssetManager mgr, String path) {
 		return DEFAULT;

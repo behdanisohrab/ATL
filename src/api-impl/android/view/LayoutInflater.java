@@ -83,7 +83,11 @@ public class LayoutInflater {
 		try { // FIXME ugly
 			return createView(name, "android.view.", attrs);
 		} catch (java.lang.ClassNotFoundException e) {
-			return createView(name, "android.widget.", attrs);
+			try {
+				return createView(name, "android.widget.", attrs);
+			} catch (java.lang.ClassNotFoundException e1) {
+				return createView(name, "android.webkit.", attrs);
+			}
 		}
 	}
 

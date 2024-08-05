@@ -1,6 +1,13 @@
 package android.text;
 
+import android.graphics.drawable.Drawable;
+
 public class Html {
+
+	public static interface ImageGetter {
+		public Drawable getDrawable(String source);
+	}
+
 	public static Spanned fromHtml(String source) {
 		return new SpannableString(source.replace("<br/>", "\n")
 		                                 .replace("<br>", "\n")

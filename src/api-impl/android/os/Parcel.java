@@ -39,4 +39,8 @@ public class Parcel {
 	public int dataPosition() {
 		return 0;
 	}
+
+	public void writeParcelable(Parcelable p, int flags) {
+		System.out.println("Parcel.writeParcelable(" + p + ", " + flags + ")");
+	}
 }

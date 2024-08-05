@@ -52,4 +52,8 @@ public interface MenuItem {
 
 	public MenuItem setIcon(Drawable icon);
 
+	public boolean isChecked();
+
+	public MenuItem setShowAsActionFlags(int action);
+
 }

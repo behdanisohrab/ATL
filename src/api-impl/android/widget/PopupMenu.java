@@ -444,8 +444,7 @@ public class PopupMenu {
 
 		@Override
 		public Drawable getIcon() {
-			// TODO Auto-generated method stub
-			throw new UnsupportedOperationException("Unimplemented method 'getIcon'");
+			return new Drawable();
 		}
 
 		@Override
@@ -475,6 +474,18 @@ public class PopupMenu {
 		public MenuItem setOnActionExpandListener(OnActionExpandListener listener) {
 			// TODO Auto-generated method stub
 			throw new UnsupportedOperationException("Unimplemented method 'setOnActionExpandListener'");
+		}
+
+		@Override
+		public boolean isChecked() {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'isChecked'");
+		}
+
+		@Override
+		public MenuItem setShowAsActionFlags(int action) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'setShowAsActionFlags'");
 		}
 	}
 
