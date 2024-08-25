@@ -7,6 +7,7 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 
 public class ViewGroup extends View implements ViewParent, ViewManager {
 	public ArrayList<View> children;
@@ -363,6 +364,24 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 		removeView(view);
 	}
 
+	public void setTouchscreenBlocksFocus(boolean touchscreenBlocksFocus) {}
+
+	public void setClipChildren(boolean clipChildren) {}
+
+	public void dispatchSetPressed(boolean pressed) {}
+
+	@Override
+	public View findViewWithTag(Object tag) {
+		if (Objects.equals(tag, getTag()))
+			return this;
+		for (View child: children) {
+			View result = child.findViewWithTag(tag);
+			if (result != null)
+				return result;
+		}
+		return null;
+	}
+
 	public static class LayoutParams {
 		public static final int FILL_PARENT = -1;
 		public static final int MATCH_PARENT = -1;
@@ -440,6 +459,16 @@ public class ViewGroup extends View implements ViewParent, ViewManager {
 			rightMargin = a.getDimensionPixelSize(R.styleable.ViewGroup_MarginLayout_layout_marginRight, 0);
 			bottomMargin = a.getDimensionPixelSize(R.styleable.ViewGroup_MarginLayout_layout_marginBottom, 0);
 			a.recycle();
+		}
+
+		public MarginLayoutParams(ViewGroup.MarginLayoutParams source) {
+			super();
+			width = source.width;
+			height = source.height;
+			leftMargin = source.leftMargin;
+			topMargin = source.topMargin;
+			rightMargin = source.rightMargin;
+			bottomMargin = source.bottomMargin;
 		}
 
 		public void setMargins(int left, int top, int right, int bottom) {

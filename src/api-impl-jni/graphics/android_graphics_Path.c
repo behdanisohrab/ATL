@@ -178,3 +178,26 @@ JNIEXPORT void JNICALL Java_android_graphics_Path_native_1addRoundRect__JLandroi
 	sk_path_add_rounded_rect(path, &(sk_rect_t){left, top, right, bottom}, radii_array[0], radii_array[1], (sk_path_direction_t)dir);
 	(*env)->ReleaseFloatArrayElements(env, radii, radii_array, 0);
 }
+
+JNIEXPORT void JNICALL Java_android_graphics_Path_native_1addOval(JNIEnv *env, jclass class, jlong path_ptr, jobject rect, jint dir)
+{
+	sk_path_t *path = (sk_path_t *)_PTR(path_ptr);
+	float left = _GET_FLOAT_FIELD(rect, "left");
+	float top = _GET_FLOAT_FIELD(rect, "top");
+	float right = _GET_FLOAT_FIELD(rect, "right");
+	float bottom = _GET_FLOAT_FIELD(rect, "bottom");
+	sk_path_add_oval(path, &(sk_rect_t){left, top, right, bottom}, (sk_path_direction_t)dir);
+}
+
+JNIEXPORT void JNICALL Java_android_graphics_Path_native_1addCircle(JNIEnv *env, jclass class, jlong path_ptr, jfloat x, jfloat y, jfloat radius, jint dir)
+{
+	sk_path_t *path = (sk_path_t *)_PTR(path_ptr);
+	sk_path_add_circle(path, x, y, radius, (sk_path_direction_t)dir);
+}
+
+JNIEXPORT void JNICALL Java_android_graphics_Path_native_1addPath__JJ(JNIEnv *env, jclass class, jlong path_ptr, jlong src_ptr)
+{
+	sk_path_t *path = (sk_path_t *)_PTR(path_ptr);
+	sk_path_t *src = (sk_path_t *)_PTR(src_ptr);
+	sk_path_add_path(path, src, APPEND_SK_PATH_ADD_MODE);
+}

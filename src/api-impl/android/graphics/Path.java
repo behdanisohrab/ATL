@@ -423,6 +423,10 @@ public class Path {
 		native_arcTo(mNativePath, oval, startAngle, sweepAngle, false);
 	}
 
+	public void arcTo(float left, float top, float right, float bottom, float startAngle, float sweepAngle, boolean forceMoveTo) {
+		arcTo(new RectF(left, top, right, bottom), startAngle, sweepAngle, forceMoveTo);
+	}
+
 	/**
 	 * Close the current contour. If the current point is not equal to the
 	 * first point of the contour, a line segment is automatically added.

@@ -30,6 +30,7 @@ import android.view.animation.Animation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class WindowId {}
@@ -652,6 +653,8 @@ public class View implements Drawable.Callback {
 		 */
 //		void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo);
 	}
+
+	public interface OnDragListener {}
 	// --- end of interfaces
 
 	// --- subclasses
@@ -1091,7 +1094,7 @@ public class View implements Drawable.Callback {
 	}
 	public void setPadding(int left, int top, int right, int bottom) {}
 	public void setBackgroundResource(int resid) {
-		setBackgroundDrawable(getResources().getDrawable(resid));
+		setBackgroundDrawable(resid == 0 ? null : getResources().getDrawable(resid));
 	}
 
 	public void getHitRect(Rect outRect) {
@@ -1823,4 +1826,27 @@ public class View implements Drawable.Callback {
 	public void setNestedScrollingEnabled(boolean enabled) {}
 
 	public void setTouchDelegate(TouchDelegate touchDelegate) {}
+
+	public void setOnDragListener(OnDragListener onDragListener) {}
+
+	public void setTransitionName(String transitionName) {}
+
+	public Animation getAnimation() {return null;}
+
+	public ViewOverlay getOverlay() {
+		return new ViewOverlay();
+	}
+
+	public void cancelLongPress() {}
+
+	public int getTextAlignment() {return 0;}
+
+	public float getY() {return 0.f;}
+
+	public View findViewWithTag(Object tag) {
+		if (Objects.equals(tag, this.tag))
+			return this;
+		else
+			return null;
+	}
 }

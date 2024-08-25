@@ -480,7 +480,8 @@ JNIEXPORT void JNICALL Java_android_view_View_setBackgroundColor(JNIEnv *env, jo
 
 	gtk_style_context_add_provider(style_context, GTK_STYLE_PROVIDER(css_provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	g_object_set_data(G_OBJECT(widget), "background_color_style_provider", css_provider);
-	widget_set_needs_allocation(widget);
+	if (((color >> 24) & 0xFF) != 0)
+		widget_set_needs_allocation(widget);
 }
 #pragma GCC diagnostic pop
 

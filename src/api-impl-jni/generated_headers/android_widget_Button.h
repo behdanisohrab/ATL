@@ -223,6 +223,14 @@ JNIEXPORT void JNICALL Java_android_widget_Button_native_1setText
 JNIEXPORT void JNICALL Java_android_widget_Button_nativeSetOnClickListener
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     android_widget_Button
+ * Method:    getText
+ * Signature: ()Ljava/lang/CharSequence;
+ */
+JNIEXPORT jobject JNICALL Java_android_widget_Button_getText
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

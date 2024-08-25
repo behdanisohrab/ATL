@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class Activity extends ContextThemeWrapper implements Window.Callback {
 	LayoutInflater layout_inflater;
-	Window window = new Window(this);
+	Window window = new Window(this, this);
 	int requested_orientation = -1 /*ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED*/; // dummy
 	public Intent intent;
 	private Activity resultActivity;
@@ -369,9 +369,10 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				nativeFinish(getWindow().native_window);
-				getWindow().setContentView(null);
-				window = null;
+				if (window != null) {
+					nativeFinish(getWindow().native_window);
+					window = null;
+				}
 			}
 		});
 	}
@@ -528,6 +529,14 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 	}
 
 	public void overridePendingTransition(int enterAnim, int exitAnim) {}
+
+	public boolean isTaskRoot() {
+		return false;
+	}
+
+	public void postponeEnterTransition() {}
+
+	public void startPostponedEnterTransition() {}
 
 	private native void nativeFinish(long native_window);
 	public static native void nativeRecreateActivity(Activity activity);

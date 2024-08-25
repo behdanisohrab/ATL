@@ -566,6 +566,10 @@ public class BitmapFactory {
 			}
 
 			setDensityFromOptions(bm, opts);
+			if (bm != null && opts != null) {
+				opts.outWidth = bm.getWidth();
+				opts.outHeight = bm.getHeight();
+			}
 		} finally {
 			Trace.traceEnd(Trace.TRACE_TAG_GRAPHICS);
 		}

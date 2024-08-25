@@ -34,4 +34,13 @@ public class ViewStub extends View {
 		return view;
 	}
 
+	public void setLayoutResource(int layoutResource) {
+		this.layoutResource = layoutResource;
+	}
+
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		setMeasuredDimension(0, 0);
+	}
+
 }

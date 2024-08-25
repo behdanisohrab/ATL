@@ -28,6 +28,11 @@ public class BitmapDrawable extends Drawable {
 		this.paintable = bitmap.getTexture();
 	}
 
+	public BitmapDrawable(Bitmap bitmap) {
+		this.bitmap = bitmap;
+		this.paintable = bitmap.getTexture();
+	}
+
 	public Bitmap getBitmap() {
 		return bitmap;
 	}

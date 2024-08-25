@@ -40,4 +40,10 @@ public class ListView extends AbsListView {
 	public void setDivider(Drawable drawable) {}
 
 	public void setSelectionFromTop(int position, int y) {}
+
+	public void addFooterView(View v, Object data, boolean isSelectable) {}
+
+	public void addFooterView(View v) {}
+
+	public void setDividerHeight(int height) {}
 }

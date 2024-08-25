@@ -11,6 +11,7 @@ public interface WindowManager {
 		public int x;
 		public int y;
 		public int windowAnimations;
+		public int flags;
 
 		public LayoutParams(int w, int h, int type, int flags, int format) {
 			super(w, h);

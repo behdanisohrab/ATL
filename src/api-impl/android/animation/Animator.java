@@ -29,4 +29,8 @@ public class Animator {
 
 	public void setInterpolator(TimeInterpolator i) {}
 
+	public void setStartDelay(long startDelay) {}
+
+	public boolean isStarted() { return false; }
+
 }

@@ -399,7 +399,14 @@ public class Canvas {
 		native_drawLine(skia_canvas, widget, startX, startY, stopX, stopY, paint.skia_paint);
 	}
 
-	public void setBitmap(Bitmap bitmap) {}
+	public void setBitmap(Bitmap bitmap) {
+		if (skia_canvas != 0) {
+			native_destroy_canvas(skia_canvas);
+		}
+		bitmap.destroyTexture();  // invalidate cached texture
+		this.skia_canvas = native_canvas_from_bitmap(bitmap.pixbuf);
+		this.widget = 0;
+	}
 
 	public void drawPath(Path path, Paint paint) {
 		native_drawPath(skia_canvas, path.mNativePath, paint.skia_paint);
@@ -444,6 +451,20 @@ public class Canvas {
 	}
 
 	public void drawColor(int dummy) {}
+
+	public void drawARGB(int a, int r, int g, int b) {}
+
+	public int saveLayer(RectF bounds, Paint paint, int flags) {
+		return save();
+	}
+
+	public void drawOval(RectF oval, Paint paint) {}
+
+	public boolean clipRect(int left, int top, int right, int bottom) {
+		return false;
+	}
+
+	public void drawColor(int color, PorterDuff.Mode mode) {}
 
 	private static native long native_canvas_from_bitmap(long pixbuf);
 

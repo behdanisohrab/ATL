@@ -27,4 +27,6 @@ public class Layout {
 	public int getHeight() {return 10;}
 
 	public void draw(Canvas canvas) {}
+
+	public int getParagraphDirection(int line) {return 0;}
 }

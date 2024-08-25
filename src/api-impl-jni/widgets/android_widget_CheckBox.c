@@ -49,6 +49,10 @@ JNIEXPORT void JNICALL Java_android_widget_CheckBox_setOnCheckedChangeListener(J
 JNIEXPORT void JNICALL Java_android_widget_CheckBox_setText(JNIEnv *env, jobject this, jstring text)
 {
 	GtkCheckButton *button = GTK_CHECK_BUTTON(_PTR(_GET_LONG_FIELD(this, "widget")));
+	if (text == NULL) {
+		gtk_check_button_set_label(button, NULL);
+		return;
+	}
 	const char *text_str = (*env)->GetStringUTFChars(env, text, NULL);
 	gtk_check_button_set_label(button, text_str);
 	(*env)->ReleaseStringUTFChars(env, text, text_str);

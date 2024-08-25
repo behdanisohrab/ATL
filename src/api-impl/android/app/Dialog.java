@@ -27,7 +27,7 @@ public class Dialog implements Window.Callback, DialogInterface {
 	public Dialog(Context context, int themeResId) {
 		this.context = context;
 		nativePtr = nativeInit();
-		window = new Window(this);
+		window = new Window(context, this);
 		window.native_window = nativePtr;
 	}
 

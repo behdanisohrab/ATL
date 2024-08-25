@@ -14,6 +14,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.content.res.Resources.Theme;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -54,7 +55,24 @@ public class Drawable {
 	public void setChangingConfigurations(int bitmap) {}
 
 	public ConstantState getConstantState() {
-		return null;
+		return new ConstantState() {
+
+			@Override
+			public Drawable newDrawable(Resources res) {
+				return Drawable.this;
+			}
+
+			@Override
+			public Drawable newDrawable() {
+				return Drawable.this;
+			}
+
+			@Override
+			public int getChangingConfigurations() {
+				return Drawable.this.getChangingConfigurations();
+			}
+			
+		};
 	}
 
 	public static abstract class ConstantState {
@@ -220,12 +238,17 @@ public class Drawable {
 			LayerDrawable drawable = new LayerDrawable();
 			drawable.inflate(resources, parser, attrs);
 			return drawable;
+		} else if ("nine-patch".equals(parser.getName())) {
+			return new NinePatchDrawable(resources, null, null, null, null);
 		}
 		return null;
 	}
 
 	public static Drawable createFromResourceStream(Resources resources, TypedValue value, InputStream is, String file,
 			Object object) {
+		if (!file.endsWith(".9.png")) {
+			return new BitmapDrawable(resources, BitmapFactory.decodeStream(is));
+		}
 		Path path = Paths.get(android.os.Environment.getExternalStorageDirectory().getPath(), file);
 		if (!Files.exists(path)) {
 			try (InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(file)) {

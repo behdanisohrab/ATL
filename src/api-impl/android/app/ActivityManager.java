@@ -20,6 +20,10 @@ public class ActivityManager {
 		public long availMem = 10000;
 
 		public long totalMem = 10000;
+
+		public long threshold = 200;
+
+		public boolean lowMemory = false;
 	}
 
 	public void getMemoryInfo(MemoryInfo outInfo)

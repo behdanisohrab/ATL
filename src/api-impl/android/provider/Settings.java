@@ -28,9 +28,11 @@ public class Settings {
 		}
 	}
 	public static final class System {
-		public static final Uri CONTENT_URI = null; // Uri.parse("content://settings/system");
+		public static final Uri CONTENT_URI = Uri.parse("content://settings/system");
 
 		public static final Uri DEFAULT_NOTIFICATION_URI = getUriFor("notification_sound");
+
+		public static final Uri DEFAULT_RINGTONE_URI = getUriFor("ringtone");
 
 		public static int getInt(ContentResolver cr, String key, int def) {
 			int ret = getInt(cr, key);
@@ -54,7 +56,7 @@ public class Settings {
 		}
 
 		public static Uri getUriFor(String name) {
-			return null;
+			return Uri.withAppendedPath(CONTENT_URI, name);
 		}
 
 		public static float getFloat(ContentResolver cr, String key, float def) {
@@ -68,6 +70,14 @@ public class Settings {
 			switch (key) {
 				default:
 					java.lang.System.out.println("!!!! Settings$Global.getInt: unknown key: >" + key + "<");
+					return def;
+			}
+		}
+
+		public static float getFloat(ContentResolver cr, String key, float def) {
+			switch (key) {
+				default:
+					java.lang.System.out.println("!!!! Settings$Global.getFloat: unknown key: >" + key + "<");
 					return def;
 			}
 		}

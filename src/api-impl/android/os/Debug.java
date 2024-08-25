@@ -15,4 +15,12 @@ public final class Debug {
 	public static boolean isDebuggerConnected() {
 		return false;
 	}
+
+	public static long getNativeHeapFreeSize() {
+		return 0;
+	}
+
+	public static long getNativeHeapAllocatedSize() {
+		return 0;
+	}
 }

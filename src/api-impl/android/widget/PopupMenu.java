@@ -304,6 +304,12 @@ public class PopupMenu {
 			// TODO Auto-generated method stub
 			throw new UnsupportedOperationException("Unimplemented method 'hasVisibleItems'");
 		}
+
+		@Override
+		public SubMenu addSubMenu(int groupId, int itemId, int order, int titleRes) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'addSubMenu'");
+		}
 	}
 
 	private class SubMenuImpl extends MenuImpl implements SubMenu {
@@ -316,6 +322,12 @@ public class PopupMenu {
 		@Override
 		public MenuItem getItem() {
 			return item;
+		}
+
+		@Override
+		public void clearHeader() {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'clearHeader'");
 		}
 		
 	}
@@ -486,6 +498,12 @@ public class PopupMenu {
 		public MenuItem setShowAsActionFlags(int action) {
 			// TODO Auto-generated method stub
 			throw new UnsupportedOperationException("Unimplemented method 'setShowAsActionFlags'");
+		}
+
+		@Override
+		public MenuItem setAlphabeticShortcut(char alphaChar) {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'setAlphabeticShortcut'");
 		}
 	}
 

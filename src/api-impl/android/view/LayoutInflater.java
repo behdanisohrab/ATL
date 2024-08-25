@@ -299,9 +299,11 @@ public class LayoutInflater {
 			// Inflate all children.
 			rInflate(childParser, view, childAttrs, true);
 
-			int id = attrs.getAttributeResourceValue("http://schemas.android.com/apk/res/android", "id", 0);
+			TypedArray ta = context.obtainStyledAttributes(attrs, new int[]{com.android.internal.R.attr.id});
+			int id = ta.getResourceId(0, 0);
 			if (id != 0)
 				view.setId(id);
+			ta.recycle();
 
 			group.addView(view);
 		}

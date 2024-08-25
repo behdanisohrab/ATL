@@ -1,5 +1,8 @@
 package android.view.inputmethod;
 
+import java.util.Collections;
+import java.util.List;
+
 import android.os.IBinder;
 import android.view.View;
 
@@ -12,5 +15,9 @@ public class InputMethodManager {
 	public boolean isFullscreenMode() {return false;}
 
 	public boolean isActive(View view) {return false;}
+
+	public List/*<InputMethodInfo>*/ getEnabledInputMethodList() {
+		return Collections.emptyList();
+	}
 
 }

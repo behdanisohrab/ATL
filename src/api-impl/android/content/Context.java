@@ -418,6 +418,7 @@ public class Context extends Object {
 					Class<? extends Service> cls = Class.forName(component.getClassName()).asSubclass(Service.class);
 					if (!runningServices.containsKey(cls)) {
 						Service service = cls.getConstructor().newInstance();
+						service.attachBaseContext(new Context());
 						service.onCreate();
 						runningServices.put(cls, service);
 					}

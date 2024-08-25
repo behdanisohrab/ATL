@@ -27,9 +27,11 @@ public class Window {
 	public View contentView;
 
 	private Window.Callback callback;
+	private Context context;
 
-	public Window(Window.Callback callback) {
+	public Window(Context context, Window.Callback callback) {
 		this.callback = callback;
+		this.context = context;
 		contentView = new ViewGroup(Context.this_application);
 		contentView.setId(android.R.id.content);
 	}
@@ -122,4 +124,12 @@ public class Window {
 	public void setBackgroundDrawableResource(int resId) {}
 
 	public int getStatusBarColor() { return 0xFFFF0000; }
+
+	public Context getContext() {
+		return context;
+	}
+
+	public boolean hasFeature(int featureId) {
+		return false;
+	}
 }

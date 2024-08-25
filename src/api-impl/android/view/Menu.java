@@ -31,4 +31,6 @@ public interface Menu {
 	public int size();
 
 	public boolean hasVisibleItems();
+
+	public SubMenu addSubMenu(int groupId, int itemId, int order, int titleRes);
 }

@@ -53,4 +53,8 @@ public class TelephonyManager {
 	public String getSimOperatorName() {
 		return null;
 	}
+
+	public int getCallState() {
+		return 0; // CALL_STATE_IDLE
+	}
 }

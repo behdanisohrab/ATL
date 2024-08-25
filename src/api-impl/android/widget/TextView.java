@@ -262,6 +262,8 @@ public class TextView extends View {
 
 	public void setCompoundDrawablesRelativeWithIntrinsicBounds(int start, int top, int end, int bottom) {}
 
+	public void setCompoundDrawablesRelativeWithIntrinsicBounds(Drawable start, Drawable top, Drawable end, Drawable bottom) {}
+
 	public boolean getLinksClickable() {return true;}
 
 	public boolean isTextSelectable() {return true;}
@@ -297,4 +299,10 @@ public class TextView extends View {
 	public void setCustomSelectionActionModeCallback(ActionMode.Callback actionModeCallback) {}
 
 	public int getExtendedPaddingTop() {return 0;}
+
+	public void setRawInputType(int type) {}
+
+	public TextUtils.TruncateAt getEllipsize() {return null;}
+
+	public void setLines(int lines) {}
 }

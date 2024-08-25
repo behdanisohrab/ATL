@@ -40,4 +40,8 @@ public abstract class Service extends Context {
 	public void stopSelf() {
 		System.out.println("Service.stopSelf() called");
 	}
+
+	public void attachBaseContext(Context newBase) {
+		System.out.println("Service.attachBaseContext(" + newBase + ") called");
+	}
 }

@@ -63,6 +63,15 @@ public class BaseBundle {
 	}
 
 	/**
+	 * Removes any entry with the given key from the mapping of this Bundle.
+	 *
+	 * @param key a String key
+	 */
+	public void remove(String key) {
+		mMap.remove(key);
+	}
+
+	/**
 	 * Returns the entry with the given key as an object.
 	 *
 	 * @param key a String key
@@ -170,6 +179,17 @@ public class BaseBundle {
 	}
 
 	/**
+	 * Inserts a String array value into the mapping of this Bundle, replacing
+	 * any existing value for the given key.  Either key or value may be null.
+	 *
+	 * @param key a String, or null
+	 * @param value a String array object, or null
+	 */
+	public void putStringArray(String key, String[] value) {
+		mMap.put(key, value);
+	}
+
+	/**
 	 * Returns the number of mappings contained in this Bundle.
 	 *
 	 * @return the number of mappings as an int.
@@ -208,5 +228,26 @@ public class BaseBundle {
 	 */
 	public int getInt(String key) {
 		return getInt(key, 0);
+	}
+
+	/**
+	 * Returns the value associated with the given key, or null if
+	 * no mapping of the desired type exists for the given key or a null
+	 * value is explicitly associated with the key.
+	 *
+	 * @param key a String, or null
+	 * @return a String[] value, or null
+	 */
+	public String[] getStringArray(String key) {
+		Object o = mMap.get(key);
+		if (o == null) {
+			return null;
+		}
+		try {
+			return (String[])o;
+		} catch (ClassCastException e) {
+			typeWarning(key, o, "String[]", e);
+			return null;
+		}
 	}
 }

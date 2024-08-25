@@ -1651,8 +1651,8 @@ public final class MotionEvent extends InputEvent {
 			throw new IllegalArgumentException("other motion event must not be null");
 		}
 
-		MotionEvent ev = obtain();
-		ev.mNativePtr = nativeCopy(ev.mNativePtr, other.mNativePtr, false /*keepHistory*/);
+		MotionEvent ev = obtain(other);
+		// ev.mNativePtr = nativeCopy(ev.mNativePtr, other.mNativePtr, false /*keepHistory*/);
 		return ev;
 	}
 

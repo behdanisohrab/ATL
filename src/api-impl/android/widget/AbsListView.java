@@ -65,6 +65,16 @@ public abstract class AbsListView extends AdapterView {
 
 	public void setFastScrollAlwaysVisible(boolean alwaysVisible) {}
 
+	public void setTranscriptMode(int mode) {}
+
+	public int getTranscriptMode() {return 0;}
+
+	public void setSelectionFromTop(int position, int y) {}
+
+	public void smoothScrollBy(int position, int duration) {}
+
+	public void smoothScrollToPositionFromTop(int position, int offset) {}
+
 	public interface OnScrollListener {}
 
 	public interface SelectionBoundsAdjuster {}

@@ -188,6 +188,8 @@ public class Notification implements Parcelable {
 
 			public Builder addExtras(Bundle extras) {return this;}
 
+			public Builder addRemoteInput(RemoteInput remoteInput) {return this;}
+
 			public Action build() {
 				return action;
 			}
@@ -210,5 +212,19 @@ public class Notification implements Parcelable {
 		public BigTextStyle setBigContentTitle(CharSequence title) {return this;}
 
 		public BigTextStyle bigText(CharSequence text) {return this;}
+
+		public BigTextStyle setSummaryText(CharSequence summaryText) {return this;}
+	}
+
+	public static class InboxStyle extends Style {
+
+		public InboxStyle(Notification.Builder builder) {}
+
+		public InboxStyle setBigContentTitle(CharSequence title) {return this;}
+
+		public InboxStyle setSummaryText(CharSequence summaryText) {return this;}
+
+		public InboxStyle addLine(CharSequence line) {return this;}
+
 	}
 }

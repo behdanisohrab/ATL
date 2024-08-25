@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Intent {
+public class Intent implements Parcelable {
 	private ComponentName component;
 	private Bundle extras = new Bundle();
 	private String action;
@@ -316,11 +316,24 @@ public class Intent {
 	}
 
 	public String getPackage() {
-		return component.getPackageName();
+		return component == null ? null : component.getPackageName();
 	}
 
 	public String getScheme() {
 		return data == null ? null : data.getScheme();
+	}
+
+	public Intent putStringArrayListExtra(String name, ArrayList<String> value) {
+		extras.putStringArrayList(name, value);
+		return this;
+	}
+
+	public ArrayList<String> getStringArrayListExtra(String name) {
+		return extras.getStringArrayList(name);
+	}
+
+	public ClipData getClipData() {
+		return null;
 	}
 
 	public static class ShortcutIconResource {

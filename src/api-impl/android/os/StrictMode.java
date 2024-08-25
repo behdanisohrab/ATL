@@ -20,6 +20,9 @@ public final class StrictMode {
 			public Builder penaltyLog() {
 				return this;
 			}
+			public Builder detectNetwork() {
+				return this;
+			}
 			public ThreadPolicy build() {
 				return new ThreadPolicy();
 			}

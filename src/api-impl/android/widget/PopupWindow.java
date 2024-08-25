@@ -3,6 +3,8 @@ package android.widget;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 
 public class PopupWindow {
@@ -13,6 +15,22 @@ public class PopupWindow {
 
 	public PopupWindow(Context context) {
 		this(context, null, 0, 0);
+	}
+
+	public PopupWindow() {
+		popover = native_constructor();
+	}
+
+	public PopupWindow(View contentView, int width, int height, boolean focusable) {
+		popover = native_constructor();
+		setContentView(contentView);
+		setWidth(width);
+		setHeight(height);
+		setFocusable(focusable);
+	}
+
+	public PopupWindow(View contentView, int width, int height) {
+		this(contentView, width, height, true);
 	}
 
 	private View contentView;
@@ -60,4 +78,24 @@ public class PopupWindow {
 	}
 
 	public View getContentView() {return contentView;}
+
+	public void setTouchable(boolean touchable) {}
+
+	public void showAsDropDown(View anchor, int xoff, int yoff) {
+		if (!anchor.isAttachedToWindow()) {
+			Log.e("PopupWindow", "anchor is not attached to window");
+			return;
+		}
+		native_showAsDropDown(popover, anchor.widget, xoff, yoff, Gravity.NO_GRAVITY);
+	}
+
+	public void showAtLocation(View parent, int gravity, int x, int y) {
+		native_showAsDropDown(popover, parent.widget, x, y, gravity);
+	}
+
+	public void dismiss() {
+		System.out.println("PopupWindow.dismiss() called");
+	}
+
+	public void setAnimationStyle(int animationStyle) {}
 }

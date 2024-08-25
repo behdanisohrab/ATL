@@ -53,4 +53,18 @@ public abstract class AdapterView extends ViewGroup {
 	public Object getItemAtPosition(int position) {
 		return adapter.getItem(position);
 	}
+
+	public void setEmptyView(View emptyView) {}
+
+	public int getFirstVisiblePosition() {
+		return 0;
+	}
+
+	public int getLastVisiblePosition() {
+		return 0;
+	}
+
+	public int getCount() {
+		return adapter.getCount();
+	}
 }

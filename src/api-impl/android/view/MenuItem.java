@@ -56,4 +56,6 @@ public interface MenuItem {
 
 	public MenuItem setShowAsActionFlags(int action);
 
+	public MenuItem setAlphabeticShortcut(char alphaChar);
+
 }
