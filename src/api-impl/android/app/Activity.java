@@ -38,9 +38,6 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 	public Intent intent;
 	private Activity resultActivity;
 	private int resultRequestCode;
-	private int pendingRequestCode;
-	private int pendingResultCode;
-	private Intent pendingData;
 	private boolean paused = false;
 	private CharSequence title = null;
 	List<Fragment> fragments = new ArrayList<>();
@@ -171,10 +168,6 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 
 	protected void onResume() {
 		System.out.println("- onResume - yay!");
-		if (pendingData != null) {
-			onActivityResult(pendingRequestCode, pendingResultCode, pendingData);
-			pendingData = null;
-		}
 
 		for (Fragment fragment : fragments) {
 			fragment.onResume();
@@ -329,9 +322,7 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 
 	public void setResult(int resultCode, Intent data) {
 		if (resultActivity != null) {
-			resultActivity.pendingRequestCode = resultRequestCode;
-			resultActivity.pendingResultCode = resultCode;
-			resultActivity.pendingData = data;
+			resultActivity.onActivityResult(resultRequestCode, resultCode, data);
 		}
 	}
 
