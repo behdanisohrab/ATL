@@ -25,6 +25,14 @@ JNIEXPORT jstring JNICALL Java_android_content_Context_native_1get_1apk_1path
 JNIEXPORT void JNICALL Java_android_content_Context_native_1updateConfig
   (JNIEnv *, jclass, jobject);
 
+/*
+ * Class:     android_content_Context
+ * Method:    nativeOpenFile
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_android_content_Context_nativeOpenFile
+  (JNIEnv *, jclass, jint);
+
 #ifdef __cplusplus
 }
 #endif

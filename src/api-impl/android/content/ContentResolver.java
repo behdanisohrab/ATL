@@ -23,7 +23,15 @@ public class ContentResolver {
 	}
 
 	public ParcelFileDescriptor openFileDescriptor(Uri uri, String mode) throws FileNotFoundException {
-		return ParcelFileDescriptor.open(new File(uri.toString()), ParcelFileDescriptor.parseMode(mode));
+		if ("file".equals(uri.getScheme())) {
+			return ParcelFileDescriptor.open(new File(uri.toString()), ParcelFileDescriptor.parseMode(mode));
+		} else {
+			ContentProvider provider = ContentProvider.providers.get(uri.getAuthority());
+			if (provider != null)
+				return provider.openFile(uri, mode);
+			else
+				return null;
+		}
 	}
 
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
@@ -50,6 +58,14 @@ public class ContentResolver {
 		ContentProvider provider = ContentProvider.providers.get(uri.getAuthority());
 		if (provider != null)
 			return provider.insert(uri, values);
+		else
+			return null;
+	}
+
+	public String getType(Uri uri) {
+		ContentProvider provider = ContentProvider.providers.get(uri.getAuthority());
+		if (provider != null)
+			return provider.getType(uri);
 		else
 			return null;
 	}

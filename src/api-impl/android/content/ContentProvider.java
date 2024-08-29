@@ -6,6 +6,7 @@ import java.util.Map;
 import android.content.pm.PackageParser;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 
 public abstract class ContentProvider {
 
@@ -33,5 +34,9 @@ public abstract class ContentProvider {
 	public abstract Uri insert(Uri uri, ContentValues values);
 
 	public abstract int delete(Uri uri, String selection, String[] selectionArgs);
+
+	public abstract String getType(Uri uri);
+
+	public abstract ParcelFileDescriptor openFile(Uri uri, String mode);
 
 }

@@ -2,6 +2,7 @@
 #include <libportal/portal.h>
 
 #include <jni.h>
+#include <string.h>
 
 #include "../defines.h"
 #include "../util.h"
@@ -261,7 +262,7 @@ JNIEXPORT void JNICALL Java_android_app_Activity_nativeFileChooser(JNIEnv *env, 
 #endif
 
 	const char *type = type_jstring ? (*env)->GetStringUTFChars(env, type_jstring, NULL) : NULL;
-	if (type) {
+	if (type && !strchr(type, '*')) {
 		GtkFileFilter *filter = gtk_file_filter_new();
 		gtk_file_filter_add_mime_type(filter, type);
 		gtk_file_filter_set_name(filter, type);

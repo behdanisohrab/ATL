@@ -2,6 +2,7 @@ package android.content;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 
 public class SearchRecentSuggestionsProvider extends ContentProvider {
 	public void setupSuggestions(String s, int i) {}
@@ -19,5 +20,15 @@ public class SearchRecentSuggestionsProvider extends ContentProvider {
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		throw new UnsupportedOperationException("Unimplemented method 'delete'");
+	}
+
+	@Override
+	public String getType(Uri uri) {
+		throw new UnsupportedOperationException("Unimplemented method 'getType'");
+	}
+
+	@Override
+	public ParcelFileDescriptor openFile(Uri uri, String mode) {
+		throw new UnsupportedOperationException("Unimplemented method 'openFile'");
 	}
 }

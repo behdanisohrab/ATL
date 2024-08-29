@@ -35,6 +35,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.telephony.TelephonyManager;
@@ -116,6 +117,7 @@ public class Context extends Object {
 
 	private static native String native_get_apk_path();
 	protected static native void native_updateConfig(Configuration config);
+	private static native void nativeOpenFile(int fd);
 
 	static Application createApplication(long native_window) throws Exception {
 		Application application;
@@ -494,6 +496,15 @@ public class Context extends Object {
 					ClipboardManager.native_set_clipboard(text);
 			} else if (intent.getData() != null) {
 				Slog.i(TAG, "starting extern activity with intent: " + intent);
+				if (intent.getData().getScheme().equals("content")) {
+					try {
+						ParcelFileDescriptor fd = getContentResolver().openFileDescriptor(intent.getData(), "r");
+						nativeOpenFile(fd.getFd());
+						return;
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					}
+				}
 				Activity.nativeOpenURI(String.valueOf(intent.getData()));
 			}
 			return;

@@ -3,6 +3,8 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
+#include "portal-openuri.h"
+
 #include "../defines.h"
 #include "../util.h"
 
@@ -31,4 +33,17 @@ JNIEXPORT void JNICALL Java_android_content_Context_native_1updateConfig(JNIEnv 
 	}
 	if (!theme_name_from_env)
 		g_free(theme_name);
+}
+
+JNIEXPORT void JNICALL Java_android_content_Context_nativeOpenFile(JNIEnv *env, jclass class, jint fd)
+{
+	GDBusConnection *connection = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	OpenURI *openuri = open_uri_proxy_new_sync(connection, 0, "org.freedesktop.portal.Desktop", "/org/freedesktop/portal/desktop", NULL, NULL);
+	GVariantBuilder opt_builder;
+	g_variant_builder_init(&opt_builder, G_VARIANT_TYPE_VARDICT);
+	GUnixFDList *fd_list = g_unix_fd_list_new_from_array(&fd, 1);
+	open_uri_call_open_file_sync(openuri, "", g_variant_new("h", 0), g_variant_builder_end(&opt_builder), fd_list, NULL, NULL, NULL, NULL);
+	g_object_unref(fd_list);
+	g_object_unref(openuri);
+	g_object_unref(connection);
 }

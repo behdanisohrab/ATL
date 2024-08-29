@@ -50,6 +50,9 @@ viewporter = wl_mod.scan_xml(xml)
 mpris = gnome.gdbus_codegen('mpris-dbus',
                             'src/api-impl-jni/media/org.mpris.MediaPlayer2.xml',
                             interface_prefix: 'org.mpris')
+portal_openuri = gnome.gdbus_codegen('portal-openuri',
+                                     'src/api-impl-jni/content/org.freedesktop.portal.OpenURI.xml',
+                                     interface_prefix: 'org.freedesktop.portal')
 
 # libandroid
 libandroid_so = shared_library('android', [
@@ -139,6 +142,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	linux_dmabuf,
                                                                   	viewporter,
                                                                   	mpris,
+                                                                  	portal_openuri,
                                                                   ] + marshal_files,
                                                                   include_directories: ['src/sk_area/'],
                                                                   install: true,
