@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 public abstract class AbsListView extends AdapterView {
 
 	public boolean mIsChildViewEnabled = false;  // this field gets directly accessed by androidx DropDownListView
-	private Observer observer = new Observer();
+	protected Observer observer = new Observer();
 
 	public AbsListView(Context context) {
 		super(context);
@@ -79,7 +79,7 @@ public abstract class AbsListView extends AdapterView {
 
 	public interface SelectionBoundsAdjuster {}
 
-	private class Observer extends DataSetObserver {
+	class Observer extends DataSetObserver {
 
 		@Override
 		public void onChanged() {
