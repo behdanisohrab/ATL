@@ -19,6 +19,9 @@ public class ProgressBar extends View {
 		haveCustomMeasure = false;
 		TypedArray a = context.obtainStyledAttributes(attrs, com.android.internal.R.styleable.ProgressBar, defStyle, 0);
 		setIndeterminate(a.getBoolean(com.android.internal.R.styleable.ProgressBar_indeterminate, false));
+		if (a.getBoolean(com.android.internal.R.styleable.ProgressBar_indeterminateOnly, false)) {
+			setIndeterminate(true);
+		}
 		setIndeterminateDrawable(a.getDrawable(com.android.internal.R.styleable.ProgressBar_indeterminateDrawable));
 		/* FIXME hack: NewPipe expects this to not be null, but for some reason it is */
 		if(indeterminateDrawable == null)
