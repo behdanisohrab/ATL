@@ -25,6 +25,7 @@ public abstract class AbsListView extends AdapterView {
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
 	protected native void native_setAdapter(long widget, ListAdapter adapter);
+	protected native void native_scrollTo(long widget, int position);
 
 	public void setChoiceMode(int choiceMode) {}
 
@@ -72,6 +73,30 @@ public abstract class AbsListView extends AdapterView {
 	public void setSelectionFromTop(int position, int y) {}
 
 	public void smoothScrollBy(int position, int duration) {}
+
+	public void smoothScrollToPositionFromTop(int position, int offset) {
+		native_scrollTo(this.widget, position);
+	}
+
+	private int pendingSelection = -1;
+	@Override
+	public void setSelection(int position, boolean animate) {
+		super.setSelection(position, animate);
+		native_scrollTo(this.widget, position);
+		if (getWidth() > 0 && getHeight() > 0)
+			native_scrollTo(AbsListView.this.widget, position);
+		else
+			pendingSelection = position;
+	}
+
+	@Override
+	public void layout(int l, int t, int r, int b) {
+		super.layout(l, t, r, b);
+		if (pendingSelection != -1) {
+			native_scrollTo(AbsListView.this.widget, pendingSelection);
+			pendingSelection = -1;
+		}
+	}
 
 	@Override
 	public ViewGroup.LayoutParams generateLayoutParams(AttributeSet attrs) {

@@ -36,6 +36,7 @@ public abstract class AdapterView extends ViewGroup {
 	}
 
 	public void setSelection(int i) {
+		setSelection(i, false);
 	}
 
 	public void setOnItemSelectedListener(AdapterView.OnItemSelectedListener listener) {}

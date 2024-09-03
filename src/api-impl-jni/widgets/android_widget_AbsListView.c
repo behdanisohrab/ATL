@@ -171,3 +171,12 @@ JNIEXPORT jint JNICALL Java_android_widget_AbsListView_getCheckedItemPosition(JN
 
 	return gtk_single_selection_get_selected(single_selection);
 }
+
+JNIEXPORT void JNICALL Java_android_widget_AbsListView_native_1scrollTo(JNIEnv *env, jobject this, jlong widget_ptr, jint position)
+{
+	GtkScrolledWindow *scrolled_window = GTK_SCROLLED_WINDOW(_PTR(widget_ptr));
+	GtkListView *list_view = GTK_LIST_VIEW(gtk_scrolled_window_get_child(scrolled_window));
+#if GTK_CHECK_VERSION(4, 12, 0)
+	gtk_list_view_scroll_to(list_view, position, GTK_LIST_SCROLL_NONE, NULL);
+#endif
+}

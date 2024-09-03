@@ -217,6 +217,14 @@ JNIEXPORT void JNICALL Java_android_widget_AbsListView_native_1setAdapter
 
 /*
  * Class:     android_widget_AbsListView
+ * Method:    native_scrollTo
+ * Signature: (JI)V
+ */
+JNIEXPORT void JNICALL Java_android_widget_AbsListView_native_1scrollTo
+  (JNIEnv *, jobject, jlong, jint);
+
+/*
+ * Class:     android_widget_AbsListView
  * Method:    setItemChecked
  * Signature: (IZ)V
  */
