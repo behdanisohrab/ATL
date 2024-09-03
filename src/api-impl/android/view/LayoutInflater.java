@@ -178,12 +178,16 @@ public class LayoutInflater {
 				Slog.v(TAG, "Creating params from root: " + root);
 
 				// Create layout params that match root, if supplied
-				params = root.generateLayoutParams(attrs);
-				params.resolveLayoutDirection(root.getLayoutDirection());
-				if (!attachToRoot) {
-					// Set the layout params for temp if we are not
-					// attaching. (If we are, we use addView, below)
-					temp.setLayoutParams(params);
+				try {
+					params = root.generateLayoutParams(attrs);
+					params.resolveLayoutDirection(root.getLayoutDirection());
+					if (!attachToRoot) {
+						// Set the layout params for temp if we are not
+						// attaching. (If we are, we use addView, below)
+						temp.setLayoutParams(params);
+					}
+				} catch (RuntimeException e) {
+					Slog.w(TAG, "Exception in generateLayoutParams:", e);
 				}
 			}
 
