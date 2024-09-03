@@ -17,6 +17,7 @@ public abstract class CursorAdapter extends BaseAdapter {
 
 	public void changeCursor(Cursor cursor) {
 		this.cursor = cursor;
+		notifyDataSetChanged();
 	}
 
 	public Cursor getCursor() {

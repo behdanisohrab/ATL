@@ -529,6 +529,10 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 
 	public void startPostponedEnterTransition() {}
 
+	public boolean isChild() {
+		return false;
+	}
+
 	private native void nativeFinish(long native_window);
 	public static native void nativeRecreateActivity(Activity activity);
 	public static native void nativeStartActivity(Activity activity);

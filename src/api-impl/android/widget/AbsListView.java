@@ -73,7 +73,10 @@ public abstract class AbsListView extends AdapterView {
 
 	public void smoothScrollBy(int position, int duration) {}
 
-	public void smoothScrollToPositionFromTop(int position, int offset) {}
+	@Override
+	public ViewGroup.LayoutParams generateLayoutParams(AttributeSet attrs) {
+		return new LayoutParams(getContext(), attrs);
+	}
 
 	public interface OnScrollListener {}
 
@@ -93,5 +96,8 @@ public abstract class AbsListView extends AdapterView {
 
 	public class LayoutParams extends ViewGroup.LayoutParams {
 
+		public LayoutParams(Context c, AttributeSet attrs) {
+			super(c, attrs);
+		}
 	}
 }

@@ -896,6 +896,15 @@ public class View implements Drawable.Callback {
 				minHeight = a.getDimensionPixelSize(com.android.internal.R.styleable.View_minHeight, 0);
 			}
 		}
+		onCreateDrawableState(0);
+	}
+
+	protected int[] onCreateDrawableState(int extraSpace) {
+		return new int[0];
+	}
+
+	protected static int[] mergeDrawableStates(int[] curState, int[] newState) {
+		return new int[0];
 	}
 
 	public View findViewById(int id) {

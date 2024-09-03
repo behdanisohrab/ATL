@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 public class ViewStub extends View {
 
 	private int layoutResource;
+	private int inflatedId = View.NO_ID;
 
 	public ViewStub(Context context) {
 		this(context, null, 0);
@@ -28,6 +29,8 @@ public class ViewStub extends View {
 			throw new IllegalStateException("ViewStub must have a valid layoutResource");
 		ViewGroup parent = (ViewGroup) getParent();
 		View view = LayoutInflater.from(getContext()).inflate(layoutResource, parent, false);
+		if (inflatedId != View.NO_ID)
+			view.setId(inflatedId);
 		int index = parent.indexOfChild(this);
 		parent.removeView(this);
 		parent.addView(view, index, getLayoutParams());
@@ -41,6 +44,10 @@ public class ViewStub extends View {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		setMeasuredDimension(0, 0);
+	}
+
+	public void setInflatedId(int inflatedId) {
+		this.inflatedId = inflatedId;
 	}
 
 }

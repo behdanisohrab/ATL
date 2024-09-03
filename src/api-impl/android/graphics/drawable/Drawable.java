@@ -240,6 +240,8 @@ public class Drawable {
 			return drawable;
 		} else if ("nine-patch".equals(parser.getName())) {
 			return new NinePatchDrawable(resources, null, null, null, null);
+		} else if ("animation-list".equals(parser.getName())) {
+			return new AnimationDrawable();
 		}
 		return null;
 	}

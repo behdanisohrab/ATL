@@ -242,6 +242,8 @@ hax_jar = jar('hax', [
               	'android/media/MediaMetadata.java',
               	'android/media/MediaPlayer.java',
               	'android/media/MediaRouter.java',
+              	'android/media/Ringtone.java',
+              	'android/media/RingtoneManager.java',
               	'android/media/SoundPool.java',
               	'android/media/projection/MediaProjectionManager.java',
               	'android/media/session/MediaController.java',

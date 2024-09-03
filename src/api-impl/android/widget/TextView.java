@@ -305,4 +305,6 @@ public class TextView extends View {
 	public TextUtils.TruncateAt getEllipsize() {return null;}
 
 	public void setLines(int lines) {}
+
+	public void setMinLines(int lines) {}
 }
