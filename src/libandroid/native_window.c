@@ -452,28 +452,20 @@ void (* bionic_eglGetProcAddress(char const *procname))(void)
 
 EGLDisplay bionic_eglGetDisplay(NativeDisplayType native_display)
 {
-	// XXX - we can't use pbuffers with wayland EGLDisplay, for now one has to use an env to bypass
-	// our EGLDisplay substitution in VR usecases (the XWayland display does support pbuffers, but
-	// is different from the display the SurfaceView is on, which means trying to draw to that will
-	// not work)
-	if(getenv("UGLY_HACK_FOR_VR")) {
-		return eglGetDisplay(native_display);
+	/*
+	 * On android, at least SDL passes 0 (EGL_DISPLAY_DEFAULT) to eglGetDisplay and uses the resulting display.
+	 * We obviously want to make the app use the correct display, which may happen to be a different one
+	 * than the "default" display (especially on Wayland)
+	 */
+	GdkDisplay *display = gtk_root_get_display(GTK_ROOT(window));
+	if (GDK_IS_WAYLAND_DISPLAY (display)) {
+		struct wl_display *wl_display = gdk_wayland_display_get_wl_display(display);
+		return eglGetPlatformDisplay(EGL_PLATFORM_WAYLAND_KHR, wl_display, NULL);
+	} else if (GDK_IS_X11_DISPLAY (display)) {
+		Display *x11_display = gdk_x11_display_get_xdisplay(display);
+		return eglGetPlatformDisplay(EGL_PLATFORM_X11_KHR, x11_display, NULL);
 	} else {
-		/*
-		 * On android, at least SDL passes 0 (EGL_DISPLAY_DEFAULT) to eglGetDisplay and uses the resulting display.
-		 * We obviously want to make the app use the correct display, which may happen to be a different one
-		 * than the "default" display (especially on Wayland)
-		 */
-		GdkDisplay *display = gtk_root_get_display(GTK_ROOT(window));
-		if (GDK_IS_WAYLAND_DISPLAY (display)) {
-			struct wl_display *wl_display = gdk_wayland_display_get_wl_display(display);
-			return eglGetPlatformDisplay(EGL_PLATFORM_WAYLAND_KHR, wl_display, NULL);
-		} else if (GDK_IS_X11_DISPLAY (display)) {
-			Display *x11_display = gdk_x11_display_get_xdisplay(display);
-			return eglGetPlatformDisplay(EGL_PLATFORM_X11_KHR, x11_display, NULL);
-		} else {
-			return NULL;
-		}
+		return NULL;
 	}
 }
 
