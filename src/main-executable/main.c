@@ -498,7 +498,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 			printf("WARNING: RUN_FROM_BUILDDIR set and --install given: using current directory in desktop entry\n");
 			g_string_append_printf(desktop_entry, "-C %s ", g_get_current_dir());
 		}
-		char *envs[] = {"RUN_FROM_BUILDDIR", "LD_LIBRARY_PATH", "ANDROID_APP_DATA_DIR", "ATL_DISABLE_WINDOW_DECORATIONS", "UGLY_HACK_FOR_VR", "ATL_FORCE_FULLSCREEN"};
+		char *envs[] = {"RUN_FROM_BUILDDIR", "LD_LIBRARY_PATH", "ANDROID_APP_DATA_DIR", "ATL_UGLY_ENABLE_LOCATION", "ATL_UGLY_ENABLE_WEBVIEW", "ATL_DISABLE_WINDOW_DECORATIONS", "UGLY_HACK_FOR_VR", "ATL_FORCE_FULLSCREEN"};
 		for (int i = 0; i < sizeof(envs)/sizeof(envs[0]); i++) {
 			if (getenv(envs[i])) {
 				g_string_append_printf(desktop_entry, "%s=%s ", envs[i], getenv(envs[i]));

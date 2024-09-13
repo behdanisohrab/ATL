@@ -4,14 +4,17 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
-// the only reason we need to implement this is that some app developers are such scumbags that they try to use this for tracking purposes
 public class WebView extends View {
 	public WebView(Context context) {
-		super(context);
+		this(context, null);
 	}
 
 	public WebView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+		this(context, attrs, 0);
+	}
+
+	public WebView(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
 	}
 
 	public WebSettings getSettings() {
@@ -34,11 +37,18 @@ public class WebView extends View {
 
 	public void destroy() {}
 
-	public void loadUrl(String url) {}
+	public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl) {
+		native_loadDataWithBaseURL(widget, baseUrl, data, mimeType, encoding);
+	}
+
+	public void loadUrl(String url) {
+		native_loadUrl(widget, url);
+	}
 
 	public void stopLoading() {}
 
-	public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl) {
-		System.out.println("loadDataWithBaseURL(" + baseUrl + ", " + data + ", " + mimeType + ", " + encoding + ", " + historyUrl + ") called");
-	}
+	@Override
+	protected native long native_constructor(Context context, AttributeSet attrs);
+	private native void native_loadDataWithBaseURL(long widget, String baseUrl, String data, String mimeType, String encoding);
+	private native void native_loadUrl(long widget, String url);
 }

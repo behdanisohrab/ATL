@@ -118,6 +118,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   	'src/api-impl-jni/views/android_view_ViewGroup.c',
                                                                   	'src/api-impl-jni/widgets/WrapperWidget.c',
                                                                   	'src/api-impl-jni/widgets/android_view_SurfaceView.c',
+                                                                  	'src/api-impl-jni/widgets/android_webkit_WebView.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_AbsListView.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_AbsSpinner.c',
                                                                   	'src/api-impl-jni/widgets/android_widget_Button.c',
@@ -144,7 +145,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   dependencies: [
                                                                   	dependency('gtk4', version: '>=4.8'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni'),
                                                                   	dependency('libportal'), dependency('sqlite3'), libskia_dep, dependency('libavcodec', version: '>=59'), dependency('libdrm'),
-                                                                  	dependency('gudev-1.0'), dependency('libswscale'),
+                                                                  	dependency('gudev-1.0'), dependency('libswscale'), dependency('webkitgtk-6.0'),
                                                                   	libandroidfw_dep
                                                                   ],
                                                                   link_with: [ libandroid_so ],

@@ -37,4 +37,8 @@ public class WebSettings {
 	public void setUseWideViewPort(boolean useWideViewPort) {}
 
 	public void setTextZoom(int textZoom) {}
+
+	public void setAppCacheEnabled(boolean enabled) {}
+
+	public void setAppCachePath(String path) {}
 }
