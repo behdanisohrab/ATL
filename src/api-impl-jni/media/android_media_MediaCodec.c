@@ -31,7 +31,7 @@
 #include "jni.h"
 #include "../generated_headers/android_media_MediaCodec.h"
 #include "../util.h"
-#include "src/api-impl-jni/defines.h"
+#include "../defines.h"
 #include "../../libandroid/native_window.h"
 
 struct ATL_codec_context {
@@ -111,7 +111,7 @@ static uint32_t get_drm_frame_format(const AVDRMFrameDescriptor *drm_frame_desc)
 	if (drm_frame_desc->nb_layers == 1) {
 		return drm_frame_desc->layers[0].format;
 	}
-	for (size_t i = 0; i < sizeof(drm_format_map) / sizeof(drm_format_map[0]); i++) {
+	for (size_t i = 0; i < ARRAY_SIZE(drm_format_map); i++) {
 		if (drm_format_map[i].nb_layers != drm_frame_desc->nb_layers) {
 			continue;
 		}

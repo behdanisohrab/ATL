@@ -1,9 +1,10 @@
 // for dladdr
 #define _GNU_SOURCE
 
-#include <gtk/gtk.h>
 #include <gdk/wayland/gdkwayland.h>
+#include <gtk/gtk.h>
 #include <libportal/portal.h>
+
 
 #include "../api-impl-jni/defines.h"
 #include "../api-impl-jni/util.h"
@@ -17,7 +18,7 @@
 #include <sys/stat.h>
 
 #ifndef DEFFILEMODE
-#define DEFFILEMODE (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)/* 0666*/
+#define DEFFILEMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH) /* 0666*/
 #endif
 
 #ifdef __x86_64__
@@ -37,7 +38,7 @@ char *apk_path;
 
 // standard Gtk Application stuff, more or less
 
-gboolean app_exit(GtkWindow* self, JNIEnv *env) // TODO: do more cleanup?
+gboolean app_exit(GtkWindow *self, JNIEnv *env) // TODO: do more cleanup?
 {
 	activity_close_all();
 	return false;
@@ -53,15 +54,15 @@ char *get_app_data_dir()
 char *construct_classpath(char *prefix, char **cp_array, size_t len)
 {
 	size_t result_len = strlen(prefix);
-	for(int i = 0; i < len; i++) {
-		if(cp_array[i])
+	for (int i = 0; i < len; i++) {
+		if (cp_array[i])
 			result_len += strlen(cp_array[i]) + 1; // the 1 is for either : or the final \0
 	}
 
 	char *result = malloc(result_len);
 	strcpy(result, prefix);
-	for(int i = 0; i < len; i++) {
-		if(cp_array[i]) {
+	for (int i = 0; i < len; i++) {
+		if (cp_array[i]) {
 			if (i > 0)
 				strcat(result, ":");
 			strcat(result, cp_array[i]);
@@ -75,9 +76,10 @@ char *construct_classpath(char *prefix, char **cp_array, size_t len)
 
 #define JDWP_ARG "-XjdwpOptions:transport=dt_socket,server=y,suspend=y,address="
 
-JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, char *framework_res_apk, char *api_impl_natives_dir, char *app_lib_dir, char **extra_jvm_options) {
-	JavaVM* jvm;
-	JNIEnv* env;
+JNIEnv *create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, char *framework_res_apk, char *api_impl_natives_dir, char *app_lib_dir, char **extra_jvm_options)
+{
+	JavaVM *jvm;
+	JNIEnv *env;
 	JavaVMInitArgs args = {
 		.version = JNI_VERSION_1_6,
 		.nOptions = 3,
@@ -88,16 +90,15 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 
 	char jdwp_option_string[sizeof(JDWP_ARG) + 5] = JDWP_ARG; // 5 chars for port number, NULL byte is counted by sizeof
 
-	const char* jdwp_port = getenv("JDWP_LISTEN");
+	const char *jdwp_port = getenv("JDWP_LISTEN");
 
-	if(jdwp_port)
+	if (jdwp_port)
 		args.nOptions += 2;
-	if(extra_jvm_options)
+	if (extra_jvm_options)
 		args.nOptions += g_strv_length(extra_jvm_options);
 	options = malloc(sizeof(JavaVMOption) * args.nOptions);
 
-
-	if(getenv("RUN_FROM_BUILDDIR")) {
+	if (getenv("RUN_FROM_BUILDDIR")) {
 		options[0].optionString = construct_classpath("-Djava.library.path=", (char *[]){"./", app_lib_dir}, 2);
 	} else {
 		options[0].optionString = construct_classpath("-Djava.library.path=", (char *[]){api_impl_natives_dir, app_lib_dir}, 2);
@@ -105,13 +106,13 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 
 	options[1].optionString = construct_classpath("-Djava.class.path=", (char *[]){api_impl_jar, apk_classpath, microg_apk, framework_res_apk}, 4);
 	options[2].optionString = "-Xcheck:jni";
-	if(jdwp_port) {
+	if (jdwp_port) {
 		strncat(jdwp_option_string, jdwp_port, 5); // 5 chars is enough for a port number, and won't overflow our array
 		options[option_counter++].optionString = "-XjdwpProvider:internal";
 		options[option_counter++].optionString = jdwp_option_string;
 	}
 
-	while(extra_jvm_options && *extra_jvm_options) {
+	while (extra_jvm_options && *extra_jvm_options) {
 		options[option_counter++].optionString = *(extra_jvm_options++);
 	}
 
@@ -119,7 +120,7 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 	args.ignoreUnrecognized = JNI_FALSE;
 
 	int ret = JNI_CreateJavaVM(&jvm, (void **)&env, &args);
-	if(ret < 0) {
+	if (ret < 0) {
 		printf("Unable to Launch JVM\n");
 	} else {
 		printf("JVM launched successfully\n");
@@ -129,7 +130,8 @@ JNIEnv* create_vm(char *api_impl_jar, char *apk_classpath, char *microg_apk, cha
 	return env;
 }
 
-void icon_override(GtkWidget *window, GList *icon_list) {
+void icon_override(GtkWidget *window, GList *icon_list)
+{
 	GdkSurface *window_surface = gtk_native_get_surface(GTK_NATIVE(window));
 	// set app icon as window icon; this is a noop on Wayland because there is currently no way to set a window icon on Wayland
 	gdk_toplevel_set_icon_list(GDK_TOPLEVEL(window_surface), icon_list);
@@ -141,7 +143,7 @@ void icon_override(GtkWidget *window, GList *icon_list) {
  */
 gboolean hacky_on_window_focus_changed_callback(JNIEnv *env)
 {
-	if(gtk_widget_get_width(window) != 0) {
+	if (gtk_widget_get_width(window) != 0) {
 		activity_window_ready();
 		return G_SOURCE_REMOVE;
 	}
@@ -150,7 +152,8 @@ gboolean hacky_on_window_focus_changed_callback(JNIEnv *env)
 }
 
 struct dynamic_launcher_callback_data {char *desktop_file_id; char *desktop_entry;};
-static void dynamic_launcher_ready_callback(GObject *portal, GAsyncResult *res, gpointer user_data) {
+static void dynamic_launcher_ready_callback(GObject *portal, GAsyncResult *res, gpointer user_data)
+{
 	struct dynamic_launcher_callback_data *data = user_data;
 	GVariant *result = xdp_portal_dynamic_launcher_prepare_install_finish(XDP_PORTAL(portal), res, NULL);
 	if (!result) {
@@ -174,16 +177,16 @@ static void dynamic_launcher_ready_callback(GObject *portal, GAsyncResult *res, 
 // this is exported by the shim bionic linker
 void dl_parse_library_path(const char *path, char *delim);
 
-#define REL_DEX_INSTALL_PATH "/../java/dex"
+#define REL_DEX_INSTALL_PATH              "/../java/dex"
 
-#define REL_API_IMPL_JAR_INSTALL_PATH "/android_translation_layer/api-impl.jar"
+#define REL_API_IMPL_JAR_INSTALL_PATH     "/android_translation_layer/api-impl.jar"
 #define REL_API_IMPL_NATIVES_INSTALL_PATH "/android_translation_layer/natives"
-#define REL_MICROG_APK_INSTALL_PATH "/microg/com.google.android.gms.apk"
-#define REL_FRAMEWORK_RES_INSTALL_PATH "/android_translation_layer/framework-res.apk"
+#define REL_MICROG_APK_INSTALL_PATH       "/microg/com.google.android.gms.apk"
+#define REL_FRAMEWORK_RES_INSTALL_PATH    "/android_translation_layer/framework-res.apk"
 
-#define API_IMPL_JAR_PATH_LOCAL "./api-impl.jar"
-#define MICROG_APK_PATH_LOCAL "./com.google.android.gms.apk"
-#define FRAMEWORK_RES_PATH_LOCAL "./res/framework-res.apk"
+#define API_IMPL_JAR_PATH_LOCAL           "./api-impl.jar"
+#define MICROG_APK_PATH_LOCAL             "./com.google.android.gms.apk"
+#define FRAMEWORK_RES_PATH_LOCAL          "./res/framework-res.apk"
 
 struct jni_callback_data {
 	char *apk_main_activity_class;
@@ -195,9 +198,9 @@ struct jni_callback_data {
 	char **extra_string_keys;
 };
 
-static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* hint, struct jni_callback_data *d)
+static void open(GtkApplication *app, GFile **files, gint nfiles, const gchar *hint, struct jni_callback_data *d)
 {
-//TODO: pass all files to classpath
+// TODO: pass all files to classpath
 /*
 	printf("nfiles: %d\n", nfiles);
 	for(int i = 0; i < nfiles; i++) {
@@ -215,15 +218,15 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	jobject activity_object;
 	jobject application_object;
 
-	char *apk_classpath =  g_file_get_path(files[0]);
+	char *apk_classpath = g_file_get_path(files[0]);
 	char *apk_name = g_file_get_basename(files[0]);
 
-	if(apk_classpath == NULL) {
+	if (apk_classpath == NULL) {
 		printf("error: the specified file path doesn't seem to be valid\n");
 		exit(1);
 	}
 
-	if(access(apk_classpath, F_OK) < 0) {
+	if (access(apk_classpath, F_OK) < 0) {
 		printf("error: the specified file path doesn't seem to exist (%m)\n");
 		exit(1);
 	}
@@ -233,7 +236,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	// TODO: we shouldn't necessarily count on art being installed in the same prefix as we are
 	dladdr(JNI_CreateJavaVM, &libart_so_dl_info);
 	// make sure we didn't get NULL
-	if(libart_so_dl_info.dli_fname) {
+	if (libart_so_dl_info.dli_fname) {
 		// it's simpler if we can modify the string, so strdup it
 		char *libart_so_full_path = strdup(libart_so_dl_info.dli_fname);
 		*strrchr(libart_so_full_path, '/') = '\0'; // now we should have something like /usr/lib64/art
@@ -245,14 +248,14 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 		dex_install_dir = "DIDN'T_GET_SO_PATH_WITH_dladdr_SUS"; // in case we print this as part of some other error, it should be clear what the real cause is
 	}
 
-	char* app_data_dir_base = getenv("ANDROID_APP_DATA_DIR");
-	if(!app_data_dir_base) {
-		const char* user_data_dir = g_get_user_data_dir();
-		if(user_data_dir) {
+	char *app_data_dir_base = getenv("ANDROID_APP_DATA_DIR");
+	if (!app_data_dir_base) {
+		const char *user_data_dir = g_get_user_data_dir();
+		if (user_data_dir) {
 			app_data_dir_base = g_strdup_printf("%s/android_translation_layer", user_data_dir);
 			ret = mkdir(app_data_dir_base, DEFFILEMODE | S_IXUSR | S_IXGRP | S_IXOTH);
 			if (ret) {
-				if(errno != EEXIST) {
+				if (errno != EEXIST) {
 					fprintf(stderr, "error: ANDROID_APP_DATA_DIR not set, and the default directory (%s) coudldn't be created (error: %s)\n", app_data_dir_base, strerror(errno));
 					exit(1);
 				}
@@ -272,7 +275,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	strcat(app_data_dir, "/");
 
 	ret = mkdir(app_data_dir, DEFFILEMODE | S_IXUSR | S_IXGRP | S_IXOTH);
-	if(ret && errno != EEXIST) {
+	if (ret && errno != EEXIST) {
 		fprintf(stderr, "can't create app data dir %s (%s)\n", app_data_dir, strerror(errno));
 		exit(1);
 	}
@@ -281,7 +284,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	struct stat dont_care;
 	ret = stat(API_IMPL_JAR_PATH_LOCAL, &dont_care);
 	errno_localdir = errno;
-	if(!ret) {
+	if (!ret) {
 		api_impl_jar = strdup(API_IMPL_JAR_PATH_LOCAL); // for running out of builddir; using strdup so we can always safely call free on this
 	} else {
 		char *api_impl_install_dir = malloc(strlen(dex_install_dir) + strlen(REL_API_IMPL_JAR_INSTALL_PATH) + 1); // +1 for NULL
@@ -290,13 +293,13 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 		ret = stat(api_impl_install_dir, &dont_care);
 		errno_libdir = errno;
-		if(!ret) {
+		if (!ret) {
 			api_impl_jar = api_impl_install_dir;
 		} else {
 			printf("error: can't stat api-impl.jar; tried:\n"
-				   "\t\"" API_IMPL_JAR_PATH_LOCAL "\", got - %s\n"
-				   "\t\"%s\", got - %s\n",
-			       strerror(errno_localdir), 
+			       "\t\"" API_IMPL_JAR_PATH_LOCAL "\", got - %s\n"
+			       "\t\"%s\", got - %s\n",
+			       strerror(errno_localdir),
 			       api_impl_install_dir, strerror(errno_libdir));
 			exit(1);
 		}
@@ -304,7 +307,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	ret = stat(MICROG_APK_PATH_LOCAL, &dont_care);
 	errno_localdir = errno;
-	if(!ret) {
+	if (!ret) {
 		microg_apk = strdup(MICROG_APK_PATH_LOCAL); // for running out of builddir; using strdup so we can always safely call free on this
 	} else {
 		char *microg_install_dir = malloc(strlen(dex_install_dir) + strlen(REL_MICROG_APK_INSTALL_PATH) + 1); // +1 for NULL
@@ -313,12 +316,12 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 		ret = stat(microg_install_dir, &dont_care);
 		errno_libdir = errno;
-		if(!ret) {
+		if (!ret) {
 			microg_apk = microg_install_dir;
 		} else {
 			printf("warning: can't stat com.google.android.gms.apk; tried:\n"
-				   "\t\"" MICROG_APK_PATH_LOCAL "\", got - %s\n"
-				   "\t\"%s\", got - %s\n",
+			       "\t\"" MICROG_APK_PATH_LOCAL "\", got - %s\n"
+			       "\t\"%s\", got - %s\n",
 			       strerror(errno_localdir),
 			       microg_install_dir, strerror(errno_libdir));
 		}
@@ -326,7 +329,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	ret = stat(FRAMEWORK_RES_PATH_LOCAL, &dont_care);
 	errno_localdir = errno;
-	if(!ret) {
+	if (!ret) {
 		framework_res_apk = strdup(FRAMEWORK_RES_PATH_LOCAL); // for running out of builddir; using strdup so we can always safely call free on this
 	} else {
 		char *framework_res_install_dir = malloc(strlen(dex_install_dir) + strlen(REL_FRAMEWORK_RES_INSTALL_PATH) + 1); // +1 for NULL
@@ -335,12 +338,12 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 		ret = stat(framework_res_install_dir, &dont_care);
 		errno_libdir = errno;
-		if(!ret) {
+		if (!ret) {
 			framework_res_apk = framework_res_install_dir;
 		} else {
 			printf("warning: can't stat framework-res.apk; tried:\n"
-				   "\t\"" FRAMEWORK_RES_PATH_LOCAL "\", got - %s\n"
-				   "\t\"%s\", got - %s\n",
+			       "\t\"" FRAMEWORK_RES_PATH_LOCAL "\", got - %s\n"
+			       "\t\"%s\", got - %s\n",
 			       strerror(errno_localdir),
 			       framework_res_install_dir, strerror(errno_libdir));
 		}
@@ -364,7 +367,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 	dl_parse_library_path(ld_path, ":");
 	g_free(ld_path);
 
-	JNIEnv* env = create_vm(api_impl_jar, apk_classpath, microg_apk, framework_res_apk, api_impl_natives_dir, app_lib_dir, d->extra_jvm_options);
+	JNIEnv *env = create_vm(api_impl_jar, apk_classpath, microg_apk, framework_res_apk, api_impl_natives_dir, app_lib_dir, d->extra_jvm_options);
 
 	free(app_lib_dir);
 
@@ -396,41 +399,41 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	window = gtk_application_window_new(app);
 
-	if(getenv("ATL_DISABLE_WINDOW_DECORATIONS"))
+	if (getenv("ATL_DISABLE_WINDOW_DECORATIONS"))
 		gtk_window_set_decorated(GTK_WINDOW(window), 0);
 
-        if(getenv("ATL_FORCE_FULLSCREEN"))
-                gtk_window_fullscreen(GTK_WINDOW(window));
+	if (getenv("ATL_FORCE_FULLSCREEN"))
+		gtk_window_fullscreen(GTK_WINDOW(window));
 
 	prepare_main_looper(env);
 
 	// construct Application
 	application_object = (*env)->CallStaticObjectMethod(env, handle_cache.context.class,
-		_STATIC_METHOD(handle_cache.context.class, "createApplication", "(J)Landroid/app/Application;"), window);
-	if((*env)->ExceptionCheck(env))
+	                                                    _STATIC_METHOD(handle_cache.context.class, "createApplication", "(J)Landroid/app/Application;"), window);
+	if ((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
 	/* extract native libraries from apk*/
-	if(!getenv("ATL_SKIP_NATIVES_EXTRACTION"))
+	if (!getenv("ATL_SKIP_NATIVES_EXTRACTION"))
 		extract_from_apk("lib/" NATIVE_ARCH "/", "lib/");
 
 	jclass content_provider = (*env)->FindClass(env, "android/content/ContentProvider");
 	(*env)->CallStaticVoidMethod(env, content_provider, _STATIC_METHOD(content_provider, "createContentProviders", "()V"));
-	if((*env)->ExceptionCheck(env))
+	if ((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
 	(*env)->CallVoidMethod(env, application_object, _METHOD(handle_cache.application.class, "onCreate", "()V"));
-	if((*env)->ExceptionCheck(env))
+	if ((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
 	// construct main Activity
 	activity_object = (*env)->CallStaticObjectMethod(env, handle_cache.activity.class,
-		_STATIC_METHOD(handle_cache.activity.class, "createMainActivity", "(Ljava/lang/String;J)Landroid/app/Activity;"),
-		_JSTRING(d->apk_main_activity_class), _INTPTR(window));
-	if((*env)->ExceptionCheck(env))
+	                                                 _STATIC_METHOD(handle_cache.activity.class, "createMainActivity", "(Ljava/lang/String;J)Landroid/app/Activity;"),
+	                                                 _JSTRING(d->apk_main_activity_class), _INTPTR(window));
+	if ((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
-	if(d->extra_string_keys) {
+	if (d->extra_string_keys) {
 		GError *error = NULL;
 		GRegex *regex = g_regex_new("(?<!\\\\)=", 0, 0, &error);
 		if (!regex) {
@@ -440,9 +443,9 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 		jobject intent = _GET_OBJ_FIELD(activity_object, "intent", "Landroid/content/Intent;");
 
-		for(char **arg = d->extra_string_keys; *arg; arg++) {
+		for (char **arg = d->extra_string_keys; *arg; arg++) {
 			gchar **keyval = g_regex_split_full(regex, *arg, -1, 0, 0, 2, NULL);
-			if(!keyval || !keyval[0] || !keyval[1]) {
+			if (!keyval || !keyval[0] || !keyval[1]) {
 				fprintf(stderr, "extra string arg not in 'key=value' format: '%s'\n", *arg);
 				exit(1);
 			}
@@ -457,19 +460,19 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	jstring package_name_jstr = (*env)->CallObjectMethod(env, activity_object, handle_cache.context.get_package_name);
 	package_name = package_name_jstr ? _CSTRING(package_name_jstr) : NULL;
-	if((*env)->ExceptionCheck(env))
+	if ((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
 	jstring app_icon_path_jstr = (*env)->CallObjectMethod(env, application_object, handle_cache.application.get_app_icon_path);
 	const char *app_icon_path = app_icon_path_jstr ? _CSTRING(app_icon_path_jstr) : NULL;
-	if((*env)->ExceptionCheck(env))
+	if ((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
 	if (d->install) {
 		XdpPortal *portal = xdp_portal_new();
 
 		const char *app_label = _CSTRING((*env)->CallObjectMethod(env, application_object, _METHOD(handle_cache.application.class, "get_app_label", "()Ljava/lang/String;")));
-		if((*env)->ExceptionCheck(env))
+		if ((*env)->ExceptionCheck(env))
 			(*env)->ExceptionDescribe(env);
 
 		GVariant *icon_serialized = NULL;
@@ -490,16 +493,15 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 		g_file_make_directory(g_file_get_parent(dest), NULL, NULL);
 		g_file_copy(files[0], dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
 
-		GString *desktop_entry = g_string_new(
-				"[Desktop Entry]\n"
-				"Type=Application\n"
-				"Exec=env ");
+		GString *desktop_entry = g_string_new("[Desktop Entry]\n"
+		                                      "Type=Application\n"
+		                                      "Exec=env ");
 		if (getenv("RUN_FROM_BUILDDIR")) {
 			printf("WARNING: RUN_FROM_BUILDDIR set and --install given: using current directory in desktop entry\n");
 			g_string_append_printf(desktop_entry, "-C %s ", g_get_current_dir());
 		}
 		char *envs[] = {"RUN_FROM_BUILDDIR", "LD_LIBRARY_PATH", "ANDROID_APP_DATA_DIR", "ATL_UGLY_ENABLE_LOCATION", "ATL_UGLY_ENABLE_WEBVIEW", "ATL_DISABLE_WINDOW_DECORATIONS", "ATL_FORCE_FULLSCREEN"};
-		for (int i = 0; i < sizeof(envs)/sizeof(envs[0]); i++) {
+		for (int i = 0; i < ARRAY_SIZE(envs); i++) {
 			if (getenv(envs[i])) {
 				g_string_append_printf(desktop_entry, "%s=%s ", envs[i], getenv(envs[i]));
 			}
@@ -523,7 +525,7 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 
 	gtk_window_set_title(GTK_WINDOW(window), package_name);
 	gtk_window_set_default_size(GTK_WINDOW(window), d->window_width, d->window_height);
-	g_signal_connect(window, "close-request", G_CALLBACK (app_exit), env);
+	g_signal_connect(window, "close-request", G_CALLBACK(app_exit), env);
 
 	gtk_window_present(GTK_WINDOW(window));
 
@@ -533,104 +535,58 @@ static void open(GtkApplication *app, GFile** files, gint nfiles, const gchar* h
 		gdk_wayland_toplevel_set_application_id(GDK_WAYLAND_TOPLEVEL(toplevel), package_name);
 	}
 
-	if(app_icon_path) {
-		char *app_icon_path_full = malloc(strlen(app_data_dir) + 1 + strlen(app_icon_path) + 1);  // +1 for /, +1 for NULL
+	if (app_icon_path) {
+		char *app_icon_path_full = malloc(strlen(app_data_dir) + 1 + strlen(app_icon_path) + 1); // +1 for /, +1 for NULL
 		sprintf(app_icon_path_full, "%s/%s", app_data_dir, app_icon_path);
 
 		extract_from_apk(app_icon_path, app_icon_path);
 
 		GError *error = NULL;
 		GList *icon_list = g_list_append(NULL, gdk_texture_new_from_filename(app_icon_path_full, &error));
-		if(error) {
+		if (error) {
 			printf("gdk_texture_new_from_filename: %s\n", error->message);
 			g_clear_error(&error);
 		}
 		icon_override(window, icon_list);
 		/* if Gtk sets the icon list to NULL, override it again */
-		g_signal_connect_after(window, "realize", G_CALLBACK (icon_override), icon_list);
+		g_signal_connect_after(window, "realize", G_CALLBACK(icon_override), icon_list);
 	}
 
 	activity_start(env, activity_object);
 
 	g_timeout_add(10, G_SOURCE_FUNC(hacky_on_window_focus_changed_callback), env);
 
-
 	jobject input_queue_callback = g_object_get_data(G_OBJECT(window), "input_queue_callback");
-	if(input_queue_callback) {
+	if (input_queue_callback) {
 		jobject input_queue = g_object_get_data(G_OBJECT(window), "input_queue");
 
 		(*env)->CallVoidMethod(env, input_queue_callback, handle_cache.input_queue_callback.onInputQueueCreated, input_queue);
-		if((*env)->ExceptionCheck(env))
+		if ((*env)->ExceptionCheck(env))
 			(*env)->ExceptionDescribe(env);
 	}
 }
 
 static void activate(GtkApplication *app, struct jni_callback_data *d)
 {
-	printf("error: usage: ./android-translation-layer [app.apk] -l [path/to/activity]\n"
+	printf("error: usage: ./android-translation-layer [app.apk] [-l path/to/activity]\n"
 	       "you can specify --help to see the list of options\n");
 	exit(1);
 }
 
 void init_cmd_parameters(GApplication *app, struct jni_callback_data *d)
 {
-  const GOptionEntry cmd_params[] =
-  {
-    {
-      .long_name = "launch-activity",
-      .short_name = 'l',
-      .flags = G_OPTION_FLAG_NONE,
-      .arg = G_OPTION_ARG_STRING,
-      .arg_data = &d->apk_main_activity_class,
-      .description = "the fully quilifed name of the activity you wish to launch (usually the apk's main activity)",
-      .arg_description = NULL,
-    },
-    {
-      .long_name = "window-width",
-      .short_name = 'w',
-      .flags = G_OPTION_FLAG_NONE,
-      .arg = G_OPTION_ARG_INT,
-      .arg_data = &d->window_width,
-      .description = "window width to launch with (some apps react poorly to runtime window size adjustments)",
-      .arg_description = NULL,
-    },
-    {
-      .long_name = "window-height",
-      .short_name = 'h',
-      .flags = G_OPTION_FLAG_NONE,
-      .arg = G_OPTION_ARG_INT,
-      .arg_data = &d->window_height,
-      .description = "window height to launch with (some apps react poorly to runtime window size adjustments)",
-      .arg_description = NULL,
-    },
-    {
-      .long_name = "install",
-      .short_name = 'i',
-      .flags = 0,
-      .arg = G_OPTION_ARG_NONE,
-      .arg_data = &d->install,
-      .description = "install .desktop file for the given apk",
-    },
-    {
-      .long_name = "extra-jvm-option",
-      .short_name = 'X',
-      .flags = 0,
-      .arg = G_OPTION_ARG_STRING_ARRAY,
-      .arg_data = &d->extra_jvm_options,
-      .description = "pass an additional option directly to art",
-    },
-    {
-      .long_name = "extra-string-key",
-      .short_name = 'e',
-      .flags = 0,
-      .arg = G_OPTION_ARG_STRING_ARRAY,
-      .arg_data = &d->extra_string_keys,
-      .description = "pass a string extra (-e key=value)",
-    },
-    {NULL}
-  };
+	const GOptionEntry cmd_params[] = {
+		/* long_name | short_name | flags | arg                 | arg_data                   | description                                                                                   | arg_desc */
+		{ "launch-activity",  'l', 0, G_OPTION_ARG_STRING,       &d->apk_main_activity_class, "the fully qualifed name of the activity you wish to launch (usually the apk's main activity)", "ACTIVITY_NAME" },
+		{ "window-width",     'w', 0, G_OPTION_ARG_INT,          &d->window_width,            "window width to launch with (some apps react poorly to runtime window size adjustments)",      "WIDTH" },
+		{ "window-height",    'h', 0, G_OPTION_ARG_INT,          &d->window_height,           "window height to launch with (some apps react poorly to runtime window size adjustments)",     "HEIGHT" },
+		{ "install",          'i', 0, G_OPTION_ARG_NONE,         &d->install,                 "install .desktop file for the given apk",                                                      NULL },
+		{ "extra-jvm-option", 'X', 0, G_OPTION_ARG_STRING_ARRAY, &d->extra_jvm_options,       "pass an additional option directly to art (e.g -X \"-verbose:jni\")",                          "\"OPTION\"" },
+		{ "extra-string-key", 'e', 0, G_OPTION_ARG_STRING_ARRAY, &d->extra_string_keys,       "pass a string extra (-e key=value)",                                                           "\"KEY=VALUE\"" },
+		{NULL}
+	};
 
-  g_application_add_main_option_entries (G_APPLICATION (app), cmd_params);
+	g_application_add_main_option_entries(G_APPLICATION(app), cmd_params);
 }
 
 void init__r_debug();
@@ -663,8 +619,8 @@ int main(int argc, char **argv)
 	init_cmd_parameters(G_APPLICATION(app), callback_data);
 	g_application_set_option_context_summary(G_APPLICATION(app), "a translation layer for running android applications natively on Linux");
 
-	g_signal_connect(app, "activate", G_CALLBACK (activate), callback_data);
-	g_signal_connect(app, "open", G_CALLBACK (open), callback_data);
+	g_signal_connect(app, "activate", G_CALLBACK(activate), callback_data);
+	g_signal_connect(app, "open", G_CALLBACK(open), callback_data);
 	status = g_application_run(G_APPLICATION(app), argc, argv);
 	g_object_unref(app);
 	remove_ongoing_notifications();

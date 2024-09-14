@@ -604,8 +604,6 @@ PFN_vkVoidFunction bionic_vkGetInstanceProcAddr(VkInstance instance, const char 
 
 typedef XrResult(*xr_func)();
 
-#define ARRRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
-
 // avoid hard dependency on libopenxr_loader for the three functions that we only ever call when running a VR app
 static void *openxr_loader_handle = NULL;
 static inline __attribute__((__always_inline__)) XrResult xr_lazy_call(char *func_name, ...) {
@@ -677,7 +675,7 @@ XrResult bionic_xrCreateInstance(XrInstanceCreateInfo *createInfo, XrInstance *i
 
 	const char * const*old_names = createInfo->enabledExtensionNames;
 	const char **new_names;
-	int new_count = createInfo->enabledExtensionCount + ARRRAY_SIZE(extra_exts);
+	int new_count = createInfo->enabledExtensionCount + ARRAY_SIZE(extra_exts);
 
 	//FIXME: Leak?
 	new_names = malloc(sizeof(*new_names) * new_count);
@@ -688,7 +686,7 @@ XrResult bionic_xrCreateInstance(XrInstanceCreateInfo *createInfo, XrInstance *i
 			new_names[i] = harmless_extension;
 	}
 
-	for (int i = 0; i < ARRRAY_SIZE(extra_exts); i++)
+	for (int i = 0; i < ARRAY_SIZE(extra_exts); i++)
 		new_names[createInfo->enabledExtensionCount + i] = extra_exts[i];
 
 	createInfo->enabledExtensionCount = new_count;
@@ -751,7 +749,7 @@ XrResult bionic_xrGetInstanceProcAddr(XrInstance instance, const char *name, PFN
 	printf("xrGetInstanceProcAddr(%s)\n", name);
 
 	struct xr_proc_override *match = bsearch(name, xr_proc_override_tbl,
-	                                         ARRRAY_SIZE(xr_proc_override_tbl),
+	                                         ARRAY_SIZE(xr_proc_override_tbl),
 	                                         sizeof(xr_proc_override_tbl[0]),
 	                                         (int (*)(const void *, const void *))strcmp);
 
