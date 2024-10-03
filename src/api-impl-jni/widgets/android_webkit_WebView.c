@@ -33,6 +33,13 @@ static void asset_uri_scheme_request_cb(WebKitURISchemeRequest *request, gpointe
 	g_object_unref(stream);
 }
 
+static void web_view_load_changed(WebKitWebView *web_view, WebKitLoadEvent load_event, gpointer user_data)
+{
+	WrapperWidget *wrapper = WRAPPER_WIDGET(gtk_widget_get_parent(GTK_WIDGET(web_view)));
+	JNIEnv *env = get_jni_env();
+	(*env)->CallVoidMethod(env, wrapper->jobj, handle_cache.webview.internalLoadChanged, load_event, _JSTRING(webkit_web_view_get_uri(web_view)));
+}
+
 JNIEXPORT jlong JNICALL Java_android_webkit_WebView_native_1constructor(JNIEnv *env, jobject this, jobject context, jobject attrs)
 {
 	/* 
@@ -48,6 +55,7 @@ JNIEXPORT jlong JNICALL Java_android_webkit_WebView_native_1constructor(JNIEnv *
 	wrapper_widget_set_child(WRAPPER_WIDGET(wrapper), webview);
 	wrapper_widget_set_jobject(WRAPPER_WIDGET(wrapper), env, this);
 	webkit_web_context_register_uri_scheme(webkit_web_view_get_context(WEBKIT_WEB_VIEW(webview)), "android-asset", asset_uri_scheme_request_cb, NULL, NULL);
+	g_signal_connect(G_OBJECT(webview), "load-changed", G_CALLBACK(web_view_load_changed), NULL);
 	return _INTPTR(webview);
 }
 

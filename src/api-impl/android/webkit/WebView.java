@@ -6,6 +6,9 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class WebView extends View {
+
+	private WebViewClient webViewClient;
+
 	public WebView(Context context) {
 		this(context, null);
 	}
@@ -26,7 +29,18 @@ public class WebView extends View {
 
 	public void setScrollBarStyle(int scrollBarStyle) {}
 
-	public void setWebViewClient(WebViewClient webViewClient) {}
+	public void setWebViewClient(WebViewClient webViewClient) {
+		this.webViewClient = webViewClient;
+	}
+
+	// to be used by native code
+	void internalLoadChanged(int loadState, String url) {
+		if (loadState == /*WEBKIT_LOAD_STARTED*/0 && webViewClient != null) {
+			webViewClient.onPageStarted(this, url);
+		} else if (loadState == /*WEBKIT_LOAD_FINISHED*/3 && webViewClient != null) {
+			webViewClient.onPageFinished(this, url);
+		}
+	}
 
 	public void setVerticalScrollBarEnabled(boolean enabled) {}
 
