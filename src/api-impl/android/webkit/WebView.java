@@ -29,7 +29,16 @@ public class WebView extends View {
 
 	public void setVerticalScrollBarEnabled(boolean enabled) {}
 
-	public void addJavascriptInterface(Object dummy, String dummy2) {}
+	public void addJavascriptInterface(Object object, String name) {
+		// HACK: directly call onRenderingDone for OctoDroid, as the javascript interface is not implemented yet
+		if (object.getClass().getName().startsWith("com.gh4a") && "NativeClient".equals(name)) {
+			try {
+				object.getClass().getMethod("onRenderingDone").invoke(object);
+			} catch (ReflectiveOperationException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	public void setWebChromeClient(WebChromeClient dummy) {}
 
@@ -42,6 +51,10 @@ public class WebView extends View {
 	}
 
 	public void loadUrl(String url) {
+		if (url.startsWith("javascript:")) {
+			System.out.println("loadUrl: " + url + " - not implemented yet");
+			return;
+		}
 		native_loadUrl(widget, url);
 	}
 
