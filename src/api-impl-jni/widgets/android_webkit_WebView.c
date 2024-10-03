@@ -45,5 +45,5 @@ JNIEXPORT void JNICALL Java_android_webkit_WebView_native_1loadDataWithBaseURL(J
 	jsize data_jlen = (*env)->GetStringLength(env, data_jstr);
 	char *data = malloc(data_len + 1); // + 1 for NUL
 	(*env)->GetStringUTFRegion(env, data_jstr, 0, data_jlen, data);
-	webkit_web_view_load_bytes(webview, g_bytes_new(data, data_len), _CSTRING(mime_type), _CSTRING(encoding), _CSTRING(base_url));
+	webkit_web_view_load_bytes(webview, g_bytes_new(data, data_len), mime_type ? _CSTRING(mime_type) : "text/html", _CSTRING(encoding), _CSTRING(base_url));
 }
