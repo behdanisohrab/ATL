@@ -161,6 +161,9 @@ void set_up_handle_cache(JNIEnv *env)
 
 	handle_cache.intent.class = _REF((*env)->FindClass(env, "android/content/Intent"));
 	handle_cache.intent.putExtraCharSequence = _METHOD(handle_cache.intent.class, "putExtra", "(Ljava/lang/String;Ljava/lang/CharSequence;)Landroid/content/Intent;");
+
+	handle_cache.webview.class = _REF((*env)->FindClass(env, "android/webkit/WebView"));
+	handle_cache.webview.internalGetAssetManager = _METHOD(handle_cache.webview.class, "internalGetAssetManager", "()Landroid/content/res/AssetManager;");
 }
 
 void extract_from_apk(const char *path, const char *target) {

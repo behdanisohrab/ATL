@@ -111,6 +111,10 @@ struct handle_cache {
 		jclass class;
 		jmethodID putExtraCharSequence;
 	} intent;
+	struct {
+		jclass class;
+		jmethodID internalGetAssetManager;
+	} webview;
 };
 
 extern struct handle_cache handle_cache;

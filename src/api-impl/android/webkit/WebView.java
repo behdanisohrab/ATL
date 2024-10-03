@@ -1,6 +1,7 @@
 package android.webkit;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -47,6 +48,8 @@ public class WebView extends View {
 	public void destroy() {}
 
 	public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl) {
+		// webkit doesn't allow overwriting the file:// uri scheme. So we replace it with the android-asset:// scheme
+		data = data.replace("file:///android_asset/", "android-asset:///assets/");
 		native_loadDataWithBaseURL(widget, baseUrl, data, mimeType, encoding);
 	}
 
@@ -59,6 +62,11 @@ public class WebView extends View {
 	}
 
 	public void stopLoading() {}
+
+	// to be used by native code
+	AssetManager internalGetAssetManager() {
+		return getContext().getResources().getAssets();
+	}
 
 	@Override
 	protected native long native_constructor(Context context, AttributeSet attrs);
