@@ -171,14 +171,21 @@ JNIEXPORT void JNICALL Java_android_app_NotificationManager_nativeShowMPRIS(JNIE
 		mpris = media_player2_skeleton_new();
 		g_signal_connect(mpris, "handle-raise", G_CALLBACK(on_media_player_handle_raise), NULL);
 	}
+	const char *package_name = NULL;
+	const char *app_id = g_application_get_application_id(G_APPLICATION(gtk_window_get_application(window)));
+	if ((app_id == NULL || strcmp(app_id, "com.example.demo_application") == 0) && package_name_jstr) {
+		// fall back to package name
+		app_id = package_name = (*env)->GetStringUTFChars(env, package_name_jstr, NULL);
+	}
 	if (!dbus_name_id) {
-		dbus_name_id = g_bus_own_name(G_BUS_TYPE_SESSION, MPRIS_BUS_NAME_PREFIX "ATL", G_BUS_NAME_OWNER_FLAGS_NONE,
+		gchar *bus_name = g_strdup_printf("%s%s", MPRIS_BUS_NAME_PREFIX, app_id);
+		dbus_name_id = g_bus_own_name(G_BUS_TYPE_SESSION, bus_name, G_BUS_NAME_OWNER_FLAGS_NONE,
 		               on_bus_acquired, NULL, NULL, mpris, NULL);
+		g_free(bus_name);
 	}
 	media_player2_set_can_raise(mpris, TRUE);
-	if (package_name_jstr) {
-		const char *package_name = (*env)->GetStringUTFChars(env, package_name_jstr, NULL);
-		media_player2_set_desktop_entry(mpris, package_name);
+	media_player2_set_desktop_entry(mpris, app_id);
+	if (package_name) {
 		(*env)->ReleaseStringUTFChars(env, package_name_jstr, package_name);
 	}
 	if (identity_jstr) {
