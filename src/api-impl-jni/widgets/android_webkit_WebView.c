@@ -8,6 +8,7 @@
 #include "../util.h"
 
 #include "WrapperWidget.h"
+#include "../AssetInputStream.h"
 
 #include "../generated_headers/android_view_View.h"
 #include "../generated_headers/android_webkit_WebView.h"
@@ -23,13 +24,8 @@ static void asset_uri_scheme_request_cb(WebKitURISchemeRequest *request, gpointe
 	jobject asset_manager_obj = (*env)->CallObjectMethod(env, wrapper->jobj, handle_cache.webview.internalGetAssetManager);
 	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(asset_manager_obj, "mObject"));
 	struct Asset *asset = AssetManager_openNonAsset(asset_manager, path, ACCESS_STREAMING);
-	off_t offset;
-	off_t size;
-	int fd = Asset_openFileDescriptor(asset, &offset, &size);
-	Asset_delete(asset);
-	GInputStream *stream = g_unix_input_stream_new(fd, TRUE);
-	g_input_stream_skip(stream, offset, NULL, NULL);
-	webkit_uri_scheme_request_finish(request, stream, size, NULL);
+	GInputStream *stream = asset_input_stream_new(asset);
+	webkit_uri_scheme_request_finish(request, stream, Asset_getLength(asset), NULL);
 	g_object_unref(stream);
 }
 
