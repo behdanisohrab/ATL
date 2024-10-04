@@ -1,12 +1,18 @@
 package android.app;
 
 import android.content.pm.ConfigurationInfo;
+import android.graphics.Bitmap;
+
 import java.util.List;
 
 public class ActivityManager {
 
 	public static class RunningAppProcessInfo{
 		public int importance;
+	}
+
+	public static class TaskDescription {
+		public TaskDescription(String name, Bitmap icon, int color) {}
 	}
 
 	public List<RunningAppProcessInfo> getRunningAppProcesses() {

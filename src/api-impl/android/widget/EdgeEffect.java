@@ -20,5 +20,7 @@ public class EdgeEffect extends View {
 	public boolean isFinished() {return true;}
 	public void onRelease() {}
 	public void onAbsorb(int velocity) {}
+	public int getColor() {return 0;}
+	public void setColor(int color) {}
 
 }

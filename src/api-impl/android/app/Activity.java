@@ -533,6 +533,8 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 		return false;
 	}
 
+	public void setTaskDescription(ActivityManager.TaskDescription description) {}
+
 	private native void nativeFinish(long native_window);
 	public static native void nativeRecreateActivity(Activity activity);
 	public static native void nativeStartActivity(Activity activity);

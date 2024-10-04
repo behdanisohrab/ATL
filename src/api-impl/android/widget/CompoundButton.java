@@ -60,4 +60,8 @@ public abstract class CompoundButton extends Button implements Checkable {
 	public Drawable getButtonDrawable() {
 		return button_drawable;
 	}
+
+	public ColorStateList getButtonTintList() {
+		return null;
+	}
 }
