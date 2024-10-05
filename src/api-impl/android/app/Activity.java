@@ -148,6 +148,11 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 		return;
 	}
 
+	protected void onPostCreate(Bundle savedInstanceState) {
+		System.out.println("- onPostCreate - yay!");
+		return;
+	}
+
 	protected void onStart() {
 		System.out.println("- onStart - yay!");
 		if (window.contentView != null)
@@ -174,6 +179,11 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 		}
 
 		paused = false;
+		return;
+	}
+
+	protected void onPostResume() {
+		System.out.println("- onPostResume - yay!");
 		return;
 	}
 

@@ -54,6 +54,10 @@ static void activity_focus(JNIEnv *env, jobject activity)
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
+	(*env)->CallVoidMethod(env, activity, handle_cache.activity.onPostResume);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
+
 	(*env)->CallVoidMethod(env, activity, handle_cache.activity.onWindowFocusChanged, true);
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
@@ -128,6 +132,10 @@ void _activity_start(JNIEnv *env, jobject activity_object, bool recreate)
 		activity_not_created = NULL;
 		return;
 	}
+
+	(*env)->CallVoidMethod(env, activity_object, handle_cache.activity.onPostCreate, NULL);
+	if((*env)->ExceptionCheck(env))
+		(*env)->ExceptionDescribe(env);
 
 	if(recreate) // only allowed for toplevel, so we know for sure where in the stack it belongs
 		activity_backlog = g_list_append(activity_backlog, _REF(activity_object));
