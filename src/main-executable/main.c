@@ -198,6 +198,8 @@ struct jni_callback_data {
 	char **extra_string_keys;
 };
 
+static char *uri_option = NULL;
+
 static void open(GtkApplication *app, GFile **files, gint nfiles, const gchar *hint, struct jni_callback_data *d)
 {
 // TODO: pass all files to classpath
@@ -428,10 +430,12 @@ static void open(GtkApplication *app, GFile **files, gint nfiles, const gchar *h
 
 	// construct main Activity
 	activity_object = (*env)->CallStaticObjectMethod(env, handle_cache.activity.class,
-	                                                 _STATIC_METHOD(handle_cache.activity.class, "createMainActivity", "(Ljava/lang/String;J)Landroid/app/Activity;"),
-	                                                 _JSTRING(d->apk_main_activity_class), _INTPTR(window));
+	                                                 _STATIC_METHOD(handle_cache.activity.class, "createMainActivity", "(Ljava/lang/String;JLjava/lang/String;)Landroid/app/Activity;"),
+	                                                 _JSTRING(d->apk_main_activity_class), _INTPTR(window), uri_option ? _JSTRING(uri_option) : NULL);
 	if ((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
+	if (uri_option)
+		g_free(uri_option);
 
 	if (d->extra_string_keys) {
 		GError *error = NULL;
@@ -493,6 +497,12 @@ static void open(GtkApplication *app, GFile **files, gint nfiles, const gchar *h
 		g_file_make_directory(g_file_get_parent(dest), NULL, NULL);
 		g_file_copy(files[0], dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, NULL);
 
+		jmethodID get_supported_mime_types = _METHOD(handle_cache.application.class, "get_supported_mime_types", "()Ljava/lang/String;");
+		jstring supported_mime_types_jstr = (*env)->CallObjectMethod(env, application_object, get_supported_mime_types);
+		const char *supported_mime_types = supported_mime_types_jstr ? _CSTRING(supported_mime_types_jstr) : NULL;
+		if ((*env)->ExceptionCheck(env))
+			(*env)->ExceptionDescribe(env);
+
 		GString *desktop_entry = g_string_new("[Desktop Entry]\n"
 		                                      "Type=Application\n"
 		                                      "Exec=env ");
@@ -514,7 +524,9 @@ static void open(GtkApplication *app, GFile **files, gint nfiles, const gchar *h
 			g_string_append_printf(desktop_entry, "-w %d ", d->window_width);
 		if (d->window_height)
 			g_string_append_printf(desktop_entry, "-h %d ", d->window_height);
-		g_string_append_printf(desktop_entry, "%s\n", g_file_get_path(dest));
+		g_string_append_printf(desktop_entry, "%s --uri %%u\n", g_file_get_path(dest));
+		if (supported_mime_types)
+			g_string_append_printf(desktop_entry, "MimeType=%s\n", supported_mime_types);
 		struct dynamic_launcher_callback_data *cb_data = g_new(struct dynamic_launcher_callback_data, 1);
 		cb_data->desktop_file_id = g_strdup_printf("%s.desktop", package_name);
 		cb_data->desktop_entry = g_string_free(desktop_entry, FALSE);
@@ -573,6 +585,13 @@ static void activate(GtkApplication *app, struct jni_callback_data *d)
 	exit(1);
 }
 
+static gboolean option_uri_cb(const gchar* option_name, const gchar* value, gpointer data, GError** error)
+{
+	printf("option_uri_cb: %s %s, %p, %p\n", option_name, value, data, error);
+	uri_option = g_strdup(value);
+	return TRUE;
+}
+
 void init_cmd_parameters(GApplication *app, struct jni_callback_data *d)
 {
 	const GOptionEntry cmd_params[] = {
@@ -583,6 +602,7 @@ void init_cmd_parameters(GApplication *app, struct jni_callback_data *d)
 		{ "install",          'i', 0, G_OPTION_ARG_NONE,         &d->install,                 "install .desktop file for the given apk",                                                      NULL },
 		{ "extra-jvm-option", 'X', 0, G_OPTION_ARG_STRING_ARRAY, &d->extra_jvm_options,       "pass an additional option directly to art (e.g -X \"-verbose:jni\")",                          "\"OPTION\"" },
 		{ "extra-string-key", 'e', 0, G_OPTION_ARG_STRING_ARRAY, &d->extra_string_keys,       "pass a string extra (-e key=value)",                                                           "\"KEY=VALUE\"" },
+		{ "uri",              'u', G_OPTION_FLAG_OPTIONAL_ARG, G_OPTION_ARG_CALLBACK, option_uri_cb, "open the given URI inside the application",                                             "URI" },
 		{NULL}
 	};
 

@@ -9,6 +9,7 @@ public class IntentFilter {
 	
 	private List<String> actions = new ArrayList<>();
 	private Set<String> categories = new HashSet<>();
+	private List<String> dataSchemes = new ArrayList<>();
 
 	public IntentFilter() {}
 	public IntentFilter(String action) {
@@ -42,4 +43,20 @@ public class IntentFilter {
 	}
 
 	public void setPriority(int priority) {}
+
+	public void addDataScheme(String dataScheme) {
+		dataSchemes.add(dataScheme);
+	}
+
+	public boolean hasDataScheme(String dataScheme) {
+		return dataSchemes.contains(dataScheme);
+	}
+
+	public int countDataSchemes() {
+		return dataSchemes.size();
+	}
+
+	public String getDataScheme(int index) {
+		return dataSchemes.get(index);
+	}
 }

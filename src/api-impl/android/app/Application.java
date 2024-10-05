@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.content.res.Configuration;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.pm.PackageParser;
 
 public class Application extends ContextWrapper {
 	public long native_window;
@@ -14,6 +15,21 @@ public class Application extends ContextWrapper {
 
 	String get_app_label() {
 		return getString(pkg.applicationInfo.labelRes);
+	}
+
+	String get_supported_mime_types() {
+		String mimeTypes = "";
+		for (PackageParser.Activity activity: pkg.activities) {
+			for (PackageParser.IntentInfo intent: activity.intents) {
+				for (int i = 0; i < intent.countDataSchemes(); i++) {
+					String scheme = intent.getDataScheme(i);
+					// ignore http and https, as there is no way to only handle specific hosts in a .desktop file
+					if (!"http".equals(scheme) && !"https".equals(scheme))
+						mimeTypes += "x-scheme-handler/" + intent.getDataScheme(i) + ";";
+				}
+			}
+		}
+		return "".equals(mimeTypes) ? null : mimeTypes;
 	}
 
 	public interface ActivityLifecycleCallbacks {

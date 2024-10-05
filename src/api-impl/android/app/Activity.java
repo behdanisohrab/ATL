@@ -50,11 +50,13 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 	 * @return  instance of main activity class
 	 * @throws Exception 
 	 */
-	private static Activity createMainActivity(String className, long native_window) throws Exception {
+	private static Activity createMainActivity(String className, long native_window, String uriString) throws Exception {
+		Uri uri = uriString != null ? Uri.parse(uriString) : null;
 		if (className == null) {
 			for (PackageParser.Activity activity: pkg.activities) {
 				for (PackageParser.IntentInfo intent: activity.intents) {
-					if (intent.hasCategory("android.intent.category.LAUNCHER")) {
+					if ((uri == null && intent.hasCategory("android.intent.category.LAUNCHER")) ||
+						(uri != null && intent.hasDataScheme(uri.getScheme()))) {
 						className = activity.className;
 						break;
 					}
@@ -65,10 +67,16 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 		} else {
 			className = className.replace('/', '.');
 		}
+		if (className == null) {
+			System.err.println("Failed to find Activity to launch URI: " + uri);
+			System.exit(1);
+		}
 		Class<? extends Activity> cls = Class.forName(className).asSubclass(Activity.class);
 		Constructor<? extends Activity> constructor = cls.getConstructor();
 		Activity activity = constructor.newInstance();
 		activity.window.native_window = native_window;
+		if (uri != null)
+			activity.setIntent(new Intent("android.intent.action.VIEW", uri));
 		return activity;
 	}
 
@@ -467,7 +475,9 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 		finish();
 	}
 
-	public void setIntent(Intent newIntent) {}
+	public void setIntent(Intent newIntent) {
+		this.intent = newIntent;
+	}
 
 	public void unregisterReceiver(BroadcastReceiver receiver) {}
 

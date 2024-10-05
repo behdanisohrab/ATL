@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PatternMatcher;
 import android.os.UserHandle;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -2247,6 +2248,10 @@ public class PackageParser {
 				XmlUtils.skipCurrentTag(parser);
 				outInfo.addCategory(value);
 			} else if (nodeName.equals("data")) {
+				String scheme = parser.getAttributeValue(
+						ANDROID_RESOURCES, "scheme");
+				if (!TextUtils.isEmpty(scheme))
+					outInfo.addDataScheme(scheme);
 				XmlUtils.skipCurrentTag(parser);
 			} else if (!RIGID_PARSER) {
 				Slog.w(TAG, "Unknown element under <intent-filter>: "
