@@ -93,6 +93,7 @@ JNIEXPORT void JNICALL Java_android_widget_EditText_native_1setOnEditorActionLis
 	callback_data->listener = _REF(listener);
 	callback_data->listener_method = _METHOD(_CLASS(listener), "onEditorAction", "(Landroid/widget/TextView;ILandroid/view/KeyEvent;)Z");
 
+	g_signal_handlers_disconnect_matched(entry, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, on_activate, NULL);
 	g_signal_connect(entry, "activate", G_CALLBACK(on_activate), callback_data);
 }
 
