@@ -500,7 +500,7 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 			activity.getWindow().native_window = getWindow().native_window;
 			System.out.println("activity.getWindow().native_window >"+activity.getWindow().native_window+"<");
 			nativeFinish(0);
-			nativeRecreateActivity(activity);
+			nativeStartActivity(activity);
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			System.out.println("exception in Activity.recreate, this is kinda sus");
 			e.printStackTrace();
@@ -556,7 +556,6 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 	public void setTaskDescription(ActivityManager.TaskDescription description) {}
 
 	private native void nativeFinish(long native_window);
-	public static native void nativeRecreateActivity(Activity activity);
 	public static native void nativeStartActivity(Activity activity);
 	public static native void nativeOpenURI(String uri);
 	public native void nativeFileChooser(int action, String type, String title, int requestCode);

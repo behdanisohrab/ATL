@@ -11,7 +11,6 @@
 
 static GList *activity_backlog = NULL;
 static jobject activity_current = NULL;
-static jobject activity_toplevel_current = NULL;
 
 static void activity_close(JNIEnv *env, jobject activity)
 {
@@ -66,7 +65,6 @@ static void activity_focus(JNIEnv *env, jobject activity)
 static void activity_update_current(JNIEnv *env)
 {
 	jobject activity_new = activity_backlog ? g_list_first(activity_backlog)->data : NULL;
-	jobject activity_toplevel_new = activity_backlog ? g_list_last(activity_backlog)->data : NULL;
 
 	if (activity_current != activity_new) {
 		if (activity_current)
@@ -76,17 +74,6 @@ static void activity_update_current(JNIEnv *env)
 			activity_focus(env, activity_new);
 
 		activity_current = activity_new;
-	}
-
-	/* for Activity.recreate */
-	if(activity_toplevel_current != activity_toplevel_new) {
-		if (activity_toplevel_current)
-			activity_unfocus(env, activity_toplevel_current);
-
-		if (activity_toplevel_new)
-			activity_focus(env, activity_toplevel_new);
-
-		activity_toplevel_current = activity_toplevel_new;
 	}
 }
 
@@ -120,7 +107,7 @@ void activity_close_all(void)
 
 static jobject activity_not_created = NULL;
 
-void _activity_start(JNIEnv *env, jobject activity_object, bool recreate)
+void activity_start(JNIEnv *env, jobject activity_object)
 {
 	/* -- run the activity's onCreate -- */
 	(*env)->CallVoidMethod(env, activity_object, handle_cache.activity.onCreate, NULL);
@@ -137,18 +124,10 @@ void _activity_start(JNIEnv *env, jobject activity_object, bool recreate)
 	if((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 
-	if(recreate) // only allowed for toplevel, so we know for sure where in the stack it belongs
-		activity_backlog = g_list_append(activity_backlog, _REF(activity_object));
-	else
-		activity_backlog = g_list_prepend(activity_backlog, _REF(activity_object));
+	activity_backlog = g_list_prepend(activity_backlog, _REF(activity_object));
 
 	activity_update_current(env);
 
-}
-
-void activity_start(JNIEnv *env, jobject activity_object)
-{
-	_activity_start(env, activity_object, false);
 }
 
 JNIEXPORT void JNICALL Java_android_app_Activity_nativeFinish(JNIEnv *env, jobject this, jlong window)
@@ -172,12 +151,6 @@ JNIEXPORT void JNICALL Java_android_app_Activity_nativeFinish(JNIEnv *env, jobje
 	if (activity_backlog == NULL && window)
 		gtk_window_close(GTK_WINDOW(_PTR(window)));
 }
-
-JNIEXPORT void JNICALL Java_android_app_Activity_nativeRecreateActivity(JNIEnv *env, jclass class, jobject activity)
-{
-	_activity_start(env, activity, true);
-}
-
 
 JNIEXPORT void JNICALL Java_android_app_Activity_nativeStartActivity(JNIEnv *env, jclass class, jobject activity)
 {
