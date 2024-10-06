@@ -234,11 +234,11 @@ JNIEXPORT jint JNICALL Java_android_content_res_AssetManager_loadThemeAttributeV
 	struct AssetManager *asset_manager = _PTR(_GET_LONG_FIELD(this, "mObject"));
 	const struct ResTable *res_table = AssetManager_getResources(asset_manager, true);
 	struct Theme *theme = _PTR(theme_ptr);
-	uint32_t resId = ident;
+	uint32_t resId = 0;
 	struct Res_value value;
 	uint32_t outSpecFlags;
 	struct ResTable_config outConfig;
-	int block = Theme_getAttribute(theme, resId, &value, &outSpecFlags);
+	int block = Theme_getAttribute(theme, ident, &value, &outSpecFlags);
 	if (resolve) {
 		block = Theme_resolveAttributeReference(theme, &value, block, &resId, &outSpecFlags, &outConfig);
 	}
