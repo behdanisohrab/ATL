@@ -345,8 +345,16 @@ ANativeWindow * ANativeWindow_fromSurface(JNIEnv* env, jobject surface)
 		/* Get the top level window's X11 window ID */
 		Window toplevel_window = gdk_x11_surface_get_xid(gtk_native_get_surface(GTK_NATIVE(window)));
 
-		/* Make a new X11 window inheriting from the GTK top level window */
-		Window x11_window = XCreateSimpleWindow(x11_display, toplevel_window, 0, 0, width, height, 0, 0, 0xffffffff);
+		/*
+		 * Make a new X11 window inheriting from the GTK top level window.
+		 * The reason why it's first bound to the default root window and
+		 * then reparented to the GTK window is because on NVIDIA drivers
+		 * the GTK window selects a visual mode that's not compatible with
+		 * NVIDIA's implementation of EGL for some reason.
+		 */
+		Window x11_window = XCreateSimpleWindow(x11_display, DefaultRootWindow(x11_display), 0, 0, width, height, 0, 0, 0xffffffff);
+		XReparentWindow(x11_display, x11_window, toplevel_window, 0, 0);
+
 		XMapWindow(x11_display, x11_window);
 
 		/* Make the X11 window able to be clicked through */
