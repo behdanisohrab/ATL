@@ -5,6 +5,8 @@ public interface WindowManager {
 
 	public class LayoutParams extends ViewGroup.LayoutParams {
 		public static final int FLAG_KEEP_SCREEN_ON = 0;
+		public static final int FLAG_DIM_BEHIND = 2;
+		public static final int FLAG_NOT_FOCUSABLE = 8;
 
 		public float screenBrightness;
 		public int softInputMode;

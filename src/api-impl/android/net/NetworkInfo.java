@@ -47,4 +47,8 @@ public class NetworkInfo {
 	public String getSubtypeName() {
 		return "UNKNOWN";
 	}
+
+	public boolean isAvailable () {
+		return false;
+	}
 }

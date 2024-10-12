@@ -57,4 +57,8 @@ public class TelephonyManager {
 	public int getCallState() {
 		return 0; // CALL_STATE_IDLE
 	}
+
+	public String getDeviceId() {
+		return "";
+	}
 }

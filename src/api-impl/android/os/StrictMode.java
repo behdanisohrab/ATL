@@ -11,6 +11,9 @@ public final class StrictMode {
 			public Builder detectAll() {
 				return this;
 			}
+			public Builder detectNetwork() {
+				return this;
+			}
 			public Builder permitDiskReads() {
 				return this;
 			}
@@ -18,9 +21,6 @@ public final class StrictMode {
 				return this;
 			}
 			public Builder penaltyLog() {
-				return this;
-			}
-			public Builder detectNetwork() {
 				return this;
 			}
 			public ThreadPolicy build() {

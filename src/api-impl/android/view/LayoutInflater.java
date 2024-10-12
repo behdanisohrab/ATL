@@ -44,8 +44,14 @@ public class LayoutInflater {
 		this.context = context;
 	}
 
+	private Factory mFactory;
+
 	public final LayoutInflater.Factory getFactory() {
-		return null;
+		return mFactory;
+	}
+
+	public final void setFactory(LayoutInflater.Factory factory){
+		mFactory = factory;
 	}
 
 	public void setFactory2(Factory2 factory) {

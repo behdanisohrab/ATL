@@ -6,6 +6,7 @@ import android.view.SurfaceHolder;
 
 public class Window {
 	public static final int FEATURE_OPTIONS_PANEL = 0;
+	public static final int FEATURE_NO_TITLE = 1;
 
 	public static interface Callback {
 		public void onContentChanged();

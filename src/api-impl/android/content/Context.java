@@ -69,7 +69,8 @@ public class Context extends Object {
 	public static final String MEDIA_ROUTER_SERVICE = "media_router";
 	public static final String WINDOW_SERVICE = "window";
 	public static final String INPUT_METHOD_SERVICE = "input";
-        public static final String POWER_SERVICE = "power";
+	public static final String POWER_SERVICE = "power";
+	public static final String VIBRATOR_SERVICE = "vibrator";
 
 	public static Vibrator vibrator;
 

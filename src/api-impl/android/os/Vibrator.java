@@ -9,6 +9,10 @@ public class Vibrator {
 		fd = native_constructor();
 	}
 
+	public boolean hasVibrator(){
+		return true;
+	}
+
 	public void vibrate(long millis) {
 		if(fd != -1)
 			native_vibrate(fd, millis);

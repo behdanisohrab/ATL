@@ -22,6 +22,7 @@ hax_jar = jar('hax', [
               	'android/annotation/Widget.java',
               	'android/app/Activity.java',
               	'android/app/ActivityManager.java',
+                'android/app/ActivityThread.java',
               	'android/app/AlarmManager.java',
               	'android/app/AlertDialog.java',
               	'android/app/AppGlobals.java',

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Iterator;
 
 public class IntentFilter {
 	
@@ -58,5 +59,9 @@ public class IntentFilter {
 
 	public String getDataScheme(int index) {
 		return dataSchemes.get(index);
+	}
+
+	public final Iterator<String> actionsIterator() {
+		return actions.iterator();
 	}
 }
