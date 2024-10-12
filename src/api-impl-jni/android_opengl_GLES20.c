@@ -12,6 +12,11 @@ JNIEXPORT jstring JNICALL Java_android_opengl_GLES20_glGetString(JNIEnv *env, jc
 	return _JSTRING(chars);
 }
 
+JNIEXPORT jint JNICALL Java_android_opengl_GLES20_glGetError(JNIEnv *env, jclass)
+{
+	return (jint) glGetError();
+}
+
 JNIEXPORT void JNICALL Java_android_opengl_GLES20_glGetIntegerv__I_3II(JNIEnv *env, jclass, jint pname, jintArray params_ref, jint offset)
 {
 	jint *params = (*env)->GetIntArrayElements(env, params_ref, NULL);
@@ -24,14 +29,35 @@ JNIEXPORT void JNICALL Java_android_opengl_GLES20_glEnableVertexAttribArray(JNIE
 	glEnableVertexAttribArray((GLuint)index);
 }
 
+JNIEXPORT void JNICALL Java_android_opengl_GLES20_glVertexAttribPointerBounds(JNIEnv *env, jclass, jint index, jint size, jint type, jboolean normalized, jint stride, jobject pointer, jint count)
+{
+	jarray array_ref;
+	jbyte *array;
+	GLvoid *pixels = get_nio_buffer(env, pointer, &array_ref, &array);
+
+	glVertexAttribPointer(index, size, type, normalized, stride, pixels);
+	release_nio_buffer(env, array_ref, array);
+}
+
+
 JNIEXPORT void JNICALL Java_android_opengl_GLES20_glDisable(JNIEnv *env, jclass, jint cap)
 {
 	glDisable((GLenum)cap);
 }
 
+JNIEXPORT void JNICALL Java_android_opengl_GLES20_glActiveTexture(JNIEnv *env, jclass, jint texture)
+{
+	glActiveTexture((GLenum)texture);
+}
+
 JNIEXPORT void JNICALL Java_android_opengl_GLES20_glEnable(JNIEnv *env, jclass, jint cap)
 {
 	glEnable((GLenum)cap);
+}
+
+JNIEXPORT void JNICALL Java_android_opengl_GLES20_glFrontFace(JNIEnv *env, jclass, jint mode)
+{
+	glEnable((GLenum)mode);
 }
 
 JNIEXPORT void JNICALL Java_android_opengl_GLES20_glViewport(JNIEnv *env, jclass, jint x, jint y, jint width, jint height)
@@ -201,6 +227,15 @@ JNIEXPORT void JNICALL Java_android_opengl_GLES20_glDeleteShader(JNIEnv *env, jc
 	glDeleteShader((GLuint)shader);
 }
 
+JNIEXPORT void JNICALL Java_android_opengl_GLES20_glDeleteTextures(JNIEnv *env, jclass, jint n, jintArray textures, jint offset)
+{
+	jint *tex = (*env)->GetIntArrayElements(env, textures, NULL);
+
+	glDeleteTextures((GLsizei) n, (const GLuint*) tex + (4 * offset));
+
+	(*env)->ReleaseIntArrayElements(env, textures, tex, 0);
+}
+
 JNIEXPORT void JNICALL Java_android_opengl_GLES20_glUseProgram(JNIEnv *env, jclass, jint program)
 {
 	glUseProgram((GLuint)program);
@@ -223,9 +258,24 @@ JNIEXPORT void JNICALL Java_android_opengl_GLES20_glUniform1i(JNIEnv *env, jclas
 	glUniform1i((GLint)location, (GLint)x);
 }
 
+JNIEXPORT void JNICALL Java_android_opengl_GLES20_glUniform4f(JNIEnv *env, jclass, jint location, jfloat x, jfloat y, jfloat z, jfloat w)
+{
+	glUniform4f((GLint)location, (GLfloat)x, (GLfloat)y, (GLfloat)z, (GLfloat)w);
+}
+
 JNIEXPORT void JNICALL Java_android_opengl_GLES20_glDrawArrays(JNIEnv *env, jclass, jint mode, jint first, jint count)
 {
 	glDrawArrays((GLenum)mode, (GLint)first, (GLsizei)count);
+}
+
+JNIEXPORT void JNICALL Java_android_opengl_GLES20_glDrawElements(JNIEnv *env, jclass, jint mode, jint count, jint type, jobject indices)
+{
+	jarray array_ref;
+	jbyte *array;
+	GLvoid *data = get_nio_buffer(env, indices, &array_ref, &array);
+
+	glDrawElements((GLenum)mode, (GLsizei)type, (GLenum)type, data);
+	release_nio_buffer(env, array_ref, array);
 }
 
 JNIEXPORT void JNICALL Java_android_opengl_GLES20_glClearColor(JNIEnv *env, jclass, jfloat red, jfloat green, jfloat blue, jfloat alpha)

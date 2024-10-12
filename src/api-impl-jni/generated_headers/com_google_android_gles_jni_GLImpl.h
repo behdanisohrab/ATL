@@ -33,14 +33,6 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glAlphaFuncx
 
 /*
  * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glBindTexture
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glBindTexture
-  (JNIEnv *, jobject, jint, jint);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
  * Method:    glBlendFunc
  * Signature: (II)V
  */
@@ -161,22 +153,6 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glCullFace
 
 /*
  * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glDeleteTextures
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glDeleteTextures__I_3II
-  (JNIEnv *, jobject, jint, jintArray, jint);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glDeleteTextures
- * Signature: (ILjava/nio/IntBuffer;)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glDeleteTextures__ILjava_nio_IntBuffer_2
-  (JNIEnv *, jobject, jint, jobject);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
  * Method:    glDepthFunc
  * Signature: (I)V
  */
@@ -209,14 +185,6 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glDepthRangex
 
 /*
  * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glDisable
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glDisable
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
  * Method:    glDisableClientState
  * Signature: (I)V
  */
@@ -230,22 +198,6 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glDisableClientS
  */
 JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glDrawArrays
   (JNIEnv *, jobject, jint, jint, jint);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glDrawElements
- * Signature: (IIILjava/nio/Buffer;)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glDrawElements__IIILjava_nio_Buffer_2
-  (JNIEnv *, jobject, jint, jint, jint, jobject);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glEnable
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glEnable
-  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     com_google_android_gles_jni_GLImpl
@@ -313,14 +265,6 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glFogxv__ILjava_
 
 /*
  * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glFrontFace
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glFrontFace
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
  * Method:    glFrustumf
  * Signature: (FFFFFF)V
  */
@@ -338,17 +282,9 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glFrustumx
 /*
  * Class:     com_google_android_gles_jni_GLImpl
  * Method:    glGenTextures
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glGenTextures__I_3II
-  (JNIEnv *, jobject, jint, jintArray, jint);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glGenTextures
  * Signature: (ILjava/nio/IntBuffer;)V
  */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glGenTextures__ILjava_nio_IntBuffer_2
+JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glGenTextures
   (JNIEnv *, jobject, jint, jobject);
 
 /*
@@ -905,14 +841,6 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glTexImage2D
 
 /*
  * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glTexParameterf
- * Signature: (IIF)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glTexParameterf
-  (JNIEnv *, jobject, jint, jint, jfloat);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
  * Method:    glTexParameterx
  * Signature: (III)V
  */
@@ -950,14 +878,6 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glTranslatex
  */
 JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glVertexPointerBounds
   (JNIEnv *, jobject, jint, jint, jint, jobject, jint);
-
-/*
- * Class:     com_google_android_gles_jni_GLImpl
- * Method:    glViewport
- * Signature: (IIII)V
- */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glViewport
-  (JNIEnv *, jobject, jint, jint, jint, jint);
 
 /*
  * Class:     com_google_android_gles_jni_GLImpl
@@ -1068,7 +988,7 @@ JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glDeleteBuffers_
  * Method:    glDrawElements
  * Signature: (IIII)V
  */
-JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glDrawElements__IIII
+JNIEXPORT void JNICALL Java_com_google_android_gles_1jni_GLImpl_glDrawElements
   (JNIEnv *, jobject, jint, jint, jint, jint);
 
 /*

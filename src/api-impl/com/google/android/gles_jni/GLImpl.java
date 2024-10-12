@@ -106,9 +106,12 @@ public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 
 	// C function void glBindTexture ( GLenum target, GLuint texture )
 
-	public native void glBindTexture(
+	public void glBindTexture(
 	    int target,
-	    int texture);
+	    int texture)
+	{
+		GLES10.glBindTexture(target, texture);
+	}
 
 	// C function void glBlendFunc ( GLenum sfactor, GLenum dfactor )
 
@@ -270,16 +273,21 @@ public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 
 	// C function void glDeleteTextures ( GLsizei n, const GLuint *textures )
 
-	public native void glDeleteTextures(
+	public void glDeleteTextures(
 	    int n,
 	    int[] textures,
-	    int offset);
+	    int offset) {
+		GLES10.glDeleteTextures(n, textures, offset);
+	}
 
 	// C function void glDeleteTextures ( GLsizei n, const GLuint *textures )
 
-	public native void glDeleteTextures(
+	public void glDeleteTextures(
 	    int n,
-	    java.nio.IntBuffer textures);
+	    java.nio.IntBuffer textures)
+	{
+		GLES10.glDeleteTextures(n, textures);
+	}
 
 	// C function void glDepthFunc ( GLenum func )
 
@@ -305,8 +313,11 @@ public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 
 	// C function void glDisable ( GLenum cap )
 
-	public native void glDisable(
-	    int cap);
+	public void glDisable(
+	    int cap)
+	{
+		GLES10.glDisable(cap);
+	}
 
 	// C function void glDisableClientState ( GLenum array )
 
@@ -322,16 +333,22 @@ public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 
 	// C function void glDrawElements ( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices )
 
-	public native void glDrawElements(
+	public void glDrawElements(
 	    int mode,
 	    int count,
 	    int type,
-	    java.nio.Buffer indices);
+	    java.nio.Buffer indices)
+	{
+		GLES10.glDrawElements(mode, count, type, indices);
+	}
 
 	// C function void glEnable ( GLenum cap )
 
-	public native void glEnable(
-	    int cap);
+	public void glEnable(
+	    int cap)
+	{
+		GLES10.glEnable(cap);
+	}
 
 	// C function void glEnableClientState ( GLenum array )
 
@@ -388,8 +405,11 @@ public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 
 	// C function void glFrontFace ( GLenum mode )
 
-	public native void glFrontFace(
-	    int mode);
+	public void glFrontFace(
+	    int mode)
+	{
+		GLES10.glFrontFace(mode);
+	}
 
 	// C function void glFrustumf ( GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat zNear, GLfloat zFar )
 
@@ -413,10 +433,13 @@ public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 
 	// C function void glGenTextures ( GLsizei n, GLuint *textures )
 
-	public native void glGenTextures(
+	public void glGenTextures(
 	    int n,
 	    int[] textures,
-	    int offset);
+	    int offset)
+	{
+		GLES10.glGenTextures(n, textures, offset);
+	}
 
 	// C function void glGenTextures ( GLsizei n, GLuint *textures )
 
@@ -948,10 +971,13 @@ public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 
 	// C function void glTexParameterf ( GLenum target, GLenum pname, GLfloat param )
 
-	public native void glTexParameterf(
+	public void glTexParameterf(
 	    int target,
 	    int pname,
-	    float param);
+	    float param)
+	{
+		GLES10.glTexParameterf(target, pname, param);
+	}
 
 	// C function void glTexParameterx ( GLenum target, GLenum pname, GLfixed param )
 
@@ -1021,11 +1047,13 @@ public class GLImpl implements GL10, GL10Ext, GL11, GL11Ext, GL11ExtensionPack {
 
 	// C function void glViewport ( GLint x, GLint y, GLsizei width, GLsizei height )
 
-	public native void glViewport(
+	public void glViewport(
 	    int x,
 	    int y,
 	    int width,
-	    int height);
+	    int height) {
+		GLES10.glViewport(x, y, width, height);
+	}
 
 	// C function GLbitfield glQueryMatrixxOES ( GLfixed *mantissa, GLint *exponent )
 
