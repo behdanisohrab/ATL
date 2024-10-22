@@ -18,7 +18,6 @@ public class MediaCodec {
 	private long native_codec;
 	private boolean outputFormatSet = false;
 	private MediaFormat mediaFormat;
-	private boolean isReleased = false;
 
 	private Queue<Integer> freeOutputBuffers;
 	private Queue<Integer> queuedInputBuffers;
@@ -148,8 +147,9 @@ public class MediaCodec {
 
 	public void release() {
 		System.out.println("MediaCodec.release(): codecName=" + codecName);
-		native_release(native_codec);
-		isReleased = true;
+		if (native_codec != 0)
+			native_release(native_codec);
+		native_codec = 0;
 	}
 
 	@Override
@@ -158,9 +158,7 @@ public class MediaCodec {
 		try {
 			super.finalize();
 		} finally {
-			if (!isReleased) {
-				release();
-			}
+			release();
 		}
 	}
 
