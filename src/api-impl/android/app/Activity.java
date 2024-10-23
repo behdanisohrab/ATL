@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageParser;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -169,6 +171,12 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 		for (Fragment fragment : fragments) {
 			fragment.onStart();
 		}
+
+		TypedArray ta = obtainStyledAttributes(new int[] {R.attr.windowBackground});
+		Drawable background = ta.getDrawable(0);
+		if (background != null)
+			window.setBackgroundDrawable(background);
+		ta.recycle();
 
 		return;
 	}
