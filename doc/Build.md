@@ -6,7 +6,7 @@ sudo apt install libasound2-dev libavcodec-dev libcap-dev  libdrm-dev libglib2.0
 
 ### Fedora
 ```sh
-sudo dnf install java-17-openjdk-devel pkgconfig(gtk4) pkgconfig(libbsd) pkgconfig(libportal) pkgconfig(sqlite3) pkgconfig(libwebp) pkgconfig(liblz4) pkgconfig(openxr)
+sudo dnf install java-17-openjdk-devel 'pkgconfig(gtk4)' 'pkgconfig(libbsd)' 'pkgconfig(libportal)' 'pkgconfig(sqlite3)' 'pkgconfig(libwebp)' 'pkgconfig(liblz4)' 'pkgconfig(openxr)'
 ```
 
 ## Additional Dependencies
