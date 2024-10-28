@@ -226,6 +226,8 @@ public final class Log {
 	 * @param msg The message you would like logged.
 	 */
 	public static int e(String tag, String msg) {
+        if ("SoLoader".equals(tag))
+             e("PHH", "Kikoo", new Throwable());
 		return println_native(LOG_ID_MAIN, ERROR, tag, msg);
 	}
 

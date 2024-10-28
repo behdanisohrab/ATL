@@ -4,6 +4,7 @@ import android.content.pm.ConfigurationInfo;
 import android.graphics.Bitmap;
 
 import java.util.List;
+import java.util.Collections;
 
 public class ActivityManager {
 
@@ -46,4 +47,8 @@ public class ActivityManager {
 	public static void getMyMemoryState(RunningAppProcessInfo outInfo) {}
 
 	public boolean clearApplicationUserData() {return false;}
+
+    public List<ApplicationExitInfo> getHistoricalProcessExitReasons(String pkgname, int pid, int maxNum) {
+        return Collections.emptyList();
+    }
 }

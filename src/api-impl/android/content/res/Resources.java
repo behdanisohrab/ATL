@@ -1461,6 +1461,8 @@ public class Resources {
 		}
 
 		private final AssetManager mAssets;
+        public void rebase() {
+        }
 	}
 
 	/**

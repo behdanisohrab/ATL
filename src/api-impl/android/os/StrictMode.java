@@ -26,6 +26,12 @@ public final class StrictMode {
 			public ThreadPolicy build() {
 				return new ThreadPolicy();
 			}
+            public Builder detectResourceMismatches() {
+                return this;
+            }
+            public Builder detectUnbufferedIo() {
+                return this;
+            }
 		}
 	}
 	public static final class VmPolicy {

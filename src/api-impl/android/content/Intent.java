@@ -342,4 +342,7 @@ public class Intent implements Parcelable {
 			return new ShortcutIconResource();
 		}
 	}
+    public void removeExtra(String name) {
+        extras.remove(name);
+    }
 }

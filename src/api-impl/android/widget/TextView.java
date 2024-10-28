@@ -307,4 +307,14 @@ public class TextView extends View {
 	public void setLines(int lines) {}
 
 	public void setMinLines(int lines) {}
+    public boolean isAllCaps() { return false; }
+
+    public int getAutoSizeStepGranularity() {
+        return -1;
+    }
+
+    public void setAutoSizeTextTypeUniformWithPresetSizes(int[] presetSizes, int unit) {
+    }
+
+    public void setCompoundDrawableTintList(ColorStateList tint) {}
 }

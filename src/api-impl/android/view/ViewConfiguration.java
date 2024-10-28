@@ -54,4 +54,8 @@ public class ViewConfiguration {
 	public int getScaledWindowTouchSlop() {
 		return 8;
 	}
+
+    public boolean shouldShowMenuShortcutsWhenKeyboardPresent() {
+        return true;
+    }
 }
