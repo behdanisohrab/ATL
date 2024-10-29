@@ -557,6 +557,7 @@ hax_jar = jar('hax', [
               	'com/google/android/vending/licensing/LicenseChecker.java',
               	'com/google/android/vending/licensing/LicenseCheckerCallback.java',
               	'com/google/android/vending/licensing/Policy.java',
+		'com/android/server/am/DumpHeapProvider.java',
               	'com/htc/util/htcresutil/resutil.java',
               	'javax/microedition/khronos/egl/EGL.java',
               	'javax/microedition/khronos/egl/EGL10.java',

@@ -1,5 +1,6 @@
 package android.content;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +38,6 @@ public abstract class ContentProvider {
 
 	public abstract String getType(Uri uri);
 
-	public abstract ParcelFileDescriptor openFile(Uri uri, String mode);
+	public abstract ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException;
 
 }
