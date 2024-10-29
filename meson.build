@@ -148,6 +148,7 @@ libtranslationlayer_so = shared_library('translation_layer_main', [
                                                                   include_directories: ['src/sk_area/'],
                                                                   install: true,
                                                                   install_dir : get_option('libdir') / 'java/dex/android_translation_layer/natives',
+                                                                  install_rpath: '$ORIGIN/:' + get_option('prefix') / get_option('libdir') / 'art',
                                                                   dependencies: [
                                                                   	dependency('gtk4', version: '>=4.8'), dependency('gl'), dependency('egl'), dependency('wayland-client'), dependency('jni'),
                                                                   	dependency('libportal'), dependency('sqlite3'), libskia_dep, dependency('libavcodec', version: '>=59'), dependency('libdrm'),
