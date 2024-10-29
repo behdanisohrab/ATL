@@ -73,6 +73,9 @@ libandroid_so = shared_library('android', [
                                           ],
                                           c_args: [
                                           	'-D_LARGEFILE64_SOURCE',
+                                          ],
+                                          link_args : [
+                                          	'-Wl,-z,lazy',  # outdated Nvidia driver version 340 lacks EGL symbols
                                           ])
 
 libtranslationlayer_so = shared_library('translation_layer_main', [
