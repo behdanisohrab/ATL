@@ -322,6 +322,7 @@ hax_jar = jar('hax', [
               	'android/provider/BaseColumns.java',
               	'android/provider/ContactsContract.java',
               	'android/provider/Settings.java',
+				'android/security/keystore/KeyGenParameterSpec.java',
               	'android/telecom/TelecomManager.java',
               	'android/telephony/CellLocation.java',
               	'android/telephony/PhoneNumberUtils.java',
