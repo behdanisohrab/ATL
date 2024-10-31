@@ -33,29 +33,20 @@
 
 ## About the Project
 
-![Angry Birds 3.2.0, Worms 2 Armageddon, and Gravity Defied running side by side by side](https://gitlab.com/android_translation_layer/android_translation_layer/-/raw/master/screenshot.png)
+![Angry Birds 3.2.0](https://gitlab.com/android_translation_layer/android_translation_layer/-/wikis/uploads/168fc2f1e8ddbfc78217ca1c52034f86/image.png)
 
 ATL is a translation layer that allows running Android apps on a Linux system. It is different from projects such as Waydroid in that it does not rely on a virtual machine running Android in the background. Instead our philosophy is to reuse as much of the standard Linux stack as possible, decoupling the app from android as early as possible.
+
+Checkout the [list of known working apps](https://gitlab.com/android_translation_layer/android_translation_layer/-/wikis/known-working-proprietary-apps)!
 
 ### Powered By
 
 ATL is powered by the following projects:
 
-- [bionic_translation](https://gitlab.com/android_translation_layer/bionic_translation/) to translate from bionic to libc/musel
+- [bionic_translation](https://gitlab.com/android_translation_layer/bionic_translation/) to translate from bionic to glibc/musl
 - and more...
 
 ## Getting Started
-
-<!--
- * [Flathub Installation](#flathub-installation)
-
-### ATL in Action
-
-Try it yourself by running XXX on your device. Simply install it from flathub!
-
-[![Get it on Flathub][flathub-badge]][flathub]
-
--->
 
 ### Building ATL
 
