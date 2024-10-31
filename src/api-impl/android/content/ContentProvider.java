@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.pm.PackageParser;
+import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
@@ -19,6 +20,7 @@ public abstract class ContentProvider {
 			System.out.println("creating " + providerName);
 			Class<? extends ContentProvider> providerCls = Class.forName(providerName).asSubclass(ContentProvider.class);
 			ContentProvider provider = providerCls.getConstructor().newInstance();
+			provider.attachInfo(Context.this_application, provider_parsed.info);
 			provider.onCreate();
 			providers.put(provider_parsed.info.authority, provider);
 		}
@@ -39,5 +41,7 @@ public abstract class ContentProvider {
 	public abstract String getType(Uri uri);
 
 	public abstract ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException;
+
+	public void attachInfo(Context context, ProviderInfo provider) {}
 
 }
