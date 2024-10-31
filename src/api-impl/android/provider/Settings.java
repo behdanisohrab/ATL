@@ -81,6 +81,14 @@ public class Settings {
 					return def;
 			}
 		}
+
+		public static String getString(ContentResolver cr, String key) {
+			switch (key) {
+				default:
+					java.lang.System.out.println("!!!! Settings$Global.getString: unknown key: >" + key + "<");
+					return "STRING_FROM_SETTINGS_GLOBAL_WITH_KEY_" + key;
+			}
+		}
 	}
 
 	public static class SettingNotFoundException extends AndroidException {}

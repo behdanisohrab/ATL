@@ -1814,6 +1814,8 @@ public class PackageManager {
 				return PERMISSION_GRANTED;
 			case "android.permission.READ_EXTERNAL_STORAGE":
 				return PERMISSION_GRANTED;
+			case "com.google.android.c2dm.permission.SEND":
+				return PERMISSION_GRANTED;
 			default:
 				System.out.println("PackageManager.checkPermission: >" + permName + "< not handled\n");
 				return PERMISSION_DENIED;
