@@ -431,7 +431,7 @@ static void open(GtkApplication *app, GFile **files, gint nfiles, const gchar *h
 	// construct main Activity
 	activity_object = (*env)->CallStaticObjectMethod(env, handle_cache.activity.class,
 	                                                 _STATIC_METHOD(handle_cache.activity.class, "createMainActivity", "(Ljava/lang/String;JLjava/lang/String;)Landroid/app/Activity;"),
-	                                                 _JSTRING(d->apk_main_activity_class), _INTPTR(window), uri_option ? _JSTRING(uri_option) : NULL);
+	                                                 _JSTRING(d->apk_main_activity_class), _INTPTR(window), (uri_option && *uri_option) ? _JSTRING(uri_option) : NULL);
 	if ((*env)->ExceptionCheck(env))
 		(*env)->ExceptionDescribe(env);
 	if (uri_option)
