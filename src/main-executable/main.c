@@ -401,8 +401,16 @@ static void open(GtkApplication *app, GFile **files, gint nfiles, const gchar *h
 
 	window = gtk_application_window_new(app);
 
-	if (getenv("ATL_DISABLE_WINDOW_DECORATIONS"))
-		gtk_window_set_decorated(GTK_WINDOW(window), 0);
+	const char *disable_decoration_env = getenv("ATL_DISABLE_WINDOW_DECORATIONS");
+	gboolean decorated;
+	if (disable_decoration_env)
+		decorated = !strcmp(disable_decoration_env, "0") || !strcmp(disable_decoration_env, "false");
+	else {     // by default only enable decorations if there are any action buttons to show in the title bar
+		const char *decoration_layout;
+		g_object_get(G_OBJECT(gtk_settings_get_default()), "gtk-decoration-layout", &decoration_layout, NULL);
+		decorated = strcmp(decoration_layout, "") && strcmp(decoration_layout, "menu");
+	}
+	gtk_window_set_decorated(GTK_WINDOW(window), decorated);
 
 	if (getenv("ATL_FORCE_FULLSCREEN"))
 		gtk_window_fullscreen(GTK_WINDOW(window));
@@ -546,6 +554,15 @@ static void open(GtkApplication *app, GFile **files, gint nfiles, const gchar *h
 	if (GDK_IS_WAYLAND_TOPLEVEL(toplevel)) {
 		gdk_wayland_toplevel_set_application_id(GDK_WAYLAND_TOPLEVEL(toplevel), package_name);
 	}
+	GdkMonitor *monitor = gdk_display_get_monitor_at_surface(gdk_display_get_default(), GDK_SURFACE(toplevel));
+	GdkRectangle monitor_geometry;
+	gdk_monitor_get_geometry(monitor, &monitor_geometry);
+	jobject resources = _GET_STATIC_OBJ_FIELD(handle_cache.context.class, "r", "Landroid/content/res/Resources;");
+	jobject configuration = _GET_OBJ_FIELD(resources, "mConfiguration", "Landroid/content/res/Configuration;");
+	if (monitor_geometry.width >= 800 && monitor_geometry.height >= 800)
+		_SET_INT_FIELD(configuration, "screenLayout", /*SCREENLAYOUT_SIZE_LARGE*/ 0x03);
+	else
+		_SET_INT_FIELD(configuration, "screenLayout", /*SCREENLAYOUT_SIZE_NORMAL*/ 0x02);
 
 	if (app_icon_path) {
 		char *app_icon_path_full = malloc(strlen(app_data_dir) + 1 + strlen(app_icon_path) + 1); // +1 for /, +1 for NULL

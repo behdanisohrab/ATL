@@ -577,3 +577,17 @@ JNIEXPORT void JNICALL Java_android_view_View_native_1drawContent(JNIEnv *env, j
 	GdkSnapshot *snapshot = GDK_SNAPSHOT(_PTR(snapshot_ptr));
 	gtk_widget_snapshot_child(&wrapper->parent_instance, wrapper->child, snapshot);
 }
+
+JNIEXPORT void JNICALL Java_android_view_View_nativeSetFullscreen(JNIEnv *env, jobject this, jlong widget_ptr, jboolean fullscreen)
+{
+	GtkWidget *widget = GTK_WIDGET(_PTR(widget_ptr));
+	GtkWindow *window = GTK_WINDOW(gtk_widget_get_native(widget));
+	if (fullscreen) {
+		if (gtk_window_is_maximized(window))
+			gtk_window_fullscreen(window);
+		else
+			printf("blocking fullscreen request, because window is not maximized\n");
+	} else {
+		gtk_window_unfullscreen(window);
+	}
+}

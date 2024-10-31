@@ -1038,7 +1038,10 @@ public class View implements Drawable.Callback {
 		return true;
 	}
 
+	private native void nativeSetFullscreen(long widget, boolean fullscreen);
+
 	public void setSystemUiVisibility(int visibility) {
+		nativeSetFullscreen(widget, (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0);
 		system_ui_visibility = visibility;
 	}
 	public int getSystemUiVisibility() {
