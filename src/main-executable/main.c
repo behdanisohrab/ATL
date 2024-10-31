@@ -401,8 +401,16 @@ static void open(GtkApplication *app, GFile **files, gint nfiles, const gchar *h
 
 	window = gtk_application_window_new(app);
 
-	if (getenv("ATL_DISABLE_WINDOW_DECORATIONS"))
-		gtk_window_set_decorated(GTK_WINDOW(window), 0);
+	const char *disable_decoration_env = getenv("ATL_DISABLE_WINDOW_DECORATIONS");
+	gboolean decorated;
+	if (disable_decoration_env)
+		decorated = !strcmp(disable_decoration_env, "0") || !strcmp(disable_decoration_env, "false");
+	else {     // by default only enable decorations if there are any action buttons to show in the title bar
+		const char *decoration_layout;
+		g_object_get(G_OBJECT(gtk_settings_get_default()), "gtk-decoration-layout", &decoration_layout, NULL);
+		decorated = strcmp(decoration_layout, "") && strcmp(decoration_layout, "menu");
+	}
+	gtk_window_set_decorated(GTK_WINDOW(window), decorated);
 
 	if (getenv("ATL_FORCE_FULLSCREEN"))
 		gtk_window_fullscreen(GTK_WINDOW(window));
