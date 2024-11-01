@@ -2,6 +2,8 @@
 
 #include <gtk/gtk.h>
 #include <string.h>
+#include <libportal/portal.h>
+#include <libportal/settings.h>
 
 #include "portal-openuri.h"
 
@@ -16,23 +18,41 @@ JNIEXPORT jstring JNICALL Java_android_content_Context_native_1get_1apk_1path(JN
 	return _JSTRING(apk_path);
 }
 
+static void settings_changed_cb(XdpSettings *xdp_settings, gchar *namestpace, gchar *key, GVariant* value, jobject configuration)
+{
+	JNIEnv *env;
+	if (!strcmp(namestpace, "org.freedesktop.appearance") && !strcmp(key, "color-scheme")) {
+		int color_sheme = g_variant_get_uint32(value);
+		g_object_set(gtk_settings_get_default(), "gtk-application-prefer-dark-theme", color_sheme == 1, NULL);
+		env = get_jni_env();
+		if (!configuration) {
+			jobject resources = _GET_STATIC_OBJ_FIELD(handle_cache.context.class, "r", "Landroid/content/res/Resources;");
+			configuration = _GET_OBJ_FIELD(resources, "mConfiguration", "Landroid/content/res/Configuration;");
+		}
+		if (color_sheme == 1)  // Prefer dark appearance
+			_SET_INT_FIELD(configuration, "uiMode", /*UI_MODE_NIGHT_YES*/ 0x20);
+		else if (color_sheme == 2)  // Prefer light appearance
+			_SET_INT_FIELD(configuration, "uiMode", /*UI_MODE_NIGHT_NO*/ 0x10);
+		else  // No preference
+			_SET_INT_FIELD(configuration, "uiMode", /*UI_MODE_NIGHT_UNDEFINED*/ 0x00);
+	}
+}
+
+static XdpSettings *xdp_settings = NULL;
+
 JNIEXPORT void JNICALL Java_android_content_Context_native_1updateConfig(JNIEnv *env, jclass this, jobject config)
 {
-	GtkSettings *settings = gtk_settings_get_default();
-	char *theme_name;
-	gboolean prefer_dark = false;
-	gboolean theme_name_from_env = false;
-
-	theme_name = getenv("GTK_THEME");
-	theme_name_from_env = theme_name != NULL;
-	if (!theme_name_from_env)
-		g_object_get(settings, "gtk-theme-name", &theme_name, "gtk-application-prefer-dark-theme", &prefer_dark, NULL);
-	bool night_mode = prefer_dark || strcasestr(theme_name, "dark") || strcasestr(theme_name, "black");
-	if (night_mode) {
-		_SET_INT_FIELD(config, "uiMode", /*UI_MODE_NIGHT_YES*/ 0x20);
+	if (!xdp_settings) {
+		XdpPortal *portal = xdp_portal_new();
+		xdp_settings = xdp_portal_get_settings(portal);
+		g_object_unref(portal);
+		g_signal_connect(xdp_settings, "changed", G_CALLBACK(settings_changed_cb), NULL);
 	}
-	if (!theme_name_from_env)
-		g_free(theme_name);
+	GVariant *color_sheme = xdp_settings_read_value(xdp_settings, "org.freedesktop.appearance", "color-scheme", NULL, NULL);
+	if (color_sheme) {
+		settings_changed_cb(xdp_settings, "org.freedesktop.appearance", "color-scheme", color_sheme, config);
+		g_variant_unref(color_sheme);
+	}
 }
 
 JNIEXPORT void JNICALL Java_android_content_Context_nativeOpenFile(JNIEnv *env, jclass class, jint fd)
