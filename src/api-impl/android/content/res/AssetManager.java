@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -114,6 +115,7 @@ public final class AssetManager {
 				paths.add(null);  // reserve first slot for framework-res.apk
 				while (resources.hasMoreElements()) {
 					String path = resources.nextElement().getPath();
+					path = URLDecoder.decode(path, "UTF-8");
 					if (path.contains("framework-res.apk"))  // needs to be first, so it can be overridden
 						paths.set(0, path);
 					else if (!path.contains("com.google.android.gms"))  // microg resources can not be merged
