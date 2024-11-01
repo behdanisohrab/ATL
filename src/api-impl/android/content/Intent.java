@@ -342,4 +342,9 @@ public class Intent implements Parcelable {
 			return new ShortcutIconResource();
 		}
 	}
+
+	public void setExtrasClassLoader(ClassLoader loader) {}
+	public Intent setClassName(Context packageContext, String className) {
+		return this;
+	}
 }

@@ -10,6 +10,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.app.SharedPreferencesImpl;
 import android.app.UiModeManager;
+import android.bluetooth.BluetoothManager;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageParser;
@@ -104,7 +105,13 @@ public class Context extends Object {
 		application_info = new ApplicationInfo();
 		try (XmlResourceParser parser = assets.openXmlResourceParser("AndroidManifest.xml")) {
 			PackageParser packageParser = new PackageParser(native_get_apk_path());
-			pkg = packageParser.parsePackage(r, parser, 0, new String[1]);
+			String[] parseError = new String[1];
+			pkg = packageParser.parsePackage(r, parser, 0, parseError);
+			if (parseError[0] != null) {
+				Slog.e(TAG, parseError[0]);
+				System.exit(1);
+			}
+			
 			packageParser.collectCertificates(pkg, 0);
 			application_info = pkg.applicationInfo;
 		} catch (Exception e) {
@@ -212,10 +219,16 @@ public class Context extends Object {
 				return new LayoutInflater(getApplicationContext());
 			case "wifi":
 				return new WifiManager();
+			case "bluetooth":
+				return new BluetoothManager();
 			default:
 				Slog.e(TAG, "!!!!!!! getSystemService: case >" + name + "< is not implemented yet");
 				return null;
 		}
+	}
+
+	public final <T> T getSystemService(Class<T> serviceClass) {
+		return null;
 	}
 
 	public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {

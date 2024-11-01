@@ -97,6 +97,7 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 				break;
 			}
 		}
+
 		app_label = r.getText(pkg.applicationInfo.labelRes);
 		if (label != null) {
 			setTitle(label);
@@ -568,4 +569,6 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 	public static native void nativeOpenURI(String uri);
 	public native void nativeFileChooser(int action, String type, String title, int requestCode);
 	public void reportFullyDrawn() {}
+	public void setVisible(boolean visible) {}
+	public Uri getReferrer() { return null; }
 }

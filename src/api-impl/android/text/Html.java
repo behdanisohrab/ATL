@@ -1,5 +1,7 @@
 package android.text;
 
+import org.xml.sax.XMLReader;
+
 import android.graphics.drawable.Drawable;
 
 public class Html {
@@ -28,5 +30,13 @@ public class Html {
 			}
 		}
 		return out.toString();
+	}
+
+	public static interface TagHandler {
+		/**
+		 * This method will be called whenn the HTML parser encounters
+		 * a tag that it does not know how to interpret.
+		 */
+		public void handleTag(boolean opening, String tag, Editable output, XMLReader xmlReader);
 	}
 }

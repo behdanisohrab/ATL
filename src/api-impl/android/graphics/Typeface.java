@@ -50,6 +50,10 @@ public class Typeface {
 		return typeface;
 	}
 
+	public static Typeface createFromFile(String path) {
+		return DEFAULT;
+	}
+
 	private static native long native_create(CharSequence family_name, int style);
 
 	public int getStyle() {

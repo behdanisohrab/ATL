@@ -1,5 +1,7 @@
 package android.os;
 
+import java.util.concurrent.Executor;
+
 public final class StrictMode {
 	public static void setThreadPolicy(final ThreadPolicy policy) {}
 	public static void setVmPolicy(final VmPolicy policy) {}
@@ -9,9 +11,50 @@ public final class StrictMode {
 	public static ThreadPolicy allowThreadDiskReads() {
 		return new ThreadPolicy();
 	}
+	public static ThreadPolicy getThreadPolicy() { 
+		return new ThreadPolicy();
+	}
+
+	public interface OnThreadViolationListener {
+	}
 
 	public static final class ThreadPolicy {
+		final int mask;
+		final OnThreadViolationListener listener;
+		final Executor callbackExecutor;
+		
+		private ThreadPolicy(int mask, OnThreadViolationListener listener, Executor executor) {
+		    this.mask = mask;
+		    this.listener = listener;
+		    this.callbackExecutor = executor;
+		}
+
+		private ThreadPolicy() {
+			this.mask = 0;
+			this.listener = new OnThreadViolationListener() {};
+			this.callbackExecutor = new Executor() {
+				@Override
+				public void execute(Runnable command) {}
+			};
+		}
+	
 		public static final class Builder {
+			private int mask = 0;
+			private OnThreadViolationListener listener;
+			private Executor executor;
+
+			public Builder() {
+				mask = 0;
+			}
+
+			public Builder(ThreadPolicy policy) {
+				if(policy != null) {
+					mask = policy.mask;
+					listener = policy.listener;
+					executor = policy.callbackExecutor;
+				}
+			}
+
 			public Builder detectAll() {
 				return this;
 			}
@@ -24,11 +67,14 @@ public final class StrictMode {
 			public Builder permitDiskWrites() {
 				return this;
 			}
+			public Builder detectResourceMismatches() {
+				return this;
+			}
 			public Builder penaltyLog() {
 				return this;
 			}
 			public ThreadPolicy build() {
-				return new ThreadPolicy();
+				return new ThreadPolicy(mask, listener, executor);
 			}
 		}
 	}
