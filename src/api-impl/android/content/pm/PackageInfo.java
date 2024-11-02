@@ -238,4 +238,10 @@ public class PackageInfo {
 	public int describeContents() {
 		return 0;
 	}
+
+    public long getLongVersionCode() {
+        return versionCode;
+    }
+
+    public SigningInfo signingInfo = new SigningInfo();
 }

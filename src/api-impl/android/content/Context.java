@@ -10,9 +10,11 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.app.SharedPreferencesImpl;
 import android.app.UiModeManager;
+import android.app.job.JobScheduler;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageParser;
+import android.content.pm.ShortcutManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -37,6 +39,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
+import android.os.UserManager;
 import android.os.Vibrator;
 import android.telephony.TelephonyManager;
 import android.util.AttributeSet;
@@ -212,11 +215,27 @@ public class Context extends Object {
 				return new LayoutInflater(getApplicationContext());
 			case "wifi":
 				return new WifiManager();
+			case "jobscheduler":
+				return new JobScheduler();
 			default:
 				Slog.e(TAG, "!!!!!!! getSystemService: case >" + name + "< is not implemented yet");
 				return null;
 		}
 	}
+
+    public <T> T getSystemService(Class<T> serviceClass) {
+        if (serviceClass == WifiManager.class) {
+            return (T)new WifiManager();
+        }
+        if (serviceClass == UserManager.class) {
+            return (T)new UserManager();
+        }
+        if (serviceClass == ShortcutManager.class) {
+            return (T)new ShortcutManager();
+        }
+        Slog.e(TAG, "!!!!!! Trying to load system service class " + serviceClass.getName());
+        return null;
+    }
 
 	public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
 		receiverMap.put(filter, receiver);
@@ -637,4 +656,16 @@ public class Context extends Object {
 	public void revokeUriPermission(Uri uri, int mode) {
 		System.out.println("revokeUriPermission(" + uri + ", " + mode + ") called");
 	}
+
+    public String getAttributionTag() {
+        return null;
+    }
+    public boolean isDeviceProtectedStorage() {
+        return false;
+    }
+    public File[] getExternalMediaDirs() {
+        File[] ret = new File[1];
+        ret[0] = data_dir;
+        return ret;
+    }
 }

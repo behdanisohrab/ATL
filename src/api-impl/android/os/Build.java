@@ -123,7 +123,7 @@ public class Build {
 		 * The user-visible SDK version of the framework; its possible
 		 * values are defined in {@link Build.VERSION_CODES}.
 		 */
-		public static final int SDK_INT = Build.VERSION_CODES.GINGERBREAD;
+		public static final int SDK_INT = 30;//Build.VERSION_CODES.GINGERBREAD;
 
 		/**
 		 * The user-visible SDK version of the framework in its raw String

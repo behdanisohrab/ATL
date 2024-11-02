@@ -96,4 +96,8 @@ public class Application extends ContextWrapper {
 	}
 	public void unregisterOnProvideAssistDataListener(OnProvideAssistDataListener callback) {
 	}
+    public static String getProcessName() {
+        android.util.Log.e("PHH", "GetProcessName", new Throwable());
+        return "com.whatsapp";
+    }
 }

@@ -568,4 +568,13 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 	public static native void nativeOpenURI(String uri);
 	public native void nativeFileChooser(int action, String type, String title, int requestCode);
 	public void reportFullyDrawn() {}
+
+    public void registerActivityLifecycleCallbacks(Application.ActivityLifecycleCallbacks callback) {}
+
+    public void setDisablePreviewScreenshots(boolean disable) {}
+    public final View requireViewById(int id) {
+        View view = findViewById(id);
+        if (view == null) throw new IllegalArgumentException("ID does not reference a View inside this View");
+        return view;
+    }
 }

@@ -1861,4 +1861,18 @@ public class View implements Drawable.Callback {
 		else
 			return null;
 	}
+
+    public void saveAttributeDataForStyleable(Context ctxt, int[] styleable, AttributeSet attrs, TypedArray t, int defStyleAttr, int defStyleRes) {
+    }
+    public void setTooltipText(CharSequence tooltipText) {}
+    public void setImportantForAutofill(int mode) {}
+
+    public final View requireViewById(int id) {
+        View view = findViewById(id);
+        if (view == null) throw new IllegalArgumentException("ID does not reference a View inside this View");
+        return view;
+    }
+    public float getTransitionAlpha() {
+        return 1.0f;
+    }
 }
