@@ -68,6 +68,10 @@ public class Paint {
 	}
 	public void getTextBounds(String text, int start, int end, Rect bounds) {}
 	public void getTextBounds(char[] text, int index, int count, Rect bounds) {}
+	public int getTextWidths(String text, int start, int end, float[] widths) { 
+		// TODO fix it
+		return 0; 
+	}
 	public void setFilterBitmap(boolean filter) {}
 
 	public void setFlags(int flags) {

@@ -263,17 +263,6 @@ public final class Bundle extends BaseBundle implements Cloneable, Parcelable {
 	}
 
 	/**
-	 * Inserts a Boolean value into the mapping of this Bundle, replacing
-	 * any existing value for the given key.  Either key or value may be null.
-	 *
-	 * @param key a String, or null
-	 * @param value a Boolean, or null
-	 */
-	public void putBoolean(String key, boolean value) {
-		mMap.put(key, value);
-	}
-
-	/**
 	 * Inserts a byte value into the mapping of this Bundle, replacing
 	 * any existing value for the given key.
 	 *
@@ -585,45 +574,6 @@ public final class Bundle extends BaseBundle implements Cloneable, Parcelable {
 	@Deprecated
 	public void putIBinder(String key, IBinder value) {
 		mMap.put(key, value);
-	}
-
-	/**
-	 * Returns the value associated with the given key, or false if
-	 * no mapping of the desired type exists for the given key.
-	 *
-	 * @param key a String
-	 * @return a boolean value
-	 */
-	public boolean getBoolean(String key) {
-		if (DEBUG)
-			Log.d(TAG, "Getting boolean in " + Integer.toHexString(System.identityHashCode(this)));
-		return getBoolean(key, false);
-	}
-
-	/**
-	 * Returns the value associated with the given key, or defaultValue if
-	 * no mapping of the desired type exists for the given key.
-	 *
-	 * @param key a String
-	 * @param defaultValue Value to return if key does not exist
-	 * @return a boolean value
-	 */
-	public boolean getBoolean(String key, boolean defaultValue) {
-		Object o = mMap.get(key);
-		System.out.println("bundle.getBoolean(" + key + ", " + defaultValue + ") called");
-		/* the default for this is very scummy */
-		if(key.equals("com.facebook.sdk.AutoLogAppEventsEnabled")) {
-			return false;
-		}
-		if (o == null) {
-			return defaultValue;
-		}
-		try {
-			return (Boolean)o;
-		} catch (ClassCastException e) {
-			typeWarning(key, o, "Boolean", defaultValue, e);
-			return defaultValue;
-		}
 	}
 
 	/**

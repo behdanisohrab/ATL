@@ -831,6 +831,11 @@ public class Resources {
 		return csl.getDefaultColor();
 	}
 
+	public int getColor(int id, Theme theme) throws NotFoundException {
+		// TODO fix it
+		return 0;
+	}
+
 	/**
 	 * Return a color state list associated with a particular resource ID.  The
 	 * resource may contain either a single raw color value, or a complex
@@ -1594,7 +1599,7 @@ public class Resources {
 						 mConfiguration.smallestScreenWidthDp,
 						 mConfiguration.screenWidthDp, mConfiguration.screenHeightDp,
 						 mConfiguration.screenLayout, mConfiguration.uiMode,
-						 24);
+						 25);
 
 			if (DEBUG_CONFIG) {
 				Slog.i(TAG, "**** Updating config of " + this + ": final config is " + mConfiguration + " final compat is " + mCompatibilityInfo);
@@ -2310,50 +2315,50 @@ public class Resources {
 			throw new RuntimeException(e);
 		}
 /*        if (id != 0) {
-            try {
-                // These may be compiled...
-                synchronized (mCachedXmlBlockIds) {
-                    // First see if this block is in our cache.
-                    final int num = mCachedXmlBlockIds.length;
-                    for (int i=0; i<num; i++) {
-                        if (mCachedXmlBlockIds[i] == id) {
-                            //System.out.println("**** REUSING XML BLOCK!  id="
-                            //                   + id + ", index=" + i);
-                            return mCachedXmlBlocks[i].newParser();
-                        }
-                    }
+	    try {
+		// These may be compiled...
+		synchronized (mCachedXmlBlockIds) {
+		    // First see if this block is in our cache.
+		    final int num = mCachedXmlBlockIds.length;
+		    for (int i=0; i<num; i++) {
+			if (mCachedXmlBlockIds[i] == id) {
+			    //System.out.println("**** REUSING XML BLOCK!  id="
+			    //                   + id + ", index=" + i);
+			    return mCachedXmlBlocks[i].newParser();
+			}
+		    }
 
-                    // Not in the cache, create a new block and put it at
-                    // the next slot in the cache.
-                    XmlBlock block = mAssets.openXmlBlockAsset(
-                            assetCookie, file);
-                    if (block != null) {
-                        int pos = mLastCachedXmlBlockIndex+1;
-                        if (pos >= num) pos = 0;
-                        mLastCachedXmlBlockIndex = pos;
-                        XmlBlock oldBlock = mCachedXmlBlocks[pos];
-                        if (oldBlock != null) {
-                            oldBlock.close();
-                        }
-                        mCachedXmlBlockIds[pos] = id;
-                        mCachedXmlBlocks[pos] = block;
-                        //System.out.println("**** CACHING NEW XML BLOCK!  id="
-                        //                   + id + ", index=" + pos);
-                        return block.newParser();
-                    }
-                }
-            } catch (Exception e) {
-                NotFoundException rnf = new NotFoundException(
-                        "File " + file + " from xml type " + type + " resource ID #0x"
-                        + Integer.toHexString(id));
-                rnf.initCause(e);
-                throw rnf;
-            }
-        }
+		    // Not in the cache, create a new block and put it at
+		    // the next slot in the cache.
+		    XmlBlock block = mAssets.openXmlBlockAsset(
+			    assetCookie, file);
+		    if (block != null) {
+			int pos = mLastCachedXmlBlockIndex+1;
+			if (pos >= num) pos = 0;
+			mLastCachedXmlBlockIndex = pos;
+			XmlBlock oldBlock = mCachedXmlBlocks[pos];
+			if (oldBlock != null) {
+			    oldBlock.close();
+			}
+			mCachedXmlBlockIds[pos] = id;
+			mCachedXmlBlocks[pos] = block;
+			//System.out.println("**** CACHING NEW XML BLOCK!  id="
+			//                   + id + ", index=" + pos);
+			return block.newParser();
+		    }
+		}
+	    } catch (Exception e) {
+		NotFoundException rnf = new NotFoundException(
+			"File " + file + " from xml type " + type + " resource ID #0x"
+			+ Integer.toHexString(id));
+		rnf.initCause(e);
+		throw rnf;
+	    }
+	}
 
-        throw new NotFoundException(
-                "File " + file + " from xml type " + type + " resource ID #0x"
-                + Integer.toHexString(id));
+	throw new NotFoundException(
+		"File " + file + " from xml type " + type + " resource ID #0x"
+		+ Integer.toHexString(id));
 */    }
 
 private TypedArray getCachedStyledAttributes(int len) {

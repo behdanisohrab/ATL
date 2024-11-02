@@ -29,6 +29,11 @@ public class PackageInfo {
 	public String packageName = "com.example.app"; // FIXME
 
 	/**
+	* The names of any installed split APKs for this package.
+	*/
+	public String[] splitNames;
+
+	/**
 	 * The version number of this package, as specified by the &lt;manifest&gt;
 	 * tag's {@link android.R.styleable#AndroidManifest_versionCode versionCode}
 	 * attribute.
