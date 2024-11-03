@@ -168,6 +168,7 @@ public class Activity extends ContextThemeWrapper implements Window.Callback {
 		System.out.println("- onStart - yay!");
 		if (window.contentView != null)
 			window.setContentView(window.contentView);
+		window.setTitle(title);
 
 		for (Fragment fragment : fragments) {
 			fragment.onStart();

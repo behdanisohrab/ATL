@@ -14,6 +14,14 @@ JNIEXPORT void JNICALL Java_android_view_Window_set_1widget_1as_1root(JNIEnv *en
 	}
 }
 
+JNIEXPORT void JNICALL Java_android_view_Window_set_1title(JNIEnv *env, jobject this, jlong window, jstring title_jstr)
+{
+	GtkWindow *gtk_window = GTK_WINDOW(_PTR(window));
+	const char *title = (*env)->GetStringUTFChars(env, title_jstr, NULL);
+	gtk_window_set_title(gtk_window, title);
+	(*env)->ReleaseStringUTFChars(env, title_jstr, title);
+}
+
 // FIXME put this in a header file
 struct input_queue {
 	int fd;

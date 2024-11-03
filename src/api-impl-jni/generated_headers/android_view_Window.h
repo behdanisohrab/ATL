@@ -21,6 +21,14 @@ JNIEXPORT void JNICALL Java_android_view_Window_set_1widget_1as_1root
 
 /*
  * Class:     android_view_Window
+ * Method:    set_title
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_android_view_Window_set_1title
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     android_view_Window
  * Method:    take_input_queue
  * Signature: (JLandroid/view/InputQueue/Callback;Landroid/view/InputQueue;)V
  */
