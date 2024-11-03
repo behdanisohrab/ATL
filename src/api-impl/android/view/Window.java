@@ -68,6 +68,7 @@ public class Window {
 	}
 
 	private native void set_widget_as_root(long native_window, long widget);
+	private native void set_title(long native_window, String title);
 
 	public native void take_input_queue(long native_window, InputQueue.Callback callback, InputQueue queue);
 
@@ -132,5 +133,9 @@ public class Window {
 
 	public boolean hasFeature(int featureId) {
 		return false;
+	}
+
+	public void setTitle(CharSequence title) {
+		set_title(native_window, title != null ? title.toString() : context.getPackageName());
 	}
 }
