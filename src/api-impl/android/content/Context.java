@@ -10,6 +10,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.app.SharedPreferencesImpl;
 import android.app.UiModeManager;
+import android.app.job.JobScheduler;
 import android.bluetooth.BluetoothManager;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -221,6 +222,9 @@ public class Context extends Object {
 				return new WifiManager();
 			case "bluetooth":
 				return new BluetoothManager();
+			case "jobscheduler":
+				return new JobScheduler();
+				
 			default:
 				Slog.e(TAG, "!!!!!!! getSystemService: case >" + name + "< is not implemented yet");
 				return null;
