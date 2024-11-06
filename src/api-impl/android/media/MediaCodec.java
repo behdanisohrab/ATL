@@ -147,8 +147,15 @@ public class MediaCodec {
 
 	public void release() {
 		System.out.println("MediaCodec.release(): codecName=" + codecName);
-		if (native_codec != 0)
+		if (native_codec != 0) {
+			if (outputBuffers != null) {
+				for (int i=0; i<outputBuffers.length; i++) {
+					if (!freeOutputBuffers.contains(i))
+						releaseOutputBuffer(i, false);
+				}
+			}
 			native_release(native_codec);
+		}
 		native_codec = 0;
 	}
 
