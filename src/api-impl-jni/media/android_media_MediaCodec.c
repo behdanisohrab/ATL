@@ -343,7 +343,7 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JN
 			AVBufferRef *hw_device_ctx = NULL;
 			int ret = av_hwdevice_ctx_create(&hw_device_ctx, config->device_type, NULL, NULL, 0);
 			if (ret >= 0) {
-				codec_ctx->hw_device_ctx = av_buffer_ref(hw_device_ctx);
+				codec_ctx->hw_device_ctx = hw_device_ctx;
 				break;
 			}
 		}
@@ -465,6 +465,10 @@ JNIEXPORT jint JNICALL Java_android_media_MediaCodec_native_1dequeueOutputBuffer
 			_SET_INT_FIELD(buffer_info, "size", 0);
 			_SET_LONG_FIELD(buffer_info, "presentationTimeUs", 0);
 			av_frame_free(&frame);
+			// set the buffer to NULL, so we don't try to render it
+			uint8_t *raw_buffer = get_nio_buffer(env, buffer, &array_ref, &array);
+			*((AVFrame **)raw_buffer) = NULL;
+			release_nio_buffer(env, array_ref, array);
 			return 0;
 		}
 		if (ret != AVERROR(EAGAIN)) {
@@ -568,6 +572,9 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1releaseOutputBuffer
 		frame = *raw_buffer;
 		*raw_buffer = NULL;
 		release_nio_buffer(env, array_ref, array);
+
+		if (!frame)
+			return;
 
 		if (!render) {
 			fprintf(stderr, "skipping %dx%d frame!\n", frame->width, frame->height);
