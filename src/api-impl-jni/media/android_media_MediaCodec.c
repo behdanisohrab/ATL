@@ -343,7 +343,7 @@ JNIEXPORT void JNICALL Java_android_media_MediaCodec_native_1configure_1video(JN
 			AVBufferRef *hw_device_ctx = NULL;
 			int ret = av_hwdevice_ctx_create(&hw_device_ctx, config->device_type, NULL, NULL, 0);
 			if (ret >= 0) {
-				codec_ctx->hw_device_ctx = av_buffer_ref(hw_device_ctx);
+				codec_ctx->hw_device_ctx = hw_device_ctx;
 				break;
 			}
 		}
