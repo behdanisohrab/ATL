@@ -29,20 +29,6 @@ public class MediaCodec {
 		if (native_codec == 0) {
 			throw new IOException("Unable to create MediaCodec: " + codecName);
 		}
-		inputBuffers = new ByteBuffer[1];
-		inputBufferTimestamps = new long[inputBuffers.length];
-		freeInputBuffers = new ArrayDeque<>(inputBuffers.length);
-		queuedInputBuffers = new ArrayDeque<>(inputBuffers.length);
-		for (int i = 0; i < inputBuffers.length; i++) {
-			inputBuffers[i] = ByteBuffer.allocate(262144).order(ByteOrder.LITTLE_ENDIAN);
-			freeInputBuffers.add(i);
-		}
-		outputBuffers = new ByteBuffer[2];
-		freeOutputBuffers = new ArrayDeque<>(outputBuffers.length);
-		for (int i = 0; i < outputBuffers.length; i++) {
-			outputBuffers[i] = ByteBuffer.allocate(4096).order(ByteOrder.LITTLE_ENDIAN);
-			freeOutputBuffers.add(i);
-		}
 	}
 
 	public static MediaCodec createByCodecName(String codecName) throws IOException {
@@ -52,6 +38,26 @@ public class MediaCodec {
 	public void configure(MediaFormat format, Surface surface, MediaCrypto crypto, int flags) {
 		System.out.println("MediaCodec.configure(" + format + ", " + surface + ", " + crypto +	", " + flags + "): codecName=" + codecName);
 		this.mediaFormat = format;
+
+		int maxInputSize = 262144;
+		if (format.containsKey("max-input-size")) {
+			maxInputSize = format.getInteger("max-input-size");
+		}
+		inputBuffers = new ByteBuffer[1];
+		inputBufferTimestamps = new long[inputBuffers.length];
+		freeInputBuffers = new ArrayDeque<>(inputBuffers.length);
+		queuedInputBuffers = new ArrayDeque<>(inputBuffers.length);
+		for (int i = 0; i < inputBuffers.length; i++) {
+			inputBuffers[i] = ByteBuffer.allocate(maxInputSize).order(ByteOrder.LITTLE_ENDIAN);
+			freeInputBuffers.add(i);
+		}
+		outputBuffers = new ByteBuffer[2];
+		freeOutputBuffers = new ArrayDeque<>(outputBuffers.length);
+		for (int i = 0; i < outputBuffers.length; i++) {
+			outputBuffers[i] = ByteBuffer.allocate(4096).order(ByteOrder.LITTLE_ENDIAN);
+			freeOutputBuffers.add(i);
+		}
+
 		if ("aac".equals(codecName)) {
 			native_configure_audio(native_codec, format.getByteBuffer("csd-0"), format.getInteger("sample-rate"), format.getInteger("channel-count"));
 		} else if ("h264".equals(codecName)) {
