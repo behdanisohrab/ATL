@@ -1,0 +1,60 @@
+package android.hardware.security.key_mint;
+
+public final class Tag {
+    public static final int INVALID = 0;
+    public static final int PURPOSE = 0;
+    public static final int ALGORITHM = 0;
+    public static final int KEY_SIZE = 0;
+    public static final int BLOCK_MODE = 0;
+    public static final int DIGEST = 0;
+    public static final int PADDING = 0;
+    public static final int CALLER_NONCE = 0;
+    public static final int MIN_MAC_LENGTH = 0;
+    public static final int EC_CURVE = 0;
+
+    public static final int RSA_PUBLIC_EXPONENT = 0; // KM_ULONG | 200;
+    public static final int INCLUDE_UNIQUE_ID = 0; // KM_BOOL | 202;
+    public static final int RSA_OAEP_MGF_DIGEST = 0;// KM_ENUM_REP | 203;
+    public static final int ACTIVE_DATETIME = 0; // KM_DATE | 400;
+    public static final int ORIGINATION_EXPIRE_DATETIME = 0; // KM_DATE | 401;
+    public static final int USAGE_EXPIRE_DATETIME = 0; // KM_DATE | 402;
+    public static final int MIN_SECONDS_BETWEEN_OPS = 0; // KM_UINT | 403;
+    public static final int MAX_USES_PER_BOOT = 0; // KM_UINT | 404;
+    public static final int USAGE_COUNT_LIMIT = 0; // KM_UINT | 405;
+    public static final int USER_ID = 0; // KM_UINT | 501;
+    public static final int USER_SECURE_ID = 0; // KM_ULONG_REP | 502;
+    public static final int NO_AUTH_REQUIRED = 0; // KM_BOOL | 503;
+    public static final int USER_AUTH_TYPE = 0; // KM_ENUM | 504;
+    public static final int AUTH_TIMEOUT = 0; // KM_UINT | 505;
+    public static final int ALLOW_WHILE_ON_BODY = 0; // KM_BOOL | 506;
+    public static final int TRUSTED_USER_PRESENCE_REQUIRED = 0; // KM_BOOL | 507;
+    public static final int TRUSTED_CONFIRMATION_REQUIRED = 0; // KM_BOOL | 508;
+    public static final int UNLOCKED_DEVICE_REQUIRED = 0; // KM_BOOL | 509;
+    public static final int APPLICATION_ID = 0; // KM_BYTES | 601;
+    public static final int CREATION_DATETIME = 0; // KM_DATE | 701;
+    public static final int ORIGIN = 0; // KM_ENUM | 702;
+    public static final int ROLLBACK_RESISTANCE = 0; // KM_BOOL | 703;
+    public static final int ROOT_OF_TRUST = 0; // KM_BYTES | 704;
+    public static final int UNIQUE_ID = 0; // KM_BYTES | 707;
+    public static final int ATTESTATION_CHALLENGE = 0; // KM_BYTES | 708;
+    public static final int ATTESTATION_ID_BRAND = 0; // KM_BYTES | 710;
+    public static final int ATTESTATION_ID_DEVICE = 0; // KM_BYTES | 711;
+    public static final int ATTESTATION_ID_PRODUCT = 0; // KM_BYTES | 712;
+    public static final int ATTESTATION_ID_SERIAL = 0; // KM_BYTES | 713;
+    public static final int ATTESTATION_ID_IMEI = 0; // KM_BYTES | 714;
+    public static final int ATTESTATION_ID_MEID = 0; // KM_BYTES | 715;
+    public static final int ATTESTATION_ID_MANUFACTURER = 0; // KM_BYTES | 716;
+    public static final int ATTESTATION_ID_MODEL = 0; // KM_BYTES | 717;
+    public static final int VENDOR_PATCHLEVEL = 0; // KM_UINT | 718;
+    public static final int BOOT_PATCHLEVEL = 0; // KM_UINT | 719;
+    public static final int DEVICE_UNIQUE_ATTESTATION = 0; // KM_BOOL | 720;
+    public static final int ATTESTATION_ID_SECOND_IMEI = 0; // KM_BYTES | 723;
+    public static final int NONCE = 0; // KM_BYTES | 1001;
+    public static final int MAC_LENGTH = 0; // KM_UINT | 1003;
+    public static final int RESET_SINCE_ID_ROTATION = 0; // KM_BOOL | 1004
+    public static final int CONFIRMATION_TOKEN = 0; // KM_BYTES | 1005;
+    public static final int CERTIFICATE_SERIAL = 0; // KM_UINT | 1006;
+    public static final int CERTIFICATE_SUBJECT = 0; // KM_UINT | 1007;
+    public static final int CERTIFICATE_NOT_BEFORE = 0; // KM_DATE | 1008;
+    public static final int CERTIFICATE_NOT_AFTER = 0; // KM_DATE | 1009;
+}
